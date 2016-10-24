@@ -98,18 +98,56 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
     if (!moving)
     {
-        if (e->pos().y() < 3 || e->pos().y() > MainWindow::size().height() - 3)
+        if (e->pos().y() < resizingFrame)
+        {
             MainWindow::setCursor(Qt::SizeVerCursor);
+            if (resizing && e->buttons() && Qt::LeftButton)
+            {
+                MainWindow::setGeometry(MainWindow::x(), e->globalY(), MainWindow::width(), MainWindow::height() + (MainWindow::lastGlobalPos.y() - e->globalY()));
+                MainWindow::lastGlobalPos.setY(e->globalY());
+                return;
+                //cout<<MainWindow::lastGlobalPos.y() - e->globalY()<<endl;
+               // MainWindow::lastPoint = e->pos();
+                //MainWindow::move(MainWindow::pos().x(), MainWindow::pos().y() - (e->globalY() - MainWindow::lastPoint.y()));
+            }
+        }
+        else if (e->pos().y() > MainWindow::size().height() - resizingFrame)
+        {
+            MainWindow::setCursor(Qt::SizeVerCursor);
+            if (resizing)
+            {
+
+
+            }
+        }
+        else if (e->pos().x() < resizingFrame)
+        {
+            MainWindow::setCursor(Qt::SizeHorCursor);
+            if (resizing)
+            {
+
+
+            }
+        }
+        else if (e->pos().x() > MainWindow::size().width() - resizingFrame)
+        {
+            MainWindow::setCursor(Qt::SizeHorCursor);
+            if (resizing)
+            {
+
+
+            }
+        }
         else
-            if( e->pos().x() < 3 || e->pos().x() > MainWindow::size().width() - 3)
-                MainWindow::setCursor(Qt::SizeHorCursor);
-            else
-                MainWindow::setCursor(Qt::ArrowCursor);
+            MainWindow::setCursor(Qt::ArrowCursor);
     }
 
 
-    if((e->buttons() && Qt::LeftButton))
-        if ((moving))
+
+
+    if(e->buttons() && Qt::LeftButton)
+        if (moving && !resizing)
+        {
             if (!MainWindow::isMaximized())
             {
                 move(e->globalX() - MainWindow::lastPoint.x(),  e->globalY() - MainWindow::lastPoint.y());
@@ -120,26 +158,34 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
                 MainWindow::normalGeometry() = prev_geometry;
                 MainWindow::showNormal();
             }
+        }
 
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
-        if (e->pos().y() <= 50 && e->pos().y() > 2)
-        {
-            MainWindow::lastPoint = e->pos();
+    {
+        MainWindow::lastPoint = e->pos();
+        MainWindow::lastGlobalPos = e->globalPos();
+        if (e->pos().y() <= 50 && e->pos().y() > resizingFrame)
             moving = true;
-            ui->pushButton->setText("true");
-        }
+        if (e->pos().y() < resizingFrame || e->pos().y() > MainWindow::size().height() - resizingFrame || e->pos().x() < resizingFrame || e->pos().x() > MainWindow::size().width() - resizingFrame)
+            resizing = true;
+    }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 {
-    if (e->button() == Qt::LeftButton && moving)
-        if (e->pos().y() <= 50)
+    if (e->button() == Qt::LeftButton)
+    {
+        if (e->pos().y() <= 50 && e->pos().y() > resizingFrame)
         {
             moving = false;
-            ui->pushButton->setText("false");
         }
+        if (e->pos().y() < resizingFrame || e->pos().y() > MainWindow::size().height() - resizingFrame || e->pos().x() < resizingFrame || e->pos().x() > MainWindow::size().width() - resizingFrame)
+        {
+            resizing = false;
+        }
+    }
 }

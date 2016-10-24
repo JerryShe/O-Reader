@@ -5,7 +5,7 @@
 #include <QSize>
 #include <QRect>
 #include <QEvent>
-#include <QMouseEvent>
+
 
 namespace Ui
 {
@@ -38,7 +38,10 @@ private slots:
 
 private:
     bool moving;
+    bool resizing;
     QPoint lastPoint;
+    QPoint lastGlobalPos;
+    int resizingFrame = 5;
     Ui::MainWindow *ui;
 
 };

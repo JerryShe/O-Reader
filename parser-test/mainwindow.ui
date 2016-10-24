@@ -110,19 +110,19 @@
      <number>0</number>
     </property>
     <property name="verticalSpacing">
-     <number>5</number>
+     <number>2</number>
     </property>
     <property name="leftMargin">
      <number>0</number>
     </property>
     <property name="topMargin">
-     <number>10</number>
+     <number>5</number>
     </property>
     <property name="rightMargin">
      <number>2</number>
     </property>
     <property name="bottomMargin">
-     <number>2</number>
+     <number>0</number>
     </property>
     <item row="0" column="1">
      <layout class="QHBoxLayout" name="TopButtons">
@@ -150,10 +150,16 @@
       </item>
       <item>
        <widget class="QPushButton" name="min_button">
+        <property name="minimumSize">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
         <property name="maximumSize">
          <size>
-          <width>30</width>
-          <height>30</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="palette">
@@ -368,14 +374,14 @@
        <widget class="QPushButton" name="full_size_button">
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>30</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>30</width>
-          <height>30</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="palette">
@@ -590,14 +596,14 @@
        <widget class="QPushButton" name="exit_button">
         <property name="minimumSize">
          <size>
-          <width>30</width>
-          <height>30</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>30</width>
-          <height>30</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
         <property name="sizeIncrement">
@@ -794,7 +800,7 @@
 
 #exit_button:hover 
 {
-	background-color:rgb(205, 0, 0);
+	background-color:rgb(203, 0, 88);
 }</string>
         </property>
         <property name="text">
@@ -926,7 +932,7 @@
 
 #Library:hover 
 {
-	background-color:rgb(159, 0, 69);
+	background-color:rgb(157, 0, 70);
 }</string>
         </property>
         <property name="text">
@@ -967,7 +973,7 @@
 
 #Settings:hover 
 {
-	background-color:rgb(159, 0, 69);
+	background-color:rgb(157, 0, 70);
 }</string>
         </property>
         <property name="text">
@@ -1009,7 +1015,7 @@
 
 #Synchronization:hover 
 {
-	background-color:rgb(159, 0, 69);
+	background-color:rgb(157, 0, 70);
 }</string>
         </property>
         <property name="text">
@@ -1063,7 +1069,7 @@
 
 #Logout:hover 
 {
-	background-color:rgb(159, 0, 69);
+	background-color:rgb(157, 0, 70);
 }</string>
         </property>
         <property name="text">
