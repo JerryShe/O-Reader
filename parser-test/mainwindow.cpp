@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
     MainWindow::prev_geometry = MainWindow::geometry();
+    ui->centralWidget=ui->MainPage;
 
 }
 
@@ -31,8 +32,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    ui->context->clear();
-    ui->line->setStyleSheet(QString::fromUtf8("background-color: rgb(244, 115, 255);"));
+    ui->Context->clear();
+    //ui->line->setStyleSheet(QString::fromUtf8("background-color: rgb(244, 115, 255);"));
 
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("FB2 Files (*.fb2)"));
     wchar_t * nameOfFile = (wchar_t*)fileName.utf16();                    //костыль, что-то с кодировкой при приведении типов встроенной функцией
@@ -55,7 +56,7 @@ void MainWindow::on_pushButton_clicked()
           cout<< a;
     }
 
-    ui->context->addItems(table_of_contents);
+    ui->Context->addItems(table_of_contents);
 
 
 }
