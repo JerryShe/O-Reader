@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
     MainWindow::prev_geometry = MainWindow::geometry();
+    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
+    MainWindow::setMouseTracking(true);
 
 
 }
@@ -73,9 +75,6 @@ void MainWindow::on_full_size_button_clicked()
     {
         MainWindow::normalGeometry() = MainWindow::prev_geometry;
         MainWindow::showNormal();
-      //  MainWindow::resize(MainWindow::prev_geometry.width(), MainWindow::prev_geometry.height());
-        //MainWindow::move(MainWindow::prev_geometry.x(), MainWindow::prev_geometry.y());
-
     }
     else
     {
@@ -90,13 +89,60 @@ void MainWindow::on_min_button_clicked()
     {
         MainWindow::normalGeometry() = MainWindow::prev_geometry;
         MainWindow::showNormal();
-       // MainWindow::resize(MainWindow::prev_geometry.width(), MainWindow::prev_geometry.height());
-       // MainWindow::move(MainWindow::prev_geometry.x(), MainWindow::prev_geometry.y());
-
     }
     else
     {
         MainWindow::prev_geometry = MainWindow::geometry();
         MainWindow::showMinimized();
     }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *e)
+{
+    if (!moving)
+    {
+        if (e->pos().y() < 3 || e->pos().y() > MainWindow::size().height() - 3)
+            MainWindow::setCursor(Qt::SizeVerCursor);
+        else
+            if( e->pos().x() < 3 || e->pos().x() > MainWindow::size().width() - 3)
+                MainWindow::setCursor(Qt::SizeHorCursor);
+            else
+                MainWindow::setCursor(Qt::ArrowCursor);
+    }
+
+
+    if((e->buttons() && Qt::LeftButton))
+        if ((moving))
+            if (!MainWindow::isMaximized())
+            {
+                move(e->globalX() - MainWindow::lastPoint.x(),  e->globalY() - MainWindow::lastPoint.y());
+            }
+            else
+            {
+                prev_geometry.setY(e->globalY());
+                MainWindow::normalGeometry() = prev_geometry;
+                MainWindow::showNormal();
+            }
+
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton)
+        if (e->pos().y() <= 50 && e->pos().y() > 2)
+        {
+            MainWindow::lastPoint = e->pos();
+            moving = true;
+            ui->pushButton->setText("true");
+        }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *e)
+{
+    if (e->button() == Qt::LeftButton && moving)
+        if (e->pos().y() <= 50)
+        {
+            moving = false;
+            ui->pushButton->setText("false");
+        }
 }
