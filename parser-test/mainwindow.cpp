@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
     MainWindow::prev_geometry = MainWindow::geometry();
-    ui->centralWidget=ui->MainPage;
+
 
 }
 
@@ -69,10 +69,34 @@ void MainWindow::on_exit_button_clicked()
 
 void MainWindow::on_full_size_button_clicked()
 {
-    if (MainWindow::geometry() == MainWindow::prev_geometry)
-        MainWindow::showMaximized();
+    if( MainWindow::isMaximized())
+    {
+        MainWindow::normalGeometry() = MainWindow::prev_geometry;
+        MainWindow::showNormal();
+      //  MainWindow::resize(MainWindow::prev_geometry.width(), MainWindow::prev_geometry.height());
+        //MainWindow::move(MainWindow::prev_geometry.x(), MainWindow::prev_geometry.y());
+
+    }
     else
     {
-        MainWindow::setGeometry(MainWindow::prev_geometry);
+        MainWindow::prev_geometry = MainWindow::geometry();
+        MainWindow::showMaximized();
+    }
+}
+
+void MainWindow::on_min_button_clicked()
+{
+    if( MainWindow::isMinimized())
+    {
+        MainWindow::normalGeometry() = MainWindow::prev_geometry;
+        MainWindow::showNormal();
+       // MainWindow::resize(MainWindow::prev_geometry.width(), MainWindow::prev_geometry.height());
+       // MainWindow::move(MainWindow::prev_geometry.x(), MainWindow::prev_geometry.y());
+
+    }
+    else
+    {
+        MainWindow::prev_geometry = MainWindow::geometry();
+        MainWindow::showMinimized();
     }
 }

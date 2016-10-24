@@ -27,6 +27,8 @@ private slots:
 
     void on_full_size_button_clicked();
 
+    void on_min_button_clicked();
+
 private:
     Ui::MainWindow *ui;
 
