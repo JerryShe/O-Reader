@@ -20,14 +20,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     MainWindow::prev_geometry = MainWindow::geometry();
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     MainWindow::setMouseTracking(true);
-
-
 }
 
 
 MainWindow::~MainWindow()
 {
-
     delete ui;
 }
 

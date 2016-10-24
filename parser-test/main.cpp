@@ -10,8 +10,6 @@ int main(int argc, char *argv[])
     MainWindow my_fucking_window;
     my_fucking_window.setWindowFlags(Qt::FramelessWindowHint);
 
-//    my_fucking_window.setMouseTracking(true);
-   // my_fucking_window.setWindowFlags(Qt::CustomizeWindowHint);
 
     my_fucking_window.show();
 
