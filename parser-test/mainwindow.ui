@@ -963,6 +963,12 @@
         <property name="text">
          <string/>
         </property>
+        <property name="iconSize">
+         <size>
+          <width>90</width>
+          <height>90</height>
+         </size>
+        </property>
         <property name="autoDefault">
          <bool>true</bool>
         </property>

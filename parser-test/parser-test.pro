@@ -23,4 +23,5 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui
 
 RESOURCES += \
-    top_buttons.qrc
+    top_buttons.qrc \
+    menu_buttons.qrc
