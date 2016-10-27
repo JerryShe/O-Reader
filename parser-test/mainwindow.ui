@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>700</height>
+    <height>710</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -124,6 +124,40 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="pushButton">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>70</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>fuck</string>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="default">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="1">
      <layout class="QHBoxLayout" name="TopButtons">
       <property name="spacing">
@@ -841,7 +875,7 @@
        <number>0</number>
       </property>
       <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
+       <enum>QLayout::SetFixedSize</enum>
       </property>
       <property name="leftMargin">
        <number>0</number>
@@ -923,20 +957,17 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">#Library
-{
-	border: none;
-	background:none;
-	background-repeat: none;
-}
-
-#Library:hover 
-{
-	background-color:rgb(157, 0, 70);
-}</string>
+         <string notr="true">
+</string>
         </property>
         <property name="text">
          <string/>
+        </property>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -964,17 +995,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">#Settings
-{
-	border-style: groove none none none;
- 	border-color:rgb(130, 0, 60);
- 	border-width: 1px;
-}
-
-#Settings:hover 
-{
-	background-color:rgb(157, 0, 70);
-}</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
@@ -1005,18 +1026,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">#Synchronization
-{
-
-	border-style: groove none groove none;
- 	border-color:rgb(130, 0, 60);
- 	border-width: 1px;
-}
-
-#Synchronization:hover 
-{
-	background-color:rgb(157, 0, 70);
-}</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
@@ -1030,6 +1040,9 @@
        <spacer name="verticalSpacer_2">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Expanding</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -1060,17 +1073,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">#Logout
-{
-	border-style: groove none groove none;
- 	border-color:rgb(130, 0, 60);
- 	border-width: 1px;
-}
-
-#Logout:hover 
-{
-	background-color:rgb(157, 0, 70);
-}</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
@@ -1218,40 +1221,6 @@ border-style: groove none none groove;
       </property>
       <property name="spacing">
        <number>4</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="pushButton">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>20</width>
-        <height>20</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>70</width>
-        <height>70</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>fuck</string>
-      </property>
-      <property name="autoDefault">
-       <bool>false</bool>
-      </property>
-      <property name="default">
-       <bool>false</bool>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
       </property>
      </widget>
     </item>

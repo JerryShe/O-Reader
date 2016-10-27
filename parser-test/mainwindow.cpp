@@ -18,8 +18,81 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
     MainWindow::prev_geometry = MainWindow::geometry();
+
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     MainWindow::setMouseTracking(true);
+
+
+
+    MainWindow::MenuButtonsSheets[0] = " #Library "
+                                       " {background-color: rgb(162, 0, 70); "
+                                       " border-style: none none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Library:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+    MainWindow::MenuButtonsSheets[1] = " #Settings "
+                                       " {background-color: rgb(162, 0, 70); "
+                                       " border-style: none none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Settings:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+    MainWindow::MenuButtonsSheets[2] = " #Synchronization "
+                                       " {background-color: rgb(162, 0, 70); "
+                                       " border-style: none none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Synchronization:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+    MainWindow::MenuButtonsSheets[3] = " #Logout "
+                                       " {background-color: rgb(162, 0, 70); "
+                                       " border-style: groove none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Logout:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+
+
+
+    MainWindow::MenuButtonsSheets[4] = " #Library "
+                                       " {background-color: rgb(150, 0, 60); "
+                                       " border-style: none none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Library:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+    MainWindow::MenuButtonsSheets[5] = " #Settings "
+                                       " {background-color: rgb(150, 0, 60); "
+                                       " border-style: none none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Settings:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+    MainWindow::MenuButtonsSheets[6] = " #Synchronization "
+                                       " {background-color: rgb(150, 0, 60); "
+                                       " border-style: none none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Synchronization:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+    MainWindow::MenuButtonsSheets[7] = " #Logout "
+                                       " {background-color: rgb(150, 0, 60); "
+                                       " border-style: groove none groove none; "
+                                       " border-color:rgb(130, 0, 60); "
+                                       " border-width: 1px;} "
+                                       " #Logout:hover "
+                                       " { background-color:rgb(147, 0, 60); } ";
+
+
+    ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+
+    ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+
+    ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+
+    ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
+
 }
 
 
@@ -183,9 +256,71 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
         {
             moving = false;
         }
-        if (e->pos().y() < resizingFrame || e->pos().y() > MainWindow::size().height() - resizingFrame || e->pos().x() < resizingFrame || e->pos().x() > MainWindow::size().width() - resizingFrame)
+
+        if (e->pos().y() < resizingFrame*10 || e->pos().y() > MainWindow::size().height() - resizingFrame || e->pos().x() < resizingFrame || e->pos().x() > MainWindow::size().width() - resizingFrame)
         {
             resizing = false;
         }
+    }
+}
+
+void MainWindow::on_Library_clicked()
+{
+    if (MainWindow::activeMenuButton != 1)
+    {
+        MainWindow::activeMenuButton = 1;
+        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[4]);
+
+        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+
+        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+
+        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
+    }
+}
+
+void MainWindow::on_Settings_clicked()
+{
+    if (MainWindow::activeMenuButton != 2)
+    {
+        MainWindow::activeMenuButton = 2;
+
+        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+
+        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[5]);
+
+        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+
+        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
+    }
+}
+
+void MainWindow::on_Synchronization_clicked()
+{
+    if (MainWindow::activeMenuButton != 3)
+    {
+        MainWindow::activeMenuButton = 3;
+        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+
+        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+
+        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[6]);
+
+        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
+    }
+}
+
+void MainWindow::on_Logout_clicked()
+{
+    if (MainWindow::activeMenuButton != 4)
+    {
+        MainWindow::activeMenuButton = 4;
+        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+
+        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+
+        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+
+        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[7]);
     }
 }

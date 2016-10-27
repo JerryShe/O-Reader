@@ -5,7 +5,7 @@
 #include <QSize>
 #include <QRect>
 #include <QEvent>
-
+#include <QPalette>
 
 namespace Ui
 {
@@ -36,7 +36,18 @@ private slots:
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
 
+    void on_Library_clicked();
+
+    void on_Settings_clicked();
+
+    void on_Synchronization_clicked();
+
+    void on_Logout_clicked();
+
 private:
+    QString MenuButtonsSheets [8];
+
+    int activeMenuButton;
     bool moving;
     bool resizing;
     QPoint lastPoint;
