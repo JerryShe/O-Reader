@@ -15,13 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     pugixml.cpp \
-    loginwindow.cpp
+    loginwindow.cpp \
+    librarylayout.cpp
 
 HEADERS  += mainwindow.h \
     pugiconfig.hpp \
     pugixml.hpp \
     objectsstyles.h \
-    loginwindow.h
+    loginwindow.h \
+    librarylayout.h
 
 FORMS    += mainwindow.ui \
     loginwindow.ui

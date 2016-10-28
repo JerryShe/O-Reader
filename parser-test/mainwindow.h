@@ -22,7 +22,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_AddButton_clicked();
 
     void on_exit_button_clicked();
 
@@ -41,6 +41,12 @@ private slots:
     void on_Synchronization_clicked();
 
     void on_Logout_clicked();
+
+
+
+    void on_AddBook_clicked();
+
+    void on_AddFolder_clicked();
 
 private:
     QString MenuButtonsSheets [8];

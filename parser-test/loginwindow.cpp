@@ -53,8 +53,9 @@ void LoginWindow::on_min_button_clicked()
 
 void LoginWindow::on_login_clicked()
 {
-    main_fucking_window.setWindowFlags(Qt::FramelessWindowHint);
-    main_fucking_window.show();
+    main_fucking_window = new MainWindow();
+    main_fucking_window->setWindowFlags(Qt::FramelessWindowHint);
+    main_fucking_window->show();
     LoginWindow::close();
 
 }

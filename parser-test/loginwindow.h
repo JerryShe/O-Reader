@@ -40,7 +40,7 @@ private:
 
     Ui::LoginWindow *ui;
 
-    MainWindow main_fucking_window;
+    MainWindow *main_fucking_window;
 };
 
 #endif // LOGINWINDOW_H
