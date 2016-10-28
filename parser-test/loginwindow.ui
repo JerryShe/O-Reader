@@ -13,6 +13,12 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonFollowStyle</enum>
+  </property>
+  <property name="animated">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="MainWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -764,7 +770,7 @@
      </spacer>
     </item>
     <item row="1" column="1">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0">
       <property name="spacing">
        <number>20</number>
       </property>
@@ -1027,6 +1033,97 @@
        </widget>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinAndMaxSize</enum>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="Remember">
+          <property name="styleSheet">
+           <string notr="true">#Remember
+{
+	color: white;
+}
+
+#Remember:hover
+{
+	color: rgb(151, 151, 227);
+}
+
+#Remember::indicator:off
+{
+	background-color:red;
+	background-image:none;
+}
+
+
+</string>
+          </property>
+          <property name="text">
+           <string notr="true">Remember my password</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>16</width>
+            <height>16</height>
+           </size>
+          </property>
+          <property name="shortcut">
+           <string notr="true"/>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeat">
+           <bool>true</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
+          </property>
+          <property name="tristate">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="Forgot">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#Forgot
+{
+	color: white;
+}
+
+#Forgot:hover
+{
+	color: rgb(151, 151, 227);
+}</string>
+          </property>
+          <property name="text">
+           <string>Forgot your password?</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <spacer name="verticalSpacer_3">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -1101,29 +1198,21 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>0</number>
+       <widget class="QLabel" name="Registration">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
         </property>
-        <property name="sizeConstraint">
-         <enum>QLayout::SetMinAndMaxSize</enum>
+        <property name="maximumSize">
+         <size>
+          <width>100</width>
+          <height>16777215</height>
+         </size>
         </property>
-        <item>
-         <widget class="QLabel" name="Registration">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">#Registration
+        <property name="styleSheet">
+         <string notr="true">#Registration
 {
 	color: white;
 }
@@ -1132,49 +1221,17 @@
 {
 	color: rgb(151, 151, 227);
 }</string>
-          </property>
-          <property name="text">
-           <string>Create account</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="Forgot">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">#Forgot
-{
-	color: white;
-}
-
-#Forgot:hover
-{
-	color: rgb(151, 151, 227);
-}</string>
-          </property>
-          <property name="text">
-           <string>Forgot your password?</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
+        </property>
+        <property name="text">
+         <string>Create account</string>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="verticalSpacer">
