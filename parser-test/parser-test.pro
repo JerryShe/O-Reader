@@ -28,4 +28,5 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     top_buttons.qrc \
-    menu_buttons.qrc
+    menu_buttons.qrc \
+    checkbox.qrc

@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "ui_loginwindow.h"
 
-
 #include "pugiconfig.hpp"
 #include "pugixml.hpp"
 #include "objectsstyles.h"

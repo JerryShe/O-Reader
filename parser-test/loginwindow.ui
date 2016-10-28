@@ -769,8 +769,21 @@
       </property>
      </spacer>
     </item>
+    <item row="1" column="2">
+     <spacer name="horizontalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
     <item row="1" column="1">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
       <property name="spacing">
        <number>20</number>
       </property>
@@ -810,6 +823,11 @@
           <height>35</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="styleSheet">
          <string notr="true">#Name
 {
@@ -817,11 +835,20 @@
 	color: white;
 }</string>
         </property>
+        <property name="inputMask">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
         <property name="frame">
          <bool>false</bool>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+        <property name="placeholderText">
+         <string>email</string>
         </property>
        </widget>
       </item>
@@ -1011,12 +1038,23 @@
           </disabled>
          </palette>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
         <property name="styleSheet">
          <string notr="true">#Pass
 {
 	background-color:rgb(130, 0, 55);
 	color: white;
 }</string>
+        </property>
+        <property name="inputMask">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string notr="true"/>
         </property>
         <property name="frame">
          <bool>false</bool>
@@ -1028,7 +1066,7 @@
          <set>Qt::AlignCenter</set>
         </property>
         <property name="placeholderText">
-         <string notr="true"/>
+         <string notr="true">password</string>
         </property>
        </widget>
       </item>
@@ -1042,6 +1080,18 @@
         </property>
         <item>
          <widget class="QCheckBox" name="Remember">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="styleSheet">
            <string notr="true">#Remember
 {
@@ -1055,11 +1105,13 @@
 
 #Remember::indicator:off
 {
-	background-color:red;
-	background-image:none;
+	image: url(:check_no.png);
 }
 
-
+#Remember::indicator:on
+{
+	image: url(:check_ok.png);
+}
 </string>
           </property>
           <property name="text">
@@ -1067,8 +1119,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>16</width>
-            <height>16</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="shortcut">
@@ -1124,22 +1176,6 @@
        </layout>
       </item>
       <item>
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Fixed</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QPushButton" name="login">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1150,7 +1186,7 @@
         <property name="minimumSize">
          <size>
           <width>400</width>
-          <height>30</height>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -1161,11 +1197,13 @@
         </property>
         <property name="font">
          <font>
-          <family>David</family>
-          <pointsize>18</pointsize>
+          <family>DejaVu Sans Light</family>
+          <pointsize>14</pointsize>
           <weight>50</weight>
           <italic>false</italic>
           <bold>false</bold>
+          <stylestrategy>PreferAntialias</stylestrategy>
+          <kerning>false</kerning>
          </font>
         </property>
         <property name="styleSheet">
@@ -1247,19 +1285,6 @@
        </spacer>
       </item>
      </layout>
-    </item>
-    <item row="1" column="2">
-     <spacer name="horizontalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>
