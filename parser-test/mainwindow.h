@@ -1,11 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
 #include <QMainWindow>
-#include <QSize>
 #include <QRect>
 #include <QEvent>
 #include <QPalette>
+//#include <loginwindow.h>
 
 namespace Ui
 {
@@ -18,9 +19,6 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-
-    QRect prev_geometry;
-
     ~MainWindow();
 
 private slots:
@@ -46,6 +44,7 @@ private slots:
 
 private:
     QString MenuButtonsSheets [8];
+    QRect prev_geometry;
 
     int activeMenuButton;
     bool moving;
@@ -53,6 +52,7 @@ private:
     QPoint lastPoint;
     QPoint lastGlobalPos;
     int resizingFrame = 5;
+
     Ui::MainWindow *ui;
 
 };

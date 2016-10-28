@@ -14,13 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    pugixml.cpp
+    pugixml.cpp \
+    loginwindow.cpp
 
 HEADERS  += mainwindow.h \
     pugiconfig.hpp \
-    pugixml.hpp
+    pugixml.hpp \
+    objectsstyles.h \
+    loginwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    loginwindow.ui
 
 RESOURCES += \
     top_buttons.qrc \

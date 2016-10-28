@@ -1,12 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_loginwindow.h"
+
+
 #include "pugiconfig.hpp"
 #include "pugixml.hpp"
+#include "objectsstyles.h"
 
 #include <QFileDialog>
 #include <QLabel>
 #include <QKeyEvent>
-
+#include <QProcess>
 
 #include <iostream>
 #include <string>
@@ -24,76 +28,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 
 
-    MainWindow::MenuButtonsSheets[0] = " #Library "
-                                       " {background-color: rgb(162, 0, 70); "
-                                       " background-image: url(:Library_img.png); "
-                                       " border-style: none none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Library:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-    MainWindow::MenuButtonsSheets[1] = " #Settings "
-                                       " {background-color: rgb(162, 0, 70); "
-                                       " background-image: url(:Settings_img.png); "
-                                       " border-style: none none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Settings:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-    MainWindow::MenuButtonsSheets[2] = " #Synchronization "
-                                       " {background-color: rgb(162, 0, 70); "
-                                       " background-image: url(:Synchronization_img.png); "
-                                       " border-style: none none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Synchronization:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-    MainWindow::MenuButtonsSheets[3] = " #Logout "
-                                       " {background-color: rgb(162, 0, 70); "
-                                       " background-image: url(:Logout_img.png); "
-                                       " border-style: groove none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Logout:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
+    setMenusButtonsStyle(MenuButtonsSheets);
 
-
-
-    MainWindow::MenuButtonsSheets[4] = " #Library "
-                                       " {background-color: rgb(150, 0, 60); "
-                                       " background-image: url(:Library_img.png); "
-                                       " border-style: none none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Library:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-    MainWindow::MenuButtonsSheets[5] = " #Settings "
-                                       " {background-color: rgb(150, 0, 60); "
-                                       " background-image: url(:Settings_img.png); "
-                                       " border-style: none none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Settings:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-    MainWindow::MenuButtonsSheets[6] = " #Synchronization "
-                                       " {background-color: rgb(150, 0, 60); "
-                                       " background-image: url(:Synchronization_img.png); "
-                                       " border-style: none none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Synchronization:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-    MainWindow::MenuButtonsSheets[7] = " #Logout "
-                                       " {background-color: rgb(150, 0, 60); "
-                                       " background-image: url(:Logout_img.png); "
-                                       " border-style: groove none groove none; "
-                                       " border-color:rgb(130, 0, 60); "
-                                       " border-width: 1px;} "
-                                       " #Logout:hover "
-                                       " { background-color:rgb(147, 0, 60); } ";
-
-
-    ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+    ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[4]);
 
     ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
 
@@ -331,4 +268,6 @@ void MainWindow::on_Logout_clicked()
 
         ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[7]);
     }
+    QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
+    MainWindow::close();
 }
