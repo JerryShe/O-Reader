@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
     LoginWindow login_fucking_window;
 
     login_fucking_window.setWindowFlags(Qt::FramelessWindowHint);
@@ -18,5 +18,5 @@ int main(int argc, char *argv[])
 
 
 
-    return a.exec();
+    return app.exec();
 }

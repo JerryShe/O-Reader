@@ -4,12 +4,14 @@
 
 #include "pugiconfig.hpp"
 #include "pugixml.hpp"
-#include "objectsstyles.h"
+#include "menubuttonsstyles.h"
 
 #include <QFileDialog>
 #include <QLabel>
 #include <QKeyEvent>
 #include <QProcess>
+#include <answerdialog.h>
+#include <QGraphicsBlurEffect>
 
 #include <iostream>
 #include <string>
@@ -199,11 +201,8 @@ void MainWindow::on_Settings_clicked()
         MainWindow::activeMenuButton = 2;
 
         ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
-
         ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[5]);
-
         ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
-
         ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
     }
 }
@@ -213,12 +212,10 @@ void MainWindow::on_Synchronization_clicked()
     if (MainWindow::activeMenuButton != 3)
     {
         MainWindow::activeMenuButton = 3;
+
         ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
-
         ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
-
         ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[6]);
-
         ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
     }
 }
@@ -228,16 +225,37 @@ void MainWindow::on_Logout_clicked()
     if (MainWindow::activeMenuButton != 4)
     {
         MainWindow::activeMenuButton = 4;
+
         ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
-
         ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
-
         ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
-
         ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[7]);
     }
-    QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
-    MainWindow::close();
+
+
+    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Fuck!");
+
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    blur->setBlurRadius(1.6);
+    blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
+    this->setGraphicsEffect(blur);
+
+
+    answer_window->show();
+    answer_window->setMouseTracking(true);
+    answer_window->activateWindow();
+
+    if (answer_window->exec() == QDialog::Accepted)
+    {
+        this->setGraphicsEffect(0);
+        QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
+        MainWindow::close();
+    }
+    else
+        delete answer_window;
+
+    this->setGraphicsEffect(0);
+
 }
 
 
@@ -279,7 +297,7 @@ void MainWindow::on_AddFolder_clicked()
     QPushButton *button = new QPushButton(this);
     button->setMaximumWidth(100);
     button->setMinimumWidth(100);
-    button->setMaximumHeight(20);
-    button->setMinimumHeight(20);
+    button->setMaximumHeight(150);
+    button->setMinimumHeight(150);
     ui->LibraryLayout->addWidget(button);
 }

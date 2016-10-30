@@ -1057,7 +1057,7 @@
      </layout>
     </item>
     <item row="2" column="1">
-     <layout class="QVBoxLayout" name="MainWindowLayout">
+     <layout class="QVBoxLayout" name="LibraryWindowLayout">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -1132,6 +1132,31 @@
          </widget>
         </item>
         <item>
+         <widget class="QComboBox" name="Sort">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>150</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="frame">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="AddBook">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -1188,7 +1213,7 @@
         <property name="styleSheet">
          <string notr="true">#scrollArea
 {
-	background-color:rgb(130, 0, 55);
+	background-color:rgb(170, 0, 73);
 	color: white;
 
 }</string>
@@ -1226,7 +1251,7 @@
          <property name="styleSheet">
           <string notr="true">#scrollAreazwidgetContens
 {
-	background-color:rgb(130, 0, 55);
+	background-color:rgb(170, 0, 73);
 	color: white;
 }</string>
          </property>
@@ -1260,7 +1285,7 @@
             <property name="styleSheet">
              <string notr="true">#LibraryLayout
 {
-	background-color:rgb(130, 0, 55);
+	background-color:rgb(170, 0, 73);
 	color: white;
 
 }</string>
@@ -1268,8 +1293,6 @@
            </widget>
           </item>
          </layout>
-         <zorder>LibraryLayout</zorder>
-         <zorder>LibraryLayout</zorder>
         </widget>
        </widget>
       </item>

@@ -16,14 +16,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     pugixml.cpp \
     loginwindow.cpp \
-    librarylayout.cpp
+    librarylayout.cpp \
+    answerdialog.cpp
 
 HEADERS  += mainwindow.h \
     pugiconfig.hpp \
     pugixml.hpp \
-    objectsstyles.h \
     loginwindow.h \
-    librarylayout.h
+    librarylayout.h \
+    answerdialog.h \
+    menubuttonsstyles.h
 
 FORMS    += mainwindow.ui \
     loginwindow.ui

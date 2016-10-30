@@ -1,5 +1,9 @@
 #include <QString>
 
+
+
+
+
 void setMenusButtonsStyle (QString menuButtonsStyle [])
 {
 

@@ -6,7 +6,7 @@
 #include <QRect>
 #include <QEvent>
 #include <QPalette>
-//#include <loginwindow.h>
+
 
 namespace Ui
 {
