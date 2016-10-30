@@ -50,7 +50,17 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_exit_button_clicked()
 {
-    exit(0);
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Fuck?");
+
+    answer_window->show();
+
+    if (answer_window->exec() == QDialog::Accepted)
+    {
+        exit(0);
+    }
+    else
+        delete answer_window;
+
 }
 
 
@@ -235,26 +245,25 @@ void MainWindow::on_Logout_clicked()
 
     AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Fuck!");
 
-    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
+    /*
+     * QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
     blur->setBlurRadius(1.6);
     blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
     this->setGraphicsEffect(blur);
-
+    */
 
     answer_window->show();
-    answer_window->setMouseTracking(true);
-    answer_window->activateWindow();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        this->setGraphicsEffect(0);
+        //this->setGraphicsEffect(0);
         QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
         MainWindow::close();
     }
     else
         delete answer_window;
 
-    this->setGraphicsEffect(0);
+    //this->setGraphicsEffect(0);
 
 }
 
