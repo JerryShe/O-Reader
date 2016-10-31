@@ -1,6 +1,7 @@
 #include "loginwindow.h"
 #include "ui_loginwindow.h"
 #include "mainwindow.h"
+#include "answerdialog.h"
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::LoginWindow)
 {
@@ -19,7 +20,15 @@ LoginWindow::~LoginWindow()
 
 void LoginWindow::on_exit_button_clicked()
 {
-    exit(0);
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Fuck?");
+    answer_window->show();
+
+    if (answer_window->exec() == QDialog::Accepted)
+    {
+        exit(0);
+    }
+    else
+        delete answer_window;
 }
 
 

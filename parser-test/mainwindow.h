@@ -52,7 +52,7 @@ private:
     QString MenuButtonsSheets [8];
     QRect prev_geometry;
 
-    int activeMenuButton;
+    int activeWindow = 1;
     bool moving;
     bool resizing;
     QPoint lastPoint;

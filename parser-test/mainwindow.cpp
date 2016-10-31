@@ -51,7 +51,6 @@ MainWindow::~MainWindow()
 void MainWindow::on_exit_button_clicked()
 {
     AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Fuck?");
-
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
@@ -191,80 +190,79 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 
 void MainWindow::on_Library_clicked()
 {
-    if (MainWindow::activeMenuButton != 1)
+    if (MainWindow::activeWindow != 1)
     {
-        MainWindow::activeMenuButton = 1;
+        switch (MainWindow::activeWindow)
+        {
+            case 2:
+                ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+                break;
+            case 3:
+                ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+                break;
+            default: break;
+        }
+
+        MainWindow::activeWindow = 1;
         ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[4]);
-
-        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
-
-        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
-
-        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
     }
 }
 
 void MainWindow::on_Settings_clicked()
 {
-    if (MainWindow::activeMenuButton != 2)
+    if (MainWindow::activeWindow != 2)
     {
-        MainWindow::activeMenuButton = 2;
-
-        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+        switch (MainWindow::activeWindow)
+        {
+            case 1:
+                ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+                break;
+            case 3:
+                ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+                break;
+            default: break;
+        }
+        MainWindow::activeWindow = 2;
         ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[5]);
-        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
-        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
     }
 }
 
 void MainWindow::on_Synchronization_clicked()
 {
-    if (MainWindow::activeMenuButton != 3)
+    if (MainWindow::activeWindow != 3)
     {
-        MainWindow::activeMenuButton = 3;
+        switch (MainWindow::activeWindow)
+        {
+            case 1:
+                ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
+                break;
+            case 2:
+                ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+                break;
+            default: break;
+        }
 
-        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
-        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
+        MainWindow::activeWindow = 3;
         ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[6]);
-        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
     }
 }
 
 void MainWindow::on_Logout_clicked()
 {
-    if (MainWindow::activeMenuButton != 4)
-    {
-        MainWindow::activeMenuButton = 4;
-
-        ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[0]);
-        ui->Settings->setStyleSheet(MainWindow::MenuButtonsSheets[1]);
-        ui->Synchronization->setStyleSheet(MainWindow::MenuButtonsSheets[2]);
+    if (MainWindow::activeWindow != 4)
         ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[7]);
-    }
-
 
     AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Fuck!");
-
-    /*
-     * QGraphicsBlurEffect *blur = new QGraphicsBlurEffect(this);
-    blur->setBlurRadius(1.6);
-    blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
-    this->setGraphicsEffect(blur);
-    */
-
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        //this->setGraphicsEffect(0);
+        ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
         QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
         MainWindow::close();
     }
-    else
-        delete answer_window;
-
-    //this->setGraphicsEffect(0);
-
+    ui->Logout->setStyleSheet(MainWindow::MenuButtonsSheets[3]);
+    delete answer_window;
 }
 
 
@@ -304,6 +302,7 @@ void MainWindow::on_AddBook_clicked()
 void MainWindow::on_AddFolder_clicked()
 {
     QPushButton *button = new QPushButton(this);
+    button->setStyleSheet(QString("QPushButton{background-color:rgb(170, 0, 73); border:none;}"));
     button->setMaximumWidth(100);
     button->setMinimumWidth(100);
     button->setMaximumHeight(150);

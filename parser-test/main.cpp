@@ -13,10 +13,5 @@ int main(int argc, char *argv[])
     login_fucking_window.setWindowFlags(Qt::FramelessWindowHint);
     login_fucking_window.show();
 
-
-    //login_fucking_window.show();
-
-
-
     return app.exec();
 }

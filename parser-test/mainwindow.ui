@@ -1213,7 +1213,7 @@
         <property name="styleSheet">
          <string notr="true">#scrollArea
 {
-	background-color:rgb(170, 0, 73);
+background-color:rgb(170, 0, 73);
 	color: white;
 
 }</string>
