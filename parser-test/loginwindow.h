@@ -19,23 +19,25 @@ public:
 
 private slots:
     void on_exit_button_clicked();
-
     void on_full_size_button_clicked();
-
     void on_min_button_clicked();
-
-
     void on_login_clicked();
+    void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
 
 private:
 
     QRect prev_geometry;
 
     int activeMenuButton;
-    bool moving;
-    bool resizing;
+    bool moving = false;
+    int resizingMethod;
+    bool resizing = false;
     QPoint lastPoint;
-    QPoint lastGlobalPos;
+    QPoint lastMouseGlobalPos;
+    int lastWindowHeight;
+    int lastWindowWidth;
     int resizingFrame = 5;
 
     Ui::LoginWindow *ui;

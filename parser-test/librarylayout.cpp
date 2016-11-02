@@ -3,40 +3,27 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QScrollArea>
-#include <QWidget>
+//#include <QWidget>
 #include <QPair>
-
-void librarylayout::setColumnsAndMargins()
-{
-
-    int lMargin, rMargin;
-    librarylayout::gridLayout->getContentsMargins(&lMargin, NULL, &rMargin, NULL);
-
-    int layoutSize = librarylayout::windowSize - lMargin - rMargin;
-
-    librarylayout::max_columns = layoutSize/(librarylayout::content->size().width()+5);
-
-    int spacing = (layoutSize - librarylayout::content->size().width() * librarylayout::max_columns) / (librarylayout::max_columns - 1);
-    librarylayout::gridLayout->setHorizontalSpacing(spacing);
-    librarylayout::gridLayout->setVerticalSpacing(spacing);
-
-}
+#include <QMouseEvent>
 
 
 
 librarylayout::librarylayout(QWidget *AreaLayout)
 {
     librarylayout::windowSize = AreaLayout->size().width();
+    AreaLayout->setStyleSheet(QString("QWidget{background-color:rgb(170, 0, 73); border:none;}"));
+
+    librarylayout::setAttribute(Qt::WA_MouseTracking);
+    librarylayout::setMouseTracking(true);
 
     gridLayout = new QGridLayout;
     scrollArea = new QScrollArea;
 
     QWidget* widget = new QWidget;
-    widget->setStyleSheet(QString("QWidget{background-color:rgb(170, 0, 73); border:none;}"));
     widget -> setLayout(gridLayout);
 
     scrollArea -> setWidget(widget);
-    scrollArea -> setStyleSheet(QString("area{background-color:rgb(170, 0, 73); border:none;}"));
 
 
     row = column = 0;
@@ -45,6 +32,22 @@ librarylayout::librarylayout(QWidget *AreaLayout)
 }
 
 
+void librarylayout::setColumnsAndMargins()
+{
+
+    int lMargin, rMargin;
+    librarylayout::gridLayout->getContentsMargins(&lMargin, NULL, &rMargin, NULL);
+
+
+    int layoutSize = librarylayout::windowSize - lMargin - rMargin;
+    //if (max_columns)
+    librarylayout::max_columns = layoutSize/(librarylayout::content->size().width()+5);
+
+    int spacing = (layoutSize - librarylayout::content->size().width() * librarylayout::max_columns) / (librarylayout::max_columns - 1);
+    librarylayout::gridLayout->setHorizontalSpacing(spacing);
+    librarylayout::gridLayout->setVerticalSpacing(spacing);
+
+}
 
 void librarylayout::addWidget(QWidget *widget)
 {
@@ -61,3 +64,13 @@ void librarylayout::addWidget(QWidget *widget)
 
     gridLayout -> addWidget(widget, row, column++);
 }
+
+
+void librarylayout::decrimentColumn()
+{
+    librarylayout::column--;
+}
+
+
+
+

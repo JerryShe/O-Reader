@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     pugixml.cpp \
     loginwindow.cpp \
     librarylayout.cpp \
-    answerdialog.cpp
+    answerdialog.cpp \
+    bookbar.cpp
 
 HEADERS  += mainwindow.h \
     pugiconfig.hpp \
@@ -25,7 +26,8 @@ HEADERS  += mainwindow.h \
     loginwindow.h \
     librarylayout.h \
     answerdialog.h \
-    menubuttonsstyles.h
+    menubuttonsstyles.h \
+    bookbar.h
 
 FORMS    += mainwindow.ui \
     loginwindow.ui

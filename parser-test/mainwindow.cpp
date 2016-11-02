@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     MainWindow::setMouseTracking(true);
 
 
-
     setMenusButtonsStyle(MenuButtonsSheets);
 
     ui->Library->setStyleSheet(MainWindow::MenuButtonsSheets[4]);
@@ -41,10 +40,20 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 }
 
-
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::eventFilter(QObject *target, QEvent *event) //наш обработчик событий
+{
+    if (event->type() == QEvent::MouseMove)
+    {
+        QMouseEvent *mouseEvent = (QMouseEvent *) event;
+        std::cout<<mouseEvent->pos().x()<<"     "<<mouseEvent->pos().y()<<std::endl;    //в консоль выводим координаты
+        return true;    //возвращаю true, событие обработано, дальнейшая обработка не требуется
+    }
+    return false;    //Событие должно быть обработано родительским виджетом
 }
 
 
@@ -91,84 +100,128 @@ void MainWindow::on_min_button_clicked()
     }
 }
 
+
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    if (!moving)
+    if (MainWindow::resizing && !MainWindow::moving)
     {
-        if (e->pos().y() < resizingFrame)
+        switch (MainWindow::resizingMethod)
         {
+        case 1:
+            MainWindow::resize(MainWindow::width(), MainWindow::lastWindowHeight + (MainWindow::lastMouseGlobalPos.y() - e->globalY()));
+            if (MainWindow::height() > 643)
+            MainWindow::move(MainWindow::x(), e->globalY());
+            break;
+        case 3:
+            MainWindow::resize(MainWindow::lastWindowWidth + (MainWindow::lastMouseGlobalPos.x() - e->globalX()), MainWindow::height());
+            if (MainWindow::width() > 566)
+                MainWindow::move(e->globalX(), MainWindow::y());
+            break;
+        case 2:
+            MainWindow::resize(MainWindow::width(), MainWindow::lastWindowHeight - (MainWindow::lastMouseGlobalPos.y() - e->globalY()));
+            break;
+        case 6:
+            MainWindow::resize(MainWindow::lastWindowWidth - (MainWindow::lastMouseGlobalPos.x() - e->globalX()), MainWindow::height());
+            break;
+        case 4:
+            MainWindow::resize(MainWindow::lastWindowWidth + (MainWindow::lastMouseGlobalPos.x() - e->globalX()), MainWindow::lastWindowHeight + (MainWindow::lastMouseGlobalPos.y() - e->globalY()));
+            if (MainWindow::width() > 566 && MainWindow::height() > 543)
+                MainWindow::move(e->globalX(), e->globalY());
+            break;
+        case 7:
+            MainWindow::resize(MainWindow::lastWindowWidth - (MainWindow::lastMouseGlobalPos.x() - e->globalX()), MainWindow::lastWindowHeight + (MainWindow::lastMouseGlobalPos.y() - e->globalY()));
+            if (MainWindow::height() > 543)
+                MainWindow::move(MainWindow::x(), e->globalY());
+            break;
+        case 5:
+            MainWindow::resize(MainWindow::lastWindowWidth + (MainWindow::lastMouseGlobalPos.x() - e->globalX()), MainWindow::lastWindowHeight - (MainWindow::lastMouseGlobalPos.y() - e->globalY()));
+            if (MainWindow::width() > 566)
+                MainWindow::move(e->globalX(), MainWindow::y());
+            break;
+        case 8:
+            MainWindow::resize(MainWindow::lastWindowWidth - (MainWindow::lastMouseGlobalPos.x() - e->globalX()), MainWindow::lastWindowHeight - (MainWindow::lastMouseGlobalPos.y() - e->globalY()));
+            break;
+
+        }
+    }
+    else
+    if (!MainWindow::moving && !MainWindow::resizing)
+    {
+        MainWindow::resizingMethod = 0;
+        if (e->pos().y() < MainWindow::resizingFrame)
+            MainWindow::resizingMethod += 1;
+        if (e->pos().y() > MainWindow::size().height() - MainWindow::resizingFrame)
+            MainWindow::resizingMethod += 2;
+        if (e->pos().x() < MainWindow::resizingFrame)
+            MainWindow::resizingMethod += 3;
+        if(e->pos().x() > MainWindow::size().width() - MainWindow::resizingFrame)
+            MainWindow::resizingMethod += 6;
+
+        switch (MainWindow::resizingMethod)
+        {
+        case 0:
+            MainWindow::setCursor(Qt::ArrowCursor);
+            break;
+        case 1:
             MainWindow::setCursor(Qt::SizeVerCursor);
-            if (resizing && e->buttons() && Qt::LeftButton)
-            {
-                MainWindow::setGeometry(MainWindow::x(), e->globalY(), MainWindow::width(), MainWindow::height() + (MainWindow::lastGlobalPos.y() - e->globalY()));
-                MainWindow::lastGlobalPos.setY(e->globalY());
-                return;
-                //cout<<MainWindow::lastGlobalPos.y() - e->globalY()<<endl;
-               // MainWindow::lastPoint = e->pos();
-                //MainWindow::move(MainWindow::pos().x(), MainWindow::pos().y() - (e->globalY() - MainWindow::lastPoint.y()));
-            }
-        }
-        else if (e->pos().y() > MainWindow::size().height() - resizingFrame)
-        {
+            break;
+        case 2:
             MainWindow::setCursor(Qt::SizeVerCursor);
-            if (resizing)
-            {
-
-
-            }
-        }
-        else if (e->pos().x() < resizingFrame)
-        {
+            break;
+        case 3:
             MainWindow::setCursor(Qt::SizeHorCursor);
-            if (resizing)
-            {
-
-
-            }
-        }
-        else if (e->pos().x() > MainWindow::size().width() - resizingFrame)
-        {
+            break;
+        case 4:
+            MainWindow::setCursor(Qt::SizeFDiagCursor);
+            break;
+        case 5:
+            MainWindow::setCursor(Qt::SizeBDiagCursor);
+            break;
+        case 6:
             MainWindow::setCursor(Qt::SizeHorCursor);
-            if (resizing)
-            {
+            break;
+        case 7:
+            MainWindow::setCursor(Qt::SizeBDiagCursor);
+            break;
+        case 8:
+            MainWindow::setCursor(Qt::SizeFDiagCursor);
+            break;
+        }
 
-
-            }
+    }
+    else
+    if (MainWindow::moving && !MainWindow::resizing)
+    {
+        if (!MainWindow::isMaximized())
+        {
+            move(e->globalX() - MainWindow::lastPoint.x(),  e->globalY() - MainWindow::lastPoint.y());
         }
         else
-            MainWindow::setCursor(Qt::ArrowCursor);
-    }
-
-
-
-
-    if(e->buttons() && Qt::LeftButton)
-        if (moving && !resizing)
         {
-            if (!MainWindow::isMaximized())
-            {
-                move(e->globalX() - MainWindow::lastPoint.x(),  e->globalY() - MainWindow::lastPoint.y());
-            }
-            else
-            {
-                prev_geometry.setY(e->globalY());
-                MainWindow::normalGeometry() = prev_geometry;
-                MainWindow::showNormal();
-            }
+            MainWindow::prev_geometry.setY(e->globalY());
+            MainWindow::normalGeometry() = MainWindow::prev_geometry;
+            MainWindow::showNormal();
         }
-
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
     {
-        MainWindow::lastPoint = e->pos();
-        MainWindow::lastGlobalPos = e->globalPos();
-        if (e->pos().y() <= 50 && e->pos().y() > resizingFrame)
-            moving = true;
-        if (e->pos().y() < resizingFrame || e->pos().y() > MainWindow::size().height() - resizingFrame || e->pos().x() < resizingFrame || e->pos().x() > MainWindow::size().width() - resizingFrame)
+        if (e->pos().y() <= 50 && e->pos().y() > MainWindow::resizingFrame)
+        {
+            MainWindow::moving = true;
+            MainWindow::lastPoint = e->pos();
+        }
+
+        if(MainWindow::resizingMethod)
+        {
             resizing = true;
+            MainWindow::lastMouseGlobalPos = e->globalPos();
+            MainWindow::lastWindowHeight = MainWindow::height();
+            MainWindow::lastWindowWidth = MainWindow::width();
+        }
     }
 }
 
@@ -176,14 +229,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton)
     {
-        if (e->pos().y() <= 50 && e->pos().y() > resizingFrame)
-        {
-            moving = false;
-        }
+        if (MainWindow::moving)
+            MainWindow::moving = false;
 
-        if (e->pos().y() < resizingFrame*10 || e->pos().y() > MainWindow::size().height() - resizingFrame || e->pos().x() < resizingFrame || e->pos().x() > MainWindow::size().width() - resizingFrame)
+        if (MainWindow::resizing)
         {
-            resizing = false;
+            MainWindow::resizing = false;
+            MainWindow::setCursor(Qt::ArrowCursor);
         }
     }
 }
@@ -292,20 +344,24 @@ void MainWindow::on_AddBook_clicked()
          //std::cout << a.
           cout<< a;
     }
-
-    //ui->Context->addItems(table_of_contents);
-
-
 }
 
 
 void MainWindow::on_AddFolder_clicked()
 {
     QPushButton *button = new QPushButton(this);
-    button->setStyleSheet(QString("QPushButton{background-color:rgb(170, 0, 73); border:none;}"));
+    button->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 73); border:none;}"));
     button->setMaximumWidth(100);
     button->setMinimumWidth(100);
     button->setMaximumHeight(150);
     button->setMinimumHeight(150);
     ui->LibraryLayout->addWidget(button);
+
 }
+
+void MainWindow::on_TableView_clicked()
+{
+
+}
+
+

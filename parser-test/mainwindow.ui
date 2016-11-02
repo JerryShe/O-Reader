@@ -107,22 +107,22 @@
      <enum>QLayout::SetNoConstraint</enum>
     </property>
     <property name="horizontalSpacing">
-     <number>0</number>
+     <number>8</number>
     </property>
     <property name="verticalSpacing">
      <number>2</number>
     </property>
     <property name="leftMargin">
-     <number>0</number>
+     <number>8</number>
     </property>
     <property name="topMargin">
-     <number>5</number>
+     <number>6</number>
     </property>
     <property name="rightMargin">
-     <number>2</number>
+     <number>8</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>8</number>
     </property>
     <item row="0" column="1">
      <layout class="QHBoxLayout" name="TopButtons">
@@ -133,7 +133,7 @@
        <enum>QLayout::SetNoConstraint</enum>
       </property>
       <property name="rightMargin">
-       <number>10</number>
+       <number>0</number>
       </property>
       <item>
        <spacer name="horizontalSpacer">
@@ -838,7 +838,7 @@
     <item row="2" column="0">
      <layout class="QVBoxLayout" name="LeftMenu">
       <property name="spacing">
-       <number>0</number>
+       <number>8</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
@@ -1018,7 +1018,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>12000</height>
+          <height>999999999</height>
          </size>
         </property>
        </spacer>
@@ -1062,7 +1062,7 @@
        <number>0</number>
       </property>
       <property name="sizeConstraint">
-       <enum>QLayout::SetMinimumSize</enum>
+       <enum>QLayout::SetMinAndMaxSize</enum>
       </property>
       <item>
        <layout class="QHBoxLayout" name="LibraryButtons">
@@ -1210,6 +1210,12 @@
       </item>
       <item>
        <widget class="QScrollArea" name="scrollArea">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="styleSheet">
          <string notr="true">#scrollArea
 {
@@ -1234,7 +1240,7 @@ background-color:rgb(170, 0, 73);
          <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
         </property>
         <property name="widgetResizable">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1244,16 +1250,12 @@ background-color:rgb(170, 0, 73);
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>1102</width>
-           <height>643</height>
+           <width>1082</width>
+           <height>636</height>
           </rect>
          </property>
          <property name="styleSheet">
-          <string notr="true">#scrollAreazwidgetContens
-{
-	background-color:rgb(170, 0, 73);
-	color: white;
-}</string>
+          <string notr="true"/>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
           <property name="spacing">
@@ -1282,13 +1284,11 @@ background-color:rgb(170, 0, 73);
               <height>20</height>
              </size>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="styleSheet">
-             <string notr="true">#LibraryLayout
-{
-	background-color:rgb(170, 0, 73);
-	color: white;
-
-}</string>
+             <string notr="true"/>
             </property>
            </widget>
           </item>

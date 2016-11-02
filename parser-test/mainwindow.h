@@ -22,8 +22,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_AddButton_clicked();
-
     void on_exit_button_clicked();
 
     void on_full_size_button_clicked();
@@ -35,31 +33,30 @@ private slots:
     void mouseReleaseEvent(QMouseEvent *e);
 
     void on_Library_clicked();
-
     void on_Settings_clicked();
-
     void on_Synchronization_clicked();
-
     void on_Logout_clicked();
-
-
-
     void on_AddBook_clicked();
-
     void on_AddFolder_clicked();
+    void on_TableView_clicked();
 
 private:
     QString MenuButtonsSheets [8];
     QRect prev_geometry;
 
     int activeWindow = 1;
-    bool moving;
-    bool resizing;
+    bool moving = false;
+    int resizingMethod;
+    bool resizing = false;
     QPoint lastPoint;
-    QPoint lastGlobalPos;
+    QPoint lastMouseGlobalPos;
+    int lastWindowHeight;
+    int lastWindowWidth;
     int resizingFrame = 5;
 
     Ui::MainWindow *ui;
+
+    bool eventFilter(QObject *target, QEvent *event);
 
 };
 
