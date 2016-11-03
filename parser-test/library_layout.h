@@ -29,7 +29,6 @@ private:
     int windowSize;
     bool needReflow = false;
 
-    QScrollArea* scrollArea;
     QWidget *content;
 
 };
