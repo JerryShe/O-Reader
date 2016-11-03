@@ -6,7 +6,9 @@
 #include <QRect>
 #include <QEvent>
 #include <QPalette>
-
+#include <QGridLayout>
+#include <QFrame>
+#include <library_layout.h>
 
 namespace Ui
 {
@@ -41,23 +43,25 @@ private slots:
     void on_TableView_clicked();
 
 private:
-    QString MenuButtonsSheets [8];
-    QRect prev_geometry;
-
     int activeWindow = 1;
+    QString styleSheets [8];
+
+    QRect prev_geometry;
+    QPoint lastPoint;
+    QPoint lastMouseGlobalPos;
+
     bool moving = false;
     int resizingMethod;
     bool resizing = false;
-    QPoint lastPoint;
-    QPoint lastMouseGlobalPos;
+
     int lastWindowHeight;
     int lastWindowWidth;
     int resizingFrame = 5;
 
     Ui::MainWindow *ui;
 
-    bool eventFilter(QObject *target, QEvent *event);
-
+    QWidget *settingsLayout;
+    librarylayout *Slayout;
 };
 
 

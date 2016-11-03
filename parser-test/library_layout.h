@@ -15,9 +15,8 @@ public:
     explicit librarylayout(QWidget *widget);
 
     void addWidget(QWidget* widget);
-    void decrimentColumn();
     void checkTheMouse(QMouseEvent *event, int height, int width, int resizingFrame);
-
+    void setStyle(QString libraryStyle[]);
 
 
 
@@ -32,7 +31,9 @@ private:
     bool needReflow = false;
 
     QScrollArea* scrollArea;
-    QWidget *content = NULL;
+    QWidget *content;
+    void mouseMoveEvent(QMouseEvent *event);
+
 };
 
 #endif // LIBRARYLAYOUT_H

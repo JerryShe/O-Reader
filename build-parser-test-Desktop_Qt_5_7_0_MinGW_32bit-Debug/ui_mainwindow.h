@@ -140,18 +140,6 @@ public:
         QFont font;
         font.setPointSize(12);
         exit_button->setFont(font);
-        exit_button->setStyleSheet(QLatin1String("#exit_button\n"
-"{\n"
-"	border-image: url(:exit.png);\n"
-"	border: none;\n"
-"	background:none;\n"
-"	background-repeat: none;\n"
-"}\n"
-"\n"
-"#exit_button:hover \n"
-"{\n"
-"	background-color:rgb(255, 100, 0);\n"
-"}"));
         exit_button->setShortcut(QStringLiteral(""));
         exit_button->setAutoDefault(false);
         exit_button->setFlat(true);

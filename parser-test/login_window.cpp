@@ -1,9 +1,10 @@
-#include "loginwindow.h"
+#include <styles.h>
+#include "login_window.h"
 #include "ui_loginwindow.h"
-#include "LoginWindow.h"
-#include "answerdialog.h"
-
+#include "answer_dialog.h"
 #include <QMouseEvent>
+
+
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::LoginWindow)
 {
@@ -13,6 +14,26 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::Logi
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     LoginWindow::setMouseTracking(true);
 
+
+    /////////////////////////////////////////////////////////////////////////////////////
+    setWindowTopButtonsStyle(LoginWindow::styleSheets, "red");
+
+    ui->min_button->setStyleSheet(LoginWindow::styleSheets[0]);
+    ui->full_size_button->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->exit_button->setStyleSheet(LoginWindow::styleSheets[2]);
+
+    setBackgroundWindowColor(LoginWindow::styleSheets, "red");
+
+    ui->MainWidget->setStyleSheet(LoginWindow::styleSheets[0]);
+
+    setLoginWindowStyle(LoginWindow::styleSheets, "red");
+
+    ui->login->setStyleSheet(LoginWindow::styleSheets[0]);
+    ui->Pass->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->Name->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->Forgot->setStyleSheet(LoginWindow::styleSheets[2]);
+    ui->Registration->setStyleSheet(LoginWindow::styleSheets[3]);
+    ui->Remember->setStyleSheet(LoginWindow::styleSheets[4]);
 }
 
 LoginWindow::~LoginWindow()
@@ -65,27 +86,25 @@ void LoginWindow::on_min_button_clicked()
 void LoginWindow::on_login_clicked()
 {
     main_fucking_window = new MainWindow();
-    main_fucking_window->setWindowFlags(Qt::FramelessWindowHint);
+    main_fucking_window->setWindowFlags(Qt::CustomizeWindowHint);
     main_fucking_window->show();
     LoginWindow::close();
 
 }
 
 void LoginWindow::mouseMoveEvent(QMouseEvent *e)
-{
+{/*
     if (LoginWindow::resizing && !LoginWindow::moving)
     {
         switch (LoginWindow::resizingMethod)
         {
         case 1:
             LoginWindow::resize(LoginWindow::width(), LoginWindow::lastWindowHeight + (LoginWindow::lastMouseGlobalPos.y() - e->globalY()));
-            if (LoginWindow::height() > 643)
             LoginWindow::move(LoginWindow::x(), e->globalY());
             break;
         case 3:
             LoginWindow::resize(LoginWindow::lastWindowWidth + (LoginWindow::lastMouseGlobalPos.x() - e->globalX()), LoginWindow::height());
-            if (LoginWindow::width() > 566)
-                LoginWindow::move(e->globalX(), LoginWindow::y());
+            LoginWindow::move(e->globalX(), LoginWindow::y());
             break;
         case 2:
             LoginWindow::resize(LoginWindow::width(), LoginWindow::lastWindowHeight - (LoginWindow::lastMouseGlobalPos.y() - e->globalY()));
@@ -95,18 +114,15 @@ void LoginWindow::mouseMoveEvent(QMouseEvent *e)
             break;
         case 4:
             LoginWindow::resize(LoginWindow::lastWindowWidth + (LoginWindow::lastMouseGlobalPos.x() - e->globalX()), LoginWindow::lastWindowHeight + (LoginWindow::lastMouseGlobalPos.y() - e->globalY()));
-            if (LoginWindow::width() > 566 && LoginWindow::height() > 543)
-                LoginWindow::move(e->globalX(), e->globalY());
+            LoginWindow::move(e->globalX(), e->globalY());
             break;
         case 7:
             LoginWindow::resize(LoginWindow::lastWindowWidth - (LoginWindow::lastMouseGlobalPos.x() - e->globalX()), LoginWindow::lastWindowHeight + (LoginWindow::lastMouseGlobalPos.y() - e->globalY()));
-            if (LoginWindow::height() > 543)
-                LoginWindow::move(LoginWindow::x(), e->globalY());
+            LoginWindow::move(LoginWindow::x(), e->globalY());
             break;
         case 5:
             LoginWindow::resize(LoginWindow::lastWindowWidth + (LoginWindow::lastMouseGlobalPos.x() - e->globalX()), LoginWindow::lastWindowHeight - (LoginWindow::lastMouseGlobalPos.y() - e->globalY()));
-            if (LoginWindow::width() > 566)
-                LoginWindow::move(e->globalX(), LoginWindow::y());
+            LoginWindow::move(e->globalX(), LoginWindow::y());
             break;
         case 8:
             LoginWindow::resize(LoginWindow::lastWindowWidth - (LoginWindow::lastMouseGlobalPos.x() - e->globalX()), LoginWindow::lastWindowHeight - (LoginWindow::lastMouseGlobalPos.y() - e->globalY()));
@@ -159,8 +175,8 @@ void LoginWindow::mouseMoveEvent(QMouseEvent *e)
         }
 
     }
-    else
-    if (LoginWindow::moving && !LoginWindow::resizing)
+    else*/
+    if (LoginWindow::moving)// && !LoginWindow::resizing)
     {
         if (!LoginWindow::isMaximized())
         {
@@ -184,14 +200,14 @@ void LoginWindow::mousePressEvent(QMouseEvent *e)
             LoginWindow::moving = true;
             LoginWindow::lastPoint = e->pos();
         }
-
+        /*
         if(LoginWindow::resizingMethod)
         {
             resizing = true;
             LoginWindow::lastMouseGlobalPos = e->globalPos();
             LoginWindow::lastWindowHeight = LoginWindow::height();
             LoginWindow::lastWindowWidth = LoginWindow::width();
-        }
+        }*/
     }
 }
 
@@ -201,12 +217,12 @@ void LoginWindow::mouseReleaseEvent(QMouseEvent *e)
     {
         if (LoginWindow::moving)
             LoginWindow::moving = false;
-
+        /*
         if (LoginWindow::resizing)
         {
             LoginWindow::resizing = false;
             LoginWindow::setCursor(Qt::ArrowCursor);
-        }
+        }*/
     }
 }
 

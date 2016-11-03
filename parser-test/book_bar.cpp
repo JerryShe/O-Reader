@@ -1,8 +1,8 @@
-#include "bookbar.h"
+#include "book_bar.h"
 
 BookBar::BookBar(QString FileName)
 {
-    BookBar::File = File;
+    BookBar::File = FileName;
 
 
     BookBar::setMinimumHeight(150);

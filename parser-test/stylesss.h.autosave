@@ -1,0 +1,151 @@
+#pragma once
+
+#include <QString>
+
+
+void setLoginWindowTopButtonsStyle (QString windowButtonsStyle [], QString style)
+{
+    MainWindowStyles::setWindowButtonsStyle(windowButtonsStyle, style);
+}
+
+void setLoginWindowStyle (QString windowButtonsStyle [], QString style)
+{
+    if (style == "red")
+    {
+        windowButtonsStyle[0] = "#MainWidget {background-color:rgb(162, 0, 70);}";
+
+        windowButtonsStyle[1] = "#login{"
+                                "background-color:rgb(151, 151, 227);"
+                                "border: none;"
+                                "background-repeat: none;}"
+                                "#login:hover{"
+                                "background-color:rgb(130, 130, 195);}";
+
+        windowButtonsStyle[2] = "#Pass{"
+                                "background-color:rgb(130, 0, 55);"
+                                "color: white;}";
+
+        windowButtonsStyle[3] = "#Name{"
+                                "background-color:rgb(130, 0, 55);"
+                                "color: white;}";
+
+        windowButtonsStyle[4] = "#Forgot{"
+                                "color: white;}"
+                                "#Forgot:hover{"
+                                "color: rgb(151, 151, 227);}";
+
+        windowButtonsStyle[5] = "#Registration{"
+                                "color: white;}"
+                                "#Registration:hover{"
+                                "color: rgb(151, 151, 227);}";
+    }
+
+}
+
+
+
+
+void setMenusButtonsStyle (QString menuButtonsStyle [], QString style)
+{
+    if (style == "red")
+    {
+        menuButtonsStyle[0] =  " #Library "
+                               " {background-color: rgb(162, 0, 70); "
+                               " background-image: url(:/menu_buttons/Library_img.png);"
+                               " border:none;} "
+                               " #Library:hover "
+                               " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[1] =  " #Settings "
+                               " {background-color: rgb(162, 0, 70); "
+                               " background-image: url(:/menu_buttons/Settings_img.png);"
+                               " border:none;} "
+                               " #Settings:hover "
+                               " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[2] =  " #Synchronization "
+                               " {background-color: rgb(162, 0, 70); "
+                               " background-image: url(:/menu_buttons/Synchronization_img.png);"
+                               " border:none;} "
+                               " #Synchronization:hover "
+                               " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[3] = " #Logout "
+                              " {background-color: rgb(162, 0, 70); "
+                              " background-image: url(:/menu_buttons/Logout_img.png);"
+                              " border:none;} "
+                              " #Logout:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+
+
+        menuButtonsStyle[4] = " #Library "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Library_img.png);"
+                              " border:none;} "
+                              " #Library:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[5] = " #Settings "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Settings_img.png);"
+                              " border:none;} "
+                              " #Settings:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[6] = " #Synchronization "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Synchronization_img.png);"
+                              " border:none;} "
+                              " #Synchronization:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[7] = " #Logout "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Logout_img.png);"
+                              " border:none;} "
+                              " #Logout:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+    }
+}
+
+
+void setWindowButtonsStyle (QString windowButtonsStyle [], QString style)
+{
+    if (style == "red")
+    {
+        windowButtonsStyle[0] = "#min_button{"
+                                "border-image: url(:/window_buttons/min.png);"
+                                "border: none;"
+                                "background:none;}"
+                                "#min_button:hover{"
+                                "background-color:rgb(150, 0, 65);}";
+
+        windowButtonsStyle[1] = "#full_size_button{"
+                                "border-image: url(:/window_buttons/full_size.png);"
+                                "border: none;"
+                                "background:none;}"
+                                "#full_size_button:hover{"
+                                "background-color:rgb(150, 0, 65);}";
+
+        windowButtonsStyle[2] = "#exit_button{"
+                                "border-image: url(:/window_buttons/exit.png);"
+                                "border: none;"
+                                "background:none;}"
+                                "#exit_button:hover {"
+                                "background-color:rgb(203, 0, 88);}";
+    }
+}
+
+
+void setWindowStyle (QString windowStyle [], QString style)
+{
+    if (style == "red")
+    {
+        windowStyle[0] = "#MainWidget {background-color:rgb(162, 0, 70);}";
+        windowStyle[1] = "QWidget {background-color:rgb(170, 0, 73); border:none;}";
+        windowStyle[2] = "#scrollArea {background-color:rgb(170, 0, 73);}";
+    }
+}
+
+

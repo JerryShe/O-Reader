@@ -13,26 +13,27 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     pugixml.cpp \
-    loginwindow.cpp \
-    librarylayout.cpp \
-    answerdialog.cpp \
-    bookbar.cpp
+    main_window.cpp \
+    login_window.cpp \
+    library_layout.cpp \
+    book_bar.cpp \
+    answer_dialog.cpp \
+    styles.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     pugiconfig.hpp \
     pugixml.hpp \
-    loginwindow.h \
-    librarylayout.h \
-    answerdialog.h \
-    menubuttonsstyles.h \
-    bookbar.h
+    login_window.h \
+    main_window.h \
+    book_bar.h \
+    library_layout.h \
+    answer_dialog.h \
+    styles.h
 
 FORMS    += mainwindow.ui \
     loginwindow.ui
 
 RESOURCES += \
-    top_buttons.qrc \
-    menu_buttons.qrc \
-    checkbox.qrc
+    checkbox.qrc \
+    images.qrc

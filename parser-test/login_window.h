@@ -2,7 +2,7 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
-#include <mainwindow.h>
+#include <main_window.h>
 
 namespace Ui
 {
@@ -27,6 +27,7 @@ private slots:
     void mouseReleaseEvent(QMouseEvent *e);
 
 private:
+    QString styleSheets [8];
 
     QRect prev_geometry;
 

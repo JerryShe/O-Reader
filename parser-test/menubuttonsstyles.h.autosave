@@ -1,0 +1,73 @@
+#include <QString>
+
+
+void setMenusButtonsStyle (QString menuButtonsStyle [], QString style)
+{
+    if (style == "red")
+    {
+        menuButtonsStyle[0] =  " #Library "
+                               " {background-color: rgb(162, 0, 70); "
+                               " background-image: url(:/menu_buttons/Library_img.png);"
+                               " border:none;} "
+                               " #Library:hover "
+                               " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[1] =  " #Settings "
+                               " {background-color: rgb(162, 0, 70); "
+                               " background-image: url(:/menu_buttons/Settings_img.png);"
+                               " border:none;} "
+                               " #Settings:hover "
+                               " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[2] =  " #Synchronization "
+                               " {background-color: rgb(162, 0, 70); "
+                               " background-image: url(:/menu_buttons/Synchronization_img.png);"
+                               " border:none;} "
+                               " #Synchronization:hover "
+                               " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[3] = " #Logout "
+                              " {background-color: rgb(162, 0, 70); "
+                              " background-image: url(:/menu_buttons/Logout_img.png);"
+                              " border:none;} "
+                              " #Logout:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+
+
+        menuButtonsStyle[4] = " #Library "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Library_img.png);"
+                              " border:none;} "
+                              " #Library:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[5] = " #Settings "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Settings_img.png);"
+                              " border:none;} "
+                              " #Settings:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[6] = " #Synchronization "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Synchronization_img.png);"
+                              " border:none;} "
+                              " #Synchronization:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+
+        menuButtonsStyle[7] = " #Logout "
+                              " {background-color: rgb(150, 0, 60); "
+                              " background-image: url(:/menu_buttons/Logout_img.png);"
+                              " border:none;} "
+                              " #Logout:hover "
+                              " { background-color:rgb(147, 0, 60); } ";
+    }
+}
+
+
+void setWindowButtonsStyle (QString windowButtonsStyle [], QString style)
+{
+    
+    
+}
