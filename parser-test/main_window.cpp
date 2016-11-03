@@ -6,10 +6,11 @@
 #include "pugixml.hpp"
 
 #include <QFileDialog>
-//#include <QLabel>
+#include <QSizePolicy>
 #include <QKeyEvent>
 #include <QProcess>
 #include <answer_dialog.h>
+
 
 #include <styles.h>
 #include <iostream>
@@ -27,10 +28,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     MainWindow::setMouseTracking(true);
 
-    Slayout = new librarylayout(ui->scrollAreaWidget);
-    Slayout->setSizePolicy(QSizePolicy::Preferred,QSizePolicy::Preferred);
-    Slayout->hide();
-    ui->tabs->addWidget(Slayout,1);
+    settingsLayout = new QWidget();
+    settingsLayout->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    ui->tabs->addWidget(settingsLayout);
+    
+    QPushButton *button = new QPushButton();
+    button->setMinimumSize(100,150);
+    button->setMaximumSize(100,150);
+    ui->LibraryLayout->setWidget(button);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
     setWindowTopButtonsStyle(MainWindow::styleSheets, "red");
@@ -250,9 +255,6 @@ void MainWindow::on_AddBook_clicked()
     {
          string a = node.node().text().as_string();
          table_of_contents << node.node().text().as_string();
-         std::cout << a << endl;
-         //std::cout << a.
-          cout<< a;
     }
 }
 
@@ -265,14 +267,6 @@ void MainWindow::on_AddFolder_clicked()
     button->setMinimumSize(100,150);
     button->setMaximumSize(100,150);
     ui->LibraryLayout->addWidget(button);
-
-
-    QPushButton *fuck = new QPushButton("fuck");
-    fuck->setStyleSheet(QString("QPushButton{background-color:rgb(0, 75, 0); border:none;}"));
-    fuck->setMinimumSize(100,150);
-    fuck->setMaximumSize(100,150);
-    Slayout->addWidget(fuck);
-
 }
 
 void MainWindow::on_TableView_clicked()

@@ -5,27 +5,29 @@
 #include <QScrollArea>
 #include <QPair>
 #include <QMouseEvent>
-#include <iostream>
-
 
 librarylayout::librarylayout(QWidget *AreaLayout)
 {
     librarylayout::windowSize = AreaLayout->size().width();
-    std::cout<<windowSize<<std::endl;
     content = NULL;
-
-    setMouseTracking(true);
 
     gridLayout = new QGridLayout;
 
     QWidget* widget = new QWidget;
     widget -> setLayout(gridLayout);
-
-    row = column = 0;
-
     setLayout(gridLayout);
+    
+    row = column = 0;    
 }
 
+void librarylayout::setWidget(QWidget *widget)
+{
+    if (librarylayout::content == NULL)
+    {
+        librarylayout::content = widget;
+        librarylayout::setColumnsAndMargins();
+    }    
+}
 
 
 void librarylayout::setColumnsAndMargins()
@@ -45,13 +47,8 @@ void librarylayout::setColumnsAndMargins()
 
 void librarylayout::addWidget(QWidget *widget)
 {
-    if (librarylayout::content == NULL)
+    if(column >= max_columns) 
     {
-        librarylayout::content = widget;
-        librarylayout::setColumnsAndMargins();
-    }
-
-    if(column >= max_columns) {
         column = 0;
         ++row;
     }
@@ -59,10 +56,6 @@ void librarylayout::addWidget(QWidget *widget)
     gridLayout -> addWidget(widget, row, column++);
 }
 
-void librarylayout::mouseMoveEvent(QMouseEvent *event)
-{
-    librarylayout::setCursor(Qt::ArrowCursor);
-}
 
 
 

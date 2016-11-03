@@ -28,8 +28,7 @@ private:
     int max_columns = 0;
     int windowSize;
     bool needReflow = false;
-
-    QScrollArea* scrollArea;
+    
     QWidget *content;
 
 };
