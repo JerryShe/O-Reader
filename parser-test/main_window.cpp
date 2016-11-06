@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     button->setMaximumSize(100,150);
     ui->LibraryLayout->setWidget(button);
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////
     setWindowTopButtonsStyle(MainWindow::styleSheets, "red");
 
@@ -65,7 +66,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 
 void MainWindow::on_exit_button_clicked()
@@ -159,10 +159,11 @@ void MainWindow::on_Library_clicked()
         {
             case 2:
                 ui->Settings->setStyleSheet(MainWindow::styleSheets[1]);
-                Slayout->hide();
+                ui->SettingsLayout->hide();
                 break;
             case 3:
                 ui->Synchronization->setStyleSheet(MainWindow::styleSheets[2]);
+                ui->SynchronizationLayout->hide();
                 break;
             default: break;
         }
@@ -185,12 +186,13 @@ void MainWindow::on_Settings_clicked()
                 break;
             case 3:
                 ui->Synchronization->setStyleSheet(MainWindow::styleSheets[2]);
+                ui->SynchronizationLayout->hide();
                 break;
             default: break;
         }
         MainWindow::activeWindow = 2;
 
-        Slayout->show();
+        ui->SettingsLayout->show();
         ui->Settings->setStyleSheet(MainWindow::styleSheets[5]);
     }
 }
@@ -207,10 +209,12 @@ void MainWindow::on_Synchronization_clicked()
                 break;
             case 2:
                 ui->Settings->setStyleSheet(MainWindow::styleSheets[1]);
+                ui->SettingsLayout->hide();
                 break;
             default: break;
         }
 
+        ui->SynchronizationLayout->show();
         MainWindow::activeWindow = 3;
         ui->Synchronization->setStyleSheet(MainWindow::styleSheets[6]);
     }

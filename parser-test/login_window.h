@@ -22,6 +22,10 @@ private slots:
     void on_full_size_button_clicked();
     void on_min_button_clicked();
     void on_login_clicked();
+    void on_Forgot_clicked();
+    void on_Registration_clicked();
+    void backToMainPage();
+
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);

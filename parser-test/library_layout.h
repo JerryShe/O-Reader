@@ -22,7 +22,7 @@ public:
 private:
     void setColumnsAndMargins();
 
-    QGridLayout* gridLayout;
+    QGridLayout* libraryGridLayout;
     int row;
     int column;
     int max_columns = 0;

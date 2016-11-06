@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     library_layout.cpp \
     book_bar.cpp \
     answer_dialog.cpp \
-    styles.cpp
+    styles.cpp \
+    settings_layout.cpp \
+    synchronization_layout.cpp
 
 HEADERS  += \
     pugiconfig.hpp \
@@ -29,7 +31,9 @@ HEADERS  += \
     book_bar.h \
     library_layout.h \
     answer_dialog.h \
-    styles.h
+    styles.h \
+    settings_layout.h \
+    synchronization_layout.h
 
 FORMS    += mainwindow.ui \
     loginwindow.ui

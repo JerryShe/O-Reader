@@ -298,7 +298,7 @@ outline: red solid 8px;
      </layout>
     </item>
     <item row="1" column="1">
-     <layout class="QVBoxLayout" name="LibraryWindowLayout">
+     <layout class="QVBoxLayout" name="TabsLayout">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -306,7 +306,7 @@ outline: red solid 8px;
        <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item>
-       <layout class="QHBoxLayout" name="LibraryButtons">
+       <layout class="QHBoxLayout" name="LibraryButtons" stretch="4,3,4,4">
         <property name="spacing">
          <number>0</number>
         </property>
@@ -317,7 +317,7 @@ outline: red solid 8px;
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="ListView">
+         <widget class="QPushButton" name="Find">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -337,43 +337,12 @@ outline: red solid 8px;
            </size>
           </property>
           <property name="text">
-           <string>List view</string>
+           <string>Find</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="TableView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="sizeIncrement">
-           <size>
-            <width>0</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Table view</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="Sort">
+         <widget class="QComboBox" name="SortBy">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -382,7 +351,7 @@ outline: red solid 8px;
           </property>
           <property name="minimumSize">
            <size>
-            <width>150</width>
+            <width>50</width>
             <height>30</height>
            </size>
           </property>
@@ -392,15 +361,48 @@ outline: red solid 8px;
             <height>30</height>
            </size>
           </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="editable">
+           <bool>false</bool>
+          </property>
+          <property name="currentText">
+           <string>Date</string>
+          </property>
+          <property name="insertPolicy">
+           <enum>QComboBox::InsertAtBottom</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+          </property>
+          <property name="duplicatesEnabled">
+           <bool>false</bool>
+          </property>
           <property name="frame">
            <bool>false</bool>
           </property>
+          <item>
+           <property name="text">
+            <string>Date</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Author</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Book Name</string>
+           </property>
+          </item>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="AddBook">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -425,7 +427,7 @@ outline: red solid 8px;
         <item>
          <widget class="QPushButton" name="AddFolder">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -530,12 +532,34 @@ outline: red solid 8px;
               </property>
               <property name="minimumSize">
                <size>
-                <width>20</width>
-                <height>20</height>
+                <width>100</width>
+                <height>100</height>
                </size>
               </property>
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
+              </property>
+              <zorder></zorder>
+              <zorder></zorder>
+             </widget>
+            </item>
+            <item>
+             <widget class="settingslayout" name="SettingsLayout" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>100</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="synchronizationlayout" name="SynchronizationLayout" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>100</height>
+               </size>
               </property>
              </widget>
             </item>
@@ -1227,6 +1251,18 @@ outline: red solid 8px;
    <class>librarylayout</class>
    <extends>QWidget</extends>
    <header>library_layout.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>settingslayout</class>
+   <extends>QWidget</extends>
+   <header>settings_layout.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>synchronizationlayout</class>
+   <extends>QWidget</extends>
+   <header>synchronization_layout.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
