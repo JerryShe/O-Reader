@@ -1,22 +1,23 @@
 #include "main_window.h"
 #include "ui_mainwindow.h"
 #include "ui_loginwindow.h"
+#include <answer_dialog.h>
+#include <books.h>
+#include <styles.h>
 
-#include "pugiconfig.hpp"
-#include "pugixml.hpp"
+#include <qxmlstream.h>
+#include <QtXml/qdom.h>
 
 #include <QFileDialog>
+#include <QDirIterator>
+
 #include <QSizePolicy>
 #include <QKeyEvent>
 #include <QProcess>
-#include <answer_dialog.h>
+#include <QString>
+#include <QListWidget>
 
-
-#include <styles.h>
-#include <iostream>
-#include <string>
-using namespace pugi;
-using namespace std;
+#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->setupUi(this);
     MainWindow::prev_geometry = MainWindow::geometry();
+    MainWindow::filesMask<<"*.fb2"<<"*.zip";
 
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     MainWindow::setMouseTracking(true);
@@ -60,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->Settings->setStyleSheet(MainWindow::styleSheets[1]);
     ui->Synchronization->setStyleSheet(MainWindow::styleSheets[2]);
     ui->Logout->setStyleSheet(MainWindow::styleSheets[3]);
+    /////////////////////////////////////////////////////////////////////////////////////
+
 }
 
 MainWindow::~MainWindow()
@@ -70,7 +74,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_exit_button_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Fuck?");
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Exit?");
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
@@ -79,7 +83,6 @@ void MainWindow::on_exit_button_clicked()
     }
     else
         delete answer_window;
-
 }
 
 
@@ -225,7 +228,7 @@ void MainWindow::on_Logout_clicked()
     if (MainWindow::activeWindow != 4)
         ui->Logout->setStyleSheet(MainWindow::styleSheets[7]);
 
-    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Fuck!");
+    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Logout?");
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
@@ -238,44 +241,76 @@ void MainWindow::on_Logout_clicked()
     delete answer_window;
 }
 
+QString MainWindow::FileTipe(QString fileName)
+{
+    QString tipe;
+    for (int i = 1; i <= 4; i++)
+        tipe.push_front(fileName[fileName.length()-i]);
+
+    if (tipe == ".zip" || tipe == ".ZIP")
+        return "zip";
+    if (tipe == ".FB2" || tipe == ".fb2")
+        return "fb2";
+    return "unknown format!";
+
+
+}
+
+void MainWindow::openNewBooks(QStringList fileList)
+{
+    for (int i = 0; i < fileList.size(); ++i)
+    {
+        QString tipe = MainWindow::FileTipe(fileList[i]);
+        Book *boo;
+        QPushButton *button;
+
+        if (tipe == "fb2")
+        {
+            boo = new Book (fileList[i]);
+            button = new QPushButton(boo->Title);
+        }
+        if (tipe == "zip")
+        {
+            qDebug()<<"zip!";
+            button = new QPushButton("zip");
+        }
+
+
+
+        button->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 73); border:none; color:white;}"));
+        button->setMinimumSize(100,150);
+        button->setMaximumSize(100,150);
+
+        ui->LibraryLayout->addWidget(button);
+
+
+    }
+}
+
+
 
 void MainWindow::on_AddBook_clicked()
-
 {
+    QStringList fileList = QFileDialog::getOpenFileNames(this, "Open files", "", "(*.FB2 *.zip)");
+    openNewBooks(fileList);
 
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("FB2 Files (*.fb2)"));
-    wchar_t * nameOfFile = (wchar_t*)fileName.utf16();                    //костыль, что-то с кодировкой при приведении типов встроенной функцией
-
-    xml_document doc;
-    xml_parse_result result = doc.load_file(nameOfFile, encoding_auto);
-    //ui->label->setText(result.description());
-
-    xpath_node_set nodes = doc.select_nodes("//section/title/p");
-
-    //QLocale::setDefault(QLocale::Russian);
-    //ui->listWidget->setLocale(QLocale::Russian);
-    QStringList table_of_contents;
-    for(xpath_node node : nodes)
-    {
-         string a = node.node().text().as_string();
-         table_of_contents << node.node().text().as_string();
-    }
 }
 
 
 void MainWindow::on_AddFolder_clicked()
 {
+    QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QStringList fileList;
 
-    QPushButton *button = new QPushButton();
-    button->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 73); border:none;}"));
-    button->setMinimumSize(100,150);
-    button->setMaximumSize(100,150);
-    ui->LibraryLayout->addWidget(button);
+    if (path.isEmpty())
+        return;
+
+    QDirIterator it(path, MainWindow::filesMask, QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+        fileList << it.next();
+
+    openNewBooks(fileList);
 }
 
-void MainWindow::on_TableView_clicked()
-{
-
-}
 
 

@@ -51,8 +51,10 @@ void setLoginWindowStyle (QString windowButtonsStyle [], QString style)
                                 "background-color:rgb(130, 0, 55);"
                                 "color: white;}";
 
-        windowButtonsStyle[2] = "#Forgot{"
+        windowButtonsStyle[2] = "#Recovery{"
                                 "color: white;"
+                                "margin: 0;"
+                                "text-align:right;"
                                 "border:none}"
                                 "#Forgot:hover{"
                                 "color: rgb(151, 151, 227);}";

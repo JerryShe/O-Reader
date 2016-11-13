@@ -527,7 +527,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="Forgot">
+         <widget class="QPushButton" name="Recovery">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -552,7 +552,7 @@
            </font>
           </property>
           <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
+           <enum>Qt::LeftToRight</enum>
           </property>
           <property name="styleSheet">
            <string notr="true"/>

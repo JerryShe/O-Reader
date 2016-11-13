@@ -22,7 +22,7 @@ private slots:
     void on_full_size_button_clicked();
     void on_min_button_clicked();
     void on_login_clicked();
-    void on_Forgot_clicked();
+    void on_Recovery_clicked();
     void on_Registration_clicked();
     void backToMainPage();
 
@@ -35,7 +35,14 @@ private:
 
     QRect prev_geometry;
 
-    int activeMenuButton;
+    // 0 - Main
+    // 1 - Registration - email
+    // 2 - Registration - confirm
+    // 3 - Recovery - email
+    // 4 - Recovery - confirm
+    int activePage = 0;
+
+
     bool moving = false;
     int resizingMethod;
     bool resizing = false;
@@ -47,7 +54,7 @@ private:
 
     Ui::LoginWindow *ui;
 
-    MainWindow *main_fucking_window;
+    MainWindow *main_window;
 };
 
 #endif // LOGINWINDOW_H

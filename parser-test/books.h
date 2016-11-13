@@ -1,0 +1,39 @@
+#ifndef BOOKBAR_H
+#define BOOKBAR_H
+
+#include <QPushButton>
+#include <QString>
+#include <QVector>
+#include <QPair>
+#include <QDateTime>
+
+
+class Book : public QPushButton
+{
+    Q_OBJECT
+
+public:
+    Book(QString FileName);
+    void writeToFile();
+    void readFromFile();
+
+    QString File;
+    QString Title;
+    QString AuthorFirstName;
+    QString AuthorMiddleName;
+    QString AuthorLastName;
+    QPair <QString, int> Series;
+    QStringList Genres;
+    QStringList Annotation;
+    QString Language;
+    QString SourceLanguage;
+
+    QByteArray Image;
+    int YearBook = 0;
+    QDateTime AddittionTime;
+    double BookProgress = 0;
+
+
+};
+
+#endif // BOOKBAR_H

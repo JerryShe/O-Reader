@@ -38,9 +38,11 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::Logi
     ui->Pass->setStyleSheet(LoginWindow::styleSheets[1]);
     ui->Name->setStyleSheet(LoginWindow::styleSheets[1]);
     ui->repeatPassword->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->Forgot->setStyleSheet(LoginWindow::styleSheets[2]);
+    ui->Recovery->setStyleSheet(LoginWindow::styleSheets[2]);
     ui->Registration->setStyleSheet(LoginWindow::styleSheets[3]);
     ui->Remember->setStyleSheet(LoginWindow::styleSheets[4]);
+    /////////////////////////////////////////////////////////////////////////////////////
+
 }
 
 LoginWindow::~LoginWindow()
@@ -50,6 +52,7 @@ LoginWindow::~LoginWindow()
 
 void LoginWindow::backToMainPage()
 {
+    LoginWindow::activePage = 0;
     ui->Name->setPlaceholderText("email");
     ui->Name->clear();
     ui->Error->hide();
@@ -60,7 +63,7 @@ void LoginWindow::backToMainPage()
     ui->repeatPassword->clear();
     ui->Remember->show();
     ui->Registration->setText("Create account");
-    ui->Forgot->show();
+    ui->Recovery->show();
     ui->login->setText("Log in");
 }
 
@@ -69,7 +72,7 @@ void LoginWindow::backToMainPage()
 
 void LoginWindow::on_exit_button_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Fuck?");
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Exit?");
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
@@ -111,16 +114,17 @@ void LoginWindow::on_min_button_clicked()
 
 void LoginWindow::on_Registration_clicked()
 {
-    if (ui->Registration->text() == "Back")
+    if (LoginWindow::activePage != 0)
     {
         backToMainPage();
     }
     else
     {
+        LoginWindow::activePage = 1;
         ui->login->setText("Sign up");
         ui->repeatPassword->show();
         ui->Remember->hide();
-        ui->Forgot->hide();
+        ui->Recovery->hide();
         ui->Registration->setText("Back");
     }
 }
@@ -128,8 +132,28 @@ void LoginWindow::on_Registration_clicked()
 
 void LoginWindow::on_login_clicked()
 {
-    if (ui->Name->placeholderText() == "enter code from email")
+
+    switch (LoginWindow::activePage)
     {
+    case 0:
+        // здесь надо вставить проверку пароля на серве
+        // если соединения с сервером нет, то сказать, что программа будет работать в автономном режиме и проверить пароль локально
+        main_window = new MainWindow();
+        main_window->setWindowFlags(Qt::CustomizeWindowHint);
+        main_window->show();
+        LoginWindow::close();
+
+    case 1:
+        //здесь надо пингануть серву, чтобы зарегал пользователя и выслал код подтверждения
+        LoginWindow::activePage = 2;
+        ui->Name->setPlaceholderText("enter code from email");
+        ui->Name->clear();
+        ui->Pass->hide();
+        ui->repeatPassword->hide();
+        ui->login->setText("Verify account");
+        return;
+
+    case 2:
         if (ui->Pass->text() != ui->repeatPassword->text())
         {
             ui->Error->show();
@@ -141,31 +165,20 @@ void LoginWindow::on_login_clicked()
             backToMainPage();
         }
         return;
-    }
 
-    if (ui->login->text() == "Change password")
-    {
-        //здесь надо вставить проверку легитимности введенного email
-        //и выслать код смены пароля с серва пользователю
-        ui->Name->setPlaceholderText("enter code from email");
-        ui->Name->clear();
-        ui->Pass->setPlaceholderText("new password");
-        ui->Pass->clear();
-        ui->Pass->show();
-        ui->repeatPassword->clear();
-        ui->repeatPassword->show();
-        return;
-    }
-    if (ui->login->text() == "Sign up")
-    {
+    case 3:
         if (ui->Pass->text() == ui->repeatPassword->text())
         {
-            //здесь надо пингануть серву, чтобы зарегал пользователя и выслал код подтверждения
+            //здесь надо вставить проверку легитимности введенного email
+            //и выслать код смены пароля с серва пользователю
+            LoginWindow::activePage = 4;
             ui->Name->setPlaceholderText("enter code from email");
             ui->Name->clear();
-            ui->Pass->hide();
-            ui->repeatPassword->hide();
-            ui->login->setText("Verify account");
+            ui->Pass->setPlaceholderText("new password");
+            ui->Pass->clear();
+            ui->Pass->show();
+            ui->repeatPassword->clear();
+            ui->repeatPassword->show();
             return;
         }
         else
@@ -173,34 +186,25 @@ void LoginWindow::on_login_clicked()
             ui->Error->show();
             return;
         }
-    }
-    if (ui->login->text() == "Verify account")
-    {
+
+    case 4:
         //здесь надо отослать код серву для проверки
         backToMainPage();
         return;
+
+    default:
+        return;
     }
-
-
-
-     // здесь надо вставить проверку пароля на серве
-     // если создинения с сервером нет, то сказать, что программа будет работать в автономном режиме и проверить из хеша
-
-
-    main_fucking_window = new MainWindow();
-    main_fucking_window->setWindowFlags(Qt::CustomizeWindowHint);
-    main_fucking_window->show();
-    LoginWindow::close();
-
 }
 
-void LoginWindow::on_Forgot_clicked()
+void LoginWindow::on_Recovery_clicked()
 {
+    LoginWindow::activePage = 3;
     ui->Pass->hide();
     ui->repeatPassword->hide();
     ui->Remember->hide();
     ui->Registration->setText("Back");
-    ui->Forgot->hide();
+    ui->Recovery->hide();
     ui->login->setText("Change password");
 }
 

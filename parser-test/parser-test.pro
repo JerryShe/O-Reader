@@ -5,6 +5,8 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT += xml
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,23 +19,23 @@ SOURCES += main.cpp\
     main_window.cpp \
     login_window.cpp \
     library_layout.cpp \
-    book_bar.cpp \
     answer_dialog.cpp \
     styles.cpp \
     settings_layout.cpp \
-    synchronization_layout.cpp
+    synchronization_layout.cpp \
+    books.cpp
 
 HEADERS  += \
     pugiconfig.hpp \
     pugixml.hpp \
     login_window.h \
     main_window.h \
-    book_bar.h \
     library_layout.h \
     answer_dialog.h \
     styles.h \
     settings_layout.h \
-    synchronization_layout.h
+    synchronization_layout.h \
+    books.h
 
 FORMS    += mainwindow.ui \
     loginwindow.ui
@@ -41,3 +43,6 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     checkbox.qrc \
     images.qrc
+
+
+

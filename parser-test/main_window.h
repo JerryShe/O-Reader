@@ -10,6 +10,7 @@
 #include <QFrame>
 #include <library_layout.h>
 
+
 namespace Ui
 {
     class MainWindow;
@@ -25,14 +26,15 @@ public:
 
 private slots:
     void on_exit_button_clicked();
-
     void on_full_size_button_clicked();
-
     void on_min_button_clicked();
 
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
+
+    void openNewBooks(QStringList fileList);
+    QString FileTipe(QString fileName);
 
     void on_Library_clicked();
     void on_Settings_clicked();
@@ -40,11 +42,11 @@ private slots:
     void on_Logout_clicked();
     void on_AddBook_clicked();
     void on_AddFolder_clicked();
-    void on_TableView_clicked();
 
 private:
     int activeWindow = 1;
     QString styleSheets [8];
+
 
     QRect prev_geometry;
     QPoint lastPoint;
@@ -61,7 +63,8 @@ private:
     Ui::MainWindow *ui;
 
     QWidget *settingsLayout;
-    librarylayout *Slayout;
+
+    QStringList filesMask;
 };
 
 
