@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QPair>
 #include <QDateTime>
+#include <QDataStream>
 
 
 class Book
@@ -12,8 +13,9 @@ class Book
 public:
     Book(QString FileName);
     Book(){}
-    void writeToFile();
-    void readFromFile();
+    friend QDataStream &operator<<(QDataStream &out, const Book &BookElem);
+    friend QDataStream &operator>>(QDataStream &out, Book &BookElem);
+    void writeToConsole();
 
     QString File;
     QString Title;
@@ -25,10 +27,10 @@ public:
     QStringList Annotation;
     QString Language;
     QString SourceLanguage;
-
-    QByteArray Image;
     QDateTime AddittionTime;
     double BookProgress = 0;
+    QByteArray Image;
+
 
 
 };

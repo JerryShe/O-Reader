@@ -8,6 +8,7 @@
 #include <QPalette>
 #include <QGridLayout>
 #include <QFrame>
+#include <QFile>
 #include <library_layout.h>
 #include <books.h>
 
@@ -26,6 +27,9 @@ public:
     ~MainWindow();
 
 private slots:
+    void loadBookList();
+    void saveBookList();
+
     void settingsTabChanged(int tab);
 
     void on_exit_button_clicked();
@@ -79,11 +83,11 @@ private:
 
     Ui::MainWindow *ui;
 
-    QWidget *settingsLayout;
-
     QStringList filesMask;
 
     QVector <Book> bookList;
+
+    QString resoursesFolderPath;
 };
 
 

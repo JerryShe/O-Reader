@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-QT += xml
+QT       += xml
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -35,7 +35,7 @@ HEADERS  += \
     books.h
 
 FORMS    += mainwindow.ui \
-    loginwindow.ui
+            loginwindow.ui
 
 RESOURCES += \
     checkbox.qrc \

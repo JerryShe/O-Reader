@@ -2,6 +2,7 @@
 #include "QFile"
 #include "QDomDocument"
 #include <iostream>
+#include <QDataStream>
 
 
 #include <qdebug.h>
@@ -77,29 +78,67 @@ Book::Book(QString fileName)
 
             //дата добавления
             Book::AddittionTime = QDateTime::currentDateTime();
-
-
-            qDebug()<<Book::File  ;
-            qDebug()<<Book::Title  ;
-            qDebug()<<Book::AuthorFirstName  ;
-            qDebug()<<Book::AuthorMiddleName  ;
-            qDebug()<<Book::AuthorLastName  ;
-            qDebug()<<Book::Annotation  ;
-            qDebug()<<Book::SourceLanguage  ;
-            qDebug()<<Book::Language  ;
-            qDebug()<<Book::Genres  ;
-            qDebug()<<Book::Series  ;
-            qDebug()<<Book::AddittionTime  ;
-
         }
     }
 }
 
-void Book::readFromFile()
-{}
+void Book::writeToConsole()
+{
+    qDebug()<<Book::File  ;
+    qDebug()<<Book::Title  ;
+    qDebug()<<Book::AuthorFirstName  ;
+    qDebug()<<Book::AuthorMiddleName  ;
+    qDebug()<<Book::AuthorLastName  ;
+    qDebug()<<Book::Annotation  ;
+    qDebug()<<Book::SourceLanguage  ;
+    qDebug()<<Book::Language  ;
+    qDebug()<<Book::Genres  ;
+    qDebug()<<Book::Series  ;
+    qDebug()<<Book::AddittionTime  ;
+}
 
-void Book::writeToFile()
-{}
+QDataStream &operator <<(QDataStream &out, const Book &BookElem)
+{
+    out<<BookElem.File;
+    out<<BookElem.Title;
+    out<<BookElem.AuthorFirstName;
+    out<<BookElem.AuthorMiddleName;
+    out<<BookElem.AuthorLastName;
+    out<<BookElem.Series.first;
+    out<<BookElem.Series.second;
+
+    out<<BookElem.Genres;
+    out<<BookElem.Annotation;
+
+    out<<BookElem.Language;
+    out<<BookElem.SourceLanguage;
+    out<<BookElem.AddittionTime;
+    out<<BookElem.BookProgress;
+    out<<BookElem.Image;
+    return out;
+}
+
+QDataStream &operator >>(QDataStream &in, Book &BookElem)
+{
+    in>>BookElem.File;
+    in>>BookElem.Title;
+    in>>BookElem.AuthorFirstName;
+    in>>BookElem.AuthorMiddleName;
+    in>>BookElem.AuthorLastName;
+    in>>BookElem.Series.first;
+    in>>BookElem.Series.second;
+
+    in>>BookElem.Genres;
+    in>>BookElem.Annotation;
+
+    in>>BookElem.Language;
+    in>>BookElem.SourceLanguage;
+    in>>BookElem.AddittionTime;
+    in>>BookElem.BookProgress;
+    in>>BookElem.Image;
+
+    return in;
+}
 
 
 
