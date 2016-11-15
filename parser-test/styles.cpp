@@ -32,7 +32,7 @@ void setWindowTopButtonsStyle (QString windowButtonsStyle [], QString style)
 void setBackgroundWindowColor(QString windowButtonsStyle [], QString style)
 {
     if (style == "red")
-        windowButtonsStyle[0] = "#MainWidget {background-color:rgb(162, 0, 70);}";
+        windowButtonsStyle[0] = "#MainWidget {background-color:rgb(150, 0, 60);}";
 }
 
 
@@ -56,7 +56,7 @@ void setLoginWindowStyle (QString windowButtonsStyle [], QString style)
                                 "margin: 0;"
                                 "text-align:right;"
                                 "border:none}"
-                                "#Forgot:hover{"
+                                "#Recovery:hover{"
                                 "color: rgb(151, 151, 227);}";
 
         windowButtonsStyle[3] = "#Registration{"
@@ -110,7 +110,6 @@ void setMenusButtonsStyle (QString menuButtonsStyle [], QString style)
                               " { background-color:rgb(147, 0, 60); } ";
 
 
-
         menuButtonsStyle[4] = " #Library "
                               " {background-color: rgb(150, 0, 60); "
                               " background-image: url(:/menu_buttons/Library_img.png);"
@@ -138,6 +137,29 @@ void setMenusButtonsStyle (QString menuButtonsStyle [], QString style)
                               " border:none;} "
                               " #Logout:hover "
                               " { background-color:rgb(147, 0, 60); } ";
+
+
+        menuButtonsStyle[8] = "QWidget{background-color: rgb(162, 0, 70); border:none; }";
+    }
+}
+
+void setTabButtonsStyle (QString tabButtonsStyle [], QString style)
+{
+    if (style == "red")
+    {
+        tabButtonsStyle[0] = "QPushButton "
+                             "{background-color: rgb(162, 0, 70);"
+                             "border:none;"
+                             "color:white;}"
+                             "QPushButton:hover"
+                             "{background-color:rgb(147, 0, 60);}";
+
+        tabButtonsStyle[1] = "QPushButton "
+                             "{background-color: rgb(150, 0, 60);"
+                             "border:none;"
+                             "color:white;}"
+                             "QPushButton:hover"
+                             "{background-color:rgb(147, 0, 60);}";
     }
 }
 

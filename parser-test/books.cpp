@@ -75,10 +75,6 @@ Book::Book(QString fileName)
                 Book::Series.second = titleInfo.namedItem("sequence").toElement().attribute("number", "").toInt();
             }
 
-            //год издания
-            if (! titleInfo.namedItem("date").isNull())
-                Book::YearBook = titleInfo.namedItem("date").toElement().text().toInt();
-
             //дата добавления
             Book::AddittionTime = QDateTime::currentDateTime();
 
@@ -93,7 +89,6 @@ Book::Book(QString fileName)
             qDebug()<<Book::Language  ;
             qDebug()<<Book::Genres  ;
             qDebug()<<Book::Series  ;
-            qDebug()<<Book::YearBook  ;
             qDebug()<<Book::AddittionTime  ;
 
         }

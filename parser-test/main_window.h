@@ -9,6 +9,7 @@
 #include <QGridLayout>
 #include <QFrame>
 #include <library_layout.h>
+#include <books.h>
 
 
 namespace Ui
@@ -25,6 +26,8 @@ public:
     ~MainWindow();
 
 private slots:
+    void settingsTabChanged(int tab);
+
     void on_exit_button_clicked();
     void on_full_size_button_clicked();
     void on_min_button_clicked();
@@ -33,6 +36,11 @@ private slots:
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
 
+    void libraryButtonsHide();
+    void settingsButtonsHide();
+    void libraryButtonsShow();
+    void settingsButtonsShow();
+
     void openNewBooks(QStringList fileList);
     QString FileTipe(QString fileName);
 
@@ -40,12 +48,21 @@ private slots:
     void on_Settings_clicked();
     void on_Synchronization_clicked();
     void on_Logout_clicked();
-    void on_AddBook_clicked();
-    void on_AddFolder_clicked();
+    void on__AddBook_clicked();
+    void on__AddFolder_clicked();
+
+    void on__SettingsProfile_clicked();
+
+    void on__SettingsProgram_clicked();
+
+    void on__SettingsReader_clicked();
+
+    void on__SettingsSynchronization_clicked();
 
 private:
     int activeWindow = 1;
-    QString styleSheets [8];
+    QString styleSheets [9];
+    QString tabsStyleSheets [2];
 
 
     QRect prev_geometry;
@@ -65,6 +82,8 @@ private:
     QWidget *settingsLayout;
 
     QStringList filesMask;
+
+    QVector <Book> bookList;
 };
 
 

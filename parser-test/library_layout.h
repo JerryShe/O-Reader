@@ -6,11 +6,13 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QScrollArea>
+#include <QPushButton>
 #include <QMainWindow>
 
 class librarylayout : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit librarylayout(QWidget *widget);
 

@@ -11,7 +11,7 @@ librarylayout::librarylayout(QWidget *AreaLayout)
     librarylayout::windowSize = AreaLayout->size().width();
     content = NULL;
 
-    libraryGridLayout = new QGridLayout;
+    libraryGridLayout = new QGridLayout();
 
     librarylayout::setLayout(libraryGridLayout);
     
@@ -30,7 +30,6 @@ void librarylayout::setWidget(QWidget *widget)
 
 void librarylayout::setColumnsAndMargins()
 {
-
     int lMargin, rMargin;
     librarylayout::libraryGridLayout->getContentsMargins(&lMargin, NULL, &rMargin, NULL);
 
@@ -40,7 +39,6 @@ void librarylayout::setColumnsAndMargins()
     int spacing = (layoutSize - librarylayout::content->size().width() * librarylayout::max_columns) / (librarylayout::max_columns - 1);
     librarylayout::libraryGridLayout->setHorizontalSpacing(spacing);
     librarylayout::libraryGridLayout->setVerticalSpacing(spacing);
-
 }
 
 void librarylayout::addWidget(QWidget *widget)
@@ -53,7 +51,6 @@ void librarylayout::addWidget(QWidget *widget)
 
     libraryGridLayout -> addWidget(widget, row, column++);
 }
-
 
 
 

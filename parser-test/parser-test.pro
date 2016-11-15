@@ -15,7 +15,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    pugixml.cpp \
     main_window.cpp \
     login_window.cpp \
     library_layout.cpp \
@@ -26,8 +25,6 @@ SOURCES += main.cpp\
     books.cpp
 
 HEADERS  += \
-    pugiconfig.hpp \
-    pugixml.hpp \
     login_window.h \
     main_window.h \
     library_layout.h \

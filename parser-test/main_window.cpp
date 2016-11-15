@@ -19,10 +19,43 @@
 
 #include <QDebug>
 
+void MainWindow::libraryButtonsHide()
+{
+    ui->_AddBook->hide();
+    ui->_AddFolder->hide();
+    ui->_Delete->hide();
+    ui->_Sort->hide();
+    ui->_Group->hide();
+    ui->_Find->hide();
+}
+void MainWindow::libraryButtonsShow()
+{
+    ui->_AddBook->show();
+    ui->_AddFolder->show();
+    ui->_Delete->show();
+    ui->_Sort->show();
+    ui->_Group->show();
+    ui->_Find->show();
+}
+void MainWindow::settingsButtonsHide()
+{
+    ui->_SettingsProfile->hide();
+    ui->_SettingsProgram->hide();
+    ui->_SettingsReader->hide();
+    ui->_SettingsSynchronization->hide();
+}
+void MainWindow::settingsButtonsShow()
+{
+    ui->_SettingsProfile->show();
+    ui->_SettingsProgram->show();
+    ui->_SettingsReader->show();
+    ui->_SettingsSynchronization->show();
+}
+
+
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
     MainWindow::prev_geometry = MainWindow::geometry();
     MainWindow::filesMask<<"*.fb2"<<"*.zip";
@@ -39,29 +72,44 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     button->setMaximumSize(100,150);
     ui->LibraryLayout->setWidget(button);
 
+    MainWindow::settingsButtonsHide();
+
+
+    connect(ui->SettingsLayout, SIGNAL(tabChanged(int)), this, SLOT(settingsTabChanged(int)));
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-    setWindowTopButtonsStyle(MainWindow::styleSheets, "red");
+    setWindowTopButtonsStyle(styleSheets, "red");
+    ui->min_button->setStyleSheet(styleSheets[0]);
+    ui->full_size_button->setStyleSheet(styleSheets[1]);
+    ui->exit_button->setStyleSheet(styleSheets[2]);
 
-    ui->min_button->setStyleSheet(MainWindow::styleSheets[0]);
-    ui->full_size_button->setStyleSheet(MainWindow::styleSheets[1]);
-    ui->exit_button->setStyleSheet(MainWindow::styleSheets[2]);
+    setBackgroundWindowColor(styleSheets, "red");
+    ui->MainWidget->setStyleSheet(styleSheets[0]);
 
-    setBackgroundWindowColor(MainWindow::styleSheets, "red");
+    setMainWindowStyle(styleSheets, "red");
+    ui->scrollAreaWidget->setStyleSheet(styleSheets[0]);
+    ui->scrollArea->setStyleSheet(styleSheets[1]);
 
-    ui->MainWidget->setStyleSheet(MainWindow::styleSheets[0]);
+    setTabButtonsStyle(tabsStyleSheets, "red");
+    ui->_Find->setStyleSheet(tabsStyleSheets[0]);
+    ui->_AddBook->setStyleSheet(tabsStyleSheets[0]);
+    ui->_AddFolder->setStyleSheet(tabsStyleSheets[0]);
+    ui->_Delete->setStyleSheet(tabsStyleSheets[0]);
+    ui->_Group->setStyleSheet(tabsStyleSheets[0]);
+    ui->_Sort->setStyleSheet(tabsStyleSheets[0]);
+    ui->_SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
+    ui->_SettingsProgram->setStyleSheet(tabsStyleSheets[1]);
+    ui->_SettingsReader->setStyleSheet(tabsStyleSheets[0]);
+    ui->_SettingsSynchronization->setStyleSheet(tabsStyleSheets[0]);
 
-    setMainWindowStyle(MainWindow::styleSheets, "red");
+    setMenusButtonsStyle(styleSheets, "red");
+    ui->Settings->setStyleSheet(styleSheets[1]);
+    ui->Synchronization->setStyleSheet(styleSheets[2]);
+    ui->Logout->setStyleSheet(styleSheets[3]);
+    ui->Library->setStyleSheet(styleSheets[4]);
+    ui->LeftExpandingWidget->setStyleSheet(styleSheets[8]);
 
-    ui->scrollAreaWidget->setStyleSheet(MainWindow::styleSheets[0]);
-    ui->scrollArea->setStyleSheet(MainWindow::styleSheets[1]);
 
-    setMenusButtonsStyle(MainWindow::styleSheets, "red");
-
-    ui->Library->setStyleSheet(MainWindow::styleSheets[4]);
-    ui->Settings->setStyleSheet(MainWindow::styleSheets[1]);
-    ui->Synchronization->setStyleSheet(MainWindow::styleSheets[2]);
-    ui->Logout->setStyleSheet(MainWindow::styleSheets[3]);
     /////////////////////////////////////////////////////////////////////////////////////
 
 }
@@ -100,6 +148,7 @@ void MainWindow::on_full_size_button_clicked()
     }
 }
 
+
 void MainWindow::on_min_button_clicked()
 {
     if( MainWindow::isMinimized())
@@ -132,18 +181,19 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
+
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
     {
-        if (e->pos().y() <= 50 && e->pos().y() > MainWindow::resizingFrame)
+        if (e->pos().y() <= 30 && e->pos().y() > MainWindow::resizingFrame)
         {
-
             MainWindow::moving = true;
             MainWindow::lastPoint = e->pos();
         }
     }
 }
+
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 {
@@ -154,6 +204,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
     }
 }
 
+
 void MainWindow::on_Library_clicked()
 {
     if (MainWindow::activeWindow != 1)
@@ -161,21 +212,24 @@ void MainWindow::on_Library_clicked()
         switch (MainWindow::activeWindow)
         {
             case 2:
-                ui->Settings->setStyleSheet(MainWindow::styleSheets[1]);
+                ui->Settings->setStyleSheet(styleSheets[1]);
                 ui->SettingsLayout->hide();
+                MainWindow::settingsButtonsHide();
                 break;
             case 3:
-                ui->Synchronization->setStyleSheet(MainWindow::styleSheets[2]);
+                ui->Synchronization->setStyleSheet(styleSheets[2]);
                 ui->SynchronizationLayout->hide();
                 break;
             default: break;
         }
-
         MainWindow::activeWindow = 1;
+
         ui->LibraryLayout->show();
-        ui->Library->setStyleSheet(MainWindow::styleSheets[4]);
+        MainWindow::libraryButtonsShow();
+        ui->Library->setStyleSheet(styleSheets[4]);
     }
 }
+
 
 void MainWindow::on_Settings_clicked()
 {
@@ -184,11 +238,12 @@ void MainWindow::on_Settings_clicked()
         switch (MainWindow::activeWindow)
         {
             case 1:
-                ui->Library->setStyleSheet(MainWindow::styleSheets[0]);
+                ui->Library->setStyleSheet(styleSheets[0]);
                 ui->LibraryLayout->hide();
+                MainWindow::libraryButtonsHide();
                 break;
             case 3:
-                ui->Synchronization->setStyleSheet(MainWindow::styleSheets[2]);
+                ui->Synchronization->setStyleSheet(styleSheets[2]);
                 ui->SynchronizationLayout->hide();
                 break;
             default: break;
@@ -196,9 +251,11 @@ void MainWindow::on_Settings_clicked()
         MainWindow::activeWindow = 2;
 
         ui->SettingsLayout->show();
-        ui->Settings->setStyleSheet(MainWindow::styleSheets[5]);
+        MainWindow::settingsButtonsShow();
+        ui->Settings->setStyleSheet(styleSheets[5]);
     }
 }
+
 
 void MainWindow::on_Synchronization_clicked()
 {
@@ -207,39 +264,43 @@ void MainWindow::on_Synchronization_clicked()
         switch (MainWindow::activeWindow)
         {
             case 1:
-                ui->Library->setStyleSheet(MainWindow::styleSheets[0]);
+                ui->Library->setStyleSheet(styleSheets[0]);
                 ui->LibraryLayout->hide();
+                MainWindow::libraryButtonsHide();
                 break;
             case 2:
-                ui->Settings->setStyleSheet(MainWindow::styleSheets[1]);
+                ui->Settings->setStyleSheet(styleSheets[1]);
                 ui->SettingsLayout->hide();
+                MainWindow::settingsButtonsHide();
                 break;
             default: break;
         }
-
-        ui->SynchronizationLayout->show();
         MainWindow::activeWindow = 3;
-        ui->Synchronization->setStyleSheet(MainWindow::styleSheets[6]);
+
+        ui->SynchronizationLayout->show();        
+        ui->Synchronization->setStyleSheet(styleSheets[6]);
     }
 }
+
 
 void MainWindow::on_Logout_clicked()
 {
     if (MainWindow::activeWindow != 4)
-        ui->Logout->setStyleSheet(MainWindow::styleSheets[7]);
+        ui->Logout->setStyleSheet(styleSheets[7]);
 
     AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Logout?");
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        ui->Logout->setStyleSheet(MainWindow::styleSheets[3]);
+        ui->Logout->setStyleSheet(styleSheets[3]);
         QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
         MainWindow::close();
     }
-    ui->Logout->setStyleSheet(MainWindow::styleSheets[3]);
+    ui->Logout->setStyleSheet(styleSheets[3]);
     delete answer_window;
 }
+
 
 QString MainWindow::FileTipe(QString fileName)
 {
@@ -252,22 +313,22 @@ QString MainWindow::FileTipe(QString fileName)
     if (tipe == ".FB2" || tipe == ".fb2")
         return "fb2";
     return "unknown format!";
-
-
 }
+
 
 void MainWindow::openNewBooks(QStringList fileList)
 {
     for (int i = 0; i < fileList.size(); ++i)
     {
         QString tipe = MainWindow::FileTipe(fileList[i]);
-        Book *boo;
+
         QPushButton *button;
 
         if (tipe == "fb2")
         {
-            boo = new Book (fileList[i]);
-            button = new QPushButton(boo->Title);
+            Book boo(fileList[i]);
+            MainWindow::bookList.push_back(boo);
+            button = new QPushButton(boo.Title);
         }
         if (tipe == "zip")
         {
@@ -276,28 +337,23 @@ void MainWindow::openNewBooks(QStringList fileList)
         }
 
 
-
         button->setStyleSheet(QString("QPushButton{background-color:rgb(0, 0, 73); border:none; color:white;}"));
         button->setMinimumSize(100,150);
         button->setMaximumSize(100,150);
 
         ui->LibraryLayout->addWidget(button);
-
-
     }
 }
 
 
-
-void MainWindow::on_AddBook_clicked()
+void MainWindow::on__AddBook_clicked()
 {
     QStringList fileList = QFileDialog::getOpenFileNames(this, "Open files", "", "(*.FB2 *.zip)");
     openNewBooks(fileList);
-
 }
 
 
-void MainWindow::on_AddFolder_clicked()
+void MainWindow::on__AddFolder_clicked()
 {
     QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     QStringList fileList;
@@ -313,4 +369,47 @@ void MainWindow::on_AddFolder_clicked()
 }
 
 
+void MainWindow::settingsTabChanged(int tab)
+{
+    switch (tab)
+    {
+    case 0:
+        ui->_SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
+        break;
+    case 1:
+        ui->_SettingsProgram->setStyleSheet(tabsStyleSheets[0]);
+        break;
+    case 2:
+        ui->_SettingsReader->setStyleSheet(tabsStyleSheets[0]);
+        break;
+    case 3:
+        ui->_SettingsSynchronization->setStyleSheet(tabsStyleSheets[0]);
+        break;
+    default:
+        break;
+    }
+}
 
+void MainWindow::on__SettingsProfile_clicked()
+{
+    ui->SettingsLayout->showProfile();
+    ui->_SettingsProfile->setStyleSheet(tabsStyleSheets[1]);
+}
+
+void MainWindow::on__SettingsProgram_clicked()
+{
+    ui->SettingsLayout->showProgram();
+    ui->_SettingsProgram->setStyleSheet(tabsStyleSheets[1]);
+}
+
+void MainWindow::on__SettingsReader_clicked()
+{
+    ui->SettingsLayout->showReader();
+    ui->_SettingsReader->setStyleSheet(tabsStyleSheets[1]);
+}
+
+void MainWindow::on__SettingsSynchronization_clicked()
+{
+    ui->SettingsLayout->showSynchronization();
+    ui->_SettingsSynchronization->setStyleSheet(tabsStyleSheets[1]);
+}

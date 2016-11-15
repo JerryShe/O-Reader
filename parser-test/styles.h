@@ -13,6 +13,8 @@ void setMenusButtonsStyle (QString menuButtonsStyle [], QString style);
 
 void setWindowButtonsStyle (QString windowButtonsStyle [], QString style);
 
+void setTabButtonsStyle (QString tabButtonsStyle [], QString style);
+
 void setMainWindowStyle (QString windowStyle [], QString style);
 
 void setAnswerDialogStyle (QString windowStyle [], QString style);
