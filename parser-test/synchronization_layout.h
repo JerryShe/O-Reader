@@ -8,7 +8,8 @@ class synchronizationlayout : public QWidget
 {
     Q_OBJECT
 public:
-    explicit synchronizationlayout(QWidget *parent = 0);
+    explicit synchronizationlayout(QWidget *Parent=0);
+    ~synchronizationlayout();
 
 signals:
 

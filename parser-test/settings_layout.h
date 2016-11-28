@@ -4,16 +4,19 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include "settings_programlayout.h"
+#include "settings_profilelayout.h"
+#include "settings_readerlayout.h"
 
 class settingslayout : public QWidget
 {
     Q_OBJECT
 public:
-    explicit settingslayout(QWidget *parent = 0);
+    explicit settingslayout(QWidget *Parent=0);
+    ~settingslayout();
     void showProfile();
     void showProgram();
     void showReader();
-    void showSynchronization();
 
 signals:
     void tabChanged(int prevTab);
@@ -24,18 +27,12 @@ private:
 
     QHBoxLayout *settingsMainLayout;
 
-    QWidget *ProfileWidget;                 //0
-    QWidget *ReaderWidget;                  //1
-    QWidget *SynchronizationWidget;         //2
-    QWidget *ProgramWidget;                 //3
-
-    QGridLayout *ProfileLayout;
-    QGridLayout *ReaderLayout;
-    QGridLayout *SynchronizationLayout;
-    QGridLayout *ProgramLayout;
+    Settings_ProfileLayout *ProfileWidget;  //0
+    Settings_ProgramLayout *ProgramWidget;  //2
+    Settings_ReaderLayout *ReaderWidget;    //1
 
     short currentTab = 1;
-
+    QString Style;
 };
 
 #endif // SETTINGSLAYOUT_H

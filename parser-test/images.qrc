@@ -14,4 +14,7 @@
         <file>Settings_img.png</file>
         <file>Synchronization_img.png</file>
     </qresource>
+    <qresource prefix="/noImage">
+        <file>noImage.png</file>
+    </qresource>
 </RCC>

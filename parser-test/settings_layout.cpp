@@ -1,53 +1,43 @@
 #include "settings_layout.h"
+
+#include "settings_programlayout.h"
+
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
 
 
-settingslayout::settingslayout(QWidget *AreaLayout)
+
+settingslayout::settingslayout(QWidget *Parent)
 {
+    this->setParent(Parent);
+    Style = "red";
+    ProgramWidget = new Settings_ProgramLayout(this,Style);
+    ReaderWidget = new Settings_ReaderLayout(this,Style);
+    ProfileWidget = new Settings_ProfileLayout(this,Style);
+
     settingsMainLayout = new QHBoxLayout();
-
-    ProfileWidget = new QWidget();
-    ProgramWidget = new QWidget();
-    ReaderWidget = new QWidget();
-    SynchronizationWidget = new QWidget();
-
-    ProfileLayout = new QGridLayout();
-    ProgramLayout = new QGridLayout();
-    ReaderLayout = new QGridLayout();
-    SynchronizationLayout = new QGridLayout();
 
     settingslayout::setLayout(settingsMainLayout);
 
     settingsMainLayout->addWidget(ProfileWidget, 0);
     settingsMainLayout->addWidget(ProgramWidget, 1);
     settingsMainLayout->addWidget(ReaderWidget, 2);
-    settingsMainLayout->addWidget(SynchronizationWidget, 3);
 
-    ProfileWidget->setLayout(ProfileLayout);
-    ProgramWidget->setLayout(ProgramLayout);
-    ReaderWidget->setLayout(ReaderLayout);
-    SynchronizationWidget->setLayout(SynchronizationLayout);
-
-
-    QPushButton *sett1 = new QPushButton("profile");
-    ProfileLayout->addWidget(sett1, 0, 0);
-
-    QPushButton *sett2 = new QPushButton("program");
-    ProgramLayout->addWidget(sett2, 0, 0);
-
-    QPushButton *sett3 = new QPushButton("reader");
-    ReaderLayout->addWidget(sett3, 0, 0);
-
-    QPushButton *sett4 = new QPushButton("Synchronization");
-    SynchronizationLayout->addWidget(sett4, 0, 0);
+    this->setStyleSheet("QLabel{color:white;}");
 
     settingslayout::hide();
     ProfileWidget->hide();
     ReaderWidget->hide();
-    SynchronizationWidget->hide();
+}
+
+settingslayout::~settingslayout()
+{
+    delete settingsMainLayout;
+    delete ProfileWidget;
+    delete ProgramWidget;
+    delete ReaderWidget;
 }
 
 void settingslayout::showProfile()
@@ -64,11 +54,6 @@ void settingslayout::showProfile()
     case 2:
         ReaderWidget->hide();
         emit tabChanged(2);
-        ProfileWidget->show();
-        break;
-    case 3:
-        SynchronizationWidget->hide();
-        emit tabChanged(3);
         ProfileWidget->show();
         break;
     default:
@@ -93,11 +78,6 @@ void settingslayout::showProgram()
         emit tabChanged(2);
         ProgramWidget->show();
         break;
-    case 3:
-        SynchronizationWidget->hide();
-        emit tabChanged(3);
-        ProgramWidget->show();
-        break;
     default:
         break;
     }
@@ -120,42 +100,10 @@ void settingslayout::showReader()
         break;
     case 2:
         break;
-    case 3:
-        SynchronizationWidget->hide();
-        emit tabChanged(3);
-        ReaderWidget->show();
-        break;
     default:
         break;
     }
     currentTab = 2;
-}
-
-void settingslayout::showSynchronization()
-{
-    switch (currentTab)
-    {
-    case 0:
-        ProfileWidget->hide();
-        emit tabChanged(0);
-        SynchronizationWidget->show();
-        break;
-    case 1:
-        ProgramWidget->hide();
-        emit tabChanged(1);
-        SynchronizationWidget->show();
-        break;
-    case 2:
-        ReaderWidget->hide();
-        emit tabChanged(2);
-        SynchronizationWidget->show();
-        break;
-    case 3:
-        break;
-    default:
-        break;
-    }
-    currentTab = 3;
 }
 
 

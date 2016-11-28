@@ -8,31 +8,48 @@
 #include <QScrollArea>
 #include <QPushButton>
 #include <QMainWindow>
+#include <QListView>
+#include <QStandardItemModel>
+
+
 
 class librarylayout : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit librarylayout(QWidget *widget);
+    explicit librarylayout(QWidget *Parent=0);
+    ~librarylayout();
 
-    void addWidget(QWidget* widget);
-    void checkTheMouse(QMouseEvent *event, int height, int width, int resizingFrame);
+    void addItem(int BookIndex, QString name, QString title, QImage cover);
+    QVector <int> deleteItems();
+    void setSettingsData();
+
     void setStyle(QString libraryStyle[]);
-    void setWidget(QWidget *widget);
+    void changeViewMod();
+    void iconUpscale();
+    void iconDownscale();
+
+    void sortBy(int mode);
+    void groupBy(int mode);
+    void findItems(QString str, int mode);
+
+signals:
+    void showBookPage(int index);
+
+private slots:
+    void showSelectedItem(QModelIndex mIndex);
 
 private:
-    void setColumnsAndMargins();
+    QGridLayout *libraryGridLayout;
 
-    QGridLayout* libraryGridLayout;
-    int row;
-    int column;
-    int max_columns = 0;
-    int windowSize;
-    bool needReflow = false;
+    QListView *BookListView;
+    QStandardItemModel *BookModel;
 
-    QWidget *content;
-
+    int IconBarSize;
+    int IconListSize;
+    int ListSize;
+    int itemCount;
 };
 
 #endif // LIBRARYLAYOUT_H

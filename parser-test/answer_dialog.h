@@ -12,7 +12,8 @@ class AnswerDialog : public QDialog
 {
     Q_OBJECT
 public:
-    AnswerDialog(int pos_x, int pos_y, QString text);
+    AnswerDialog(int pos_x, int pos_y, QString text, QString Style);
+    ~AnswerDialog();
 
 private:
     QLabel *message;

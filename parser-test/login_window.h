@@ -26,12 +26,15 @@ private slots:
     void on_Registration_clicked();
     void backToMainPage();
 
+    void setStyle();
+
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
 
 private:
     QString styleSheets [8];
+    QString currentStyle;
 
     QRect prev_geometry;
 

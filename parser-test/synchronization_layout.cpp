@@ -4,8 +4,9 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
-synchronizationlayout::synchronizationlayout(QWidget *AreaLayout)
+synchronizationlayout::synchronizationlayout(QWidget *Parent)
 {
+    this->setParent(Parent);
     synchronizationGridLayout = new QGridLayout();
 
     QPushButton *synch = new QPushButton("synchronization");
@@ -13,4 +14,9 @@ synchronizationlayout::synchronizationlayout(QWidget *AreaLayout)
 
     synchronizationlayout::setLayout(synchronizationGridLayout);
     synchronizationlayout::hide();
+}
+
+synchronizationlayout::~synchronizationlayout()
+{
+    delete synchronizationGridLayout;
 }

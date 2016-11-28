@@ -34,10 +34,10 @@
      <number>2</number>
     </property>
     <property name="topMargin">
-     <number>5</number>
+     <number>0</number>
     </property>
     <property name="rightMargin">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="bottomMargin">
      <number>2</number>
@@ -48,13 +48,16 @@
     <item row="0" column="2">
      <layout class="QHBoxLayout" name="TopButtons">
       <property name="spacing">
-       <number>10</number>
+       <number>0</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetNoConstraint</enum>
       </property>
       <property name="rightMargin">
-       <number>10</number>
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
       </property>
       <item>
        <spacer name="topRightHorizontalSpacer">
@@ -73,14 +76,14 @@
        <widget class="QPushButton" name="min_button">
         <property name="minimumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="font">
@@ -123,14 +126,14 @@
        <widget class="QPushButton" name="full_size_button">
         <property name="minimumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="font">
@@ -173,14 +176,14 @@
        <widget class="QPushButton" name="exit_button">
         <property name="minimumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>25</width>
+          <height>25</height>
          </size>
         </property>
         <property name="sizeIncrement">

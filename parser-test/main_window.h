@@ -11,6 +11,10 @@
 #include <QFile>
 #include <library_layout.h>
 #include <books.h>
+#include "book_or_folder.h"
+#include "book_page.h"
+
+#include <synchronization.h>
 
 
 namespace Ui
@@ -30,6 +34,13 @@ private slots:
     void loadBookList();
     void saveBookList();
 
+    void AddBook();
+    void AddFolder();
+    void DeleteBook();
+    void DeleteFolder();
+
+    void showBookPage(int index);
+
     void settingsTabChanged(int tab);
 
     void on_exit_button_clicked();
@@ -45,29 +56,32 @@ private slots:
     void libraryButtonsShow();
     void settingsButtonsShow();
 
-    void openNewBooks(QStringList fileList);
-    QString FileTipe(QString fileName);
+    void openNewBooks(QString fileList, GenresMap *Gmap);
+    QString getFileTipe(QString fileName);
 
     void on_Library_clicked();
     void on_Settings_clicked();
     void on_Synchronization_clicked();
     void on_Logout_clicked();
-    void on__AddBook_clicked();
-    void on__AddFolder_clicked();
-
+    void on__AddBooks_clicked();
     void on__SettingsProfile_clicked();
-
     void on__SettingsProgram_clicked();
-
     void on__SettingsReader_clicked();
 
-    void on__SettingsSynchronization_clicked();
+    void setStyle();
+
+    void on__Delete_clicked();
+    void on__ChangeViewMode_clicked();
+    void on__Upscale_clicked();
+    void on__Downscale_clicked();
 
 private:
     int activeWindow = 1;
     QString styleSheets [9];
-    QString tabsStyleSheets [2];
+    QString tabsStyleSheets [4];
+    QString currentStyle;
 
+    int currentBookIndex;
 
     QRect prev_geometry;
     QPoint lastPoint;
@@ -82,11 +96,11 @@ private:
     int resizingFrame = 5;
 
     Ui::MainWindow *ui;
+    BookPage *page;
+    Synchronization *UserActions;
 
     QStringList filesMask;
-
     QVector <Book> bookList;
-
     QString resoursesFolderPath;
 };
 

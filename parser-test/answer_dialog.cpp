@@ -4,7 +4,7 @@
 #include <styles.h>
 
 
-AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text)
+AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
 {
     AnswerDialog::resize(300,90);
     AnswerDialog::move(pos_x, pos_y);
@@ -24,8 +24,8 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text)
     AnswerDialog::message->setFont(QFont("MS Shell Dlg 2", 12, QFont::Normal));
 
     //////////////////////////////////////////////////////////////
-    QString styles[8];
-    setAnswerDialogStyle (styles, "red");
+    QString styles[4];
+    setAnswerDialogStyle (styles, Style);
     AnswerDialog::setStyleSheet(styles[0]);
     AnswerDialog::yes->setStyleSheet(styles[1]);
     AnswerDialog::no->setStyleSheet(styles[2]);
@@ -46,4 +46,11 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text)
 
     setLayout(windowLayout);
 
+}
+
+AnswerDialog::~AnswerDialog()
+{
+    delete message;
+    delete yes;
+    delete no;
 }

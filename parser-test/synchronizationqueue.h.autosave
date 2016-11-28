@@ -1,0 +1,19 @@
+#ifndef SYNCHRONIZATIONQUEUE_H
+#define SYNCHRONIZATIONQUEUE_H
+
+/* Добавление книги - 1: файл, время
+ * Удаление книги - 2: файл
+ * Изменение прогресса - 3: индекс, значение
+ * Редактирование описания - 4: индекс, значение
+ * Изменение настроек - 5
+ * Добавление фона - 6
+ */
+
+class SynchronizationQueue
+{
+public:
+    SynchronizationQueue();
+};
+
+
+#endif // SYNCHRONIZATIONQUEUE_H

@@ -8,6 +8,28 @@
 
 #include <iostream>
 
+void LoginWindow::setStyle()
+{
+    setWindowTopButtonsStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
+
+    ui->min_button->setStyleSheet(LoginWindow::styleSheets[0]);
+    ui->full_size_button->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->exit_button->setStyleSheet(LoginWindow::styleSheets[2]);
+
+    setBackgroundWindowColor(LoginWindow::styleSheets, LoginWindow::currentStyle);
+
+    ui->MainWidget->setStyleSheet(LoginWindow::styleSheets[0]);
+
+    setLoginWindowStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
+
+    ui->login->setStyleSheet(LoginWindow::styleSheets[0]);
+    ui->Pass->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->Name->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->repeatPassword->setStyleSheet(LoginWindow::styleSheets[1]);
+    ui->Recovery->setStyleSheet(LoginWindow::styleSheets[2]);
+    ui->Registration->setStyleSheet(LoginWindow::styleSheets[3]);
+    ui->Remember->setStyleSheet(LoginWindow::styleSheets[4]);
+}
 
 LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::LoginWindow)
 {
@@ -20,34 +42,16 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::Logi
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     LoginWindow::setMouseTracking(true);
 
+    LoginWindow::currentStyle = "red";
 
-    /////////////////////////////////////////////////////////////////////////////////////
-    setWindowTopButtonsStyle(LoginWindow::styleSheets, "red");
-
-    ui->min_button->setStyleSheet(LoginWindow::styleSheets[0]);
-    ui->full_size_button->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->exit_button->setStyleSheet(LoginWindow::styleSheets[2]);
-
-    setBackgroundWindowColor(LoginWindow::styleSheets, "red");
-
-    ui->MainWidget->setStyleSheet(LoginWindow::styleSheets[0]);
-
-    setLoginWindowStyle(LoginWindow::styleSheets, "red");
-
-    ui->login->setStyleSheet(LoginWindow::styleSheets[0]);
-    ui->Pass->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->Name->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->repeatPassword->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->Recovery->setStyleSheet(LoginWindow::styleSheets[2]);
-    ui->Registration->setStyleSheet(LoginWindow::styleSheets[3]);
-    ui->Remember->setStyleSheet(LoginWindow::styleSheets[4]);
-    /////////////////////////////////////////////////////////////////////////////////////
+    LoginWindow::setStyle();
 
 }
 
 LoginWindow::~LoginWindow()
 {
     delete ui;
+    delete main_window;
 }
 
 void LoginWindow::backToMainPage()
@@ -72,7 +76,7 @@ void LoginWindow::backToMainPage()
 
 void LoginWindow::on_exit_button_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Exit?");
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Exit?", LoginWindow::currentStyle);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)

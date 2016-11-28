@@ -3,15 +3,19 @@
 #include "QDomDocument"
 #include <iostream>
 #include <QDataStream>
-
+#include <QImage>
+#include <QIcon>
+#include "genresmap.h"
 
 #include <qdebug.h>
 
 using namespace std;
 
-Book::Book(QString fileName)
+Book::Book(QString fileName, GenresMap *Gmap)
 {
     Book::File = fileName;
+
+    Book::BookProgress = 0;
 
     QFile bookFile(fileName);
     if (bookFile.open(QIODevice::ReadOnly))
@@ -52,7 +56,7 @@ Book::Book(QString fileName)
             //жанры
             QDomNodeList nodeList = doc.elementsByTagName("genre");
             for (int i = 0; i < nodeList.length(); ++i)
-                Book::Genres<<nodeList.item(i).toElement().text();
+                Book::Genres << Gmap->getGenreFromMap( nodeList.item(i).toElement().text() );
 
             //языки
             if (! titleInfo.namedItem("lang").isNull())
@@ -76,25 +80,60 @@ Book::Book(QString fileName)
                 Book::Series.second = titleInfo.namedItem("sequence").toElement().attribute("number", "").toInt();
             }
 
+
             //дата добавления
             Book::AddittionTime = QDateTime::currentDateTime();
+
+
+            //изображения
+            if (! titleInfo.namedItem("coverpage").isNull())
+            {
+                QString coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("l:href", "");
+                if (coverName.at(0) == '#')
+                    coverName = coverName.right(coverName.size() - coverName.indexOf('#') - 1);
+
+                nodeList = doc.elementsByTagName("binary");
+                for (int i = 0; i < nodeList.size(); i++)
+                {
+                    if (nodeList.at(i).toElement().attribute("id") == coverName)
+                    {
+                        CoverType = nodeList.at(i).toElement().attribute("content-type");
+
+                        Cover = nodeList.at(i).toElement().text();
+
+                        for (int i = 0; i < Cover.size(); i++)
+                            if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
+                            {
+                                Cover.replace(i, 2, " ");
+                                i++;
+                            }
+
+                        break;
+
+                    }
+                }
+            }
+            else
+                CoverType = "noImage";
+
         }
     }
 }
 
 void Book::writeToConsole()
 {
-    qDebug()<<Book::File  ;
-    qDebug()<<Book::Title  ;
-    qDebug()<<Book::AuthorFirstName  ;
-    qDebug()<<Book::AuthorMiddleName  ;
-    qDebug()<<Book::AuthorLastName  ;
-    qDebug()<<Book::Annotation  ;
-    qDebug()<<Book::SourceLanguage  ;
-    qDebug()<<Book::Language  ;
-    qDebug()<<Book::Genres  ;
-    qDebug()<<Book::Series  ;
-    qDebug()<<Book::AddittionTime  ;
+    qDebug()<<Book::File;
+    qDebug()<<Book::BookIndex;
+    qDebug()<<Book::Title;
+    qDebug()<<Book::AuthorFirstName;
+    qDebug()<<Book::AuthorMiddleName;
+    qDebug()<<Book::AuthorLastName;
+    qDebug()<<Book::Annotation;
+    qDebug()<<Book::SourceLanguage;
+    qDebug()<<Book::Language;
+    qDebug()<<Book::Genres;
+    qDebug()<<Book::Series;
+    qDebug()<<Book::AddittionTime;
 }
 
 QDataStream &operator <<(QDataStream &out, const Book &BookElem)
@@ -106,19 +145,19 @@ QDataStream &operator <<(QDataStream &out, const Book &BookElem)
     out<<BookElem.AuthorLastName;
     out<<BookElem.Series.first;
     out<<BookElem.Series.second;
-
     out<<BookElem.Genres;
     out<<BookElem.Annotation;
-
     out<<BookElem.Language;
     out<<BookElem.SourceLanguage;
     out<<BookElem.AddittionTime;
     out<<BookElem.BookProgress;
-    out<<BookElem.Image;
+    out<<BookElem.CoverType;
+    out<<BookElem.Cover;
+
     return out;
 }
 
-QDataStream &operator >>(QDataStream &in, Book &BookElem)
+QDataStream &operator >> (QDataStream &in, Book &BookElem)
 {
     in>>BookElem.File;
     in>>BookElem.Title;
@@ -127,19 +166,87 @@ QDataStream &operator >>(QDataStream &in, Book &BookElem)
     in>>BookElem.AuthorLastName;
     in>>BookElem.Series.first;
     in>>BookElem.Series.second;
-
     in>>BookElem.Genres;
     in>>BookElem.Annotation;
-
     in>>BookElem.Language;
     in>>BookElem.SourceLanguage;
     in>>BookElem.AddittionTime;
     in>>BookElem.BookProgress;
-    in>>BookElem.Image;
+    in>>BookElem.CoverType;
+    in>>BookElem.Cover;
 
     return in;
 }
 
+QString Book::getAuthorName()
+{
+        return AuthorFirstName + ' ' + AuthorLastName;
+}
 
+QString Book::getTitle()
+{
+    return Title;
+}
 
+QImage Book::getCover()
+{
+    QImage tempImage;
+    if (CoverType != "noImage")
+    {
+        QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
+        if (CoverType == "image/jpeg")
+            tempImage = QImage::fromData(BinaryCover, "JPEG");
+        if (CoverType == "image/jpg")
+            tempImage = QImage::fromData(BinaryCover, "JPG");
+        if (CoverType == "image/png")
+            tempImage = QImage::fromData(BinaryCover, "PNG");
+    }
+    else
+        tempImage = QImage(":/noImage/noImage.png");
+
+    if (tempImage.size().width() > 200)
+        tempImage = tempImage.scaledToWidth(200);
+    if (tempImage.size().height() > 300)
+        tempImage = tempImage.scaledToHeight(300);
+
+    return tempImage;
+}
+
+void Book::setBookIndex(int index)
+{
+    BookIndex = index;
+}
+
+int Book::getBookIndex()
+{
+    return BookIndex;
+}
+
+QStringList Book::getAnnotation()
+{
+    return Annotation;
+}
+
+QStringList Book::getGenres()
+{
+    return Genres;
+}
+
+QString Book::getLanguage()
+{
+    return Language;
+}
+
+int Book::getBookProgress()
+{
+    return BookProgress;
+}
+
+QString Book::getSeries()
+{
+    if (Series.second)
+        return Series.first + ' ' + QString::number(Series.second);
+    else
+        return Series.first;
+}

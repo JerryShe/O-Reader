@@ -22,7 +22,15 @@ SOURCES += main.cpp\
     styles.cpp \
     settings_layout.cpp \
     synchronization_layout.cpp \
-    books.cpp
+    books.cpp \
+    settings.cpp \
+    book_or_folder.cpp \
+    settings_programlayout.cpp \
+    settings_profilelayout.cpp \
+    settings_readerlayout.cpp \
+    book_page.cpp \
+    genresmap.cpp \
+    synchronization.cpp
 
 HEADERS  += \
     login_window.h \
@@ -32,10 +40,22 @@ HEADERS  += \
     styles.h \
     settings_layout.h \
     synchronization_layout.h \
-    books.h
+    books.h \
+    settings.h \
+    book_or_folder.h \
+    settings_programlayout.h \
+    settings_profilelayout.h \
+    settings_readerlayout.h \
+    book_page.h \
+    genresmap.h \
+    synchronization.h
 
 FORMS    += mainwindow.ui \
-            loginwindow.ui
+            loginwindow.ui \
+    settings_programlayout.ui \
+    settings_profilelayout.ui \
+    settings_readerlayout.ui \
+    book_page.ui
 
 RESOURCES += \
     checkbox.qrc \
