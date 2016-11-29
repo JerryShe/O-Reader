@@ -132,37 +132,51 @@ int Synchronization::synchronizeFromServer()
  */
 void Synchronization::addAction(int actionIndex, QString file, int bookIndex, QString dataChanges)
 {
-    if (actionIndex == 2)
+    switch (actionIndex)
+    {
+    case 1:
+        break;
+
+    case 2:
         for (int i = 0; i < SynchroQueue.size(); i++)
             if (SynchroQueue.at(i).actionIndex == 1 && file == SynchroQueue.at(i).file)
             {
                 SynchroQueue.removeAt(i);
                 return;
             }
+        break;
 
-    if (actionIndex == 3)
+    case 3:
         for (int i = 0; i < SynchroQueue.size(); i++)
             if (SynchroQueue.at(i).actionIndex == 3 && bookIndex == SynchroQueue.at(i).bookIndex)
             {
                 SynchroQueue.removeAt(i);
                 break;
             }
+        break;
 
-    if (actionIndex == 5)
+    case 4:
+        break;
+
+    case 5:
         for (int i = 0; i < SynchroQueue.size(); i++)
             if (SynchroQueue.at(i).actionIndex == 5)
             {
                 SynchroQueue.removeAt(i);
                 break;
             }
+        break;
 
-    if (actionIndex == 6)
+    case 6:
         for (int i = 0; i < SynchroQueue.size(); i++)
             if (SynchroQueue.at(i).actionIndex == 6)
             {
                 SynchroQueue.removeAt(i);
                 break;
             }
+        break;
+
+    }
 
     SynchroQueue.enqueue(action(actionIndex, file, bookIndex, dataChanges));
 }

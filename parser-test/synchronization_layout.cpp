@@ -14,6 +14,7 @@ synchronizationlayout::synchronizationlayout(QWidget *Parent)
 
     synchronizationlayout::setLayout(synchronizationGridLayout);
     synchronizationlayout::hide();
+
 }
 
 synchronizationlayout::~synchronizationlayout()

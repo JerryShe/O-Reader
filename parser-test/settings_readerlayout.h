@@ -15,6 +15,19 @@ public:
     explicit Settings_ReaderLayout(QWidget *parent = 0, QString style = "red");
     ~Settings_ReaderLayout();
 
+private slots:
+    void on_ExampleButton_clicked();
+
+    void on_OverallSettings_clicked();
+
+    void on_RegularSettings_clicked();
+
+    void on_TitleSettings_clicked();
+
+    void on_SubtitleSettings_clicked();
+
+    void on_NoteSettings_clicked();
+
 private:
     Ui::Settings_ReaderLayout *ui;
     QString Style;
