@@ -17,6 +17,9 @@ public:
     void showProfile();
     void showProgram();
     void showReader();
+    void setSettingsData(settings *Settings);
+
+    void hideWithoutSaving();
 
 signals:
     void tabChanged(int prevTab);
@@ -26,6 +29,7 @@ public slots:
 private:
 
     QHBoxLayout *settingsMainLayout;
+    settings * ProgramSettings;
 
     Settings_ProfileLayout *ProfileWidget;  //0
     Settings_ProgramLayout *ProgramWidget;  //2

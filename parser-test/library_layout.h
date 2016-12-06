@@ -18,7 +18,7 @@ class librarylayout : public QWidget
     Q_OBJECT
 
 public:
-    explicit librarylayout(QWidget *Parent=0);
+    librarylayout(QWidget *widget = 0);
     ~librarylayout();
 
     void addItem(int BookIndex, QString name, QString title, QImage cover);

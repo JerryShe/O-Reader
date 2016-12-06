@@ -4,7 +4,7 @@
 
 void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         windowButtonsStyle[0] = "#min_button{"
                                 "border-image: url(:/window_buttons/min.png);"
@@ -31,7 +31,7 @@ void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString styl
 
 void setBackgroundWindowColor(QString windowButtonsStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
         windowButtonsStyle[0] = "#MainWidget {background-color:rgb(150, 0, 60);}";
 }
 
@@ -39,7 +39,7 @@ void setBackgroundWindowColor(QString windowButtonsStyle [], const QString style
 ////////////////////////логин///////////////////////////////
 void setLoginWindowStyle (QString windowButtonsStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         windowButtonsStyle[0] = "#login{"
                                 "background-color:rgb(151, 151, 227);"
@@ -79,7 +79,7 @@ void setLoginWindowStyle (QString windowButtonsStyle [], const QString style)
 ///////////////////////////библиотека////////////////////////////////
 void setMenusButtonsStyle (QString menuButtonsStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         menuButtonsStyle[0] =  " #Library "
                                " {background-color: rgb(162, 0, 70); "
@@ -145,7 +145,7 @@ void setMenusButtonsStyle (QString menuButtonsStyle [], const QString style)
 
 void setTabButtonsStyle (QString tabButtonsStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         tabButtonsStyle[0] = "QPushButton "
                              "{background-color: rgb(162, 0, 70);"
@@ -189,7 +189,7 @@ void setTabButtonsStyle (QString tabButtonsStyle [], const QString style)
 
 void setAnswerDialogStyle (QString windowStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         windowStyle[0] = "AnswerDialog{background-color:rgb(130, 0, 55);}";
 
@@ -213,7 +213,7 @@ void setAnswerDialogStyle (QString windowStyle [], const QString style)
 
 void setBookOrFolderStyle (QString buttonStyle [], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         buttonStyle[0] = " QPushButton "
                          " {background-color: rgb(162, 0, 70); "
@@ -226,7 +226,7 @@ void setBookOrFolderStyle (QString buttonStyle [], const QString style)
 
 void setLibraryStyle (QString ListViewStyle[], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         ListViewStyle[0] = " QListView"
                            " {background-color:rgb(150, 0, 60);"
@@ -247,7 +247,7 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
 ////////////////////////////////////////////////////////////////////
 void setBookPageStyle(QString BookPageStyle[], const QString style)
 {
-    if (style == "red")
+    if (style == "Red")
     {
         BookPageStyle[0] =  "#BookPage"
                             "{background-color:rgb(162, 0, 70);"

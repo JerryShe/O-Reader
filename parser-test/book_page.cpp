@@ -3,6 +3,7 @@
 
 #include "styles.h"
 #include "books.h"
+#include "reading_window.h"
 
 void BookPage::setStyle(QString Style)
 {
@@ -31,6 +32,7 @@ BookPage::BookPage(Book book, QString Style, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BookPage)
 {
+    BookIndex = book.getBookIndex();
     ui->setupUi(this);
     setStyle(Style);
 
@@ -91,4 +93,10 @@ BookPage::~BookPage()
 void BookPage::on_exit_button_clicked()
 {
     close();
+}
+
+void BookPage::on_startReading_clicked()
+{
+    emit startReading(BookIndex);
+    this->close();
 }

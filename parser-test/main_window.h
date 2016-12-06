@@ -13,8 +13,12 @@
 #include <books.h>
 #include "book_or_folder.h"
 #include "book_page.h"
+#include "library_layout.h"
 
 #include <synchronization.h>
+#include <settings.h>
+
+#include <reading_window.h>
 
 
 namespace Ui
@@ -39,6 +43,7 @@ private slots:
     void DeleteBook();
     void DeleteFolder();
 
+    void startReading(int index);
     void showBookPage(int index);
 
     void settingsTabChanged(int tab);
@@ -95,13 +100,20 @@ private:
     int lastWindowWidth;
     int resizingFrame = 5;
 
-    Ui::MainWindow *ui;
-    BookPage *page;
+    Ui::MainWindow * ui;
+    BookPage * page;
+    ReadingWindow * readingWindow;
+
+    librarylayout * LibraryLayout;
     Synchronization *UserActions;
+    settings *ProgramSettings;
 
     QStringList filesMask;
     QVector <Book> bookList;
     QString resoursesFolderPath;
+
+    QThread * HandlerThread;
+
 };
 
 

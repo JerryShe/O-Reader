@@ -10,9 +10,8 @@
 #include <QMessageBox>
 #include <QDebug>
 
-librarylayout::librarylayout(QWidget *Parent)
+librarylayout::librarylayout(QWidget *widget)
 {
-    this->setParent(Parent);
     libraryGridLayout = new QGridLayout(this);
 
     BookListView = new QListView();
@@ -37,10 +36,8 @@ librarylayout::librarylayout(QWidget *Parent)
     BookListView->setDragDropMode(QAbstractItemView::NoDragDrop);
 
     QString ListViewStyle[1];
-    setLibraryStyle (ListViewStyle, "red");
+    setLibraryStyle (ListViewStyle, "Red");
     BookListView->setStyleSheet(ListViewStyle[0]);
-
-
 
     connect(BookListView, SIGNAL(doubleClicked(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
 

@@ -180,19 +180,3 @@ void Synchronization::addAction(int actionIndex, QString file, int bookIndex, QS
 
     SynchroQueue.enqueue(action(actionIndex, file, bookIndex, dataChanges));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

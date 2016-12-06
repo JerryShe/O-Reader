@@ -1016,8 +1016,7 @@ outline: red solid 8px;
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">
-</string>
+             <string notr="true"/>
             </property>
             <property name="insertPolicy">
              <enum>QComboBox::InsertAtTop</enum>
@@ -1302,25 +1301,6 @@ outline: red solid 8px;
        </layout>
       </item>
       <item>
-       <widget class="librarylayout" name="LibraryLayout" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="settingslayout" name="SettingsLayout" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1334,7 +1314,6 @@ outline: red solid 8px;
           <height>100</height>
          </size>
         </property>
-        <zorder>LibraryLayout</zorder>
        </widget>
       </item>
       <item>
@@ -1360,12 +1339,6 @@ outline: red solid 8px;
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
-  <customwidget>
-   <class>librarylayout</class>
-   <extends>QWidget</extends>
-   <header>library_layout.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>settingslayout</class>
    <extends>QWidget</extends>

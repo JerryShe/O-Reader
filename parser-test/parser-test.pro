@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     settings_readerlayout.cpp \
     book_page.cpp \
     genresmap.cpp \
-    synchronization.cpp
+    synchronization.cpp \
+    reading_window.cpp
 
 HEADERS  += \
     login_window.h \
@@ -48,14 +49,16 @@ HEADERS  += \
     settings_readerlayout.h \
     book_page.h \
     genresmap.h \
-    synchronization.h
+    synchronization.h \
+    reading_window.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \
     settings_programlayout.ui \
     settings_profilelayout.ui \
     settings_readerlayout.ui \
-    book_page.ui
+    book_page.ui \
+    readingwindow.ui
 
 RESOURCES += \
     checkbox.qrc \

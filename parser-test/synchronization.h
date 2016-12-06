@@ -3,9 +3,10 @@
 #include <QQueue>
 #include <QDateTime>
 #include <QDataStream>
+#include <QObject>
 
 
-class Synchronization
+class Synchronization : public QObject
 {
 public:
     Synchronization();
@@ -25,10 +26,11 @@ private:
      * Изменение настроек - 5
      * Добавление фона - 6
      */
+
     struct action
     {
         QDateTime actionTime;
-        int actionIndex;
+        short actionIndex;
         QString file;
         int bookIndex;
         QString dataChanges;
@@ -41,11 +43,9 @@ private:
     QQueue <action> SynchroQueue;
 
 public:
-
     friend QDataStream &operator>>(QDataStream &in, action &actionElem);
     friend QDataStream &operator<<(QDataStream &out, const action &actionElem);
 
 };
-
 
 #endif // SYNCHRONIZATION_H

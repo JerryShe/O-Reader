@@ -12,10 +12,9 @@
 settingslayout::settingslayout(QWidget *Parent)
 {
     this->setParent(Parent);
-    Style = "red";
-    ProgramWidget = new Settings_ProgramLayout(this,Style);
-    ReaderWidget = new Settings_ReaderLayout(this,Style);
-    ProfileWidget = new Settings_ProfileLayout(this,Style);
+    ProgramWidget = new Settings_ProgramLayout(this);
+    ReaderWidget = new Settings_ReaderLayout(this);
+    ProfileWidget = new Settings_ProfileLayout(this);
 
     settingsMainLayout = new QHBoxLayout();
 
@@ -32,12 +31,21 @@ settingslayout::settingslayout(QWidget *Parent)
     ReaderWidget->hide();
 }
 
+void settingslayout::setSettingsData(settings *Settings)
+{
+    ProgramSettings = Settings;
+    ReaderWidget->setSettingsData(Settings);
+    ProgramWidget->setSettingsData(Settings);
+    ProfileWidget->setSettingsData(Settings);
+}
+
 settingslayout::~settingslayout()
 {
     delete settingsMainLayout;
     delete ProfileWidget;
     delete ProgramWidget;
     delete ReaderWidget;
+    delete ProgramSettings;
 }
 
 void settingslayout::showProfile()
@@ -106,4 +114,8 @@ void settingslayout::showReader()
     currentTab = 2;
 }
 
-
+void settingslayout::hideWithoutSaving()
+{
+    hide();
+    ProgramSettings->loadSettings();
+}

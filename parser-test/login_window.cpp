@@ -2,11 +2,11 @@
 #include "login_window.h"
 #include "ui_loginwindow.h"
 #include "answer_dialog.h"
+#include "settings.h"
+
 #include <QMouseEvent>
 #include <QString>
 
-
-#include <iostream>
 
 void LoginWindow::setStyle()
 {
@@ -42,10 +42,20 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::Logi
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     LoginWindow::setMouseTracking(true);
 
-    LoginWindow::currentStyle = "red";
+    QFile SettingsFile("LibraryResources/Settings.conf");
+
+    if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QDataStream in(&SettingsFile);
+        in>>currentStyle;
+        //in>>Language;
+    }
+    else
+    {
+        currentStyle = "Red";
+    }
 
     LoginWindow::setStyle();
-
 }
 
 LoginWindow::~LoginWindow()
@@ -70,9 +80,6 @@ void LoginWindow::backToMainPage()
     ui->Recovery->show();
     ui->login->setText("Log in");
 }
-
-
-
 
 void LoginWindow::on_exit_button_clicked()
 {
@@ -252,6 +259,3 @@ void LoginWindow::mouseReleaseEvent(QMouseEvent *e)
             LoginWindow::moving = false;
     }
 }
-
-
-

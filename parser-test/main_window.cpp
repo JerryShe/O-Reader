@@ -20,6 +20,10 @@
 
 #include <QDebug>
 #include <synchronization.h>
+#include <settings.h>
+#include <library_layout.h>
+
+#include <QThread>
 
 void MainWindow::libraryButtonsHide()
 {
@@ -78,43 +82,52 @@ void MainWindow::setStyle()
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    MainWindow::prev_geometry = MainWindow::geometry();
+    currentBookIndex = 0;
     MainWindow::filesMask<<"*.fb2"<<"*.zip";
+    MainWindow::prev_geometry = MainWindow::geometry();
+    LibraryLayout = new librarylayout();
 
     ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
     MainWindow::setMouseTracking(true);
 
     MainWindow::settingsButtonsHide();
 
-    currentBookIndex = 0;
-
     ui->_SortBox->setView(new QListView());
     ui->_GroupBox->setView(new QListView());
 
     connect(ui->SettingsLayout, SIGNAL(tabChanged(int)), this, SLOT(settingsTabChanged(int)));
-    connect(ui->LibraryLayout, SIGNAL(showBookPage(int)), this, SLOT(showBookPage(int)));
+    connect(LibraryLayout, SIGNAL(showBookPage(int)), this, SLOT(showBookPage(int)));
 
-    MainWindow::currentStyle = "red";
-    MainWindow::setStyle();
-
-    //начало работы с файлами ресурсов библиотеки
     resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
-    {
         QDir().mkdir(resoursesFolderPath);
-    }
 
-    loadBookList();
+    HandlerThread = new QThread(this);
+    connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
 
     UserActions = new Synchronization();
+    ProgramSettings = new settings();
+
+    ProgramSettings->moveToThread(HandlerThread);
+    UserActions->moveToThread(HandlerThread);
+
+    ui->TabsLayout->addWidget(LibraryLayout, 0);
+
+    HandlerThread->start();
+    ProgramSettings->loadSettings();
+    currentStyle = ProgramSettings->getInterfaceStyle();
+    MainWindow::setStyle();
+    ui->SettingsLayout->setSettingsData(ProgramSettings);
+    loadBookList();
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete page;
+    delete LibraryLayout;
 }
-
 
 void MainWindow::loadBookList()
 {
@@ -136,7 +149,7 @@ void MainWindow::loadBookList()
         in>>temp;
         temp.setBookIndex(currentBookIndex++);
         bookList.push_back(temp);
-        ui->LibraryLayout->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
+        LibraryLayout->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
     }
     bookFileList.close();
 }
@@ -202,7 +215,7 @@ void MainWindow::openNewBooks(QString file, GenresMap *Gmap)
         bookList.push_back(boo);
 
         UserActions->addAction(1, file, -1, "");
-        ui->LibraryLayout->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
+        LibraryLayout->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
 
     }
     if (tipe == "zip")
@@ -219,8 +232,21 @@ void MainWindow::showBookPage(int index)
             break;
 
     page = new BookPage(bookList[i], currentStyle, this);
+    connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
 }
 
+void MainWindow::startReading(int BookIndex)
+{
+    int i;
+    for (i = 0; i < bookList.size(); i++)
+        if (bookList[i].getBookIndex() == BookIndex)
+            break;
+
+    readingWindow = new ReadingWindow(ProgramSettings, bookList.at(i).File);
+    readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
+    readingWindow->show();
+    this->hide();
+}
 
 void MainWindow::on_exit_button_clicked()
 {
@@ -315,7 +341,7 @@ void MainWindow::on_Library_clicked()
         {
             case 2:
                 ui->Settings->setStyleSheet(styleSheets[1]);
-                ui->SettingsLayout->hide();
+                ui->SettingsLayout->hideWithoutSaving();
                 MainWindow::settingsButtonsHide();
                 break;
             case 3:
@@ -326,7 +352,7 @@ void MainWindow::on_Library_clicked()
         }
         MainWindow::activeWindow = 1;
 
-        ui->LibraryLayout->show();
+        LibraryLayout->show();
         MainWindow::libraryButtonsShow();
         ui->Library->setStyleSheet(styleSheets[4]);
     }
@@ -341,7 +367,7 @@ void MainWindow::on_Settings_clicked()
         {
             case 1:
                 ui->Library->setStyleSheet(styleSheets[0]);
-                ui->LibraryLayout->hide();
+                LibraryLayout->hide();
                 MainWindow::libraryButtonsHide();
                 break;
             case 3:
@@ -367,12 +393,12 @@ void MainWindow::on_Synchronization_clicked()
         {
             case 1:
                 ui->Library->setStyleSheet(styleSheets[0]);
-                ui->LibraryLayout->hide();
+                LibraryLayout->hide();
                 MainWindow::libraryButtonsHide();
                 break;
             case 2:
                 ui->Settings->setStyleSheet(styleSheets[1]);
-                ui->SettingsLayout->hide();
+                ui->SettingsLayout->hideWithoutSaving();
                 MainWindow::settingsButtonsHide();
                 break;
             default: break;
@@ -465,14 +491,14 @@ void MainWindow::AddFolder()
 
 void MainWindow::DeleteBook()
 {
-    QVector <int> deletedItemsIndexes = ui->LibraryLayout->deleteItems();
+    QVector <int> deletedItemsIndexes = LibraryLayout->deleteItems();
     for (int i = 0; i < deletedItemsIndexes.size(); i++)
     {
         for (int j = 0; j < bookList.size(); j++)
         {
             if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
             {
-                UserActions->addAction(2, bookList.at(i).File, -1, "");
+                UserActions->addAction(2, bookList.at(j).File, -1, "");
                 bookList.remove(j);                
                 break;
             }
@@ -525,20 +551,17 @@ void MainWindow::on__SettingsReader_clicked()
     ui->_SettingsReader->setStyleSheet(tabsStyleSheets[1]);
 }
 
-
-
-
 void MainWindow::on__ChangeViewMode_clicked()
 {
-    ui->LibraryLayout->changeViewMod();
+    LibraryLayout->changeViewMod();
 }
 
 void MainWindow::on__Upscale_clicked()
 {
-    ui->LibraryLayout->iconUpscale();
+    LibraryLayout->iconUpscale();
 }
 
 void MainWindow::on__Downscale_clicked()
 {
-    ui->LibraryLayout->iconDownscale();
+    LibraryLayout->iconDownscale();
 }

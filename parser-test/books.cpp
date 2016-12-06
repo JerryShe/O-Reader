@@ -27,12 +27,11 @@ Book::Book(QString fileName, GenresMap *Gmap)
 
             if (doc.namedItem("FictionBook").nodeName().isNull())
             {
-                ///выдать эксепшн - это не фанкшн бук
+                ///выдать эксепшн - это не фикшн бук
             }
 
             //файл книги
             Book::File = fileName;
-
 
             QDomNode titleInfo = doc.elementsByTagName("title-info").item(0);
             if (titleInfo.isNull())

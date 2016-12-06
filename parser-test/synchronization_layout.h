@@ -11,10 +11,6 @@ public:
     explicit synchronizationlayout(QWidget *Parent=0);
     ~synchronizationlayout();
 
-signals:
-
-public slots:
-
 private:
     QGridLayout *synchronizationGridLayout;
 };
