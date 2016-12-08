@@ -19,16 +19,18 @@ public:
 
 private slots:
     void on_exit_button_clicked();
-
     void on_startReading_clicked();
+    void on_deleteBook_clicked();
 
 signals:
     void startReading(int index);
+    void deleteBook(int index);
 
 private:
     void setStyle(QString Style);
     Ui::BookPage *ui;
     int BookIndex;
+    QString style;
 };
 
 #endif // BOOK_PAGE_H

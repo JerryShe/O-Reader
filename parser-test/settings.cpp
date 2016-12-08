@@ -66,6 +66,7 @@ void settings::loadSettings()
 
 QDataStream &operator<<(QDataStream &out, const settings &SettingsElem)
 {
+    out<<SettingsElem.LoginToken;
     out<<SettingsElem.InterfaceStyle;
     out<<SettingsElem.Language;
     out<<SettingsElem.LibraryReprezentation;
@@ -82,6 +83,7 @@ QDataStream &operator<<(QDataStream &out, const settings &SettingsElem)
 
 QDataStream &operator>>(QDataStream &in, settings &SettingsElem)
 {
+    in>>SettingsElem.LoginToken;
     in>>SettingsElem.InterfaceStyle;
     in>>SettingsElem.Language;
     in>>SettingsElem.LibraryReprezentation;
@@ -246,6 +248,16 @@ void settings::setCurrentTextStyle(const QString style)
 QStringList settings::getTextStylesList()
 {
     return TextStylesNames;
+}
+
+void settings::setToken(QString token)
+{
+    LoginToken = token;
+}
+
+QString settings::getToken()
+{
+    return LoginToken;
 }
 
 ReadingStyle settings::getNamedStyle(const QString name)

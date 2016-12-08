@@ -16,13 +16,14 @@ public:
     explicit Settings_ProfileLayout(QWidget *parent = 0);
     ~Settings_ProfileLayout();    
     void setSettingsData(settings *Settings);
+    void setLayoutStyle();
 
 private slots:
     void on_ChangePasswordButton_clicked();
 
 private:
     Ui::Settings_ProfileLayout *ui;
-    QString Style;
+    settings *ProgramSettings;
 };
 
 #endif // SETTINGS_PROFILELAYOUT_H

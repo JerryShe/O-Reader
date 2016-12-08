@@ -20,17 +20,10 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#Settings_ReaderLayout
-{background-color:rgb(150, 0, 60);
-color:white;}
-
-line 
-{
-background-color:red;
-}</string>
+   <string notr="true"/>
   </property>
   <property name="frameShape">
-   <enum>QFrame::StyledPanel</enum>
+   <enum>QFrame::NoFrame</enum>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
@@ -67,7 +60,7 @@ background-color:red;
      </property>
      <property name="maximumSize">
       <size>
-       <width>620</width>
+       <width>630</width>
        <height>16777215</height>
       </size>
      </property>
@@ -91,7 +84,7 @@ background-color:red;
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>603</width>
+        <width>613</width>
         <height>2084</height>
        </rect>
       </property>
@@ -111,21 +104,7 @@ background-color:red;
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="styleSheet">
-       <string notr="true">#ReaderSettingsContent
-{background-color:rgb(150, 0, 60);
-color:white;}
-
-QPushButton
-{background-color:rgb(170, 0, 75);
-border:none;
-color:white;}
-
-QPushButton:hover
-{background-color:rgb(180,0,80);}
-
-Line
-{color:red;
-background-color:red;}</string>
+       <string notr="true"/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
@@ -178,6 +157,9 @@ background-color:red;}</string>
            <height>50</height>
           </size>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <layout class="QFormLayout" name="formLayout_2">
           <item row="0" column="0">
            <widget class="QLabel" name="BackgroundType">
@@ -222,7 +204,7 @@ background-color:red;}</string>
            <widget class="Line" name="line">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>
@@ -306,7 +288,7 @@ background-color:red;}</string>
            <widget class="Line" name="line_62">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>
@@ -373,7 +355,7 @@ background-color:red;}</string>
            <widget class="Line" name="line_61">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>
@@ -425,7 +407,7 @@ background-color:red;}</string>
            <widget class="Line" name="line_3">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>
@@ -965,7 +947,7 @@ background-color:red;}</string>
            <widget class="Line" name="line_4">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>
@@ -1502,7 +1484,7 @@ background-color:red;}</string>
            <widget class="Line" name="line_5">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>
@@ -2039,7 +2021,7 @@ background-color:red;}</string>
            <widget class="Line" name="line_6">
             <property name="maximumSize">
              <size>
-              <width>560</width>
+              <width>550</width>
               <height>10</height>
              </size>
             </property>

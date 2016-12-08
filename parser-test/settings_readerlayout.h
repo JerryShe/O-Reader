@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <settings.h>
+#include <answer_dialog.h>
 
 namespace Ui {
 class Settings_ReaderLayout;
@@ -41,11 +42,14 @@ private slots:
     void on_EmphasizedColorBox_clicked();
     void on_EmphasizedSettings_clicked();
 
+    void setLayoutStyle();
+
 signals:
     void settingsChanged();
 
 private:
     Ui::Settings_ReaderLayout *ui;
+    AnswerDialog * StyleDeleteConfirm;
 
     settings * ProgramSettings;
     QString currentTextStyle;

@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     book_page.cpp \
     genresmap.cpp \
     synchronization.cpp \
-    reading_window.cpp
+    reading_window.cpp \
+    search_window.cpp
 
 HEADERS  += \
     login_window.h \
@@ -50,7 +51,8 @@ HEADERS  += \
     book_page.h \
     genresmap.h \
     synchronization.h \
-    reading_window.h
+    reading_window.h \
+    search_window.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \
@@ -61,7 +63,6 @@ FORMS    += mainwindow.ui \
     readingwindow.ui
 
 RESOURCES += \
-    checkbox.qrc \
     images.qrc
 
 

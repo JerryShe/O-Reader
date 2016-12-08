@@ -71,6 +71,9 @@ public:
     QStringList getTextStylesList();
     void saveStyle(const QString name, const ReadingStyle style);
 
+    void setToken(QString token);
+    QString getToken();
+
     void removeNamedStyle(QString name);
 
     ReadingStyle getNamedStyle(const QString name);
@@ -83,6 +86,7 @@ signals:
 
 private:
 
+    QString LoginToken;
     QString InterfaceStyle;
     QString Language;
     bool LibraryReprezentation;

@@ -1,10 +1,7 @@
 #include "settings_layout.h"
 
-#include "settings_programlayout.h"
-
 #include <QGridLayout>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QPushButton>
 
 

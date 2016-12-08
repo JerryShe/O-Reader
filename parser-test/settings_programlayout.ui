@@ -20,22 +20,30 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#Settings_ProgramLayout
-{background-color:rgb(150, 0, 60);
-color:white;}
-
-line 
-{
-background-color:red;
-}</string>
+   <string notr="true"/>
   </property>
   <property name="frameShape">
-   <enum>QFrame::StyledPanel</enum>
+   <enum>QFrame::NoFrame</enum>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>20</number>
+   </property>
+   <property name="bottomMargin">
+    <number>20</number>
+   </property>
+   <property name="horizontalSpacing">
+    <number>10</number>
+   </property>
    <item row="7" column="3">
     <widget class="QPushButton" name="SaveButton">
      <property name="sizePolicy">
@@ -70,7 +78,7 @@ background-color:red;
     <widget class="Line" name="line_63">
      <property name="maximumSize">
       <size>
-       <width>450</width>
+       <width>460</width>
        <height>10</height>
       </size>
      </property>
@@ -78,6 +86,19 @@ background-color:red;
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
+   </item>
+   <item row="6" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item row="0" column="1">
     <spacer name="horizontalSpacer">
@@ -96,7 +117,7 @@ background-color:red;
     <widget class="Line" name="line_62">
      <property name="maximumSize">
       <size>
-       <width>450</width>
+       <width>460</width>
        <height>10</height>
       </size>
      </property>
@@ -220,19 +241,6 @@ background-color:red;
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-   </item>
-   <item row="6" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

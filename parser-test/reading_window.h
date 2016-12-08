@@ -17,7 +17,7 @@ class ReadingWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ReadingWindow(settings * PSettings, QString file);
+    explicit ReadingWindow(settings * PSettings, Book book);
     ~ReadingWindow();
 
 private slots:
@@ -25,6 +25,12 @@ private slots:
     void on_full_size_button_clicked();
     void on_exit_button_clicked();
     void on_MenuButton_clicked();
+    void ContentsButton_clicked();
+    void FindButton_Clicked();
+    void SettingsButton_Clicked();
+    void SynchronizationButton_Clicked();
+    void BackToMainWindowButton_Clicked();
+
     void setStyle(QString currentStyle);
 
     void mouseMoveEvent(QMouseEvent *e);
@@ -32,6 +38,9 @@ private slots:
     void mouseReleaseEvent(QMouseEvent *e);
 
     void clockStep();
+
+signals:
+    void showMainWindow();
 
 private:
     QRect prev_geometry;
@@ -44,7 +53,6 @@ private:
     Ui::ReadingWindow *ui;
     QThread * HandlerThread;
     settings * ProgramSettings;
-
 
     QWidget * MenuWidget;
     QVBoxLayout * MenuLayout;

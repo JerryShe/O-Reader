@@ -6,6 +6,9 @@
 #include "book_or_folder.h"
 #include "book_page.h"
 #include "genresmap.h"
+#include "synchronization.h"
+#include "settings.h"
+#include "library_layout.h"
 
 #include <qxmlstream.h>
 #include <QtXml/qdom.h>
@@ -19,9 +22,8 @@
 #include <QListWidget>
 
 #include <QDebug>
-#include <synchronization.h>
-#include <settings.h>
-#include <library_layout.h>
+
+
 
 #include <QThread>
 
@@ -58,7 +60,7 @@ void MainWindow::setStyle()
     ui->MainWidget->setStyleSheet(styleSheets[0]);
 
     setTabButtonsStyle(tabsStyleSheets, MainWindow::currentStyle);
-    ui->_Find->setStyleSheet(tabsStyleSheets[0]);
+    ui->_Find->setStyleSheet(tabsStyleSheets[4]);
     ui->_AddBooks->setStyleSheet(tabsStyleSheets[0]);
     ui->_Delete->setStyleSheet(tabsStyleSheets[0]);
     ui->_Group->setStyleSheet(tabsStyleSheets[2]);
@@ -76,8 +78,6 @@ void MainWindow::setStyle()
     ui->Library->setStyleSheet(styleSheets[4]);
     ui->LeftExpandingWidget->setStyleSheet(styleSheets[8]);
 }
-
-
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -233,6 +233,7 @@ void MainWindow::showBookPage(int index)
 
     page = new BookPage(bookList[i], currentStyle, this);
     connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
+    connect(page, SIGNAL(deleteBook(int)), this, SLOT(deleteBook(int)));
 }
 
 void MainWindow::startReading(int BookIndex)
@@ -242,28 +243,50 @@ void MainWindow::startReading(int BookIndex)
         if (bookList[i].getBookIndex() == BookIndex)
             break;
 
-    readingWindow = new ReadingWindow(ProgramSettings, bookList.at(i).File);
+    readingWindow = new ReadingWindow(ProgramSettings, bookList.at(i));
     readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
+    connect(readingWindow, SIGNAL(showMainWindow()), this, SLOT(showWindow()));
     readingWindow->show();
     this->hide();
 }
 
+void MainWindow::deleteBook(int index)
+{
+    LibraryLayout->deleteBook(index);
+    for (int i = 0; i < bookList.size(); i++)
+        if (bookList[i].getBookIndex() == index)
+        {
+            UserActions->addAction(2, bookList.at(i).File, -1, "");
+            bookList.remove(i);
+            break;
+        }
+}
+
+void MainWindow::showWindow()
+{
+    this->show();
+}
+
 void MainWindow::on_exit_button_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x()-280,ui->exit_button->mapToGlobal(QPoint(0,0)).y()+20,"Exit?", MainWindow::currentStyle);
+    ui->_Find->setChecked(false);
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x() - 300 + ui->exit_button->width(),
+                                                   ui->exit_button->mapToGlobal(QPoint(0,0)).y() + ui->exit_button->height(),"Exit?",
+                                                   MainWindow::currentStyle);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
+        delete answer_window;
         exit(0);
     }
     else
         delete answer_window;
 }
 
-
 void MainWindow::on_full_size_button_clicked()
 {
+    ui->_Find->setChecked(false);
     if( MainWindow::isMaximized())
     {
         MainWindow::normalGeometry() = MainWindow::prev_geometry;
@@ -276,9 +299,9 @@ void MainWindow::on_full_size_button_clicked()
     }
 }
 
-
 void MainWindow::on_min_button_clicked()
 {
+    ui->_Find->setChecked(false);
     if( MainWindow::isMinimized())
     {
         MainWindow::normalGeometry() = MainWindow::prev_geometry;
@@ -290,7 +313,6 @@ void MainWindow::on_min_button_clicked()
         MainWindow::showMinimized();
     }
 }
-
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
@@ -309,7 +331,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
-
 void MainWindow::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
@@ -322,7 +343,6 @@ void MainWindow::mousePressEvent(QMouseEvent *e)
     }
 }
 
-
 void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton)
@@ -332,9 +352,9 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
     }
 }
 
-
 void MainWindow::on_Library_clicked()
 {
+    ui->_Find->setChecked(false);
     if (MainWindow::activeWindow != 1)
     {
         switch (MainWindow::activeWindow)
@@ -358,9 +378,9 @@ void MainWindow::on_Library_clicked()
     }
 }
 
-
 void MainWindow::on_Settings_clicked()
 {
+    ui->_Find->setChecked(false);
     if (MainWindow::activeWindow != 2)
     {
         switch (MainWindow::activeWindow)
@@ -384,9 +404,9 @@ void MainWindow::on_Settings_clicked()
     }
 }
 
-
 void MainWindow::on_Synchronization_clicked()
 {
+    ui->_Find->setChecked(false);
     if (MainWindow::activeWindow != 3)
     {
         switch (MainWindow::activeWindow)
@@ -405,34 +425,41 @@ void MainWindow::on_Synchronization_clicked()
         }
         MainWindow::activeWindow = 3;
 
-        ui->SynchronizationLayout->show();        
+        ui->SynchronizationLayout->show();
         ui->Synchronization->setStyleSheet(styleSheets[6]);
     }
 }
 
-
 void MainWindow::on_Logout_clicked()
 {
+    ui->_Find->setChecked(false);
     if (MainWindow::activeWindow != 4)
         ui->Logout->setStyleSheet(styleSheets[7]);
 
-    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Logout?", MainWindow::currentStyle);
+    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),
+                                                   ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Logout?",
+                                                   MainWindow::currentStyle);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
         ui->Logout->setStyleSheet(styleSheets[3]);
         QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
+        delete answer_window;
         MainWindow::close();
     }
+    else
+        delete answer_window;
     ui->Logout->setStyleSheet(styleSheets[3]);
-    delete answer_window;
 }
 
 
 void MainWindow::on__AddBooks_clicked()
 {
-    BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_AddBooks->mapToGlobal(QPoint(0,0)).x(), ui->_AddBooks->mapToGlobal(QPoint(0,0)).y() + 30, ui->_AddBooks->size().width(), true, MainWindow::currentStyle);
+    ui->_Find->setChecked(false);
+    BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_AddBooks->mapToGlobal(QPoint(0,0)).x(),
+                                                      ui->_AddBooks->mapToGlobal(QPoint(0,0)).y() + ui->_AddBooks->height(),
+                                                      ui->_AddBooks->size().width(), true, MainWindow::currentStyle);
     connect(bookOrFolderAnsw, SIGNAL(AddBookSignal()), this, SLOT(AddBook()));
     connect(bookOrFolderAnsw, SIGNAL(AddFolderSignal()), this, SLOT(AddFolder()));
 }
@@ -440,9 +467,35 @@ void MainWindow::on__AddBooks_clicked()
 
 void MainWindow::on__Delete_clicked()
 {
-    BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_Delete->mapToGlobal(QPoint(0,0)).x(), ui->_Delete->mapToGlobal(QPoint(0,0)).y() + 30, ui->_AddBooks->size().width(), false, MainWindow::currentStyle);
-    connect(bookOrFolderAnsw, SIGNAL(DeleteBookSignal()), this, SLOT(DeleteBook()));
-    connect(bookOrFolderAnsw, SIGNAL(DeleteFolderSignal()), this, SLOT(DeleteFolder()));
+    ui->_Find->setChecked(false);
+    if (LibraryLayout->getSelectedItemsCount() != 0)
+    {
+        AnswerDialog *answer_window = new AnswerDialog(ui->_Delete->mapToGlobal(QPoint(0,0)).x() - 300 + ui->_Delete->width(),
+                                                       ui->_Delete->mapToGlobal(QPoint(0,0)).y() + ui->_Delete->height(), "Delete books?",
+                                                       MainWindow::currentStyle);
+        answer_window->show();
+
+        if (answer_window->exec() == QDialog::Accepted)
+        {
+            QVector <int> deletedItemsIndexes = LibraryLayout->deleteItems();
+            for (int i = 0; i < deletedItemsIndexes.size(); i++)
+            {
+                for (int j = 0; j < bookList.size(); j++)
+                {
+                    if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
+                    {
+                        UserActions->addAction(2, bookList.at(j).File, -1, "");
+                        bookList.remove(j);
+                        break;
+                    }
+                }
+            }
+            if (deletedItemsIndexes.size())
+                saveBookList();
+        }
+        else
+            delete answer_window;
+    }
 }
 
 
@@ -487,33 +540,6 @@ void MainWindow::AddFolder()
     saveBookList();
     delete Gmap;
 }
-
-
-void MainWindow::DeleteBook()
-{
-    QVector <int> deletedItemsIndexes = LibraryLayout->deleteItems();
-    for (int i = 0; i < deletedItemsIndexes.size(); i++)
-    {
-        for (int j = 0; j < bookList.size(); j++)
-        {
-            if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
-            {
-                UserActions->addAction(2, bookList.at(j).File, -1, "");
-                bookList.remove(j);                
-                break;
-            }
-        }
-    }
-    if (deletedItemsIndexes.size())
-        saveBookList();
-
-    MainWindow::setFocus();
-}
-
-void MainWindow::DeleteFolder()
-{
-}
-
 
 void MainWindow::settingsTabChanged(int tab)
 {
@@ -564,4 +590,44 @@ void MainWindow::on__Upscale_clicked()
 void MainWindow::on__Downscale_clicked()
 {
     LibraryLayout->iconDownscale();
+}
+
+void MainWindow::findBooks(QString token, QString type)
+{
+    if (token != "")
+    {
+
+    }
+    else
+    {
+        return;
+    }
+}
+
+void MainWindow::returnButton()
+{
+    ui->_Find->setChecked(false);
+}
+
+void MainWindow::on__Find_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        searchWindow = new SearchWindow(ui->_Find->x(),
+                                        ui->_Find->y() + ui->_Find->height(),
+                                        ProgramSettings->getInterfaceStyle(), false, this);
+        //            _____   ___
+        //  \  /\  /    |     |__
+        //   \/  \/     |     |
+        // MEGA BUG, Wiiiiii
+
+
+
+        connect(searchWindow, SIGNAL(startSearch(QString,QString)), this, SLOT(findBooks(QString, QString)));
+        connect(searchWindow, SIGNAL(finished(int)), this, SLOT(returnButton()));
+    }
+    else
+    {
+        searchWindow->close();
+    }
 }

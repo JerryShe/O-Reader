@@ -12,6 +12,7 @@
 
 librarylayout::librarylayout(QWidget *widget)
 {
+    setParent(widget);
     libraryGridLayout = new QGridLayout(this);
 
     BookListView = new QListView();
@@ -107,6 +108,21 @@ QVector <int> librarylayout::deleteItems()
         SelectedItems = BookListView->selectionModel()->selectedIndexes();
     }
     return deletedItems;
+}
+
+void librarylayout::deleteBook(int index)
+{
+    int i;
+    for (i = 0; i < BookModel->rowCount(); i++)
+        if (BookModel->item(i,0)->data(Qt::WhatsThisRole) == index)
+            break;
+
+    BookModel->removeRow(i);
+}
+
+int librarylayout::getSelectedItemsCount()
+{
+    return BookListView->selectionModel()->selectedIndexes().size();
 }
 
 void librarylayout::sortBy(int mode)

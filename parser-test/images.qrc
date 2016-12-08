@@ -1,18 +1,25 @@
 <RCC>
     <qresource prefix="/checkbox_buttons">
-        <file>check_no.png</file>
-        <file>check_ok.png</file>
+        <file>LightCheck_no.png</file>
+        <file>LightCheck_ok.png</file>
     </qresource>
     <qresource prefix="/window_buttons">
-        <file>exit.png</file>
-        <file>full_size.png</file>
-        <file>min.png</file>
+        <file>DarkExit.png</file>
+        <file>DarkFull_size.png</file>
+        <file>DarkMin.png</file>
+        <file>LightExit.png</file>
+        <file>LightFull_size.png</file>
+        <file>LightMin.png</file>
     </qresource>
     <qresource prefix="/menu_buttons">
-        <file>Library_img.png</file>
-        <file>Logout_img.png</file>
-        <file>Settings_img.png</file>
-        <file>Synchronization_img.png</file>
+        <file>DarkLibrary_img.png</file>
+        <file>DarkLogout_img.png</file>
+        <file>DarkSettings_img.png</file>
+        <file>DarkSynchronization_img.png</file>
+        <file>LightLibrary_img.png</file>
+        <file>LightLogout_img.png</file>
+        <file>LightSettings_img.png</file>
+        <file>LightSynchronization_img.png</file>
     </qresource>
     <qresource prefix="/noImage">
         <file>noImage.png</file>

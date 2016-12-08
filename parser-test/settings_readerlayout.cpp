@@ -3,6 +3,16 @@
 #include "settings.h"
 #include <QColorDialog>
 #include <QDebug>
+#include "styles.h"
+
+void Settings_ReaderLayout::setLayoutStyle()
+{
+    QString a[3];
+    setReaderLayoutStyle(a, ProgramSettings->getInterfaceStyle());
+    ui->SaveButton->setStyleSheet(a[2]);
+    this->setStyleSheet(a[0]);
+    ui->ReaderSettingsContent->setStyleSheet(a[1]);
+}
 
 Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ReaderLayout)
 {
@@ -276,6 +286,7 @@ ReadingStyle Settings_ReaderLayout::getStyleData()
 void Settings_ReaderLayout::setSettingsData(settings * const Settings)
 {
     ProgramSettings = Settings;
+    setLayoutStyle();
     ui->NewStyleName->hide();
     ui->YepButton->hide();
     ui->StyleBox->addItems(ProgramSettings->getTextStylesList());
@@ -361,11 +372,21 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
     }
     else if (ui->StyleBox->currentText() != "Standart")
     {
-        ProgramSettings->removeNamedStyle(ui->StyleBox->currentText());
-        ui->StyleBox->removeItem(ui->StyleBox->currentIndex());
-        currentTextStyle = ui->StyleBox->currentText();
-        if (ProgramSettings->getTextStylesList().indexOf(currentTextStyle) != -1)
-            setStyleData(ProgramSettings->getNamedStyle(currentTextStyle));
+        AnswerDialog *answer_window = new AnswerDialog(ui->NopeButton->mapToGlobal(QPoint(0,0)).x() + ui->NopeButton->width(),
+                                                       ui->NopeButton->mapToGlobal(QPoint(0,0)).y() + ui->NopeButton->height(),
+                                                       "Delete style?", ProgramSettings->getInterfaceStyle());
+        answer_window->show();
+
+        if (answer_window->exec() == QDialog::Accepted)
+        {
+            ProgramSettings->removeNamedStyle(ui->StyleBox->currentText());
+            ui->StyleBox->removeItem(ui->StyleBox->currentIndex());
+            currentTextStyle = ui->StyleBox->currentText();
+            if (ProgramSettings->getTextStylesList().indexOf(currentTextStyle) != -1)
+                setStyleData(ProgramSettings->getNamedStyle(currentTextStyle));
+        }
+        delete answer_window;
+
     }
 }
 

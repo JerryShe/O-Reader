@@ -1,5 +1,14 @@
 #include "settings_programlayout.h"
 #include "ui_settings_programlayout.h"
+#include "styles.h"
+
+void Settings_ProgramLayout::setLayoutStyle()
+{
+    QString a[2];
+    setProgramLayoutStyle(a, ProgramSettings->getInterfaceStyle());
+    this->setStyleSheet(a[0]);
+    ui->SaveButton->setStyleSheet(a[1]);
+}
 
 Settings_ProgramLayout::Settings_ProgramLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ProgramLayout)
 {
@@ -21,7 +30,9 @@ void Settings_ProgramLayout::setProgramData()
 void Settings_ProgramLayout::setSettingsData(settings *Settings)
 {
     ProgramSettings = Settings;
+    setLayoutStyle();
     setProgramData();
+
 }
 
 void Settings_ProgramLayout::on_InterfaceStyleBox_currentTextChanged(const QString &arg1)

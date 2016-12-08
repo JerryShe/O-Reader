@@ -16,16 +16,12 @@ public:
     explicit Settings_ProgramLayout(QWidget *parent = 0);
     ~Settings_ProgramLayout();
     void setSettingsData(settings *Settings);
+    void setLayoutStyle();
 
 private slots:
-
-
     void setProgramData();
-
     void on_InterfaceStyleBox_currentTextChanged(const QString &arg1);
-
     void on_LanguageBox_currentTextChanged(const QString &arg1);
-
     void on_SaveButton_clicked();
 
 signals:

@@ -23,12 +23,15 @@ public:
 
     void addItem(int BookIndex, QString name, QString title, QImage cover);
     QVector <int> deleteItems();
+    void deleteBook(int index);
     void setSettingsData();
 
     void setStyle(QString libraryStyle[]);
     void changeViewMod();
     void iconUpscale();
     void iconDownscale();
+
+    int getSelectedItemsCount();
 
     void sortBy(int mode);
     void groupBy(int mode);

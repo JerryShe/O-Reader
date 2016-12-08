@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item row="1" column="0">
-     <widget class="QTextBrowser" name="textBrowser">
+     <widget class="QTextBrowser" name="TextPage">
       <property name="inputMethodHints">
        <set>Qt::ImhMultiLine</set>
       </property>

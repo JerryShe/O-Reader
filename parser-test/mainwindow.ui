@@ -811,6 +811,9 @@ outline: red solid 8px;
           <height>90</height>
          </size>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
         <property name="autoDefault">
          <bool>true</bool>
         </property>
@@ -845,6 +848,9 @@ outline: red solid 8px;
         <property name="text">
          <string/>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
         <property name="flat">
          <bool>true</bool>
         </property>
@@ -872,6 +878,9 @@ outline: red solid 8px;
         </property>
         <property name="text">
          <string/>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -923,6 +932,9 @@ outline: red solid 8px;
         <property name="text">
          <string/>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
         <property name="flat">
          <bool>true</bool>
         </property>
@@ -939,7 +951,7 @@ outline: red solid 8px;
        <enum>QLayout::SetFixedSize</enum>
       </property>
       <property name="bottomMargin">
-       <number>20</number>
+       <number>0</number>
       </property>
       <item>
        <layout class="QVBoxLayout" name="ButtonsLayout">
@@ -982,6 +994,9 @@ outline: red solid 8px;
             </property>
             <property name="text">
              <string>Find</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
