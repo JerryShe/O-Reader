@@ -228,7 +228,7 @@ void LoginWindow::mouseMoveEvent(QMouseEvent *e)
     {
         if (!LoginWindow::isMaximized())
         {
-            move(e->globalX() - LoginWindow::lastPoint.x(),  e->globalY() - LoginWindow::lastPoint.y());
+            move(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7);
         }
         else
         {

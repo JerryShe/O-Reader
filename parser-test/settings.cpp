@@ -105,12 +105,13 @@ ReadingStyle::ReadingStyle()
     BackgroundImage = "#ffffff";
     TextAntiAliasing = false;
     ParLeftTopIdent = 1510;
-    TextLeftRightIdent = 1515;
-    RegularTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, 0, "#000000");
-    EmphasizedTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
-    TitleStyle = TextStyleSheet("MS Shell Dlg 2", 12, 1, 1, 3, "#000000");
-    SubtitleStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, 2, "#000000");
-    NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, 0, "#000000");
+    TextLeftRightIdent = 1515;    
+    TextTopBottomIdent = 1515;
+    RegularTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, "Justify", "#000000");
+    EmphasizedTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, "Justify", "#000000");
+    TitleStyle = TextStyleSheet("MS Shell Dlg 2", 12, 1, 1, "Center", "#000000");
+    SubtitleStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, "Right", "#000000");
+    NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, "Justify", "#000000");
 }
 
 QDataStream &operator<<(QDataStream &out, const ReadingStyle &ReadingStyleElem)
@@ -121,6 +122,7 @@ QDataStream &operator<<(QDataStream &out, const ReadingStyle &ReadingStyleElem)
     out<<ReadingStyleElem.TextAntiAliasing;
     out<<ReadingStyleElem.ParLeftTopIdent;
     out<<ReadingStyleElem.TextLeftRightIdent;
+    out<<ReadingStyleElem.TextTopBottomIdent;
     out<<ReadingStyleElem.RegularTextStyle;
     out<<ReadingStyleElem.EmphasizedTextStyle;
     out<<ReadingStyleElem.TitleStyle;
@@ -137,7 +139,8 @@ QDataStream &operator>>(QDataStream &in, ReadingStyle &ReadingStyleElem)
     in>>ReadingStyleElem.BackgroundImage;
     in>>ReadingStyleElem.TextAntiAliasing;
     in>>ReadingStyleElem.ParLeftTopIdent;
-    in>>ReadingStyleElem.TextLeftRightIdent;
+    in>>ReadingStyleElem.TextLeftRightIdent;    
+    in>>ReadingStyleElem.TextTopBottomIdent;
     in>>ReadingStyleElem.RegularTextStyle;
     in>>ReadingStyleElem.EmphasizedTextStyle;
     in>>ReadingStyleElem.TitleStyle;
@@ -153,11 +156,11 @@ TextStyleSheet::TextStyleSheet()
     FontSize = 8;
     FontStyle = 0;
     LineSpacing = 1.5;
-    TextAlign = 0;
+    TextAlign = "Justify";
     TextColor = "#000000";
 }
 
-TextStyleSheet::TextStyleSheet(QString Font, short Size, short Style, short Spacing, short Align, QString color)
+TextStyleSheet::TextStyleSheet(QString Font, short Size, short Style, short Spacing, QString Align, QString color)
     : FontFamily(Font), FontSize(Size), FontStyle(Style), LineSpacing(Spacing), TextAlign(Align), TextColor(color){}
 
 QDataStream &operator <<(QDataStream &out, const TextStyleSheet &TextStyleSheetElem)
@@ -267,6 +270,11 @@ ReadingStyle settings::getNamedStyle(const QString name)
         return StylesMap.at(index);
     else
         qDebug()<<"style name wtf";
+}
+
+ReadingStyle settings::getCurrentTextStyleElem()
+{
+    return StylesMap.at(TextStylesNames.indexOf(currentStyle));
 }
 
 void settings::saveStyle(const QString name, const ReadingStyle style)

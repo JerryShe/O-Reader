@@ -12,12 +12,17 @@ synchronizationlayout::synchronizationlayout(QWidget *Parent)
     QPushButton *synch = new QPushButton("synchronization");
     synchronizationGridLayout->addWidget(synch, 0, 0);
 
-    synchronizationlayout::setLayout(synchronizationGridLayout);
-    synchronizationlayout::hide();
+    setLayout(synchronizationGridLayout);
+    hide();
 
 }
 
 synchronizationlayout::~synchronizationlayout()
 {
     delete synchronizationGridLayout;
+}
+
+void synchronizationlayout::setSettingsData(settings *PSettings)
+{
+    ProgramSettings = PSettings;
 }

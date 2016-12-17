@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QGridLayout>
+#include "settings.h"
 
 class synchronizationlayout : public QWidget
 {
@@ -11,8 +12,12 @@ public:
     explicit synchronizationlayout(QWidget *Parent=0);
     ~synchronizationlayout();
 
+    void setSettingsData(settings *PSettings);
+
 private:
     QGridLayout *synchronizationGridLayout;
+
+    settings *ProgramSettings;
 };
 
 #endif // SYNCHRONIZATIONLAYOUT_H

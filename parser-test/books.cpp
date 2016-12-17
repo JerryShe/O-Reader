@@ -85,36 +85,41 @@ Book::Book(QString fileName, GenresMap *Gmap)
 
 
             //изображения
-            if (! titleInfo.namedItem("coverpage").isNull())
+            if (!titleInfo.namedItem("coverpage").isNull())
             {
                 QString coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("l:href", "");
-                if (coverName.at(0) == '#')
-                    coverName = coverName.right(coverName.size() - coverName.indexOf('#') - 1);
+                if (coverName.isEmpty())
+                    coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("xlink:href", "");
 
-                nodeList = doc.elementsByTagName("binary");
-                for (int i = 0; i < nodeList.size(); i++)
+                if (coverName.isEmpty())
+                    CoverType = "noImage";
+                else
                 {
-                    if (nodeList.at(i).toElement().attribute("id") == coverName)
+                    if (coverName.at(0) == '#')
+                        coverName = coverName.right(coverName.size() - coverName.indexOf('#') - 1);
+
+                    nodeList = doc.elementsByTagName("binary");
+                    for (int i = 0; i < nodeList.size(); i++)
                     {
-                        CoverType = nodeList.at(i).toElement().attribute("content-type");
+                        if (nodeList.at(i).toElement().attribute("id") == coverName)
+                        {
+                            CoverType = nodeList.at(i).toElement().attribute("content-type");
 
-                        Cover = nodeList.at(i).toElement().text();
+                            Cover = nodeList.at(i).toElement().text();
 
-                        for (int i = 0; i < Cover.size(); i++)
-                            if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
-                            {
-                                Cover.replace(i, 2, " ");
-                                i++;
-                            }
-
-                        break;
-
+                            for (int i = 0; i < Cover.size(); i++)
+                                if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
+                                {
+                                    Cover.replace(i, 2, " ");
+                                    i++;
+                                }
+                            break;
+                        }
                     }
                 }
             }
             else
                 CoverType = "noImage";
-
         }
     }
 }

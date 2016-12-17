@@ -2,6 +2,7 @@
 #include "ui_settings_readerlayout.h"
 #include "settings.h"
 #include <QColorDialog>
+#include <QFileDialog>
 #include <QDebug>
 #include "styles.h"
 
@@ -34,13 +35,14 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
         ui->EmphasizedLineSpacingBox->addItem(QString::number(i));
     }
 
-    connect(ui->BackgroundImageBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->BackgroundTypeBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->TextAntiAliasingBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->ParagraphLeftIdentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->ParagraphTopIdentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->TextLeftIdentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->TextRightIdentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
+    connect(ui->TextTopIndentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
+    connect(ui->TextBottomIndentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
 
     connect(ui->RegularNameBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->RegularSizeBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
@@ -76,6 +78,11 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
 
 void Settings_ReaderLayout::updateTextBox()
 {
+    QString fileName;
+    if (ui->BackgroundImageBox->text() == "Standart image")
+        fileName = QUrl::fromLocalFile((QCoreApplication::applicationDirPath() + "/LibraryResources/Standart.jpg")).toString();
+    else
+        fileName = QUrl::fromLocalFile(ui->BackgroundImageBox->text()).toString();
 
     QString htEx = "<style type='text/css'>"
        "p{"
@@ -134,7 +141,17 @@ void Settings_ReaderLayout::updateTextBox()
             "color:" + ui->NoteColorBox->text() + ";"
             "text-indent:" + ui->ParagraphLeftIdentBox->currentText() + "px;}"
 
-    "</style> <body align = 'justify' bgcolor='" + ui->BackgroundColorBox->text() + "'>"
+       "body{"
+            "background" + ((!ui->BackgroundColorBox->isHidden()) ? ("-color:" + ui->BackgroundColorBox->text()) : ("-image:url(" + fileName + ")")) + ";}"
+    "</style> <body>"
+    "<table border='0' style='"
+    "margin-top:" + ui->TextTopIndentBox->currentText() + "px;"
+    "margin-bottom:" + ui->TextBottomIndentBox->currentText() + "px;"
+    "margin-left:" + ui->TextLeftIdentBox->currentText() + "px;"
+    "margin-right:" + ui->TextRightIdentBox->currentText() + "px;'"
+    "width='100%' cellspacing='-30' cellpadding='40'>"
+    "<tr>"
+    "<td align = 'justify'>"
     "<TitleText>"
     "<p>Гарри Гаррисон</p>"
     "<p>«Новые приключения Стальной Крысы»</p>"
@@ -147,7 +164,7 @@ void Settings_ReaderLayout::updateTextBox()
     "<p>Моя ладонь ласкала стакан только что налитого трехсотлетнего, драгоценного бурбона, охлажденного кубиками миллионолетнего льда, доставленного с одной из внешних планет. Просто идеально! Благодушно улыбнувшись, я поднес стакан к губам.</p>"
     "<p>И тут в рай вторглось нечто чуждое, будто пульсирующая зубная боль или чуть слышный комариный зуд. С могучим Бахом схлестнулось тоненькое треньканье. Чувствуя, как губы искажает оскал, я коснулся регулятора громкости, и великий орган жалобно захлебнулся молчанием. И дверной звонок прозвучал вполне отчетливо.</p>"
     "</Text> <Emphasis><p>Динь-динь…</p></Emphasis>"
-    "</body>";
+    "</td></tr></body>";
 
     ui->TextExample->setHtml(htEx);
 }
@@ -157,22 +174,16 @@ void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
     ui->BackgroundTypeBox->setCurrentIndex(style.BackgroundType);
     if (ui->BackgroundTypeBox->currentIndex() == true)
     {
-        ui->BackgroundColor->show();
-        ui->BackgroundColorBox->show();
         ui->BackgroundColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.BackgroundImage + "; "
                 "color:" + QColor(255 - QColor(style.BackgroundImage).red(), 255 - QColor(style.BackgroundImage).green(),
                                   255 - QColor(style.BackgroundImage).blue()).name() + ";}");
         ui->BackgroundColorBox->setText(style.BackgroundImage);
-        ui->BackgroundImage->hide();
-        ui->BackgroundImageBox->hide();
     }
     else
     {
         ui->BackgroundColor->hide();
         ui->BackgroundColorBox->hide();
-        ui->BackgroundImage->show();
-        ui->BackgroundImageBox->setCurrentText(style.BackgroundImage);
-        ui->BackgroundImageBox->show();
+        ui->BackgroundImageBox->setText(style.BackgroundImage);
     }
 
     ui->ColumnNumberBox->setCurrentText(QString::number(style.ColumnCount));
@@ -181,12 +192,14 @@ void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
     ui->ParagraphTopIdentBox->setCurrentText(QString::number(style.ParLeftTopIdent%100));
     ui->TextLeftIdentBox->setCurrentText(QString::number(style.TextLeftRightIdent/100));
     ui->TextRightIdentBox->setCurrentText(QString::number(style.TextLeftRightIdent%100));
+    ui->TextTopIndentBox->setCurrentText(QString::number(style.TextTopBottomIdent/100));
+    ui->TextBottomIndentBox->setCurrentText(QString::number(style.TextTopBottomIdent%100));
 
     ui->RegularNameBox->setCurrentFont(style.RegularTextStyle.FontFamily);
     ui->RegularSizeBox->setCurrentText(QString::number(style.RegularTextStyle.FontSize));
     ui->RegularStyleBox->setCurrentIndex(style.RegularTextStyle.FontStyle);
     ui->RegularLineSpacingBox->setCurrentText(QString::number(style.RegularTextStyle.LineSpacing));
-    ui->RegularAlignmentBox->setCurrentIndex(style.RegularTextStyle.TextAlign);
+    ui->RegularAlignmentBox->setCurrentText(style.RegularTextStyle.TextAlign);
     ui->RegularColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.RegularTextStyle.TextColor + "; "
             "color:" + QColor(255 - QColor(style.RegularTextStyle.TextColor).red(), 255 - QColor(style.RegularTextStyle.TextColor).green(),
                               255 - QColor(style.RegularTextStyle.TextColor).blue()).name() + ";}");
@@ -196,7 +209,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
     ui->EmphasizedSizeBox->setCurrentText(QString::number(style.EmphasizedTextStyle.FontSize));
     ui->EmphasizedStyleBox->setCurrentIndex(style.EmphasizedTextStyle.FontStyle);
     ui->EmphasizedLineSpacingBox->setCurrentText(QString::number(style.EmphasizedTextStyle.LineSpacing));
-    ui->EmphasizedAlignmentBox->setCurrentIndex(style.EmphasizedTextStyle.TextAlign);
+    ui->EmphasizedAlignmentBox->setCurrentText(style.EmphasizedTextStyle.TextAlign);
     ui->EmphasizedColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.EmphasizedTextStyle.TextColor + "; "
             "color:" + QColor(255 - QColor(style.EmphasizedTextStyle.TextColor).red(), 255 - QColor(style.EmphasizedTextStyle.TextColor).green(),
                               255 - QColor(style.EmphasizedTextStyle.TextColor).blue()).name() + ";}");
@@ -206,7 +219,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
     ui->TitleSizeBox->setCurrentText(QString::number(style.TitleStyle.FontSize));
     ui->TitleStyleBox->setCurrentIndex(style.TitleStyle.FontStyle);
     ui->TitleLineSpacingBox->setCurrentText(QString::number(style.TitleStyle.LineSpacing));
-    ui->TitleAlignmentBox->setCurrentIndex(style.TitleStyle.TextAlign);
+    ui->TitleAlignmentBox->setCurrentText(style.TitleStyle.TextAlign);
     ui->TitleColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.TitleStyle.TextColor + "; "
             "color:" + QColor(255 - QColor(style.TitleStyle.TextColor).red(), 255 - QColor(style.TitleStyle.TextColor).green(),
                               255 - QColor(style.TitleStyle.TextColor).blue()).name() + ";}");
@@ -216,7 +229,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
     ui->SubtitleSizeBox->setCurrentText(QString::number(style.SubtitleStyle.FontSize));
     ui->SubtitleStyleBox->setCurrentIndex(style.SubtitleStyle.FontStyle);
     ui->SubtitleLineSpacingBox->setCurrentText(QString::number(style.SubtitleStyle.LineSpacing));
-    ui->SubtitleAlignmentBox->setCurrentIndex(style.SubtitleStyle.TextAlign);
+    ui->SubtitleAlignmentBox->setCurrentText(style.SubtitleStyle.TextAlign);
     ui->SubtitleColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.SubtitleStyle.TextColor + "; "
             "color:" + QColor(255 - QColor(style.SubtitleStyle.TextColor).red(), 255 - QColor(style.SubtitleStyle.TextColor).green(),
                               255 - QColor(style.SubtitleStyle.TextColor).blue()).name() + ";}");
@@ -226,11 +239,21 @@ void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
     ui->NoteSizeBox->setCurrentText(QString::number(style.NoteStyle.FontSize));
     ui->NoteStyleBox->setCurrentIndex(style.NoteStyle.FontStyle);
     ui->NoteLineSpacingBox->setCurrentText(QString::number(style.NoteStyle.LineSpacing));
-    ui->NoteAlignmentBox->setCurrentIndex(style.NoteStyle.TextAlign);
+    ui->NoteAlignmentBox->setCurrentText(style.NoteStyle.TextAlign);
     ui->NoteColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.NoteStyle.TextColor + "; "
             "color:" + QColor(255 - QColor(style.NoteStyle.TextColor).red(), 255 - QColor(style.NoteStyle.TextColor).green(),
                               255 - QColor(style.NoteStyle.TextColor).blue()).name() + ";}");
     ui->NoteColorBox->setText(style.NoteStyle.TextColor);
+
+    ui->EmphasizedNameBox->setCurrentFont(style.EmphasizedTextStyle.FontFamily);
+    ui->EmphasizedSizeBox->setCurrentText(QString::number(style.EmphasizedTextStyle.FontSize));
+    ui->EmphasizedStyleBox->setCurrentIndex(style.EmphasizedTextStyle.FontStyle);
+    ui->EmphasizedLineSpacingBox->setCurrentText(QString::number(style.EmphasizedTextStyle.LineSpacing));
+    ui->EmphasizedAlignmentBox->setCurrentText(style.EmphasizedTextStyle.TextAlign);
+    ui->EmphasizedColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.EmphasizedTextStyle.TextColor + "; "
+            "color:" + QColor(255 - QColor(style.EmphasizedTextStyle.TextColor).red(), 255 - QColor(style.EmphasizedTextStyle.TextColor).green(),
+                              255 - QColor(style.EmphasizedTextStyle.TextColor).blue()).name() + ";}");
+    ui->EmphasizedColorBox->setText(style.EmphasizedTextStyle.TextColor);
 
     updateTextBox();
 }
@@ -245,40 +268,48 @@ ReadingStyle Settings_ReaderLayout::getStyleData()
     }
     else
     {
-        style.BackgroundImage = ui->BackgroundImageBox->currentText();
+        style.BackgroundImage = ui->BackgroundImageBox->text();
     }
 
     style.TextAntiAliasing = ui->TextAntiAliasingBox->currentIndex();
-    style.ParLeftTopIdent = ui->ParagraphLeftIdentBox->currentText().toInt()*100 + ui->ParagraphTopIdentBox->currentText().toInt();
-    style.TextLeftRightIdent = ui->TextLeftIdentBox->currentText().toInt()*100 + ui->TextRightIdentBox->currentText().toInt();
+    style.ParLeftTopIdent = ui->ParagraphLeftIdentBox->currentText().toShort()*100 + ui->ParagraphTopIdentBox->currentText().toShort();
+    style.TextLeftRightIdent = ui->TextLeftIdentBox->currentText().toShort()*100 + ui->TextRightIdentBox->currentText().toShort();
+    style.TextTopBottomIdent = ui->TextTopIndentBox->currentText().toShort()*100 + ui->TextBottomIndentBox->currentText().toShort();
 
     style.RegularTextStyle.FontFamily = ui->RegularNameBox->currentText();
-    style.RegularTextStyle.FontSize = ui->RegularSizeBox->currentText().toInt();
+    style.RegularTextStyle.FontSize = ui->RegularSizeBox->currentText().toShort();
     style.RegularTextStyle.FontStyle = ui->RegularStyleBox->currentIndex();
     style.RegularTextStyle.LineSpacing = ui->RegularLineSpacingBox->currentText().toDouble();
-    style.RegularTextStyle.TextAlign = ui->RegularAlignmentBox->currentIndex();
+    style.RegularTextStyle.TextAlign = ui->RegularAlignmentBox->currentText();
     style.RegularTextStyle.TextColor = ui->RegularColorBox->text();
 
     style.TitleStyle.FontFamily = ui->TitleNameBox->currentText();
-    style.TitleStyle.FontSize = ui->TitleSizeBox->currentText().toInt();
+    style.TitleStyle.FontSize = ui->TitleSizeBox->currentText().toShort();
     style.TitleStyle.FontStyle = ui->TitleStyleBox->currentIndex();
     style.TitleStyle.LineSpacing = ui->TitleLineSpacingBox->currentText().toDouble();
-    style.TitleStyle.TextAlign = ui->TitleAlignmentBox->currentIndex();
+    style.TitleStyle.TextAlign = ui->TitleAlignmentBox->currentText();
     style.TitleStyle.TextColor = ui->TitleColorBox->text();
 
     style.SubtitleStyle.FontFamily = ui->SubtitleNameBox->currentText();
-    style.SubtitleStyle.FontSize = ui->SubtitleSizeBox->currentText().toInt();
+    style.SubtitleStyle.FontSize = ui->SubtitleSizeBox->currentText().toShort();
     style.SubtitleStyle.FontStyle = ui->SubtitleStyleBox->currentIndex();
     style.SubtitleStyle.LineSpacing = ui->SubtitleLineSpacingBox->currentText().toDouble();
-    style.SubtitleStyle.TextAlign = ui->SubtitleAlignmentBox->currentIndex();
+    style.SubtitleStyle.TextAlign = ui->SubtitleAlignmentBox->currentText();
     style.SubtitleStyle.TextColor = ui->SubtitleColorBox->text();
 
     style.NoteStyle.FontFamily = ui->NoteNameBox->currentText();
-    style.NoteStyle.FontSize = ui->NoteSizeBox->currentText().toInt();
+    style.NoteStyle.FontSize = ui->NoteSizeBox->currentText().toShort();
     style.NoteStyle.FontStyle = ui->NoteStyleBox->currentIndex();
     style.NoteStyle.LineSpacing = ui->NoteLineSpacingBox->currentText().toDouble();
-    style.NoteStyle.TextAlign = ui->NoteAlignmentBox->currentIndex();
+    style.NoteStyle.TextAlign = ui->NoteAlignmentBox->currentText();
     style.NoteStyle.TextColor = ui->NoteColorBox->text();
+
+    style.EmphasizedTextStyle.FontFamily = ui->EmphasizedNameBox->currentText();
+    style.EmphasizedTextStyle.FontSize = ui->EmphasizedSizeBox->currentText().toShort();
+    style.EmphasizedTextStyle.FontStyle = ui->EmphasizedStyleBox->currentIndex();
+    style.EmphasizedTextStyle.LineSpacing = ui->EmphasizedLineSpacingBox->currentText().toDouble();
+    style.EmphasizedTextStyle.TextAlign = ui->EmphasizedAlignmentBox->currentText();
+    style.EmphasizedTextStyle.TextColor = ui->EmphasizedColorBox->text();
 
     return style;
 }
@@ -481,4 +512,35 @@ void Settings_ReaderLayout::on_EmphasizedColorBox_clicked()
                                      "color:" + QColor(255 - EmphasizedColor.red(), 255 - EmphasizedColor.green(), 255 - EmphasizedColor.blue()).name() + ";}");
     ui->EmphasizedColorBox->setText(EmphasizedColor.name());
     updateTextBox();
+}
+
+
+
+
+void Settings_ReaderLayout::on_BackgroundImageBox_clicked()
+{
+    QString file = QFileDialog::getOpenFileName(this, "Set image", "", "(*.jpeg *.jpg *.png)");
+    if (file == "")
+        return;
+    QFontMetrics metrics(ui->BackgroundImageBox->font());
+    ui->BackgroundImageBox->setText(file);
+    updateTextBox();
+}
+
+void Settings_ReaderLayout::on_BackgroundTypeBox_currentTextChanged(const QString &arg1)
+{
+    if (arg1 == "Image")
+    {
+        ui->BackgroundColor->hide();
+        ui->BackgroundColorBox->hide();
+        ui->BackgroundImage->show();
+        ui->BackgroundImageBox->show();
+    }
+    if (arg1 == "Color")
+    {
+        ui->BackgroundColor->show();
+        ui->BackgroundColorBox->show();
+        ui->BackgroundImage->hide();
+        ui->BackgroundImageBox->hide();
+    }
 }

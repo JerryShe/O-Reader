@@ -14,17 +14,17 @@ class settingslayout : public QWidget
 public:
     explicit settingslayout(QWidget *Parent=0);
     ~settingslayout();
-    void showProfile();
-    void showProgram();
-    void showReader();
-    void setSettingsData(settings *Settings);
 
+    void setSettingsData(settings *Settings);
     void hideWithoutSaving();
 
 signals:
     void tabChanged(int prevTab);
 
 public slots:
+    void showProfile();
+    void showProgram();
+    void showReader();
 
 private:
 

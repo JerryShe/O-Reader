@@ -32,7 +32,10 @@ void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString styl
 void setBackgroundWindowColor(QString windowButtonsStyle [], const QString style)
 {
     if (style == "Red")
+    {
         windowButtonsStyle[0] = "#MainWidget {background-color:rgb(150, 0, 60);}";
+        windowButtonsStyle[1] = "QDialog {background-color:rgb(150, 0, 60);}";
+    }
 }
 
 
@@ -69,8 +72,8 @@ void setLoginWindowStyle (QString windowButtonsStyle [], const QString style)
 
         windowButtonsStyle[4] = "#Remember{color: white;}"
                                 "#Remember:hover{color: rgb(151, 151, 227);}"
-                                "#Remember::indicator:off{image: url(:/checkbox_Buttons/DarkCheck_no.png);}"
-                                "#Remember::indicator:on{image: url(:/checkbox_Buttons/DarkCheck_ok.png);}";
+                                "#Remember::indicator:off{image: url(:/checkbox_buttons/LightCheck_no.png);}"
+                                "#Remember::indicator:on{image: url(:/checkbox_buttons/LightCheck_ok.png);}";
 
     }
 }
@@ -300,15 +303,17 @@ void setBookPageStyle(QString BookPageStyle[], const QString style)
     }
 }
 
+
+////////////////////////////////////////////////////////////////////
 void setSearchWindowStyle(QString SearchStyle[], const QString style)
 {
     if (style == "Red")
     {
-        SearchStyle[0] = "#exit_button{"
+        SearchStyle[0] = "QPushButton{"
                          "border-image: url(:/window_buttons/DarkExit.png);"
                          "border: none;"
                          "background:none;}"
-                         "#exit_button:hover {"
+                         "QPushButton:hover {"
                          "background-color:rgb(203, 0, 88);}";
 
         SearchStyle[1] = "QPushButton "
@@ -338,6 +343,10 @@ void setSearchWindowStyle(QString SearchStyle[], const QString style)
                          "border:none;"
                          "color:white;"
                          "min-height: 35px;}";
+
+        SearchStyle[4] = "QDialog"
+                         "{background-color:rgb(150, 0, 60);"
+                         "color: white;}";
     }
 }
 
@@ -404,3 +413,32 @@ void setProfileLayoutStyle(QString LayoutStyle[], const QString style)
                          "{background-color:rgb(130, 130, 195);}";
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+void setReaderWindowStyle(QString WindowStyle[], const QString style)
+{
+    if (style == "Red")
+    {
+        WindowStyle[0] = "QPushButton"
+                         "{background-color:rgb(151, 151, 227);"
+                         "border: none;}"
+                         "QPushButton:hover"
+                         "{background-color:rgb(130, 130, 195);}";
+        WindowStyle[1] = "QLabel"
+                         "{color:white;}";
+    }
+}
+
+void setReaderWindowMenuButtons(QString ButtonsStyle[], const QString style)
+{
+    if (style == "Red")
+    {
+        ButtonsStyle[0] = "QPushButton "
+                          "{background-color: rgb(162, 0, 70);"
+                          "border:none;"
+                          "color:white;}"
+                          "QPushButton:hover"
+                          "{background-color:rgb(147, 0, 60);}";
+    }
+}
+

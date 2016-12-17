@@ -7,10 +7,56 @@
 #include <QThread>
 #include <settings.h>
 #include <QVBoxLayout>
+#include "settings_layout.h"
+#include "search_window.h"
+#include "synchronization_layout.h"
+
+#include <QThread>
 
 namespace Ui {
 class ReadingWindow;
 }
+
+class TextParser : public QObject
+{
+    Q_OBJECT
+
+public:
+    TextParser(Book boo, settings* PSettings);
+    ~TextParser();
+
+    void setPageGeometry(int width, int height);
+    void startParse();
+    QString getCurrentPage();
+    int getPageCount();
+
+    QString getNextPage();
+    QString getPrevPage();
+    QString reparse();
+
+private:
+
+    int pageWidth;
+    int pageHeight;
+
+    int currentWidth;
+    int currentHeight;
+    short currentColumn;
+
+    int currentPage;
+    int pageCount;
+
+    Book book;
+    settings *ProgramSettings;
+
+    QString PageHTMLHeader;
+    QString PageHTMLBottom;
+    QString Page1;
+    QString Page2;
+
+    QStringList PagesList;
+    QVector <QPair<QString,QString>> ParagrafList;
+};
 
 class ReadingWindow : public QMainWindow
 {
@@ -37,6 +83,15 @@ private slots:
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
 
+    void StartSearch(QString key, QString type);
+    void NextSearchStep();
+    void PrevSearchStep();
+
+    void settings_profile_clicked();
+    void settings_program_clicked();
+    void settings_reader_clicked();
+    void changeSettingsTab(int i);
+
     void clockStep();
 
 signals:
@@ -50,48 +105,37 @@ private:
     QPoint lastPoint;
     int resizingFrame = 5;
 
+    int SettingsTab;
+
     Ui::ReadingWindow *ui;
     QThread * HandlerThread;
     settings * ProgramSettings;
 
     QWidget * MenuWidget;
     QVBoxLayout * MenuLayout;
-    QPushButton * BackToMainWindowButton;
-    QPushButton * ContentsButton;
-    QPushButton * SynchronizationButton;
-    QPushButton * FindButton;
-    QPushButton * SettingsButton;
+    QPushButton * _BackToMainWindowButton;
+    QPushButton * _ContentsButton;
+    QPushButton * _SynchronizationButton;
+    QPushButton * _FindButton;
+    QPushButton * _SettingsButton;
 
-    class TextParser
-    {
-    public:
-        TextParser(Book *book);
-        ~TextParser();
+    settingslayout *SettingsPage;
+    synchronizationlayout *SynchronizationPage;
 
-        void setPageSize(int width, int height);
-        int getCurrentPage();
-        int getCurrentProgress();
+    QThread * parserThread;
 
-        QString getTextPage();
+    QVBoxLayout * WindowLayout;
+    QHBoxLayout * SettingsTabsLayout;
+    QDialog *MiniWindow;
+    QPushButton * ProfileButton;
+    QPushButton * ProgramButton;
+    QPushButton * ReaderButton;
 
-    private:
+    SearchWindow * Search;
 
-        int pageWidth;
-        int pageHeight;
+    QString styles[5];
 
-        int currentWidth;
-        int currentHeight;
-        int currentColumn;
-
-        int currentPage;
-
-        settings *ProgramSettings;
-
-        QString PageHTMLHeader;
-        QStringList PagesList;
-        QVector <QPair<QString,QString>> ParagrafList;
-
-    };
+    TextParser * BookParse;
 };
 
 #endif // READINGWINDOW_H

@@ -41,8 +41,11 @@ private slots:
     void on_BackgroundColorBox_clicked();
     void on_EmphasizedColorBox_clicked();
     void on_EmphasizedSettings_clicked();
+    void on_BackgroundImageBox_clicked();
 
     void setLayoutStyle();
+
+    void on_BackgroundTypeBox_currentTextChanged(const QString &arg1);
 
 signals:
     void settingsChanged();

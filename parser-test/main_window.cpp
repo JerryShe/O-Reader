@@ -23,8 +23,6 @@
 
 #include <QDebug>
 
-
-
 #include <QThread>
 
 void MainWindow::libraryButtonsHide()
@@ -82,8 +80,6 @@ void MainWindow::setStyle()
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    currentBookIndex = 0;
-    MainWindow::filesMask<<"*.fb2"<<"*.zip";
     MainWindow::prev_geometry = MainWindow::geometry();
     LibraryLayout = new librarylayout();
 
@@ -101,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
+    if ( ! QDir("Downloaded books").exists()==true)
+        QDir().mkdir("Downloaded books");
 
     HandlerThread = new QThread(this);
     connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
@@ -113,25 +111,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     ui->TabsLayout->addWidget(LibraryLayout, 0);
 
+    LibHandler = new LibraryHandler(this);
+    LibHandler->moveToThread(HandlerThread);
+
     HandlerThread->start();
     ProgramSettings->loadSettings();
     currentStyle = ProgramSettings->getInterfaceStyle();
     MainWindow::setStyle();
     ui->SettingsLayout->setSettingsData(ProgramSettings);
-    loadBookList();
+
+    LibHandler->loadBookList();
 }
 
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete page;
+    delete LibHandler;
     delete LibraryLayout;
 }
 
-void MainWindow::loadBookList()
+void LibraryHandler::loadBookList()
 {
-    QFile bookFileList(resoursesFolderPath + "/BookList.lb");
+    QFile bookFileList(window->resoursesFolderPath + "/BookList.lb");
 
     if(bookFileList.open(QIODevice::ReadOnly | QIODevice::Text ))
         qDebug() << "File Has Been Created" << endl;
@@ -149,14 +151,14 @@ void MainWindow::loadBookList()
         in>>temp;
         temp.setBookIndex(currentBookIndex++);
         bookList.push_back(temp);
-        LibraryLayout->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
+        window->LibraryLayout->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
     }
     bookFileList.close();
 }
 
-void MainWindow::saveBookList()
+void LibraryHandler::saveBookList()
 {
-    QFile bookFileList(resoursesFolderPath + "/BookList.lb");
+    QFile bookFileList(window->resoursesFolderPath + "/BookList.lb");
 
     if(bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
     {
@@ -176,11 +178,11 @@ void MainWindow::saveBookList()
     }
 
     bookFileList.close();
-    UserActions->saveLog();
+    window->UserActions->saveLog();
 }
 
 
-QString MainWindow::getFileTipe(QString fileName)
+QString LibraryHandler::getFileTipe(QString fileName)
 {
     QString tipe;
     for (int i = 1; i <= 4; i++)
@@ -194,9 +196,8 @@ QString MainWindow::getFileTipe(QString fileName)
 }
 
 
-void MainWindow::openNewBooks(QString file, GenresMap *Gmap)
+void LibraryHandler::openNewBooks(QString file, GenresMap *Gmap)
 {
-
     for (int j = 0; j < bookList.size(); j++)
     {
         if (file == bookList.at(j).File)
@@ -206,7 +207,7 @@ void MainWindow::openNewBooks(QString file, GenresMap *Gmap)
         }
     }
 
-    QString tipe = MainWindow::getFileTipe(file);
+    QString tipe = getFileTipe(file);
 
     if (tipe == "fb2")
     {
@@ -214,8 +215,8 @@ void MainWindow::openNewBooks(QString file, GenresMap *Gmap)
         boo.setBookIndex(currentBookIndex++);
         bookList.push_back(boo);
 
-        UserActions->addAction(1, file, -1, "");
-        LibraryLayout->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
+        window->UserActions->addAction(1, file, -1, "");
+        window->LibraryLayout->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
 
     }
     if (tipe == "zip")
@@ -227,36 +228,36 @@ void MainWindow::openNewBooks(QString file, GenresMap *Gmap)
 void MainWindow::showBookPage(int index)
 {
     int i;
-    for (i = 0; i < bookList.size(); i++)
-        if (bookList[i].getBookIndex() == index)
+    for (i = 0; i < LibHandler->bookList.size(); i++)
+        if (LibHandler->bookList[i].getBookIndex() == index)
             break;
 
-    page = new BookPage(bookList[i], currentStyle, this);
-    connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
-    connect(page, SIGNAL(deleteBook(int)), this, SLOT(deleteBook(int)));
+    page = new BookPage(LibHandler->bookList[i], currentStyle, this);
+    connect(page, SIGNAL(startReading(int)), LibHandler, SLOT(startReading(int)));
+    connect(page, SIGNAL(deleteBook(int)), LibHandler, SLOT(deleteBook(int)));
 }
 
 void MainWindow::startReading(int BookIndex)
 {
     int i;
-    for (i = 0; i < bookList.size(); i++)
-        if (bookList[i].getBookIndex() == BookIndex)
+    for (i = 0; i < LibHandler->bookList.size(); i++)
+        if (LibHandler->bookList[i].getBookIndex() == BookIndex)
             break;
 
-    readingWindow = new ReadingWindow(ProgramSettings, bookList.at(i));
+    readingWindow = new ReadingWindow(ProgramSettings, LibHandler->bookList[i]);
     readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
     connect(readingWindow, SIGNAL(showMainWindow()), this, SLOT(showWindow()));
     readingWindow->show();
     this->hide();
 }
 
-void MainWindow::deleteBook(int index)
+void LibraryHandler::deleteBook(int index)
 {
-    LibraryLayout->deleteBook(index);
+    window->LibraryLayout->deleteBook(index);
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getBookIndex() == index)
         {
-            UserActions->addAction(2, bookList.at(i).File, -1, "");
+            window->UserActions->addAction(2, bookList.at(i).File, -1, "");
             bookList.remove(i);
             break;
         }
@@ -320,7 +321,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
     {
         if (!MainWindow::isMaximized())
         {
-            move(e->globalX() - MainWindow::lastPoint.x(),  e->globalY() - MainWindow::lastPoint.y());
+            move(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7);
         }
         else
         {
@@ -460,9 +461,22 @@ void MainWindow::on__AddBooks_clicked()
     BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_AddBooks->mapToGlobal(QPoint(0,0)).x(),
                                                       ui->_AddBooks->mapToGlobal(QPoint(0,0)).y() + ui->_AddBooks->height(),
                                                       ui->_AddBooks->size().width(), true, MainWindow::currentStyle);
-    connect(bookOrFolderAnsw, SIGNAL(AddBookSignal()), this, SLOT(AddBook()));
-    connect(bookOrFolderAnsw, SIGNAL(AddFolderSignal()), this, SLOT(AddFolder()));
+    connect(bookOrFolderAnsw, SIGNAL(AddBookSignal()), this, SLOT(addBooksFiles()));
+    connect(bookOrFolderAnsw, SIGNAL(AddFolderSignal()), this, SLOT(addBooksFolder()));
 }
+
+void MainWindow::addBooksFolder()
+{
+    QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    LibHandler->AddFolder(path);
+}
+
+void MainWindow::addBooksFiles()
+{
+    QStringList fileList = QFileDialog::getOpenFileNames(this, "Open files", "", "(*.FB2 *.zip)");
+    LibHandler->AddBooks(fileList);
+}
+
 
 
 void MainWindow::on__Delete_clicked()
@@ -476,56 +490,53 @@ void MainWindow::on__Delete_clicked()
         answer_window->show();
 
         if (answer_window->exec() == QDialog::Accepted)
-        {
-            QVector <int> deletedItemsIndexes = LibraryLayout->deleteItems();
-            for (int i = 0; i < deletedItemsIndexes.size(); i++)
-            {
-                for (int j = 0; j < bookList.size(); j++)
-                {
-                    if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
-                    {
-                        UserActions->addAction(2, bookList.at(j).File, -1, "");
-                        bookList.remove(j);
-                        break;
-                    }
-                }
-            }
-            if (deletedItemsIndexes.size())
-                saveBookList();
-        }
+            LibHandler->deleteBooks(LibraryLayout->deleteItems());
         else
             delete answer_window;
     }
 }
 
-
-void MainWindow::AddBook()
+void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
 {
-    QStringList fileList = QFileDialog::getOpenFileNames(this, "Open files", "", "(*.FB2 *.zip)");
+    for (int i = 0; i < deletedItemsIndexes.size(); i++)
+    {
+        for (int j = 0; j < bookList.size(); j++)
+        {
+            if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
+            {
+                window->UserActions->addAction(2, bookList.at(j).File, -1, "");
+                bookList.remove(j);
+                break;
+            }
+        }
+    }
+    if (deletedItemsIndexes.size())
+        saveBookList();
+}
 
+void LibraryHandler::AddBooks(QStringList fileList)
+{
     if (!fileList.size())
         return;
 
     GenresMap *Gmap = new GenresMap();
 
-    for (int i = 0; i < fileList.size(); ++i)
+    for (int i = 0; i < fileList.size(); i++)
         openNewBooks(fileList[i], Gmap);
 
     delete Gmap;
     saveBookList();
-
 }
 
 
-void MainWindow::AddFolder()
+void LibraryHandler::AddFolder(QString path)
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     QStringList fileList;
 
     if (path.isEmpty())
         return;
 
-    QDirIterator it(path, MainWindow::filesMask, QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator it(path, filesMask, QDir::Files, QDirIterator::Subdirectories);
     while (it.hasNext())
         fileList << it.next();
 
@@ -592,7 +603,7 @@ void MainWindow::on__Downscale_clicked()
     LibraryLayout->iconDownscale();
 }
 
-void MainWindow::findBooks(QString token, QString type)
+void LibraryHandler::findBooks(QString token, QString type)
 {
     if (token != "")
     {
@@ -623,11 +634,60 @@ void MainWindow::on__Find_toggled(bool checked)
 
 
 
-        connect(searchWindow, SIGNAL(startSearch(QString,QString)), this, SLOT(findBooks(QString, QString)));
-        connect(searchWindow, SIGNAL(finished(int)), this, SLOT(returnButton()));
+        connect(searchWindow, SIGNAL(startSearch(QString,QString)), LibHandler, SLOT(findBooks(QString, QString)));
+        connect(searchWindow, SIGNAL(finished(int)), LibHandler, SLOT(returnButton()));
     }
     else
     {
         searchWindow->close();
     }
+}
+
+bool AuthorComparator(Book &boo1, Book &boo2)
+{
+    if (boo1.getAuthorName() <= boo2.getAuthorName())
+        return true;
+    else
+        return false;
+}
+
+bool TitleComparator(Book &boo1, Book & boo2)
+{
+    if (boo1.getTitle() <= boo2.getTitle())
+        return true;
+    else
+        return false;
+}
+
+
+void MainWindow::on__SortBox_activated(const QString &arg1)
+{
+    if (arg1 == "Date")
+    {
+        LibraryLayout->clear();
+        for (int i = 0; i < LibHandler->bookList.size(); i++)
+            LibraryLayout->addItem(LibHandler->bookList[i].getBookIndex(), LibHandler->bookList[i].getAuthorName(), LibHandler->bookList[i].getTitle(), LibHandler->bookList[i].getCover());
+        return;
+    }
+    if (arg1 == "Author")
+    {
+
+        QVector <Book> indexVector = LibHandler->bookList;
+        qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
+        LibraryLayout->clear();
+        for (int i = 0; i < indexVector.size(); i++)
+            LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+        return;
+    }
+    if (arg1 == "Title")
+    {
+        LibraryLayout->clear();
+        QVector <Book> indexVector = LibHandler->bookList;
+        qSort(indexVector.begin(), indexVector.end(), TitleComparator);
+        LibraryLayout->clear();
+        for (int i = 0; i < indexVector.size(); i++)
+            LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+        return;
+    }
+
 }

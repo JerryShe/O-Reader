@@ -29,7 +29,7 @@
    <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>EbaReader</string>
+   <string>Reader</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>

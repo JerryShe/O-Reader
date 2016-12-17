@@ -33,8 +33,8 @@ public:
 
     int getSelectedItemsCount();
 
-    void sortBy(int mode);
-    void groupBy(int mode);
+    void clear();
+    void groupBy(QString mode);
     void findItems(QString str, int mode);
 
 signals:

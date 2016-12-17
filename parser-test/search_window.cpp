@@ -6,7 +6,7 @@
 
 void SearchWindow::setStyle(QString style)
 {
-    QString styleList[4];
+    QString styleList[5];
     setSearchWindowStyle(styleList, style);
     exit_button->setStyleSheet(styleList[0]);
     YepButton->setStyleSheet(styleList[1]);
@@ -44,11 +44,13 @@ SearchWindow::SearchWindow(int posX, int posY, QString style, bool mode, QWidget
     TextLayout->addWidget(TextBox, 0);
     TextLayout->addWidget(SearchTypeBox, 1);
 
+    VLayout->addLayout(TopLayout, 0);
     VLayout->addLayout(TextLayout, 1);
+    VLayout->addLayout(ButtonLayout, 2);
 
     YepButton = new QPushButton(this);
     NopeButton = new QPushButton(this);
-    VLayout->addLayout(ButtonLayout, 2);
+
     ButtonLayout->addWidget(YepButton, 0);
     ButtonLayout->addWidget(NopeButton, 1);
     connect(YepButton, SIGNAL(clicked(bool)), this, SLOT(YepButtonClicked()));
@@ -72,12 +74,12 @@ SearchWindow::SearchWindow(int posX, int posY, QString style, bool mode, QWidget
         TopLayout->setContentsMargins(0,0,0,0);
         TopLayout->setSpacing(0);
         exit_button->setFixedSize(25,25);
+
         connect(exit_button, SIGNAL(clicked(bool)), this, SLOT(exitButtonClicked()));
 
         TopLayout->addSpacerItem(topSpacer);
         TopLayout->addWidget(exit_button, 1);
 
-        VLayout->addLayout(TopLayout, 0);
         exit_button->show();
     }
     else

@@ -9,6 +9,7 @@
 #include <QMouseEvent>
 #include <QMessageBox>
 #include <QDebug>
+#include <QCoreApplication>
 
 librarylayout::librarylayout(QWidget *widget)
 {
@@ -75,6 +76,8 @@ void librarylayout::addItem(int BookIndex, QString name, QString title, QImage c
     BookModel->setData(index, name + '\n' + title, Qt::ToolTipRole);
     BookModel->setData(index, BookIndex, Qt::WhatsThisRole);
     BookModel->setData(index, coverIcon, Qt::DecorationRole);
+
+    QCoreApplication::processEvents();
 }
 
 
@@ -122,15 +125,24 @@ void librarylayout::deleteBook(int index)
 
 int librarylayout::getSelectedItemsCount()
 {
-    return BookListView->selectionModel()->selectedIndexes().size();
+
 }
 
-void librarylayout::sortBy(int mode)
+void librarylayout::clear()
 {
+    delete BookModel;
+    BookModel = new QStandardItemModel(ListSize,ListSize);
+    BookListView->setModel(BookModel);
+    itemCount = 0;
 
+    ///////////////////////////////////////////
+    //КОСТЫЛЬ                                //
+    //blyadishn magic detected               //
+    //после clear не добавляются элементы    //
+    ///////////////////////////////////////////
 }
 
-void librarylayout::groupBy(int mode)
+void librarylayout::groupBy(QString mode)
 {
 
 }

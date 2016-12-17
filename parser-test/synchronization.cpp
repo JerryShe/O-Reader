@@ -112,6 +112,7 @@ int Synchronization::synchronizeToServer()
     //грузим файл лога на сервер
     //чистим очередь и локальный лог
     saveLog();
+    return 0;
 }
 
 int Synchronization::synchronizeFromServer()
@@ -120,7 +121,7 @@ int Synchronization::synchronizeFromServer()
     //грузим файл лога с сервера
     //применяем изменения
     loadLog();
-
+    return 0;
 }
 
 /* Добавление книги - 1: файл
