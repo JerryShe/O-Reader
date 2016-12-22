@@ -76,13 +76,11 @@ private slots:
     void on__Downscale_clicked();
     void on__Find_toggled(bool checked);
 
-    void startReading(int index);
-    void showBookPage(int index);
+    void startReading(const int index);
+    void showBookPage(const int index);
 
     void addBooksFolder();
     void addBooksFiles();
-
-    //QVector <Book> BookSort( bool(*compare)(Book&, Book&) );
 
 private:
     int activeWindow = 1;
@@ -118,7 +116,6 @@ private:
 
     LibraryHandler * LibHandler;
     friend class LibraryHandler;
-
 };
 
 class LibraryHandler: public QObject
@@ -134,20 +131,23 @@ public:
     }
 
 public slots:
-    void AddBooks(QStringList fileList);
-    void AddFolder(QString path);
-    void deleteBook(int index);
+    void AddBooks(const QStringList fileList);
+    void AddFolder(const QString path);
+    void deleteBook(const int index);
     void deleteBooks(QVector <int> deletedItemsIndexes);
 
-    void openNewBooks(QString fileList, GenresMap *Gmap);
-    QString getFileTipe(QString fileName);
+    void openNewBooks(const QString fileList, GenresMap *Gmap);
+    QString getFileTipe(const QString fileName);
 
-    void findBooks(QString,QString);
+    void findBooks(QString key, QString mode);
 
     void loadBookList();
     void saveBookList();
 
+    void sortBooks(const QString mode);
+
 public:
+    bool needRefresh = false;
     QStringList filesMask;
     QVector <Book> bookList;
     int currentBookIndex;

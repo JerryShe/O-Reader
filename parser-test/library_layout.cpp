@@ -125,7 +125,7 @@ void librarylayout::deleteBook(int index)
 
 int librarylayout::getSelectedItemsCount()
 {
-
+    return BookListView->selectionModel()->selectedIndexes().size();
 }
 
 void librarylayout::clear()
@@ -134,20 +134,9 @@ void librarylayout::clear()
     BookModel = new QStandardItemModel(ListSize,ListSize);
     BookListView->setModel(BookModel);
     itemCount = 0;
-
-    ///////////////////////////////////////////
-    //КОСТЫЛЬ                                //
-    //blyadishn magic detected               //
-    //после clear не добавляются элементы    //
-    ///////////////////////////////////////////
 }
 
 void librarylayout::groupBy(QString mode)
-{
-
-}
-
-void librarylayout::findItems(QString str, int mode)
 {
 
 }

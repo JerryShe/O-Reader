@@ -35,7 +35,6 @@ public:
 
     void clear();
     void groupBy(QString mode);
-    void findItems(QString str, int mode);
 
 signals:
     void showBookPage(int index);

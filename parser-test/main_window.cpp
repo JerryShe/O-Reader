@@ -182,7 +182,7 @@ void LibraryHandler::saveBookList()
 }
 
 
-QString LibraryHandler::getFileTipe(QString fileName)
+QString LibraryHandler::getFileTipe(const QString fileName)
 {
     QString tipe;
     for (int i = 1; i <= 4; i++)
@@ -196,7 +196,7 @@ QString LibraryHandler::getFileTipe(QString fileName)
 }
 
 
-void LibraryHandler::openNewBooks(QString file, GenresMap *Gmap)
+void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
 {
     for (int j = 0; j < bookList.size(); j++)
     {
@@ -225,7 +225,7 @@ void LibraryHandler::openNewBooks(QString file, GenresMap *Gmap)
     }
 }
 
-void MainWindow::showBookPage(int index)
+void MainWindow::showBookPage(const int index)
 {
     int i;
     for (i = 0; i < LibHandler->bookList.size(); i++)
@@ -233,11 +233,11 @@ void MainWindow::showBookPage(int index)
             break;
 
     page = new BookPage(LibHandler->bookList[i], currentStyle, this);
-    connect(page, SIGNAL(startReading(int)), LibHandler, SLOT(startReading(int)));
+    connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
     connect(page, SIGNAL(deleteBook(int)), LibHandler, SLOT(deleteBook(int)));
 }
 
-void MainWindow::startReading(int BookIndex)
+void MainWindow::startReading(const int BookIndex)
 {
     int i;
     for (i = 0; i < LibHandler->bookList.size(); i++)
@@ -251,7 +251,7 @@ void MainWindow::startReading(int BookIndex)
     this->hide();
 }
 
-void LibraryHandler::deleteBook(int index)
+void LibraryHandler::deleteBook(const int index)
 {
     window->LibraryLayout->deleteBook(index);
     for (int i = 0; i < bookList.size(); i++)
@@ -514,7 +514,7 @@ void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
         saveBookList();
 }
 
-void LibraryHandler::AddBooks(QStringList fileList)
+void LibraryHandler::AddBooks(const QStringList fileList)
 {
     if (!fileList.size())
         return;
@@ -603,16 +603,36 @@ void MainWindow::on__Downscale_clicked()
     LibraryLayout->iconDownscale();
 }
 
-void LibraryHandler::findBooks(QString token, QString type)
+void LibraryHandler::findBooks(QString token, QString mode)
 {
     if (token != "")
     {
-
+        needRefresh = true;
+        window->LibraryLayout->clear();
+        if (mode == "Title")
+        {
+            for (int i = 0; i < bookList.size(); i++)
+                if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
+                    window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+            return;
+        }
+        if (mode == "Author")
+        {
+            for (int i = 0; i < bookList.size(); i++)
+                if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
+                    window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+            return;
+        }
+        if (mode == "Series")
+        {
+            for (int i = 0; i < bookList.size(); i++)
+                if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
+                    window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+            return;
+        }
     }
     else
-    {
         return;
-    }
 }
 
 void MainWindow::returnButton()
@@ -632,14 +652,19 @@ void MainWindow::on__Find_toggled(bool checked)
         //   \/  \/     |     |
         // MEGA BUG, Wiiiiii
 
-
-
         connect(searchWindow, SIGNAL(startSearch(QString,QString)), LibHandler, SLOT(findBooks(QString, QString)));
-        connect(searchWindow, SIGNAL(finished(int)), LibHandler, SLOT(returnButton()));
+        connect(searchWindow, SIGNAL(finished(int)), this, SLOT(returnButton()));
     }
     else
     {
         searchWindow->close();
+        if (LibHandler->needRefresh == true)
+        {
+            LibraryLayout->clear();
+            LibHandler->needRefresh = false;
+            for (int i = 0; i < LibHandler->bookList.size(); i++)
+                LibraryLayout->addItem(LibHandler->bookList[i].getBookIndex(), LibHandler->bookList[i].getAuthorName(), LibHandler->bookList[i].getTitle(), LibHandler->bookList[i].getCover());
+        }
     }
 }
 
@@ -659,35 +684,38 @@ bool TitleComparator(Book &boo1, Book & boo2)
         return false;
 }
 
+void LibraryHandler::sortBooks(const QString mode)
+{
+    if (mode == "Date")
+    {
+        window->LibraryLayout->clear();
+        for (int i = 0; i < bookList.size(); i++)
+            window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+        return;
+    }
+    if (mode == "Author")
+    {
+
+        QVector <Book> indexVector = bookList;
+        qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
+        window->LibraryLayout->clear();
+        for (int i = 0; i < indexVector.size(); i++)
+            window->LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+        return;
+    }
+    if (mode == "Title")
+    {
+        window->LibraryLayout->clear();
+        QVector <Book> indexVector = bookList;
+        qSort(indexVector.begin(), indexVector.end(), TitleComparator);
+        window->LibraryLayout->clear();
+        for (int i = 0; i < indexVector.size(); i++)
+            window->LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+        return;
+    }
+}
 
 void MainWindow::on__SortBox_activated(const QString &arg1)
 {
-    if (arg1 == "Date")
-    {
-        LibraryLayout->clear();
-        for (int i = 0; i < LibHandler->bookList.size(); i++)
-            LibraryLayout->addItem(LibHandler->bookList[i].getBookIndex(), LibHandler->bookList[i].getAuthorName(), LibHandler->bookList[i].getTitle(), LibHandler->bookList[i].getCover());
-        return;
-    }
-    if (arg1 == "Author")
-    {
-
-        QVector <Book> indexVector = LibHandler->bookList;
-        qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
-        LibraryLayout->clear();
-        for (int i = 0; i < indexVector.size(); i++)
-            LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
-        return;
-    }
-    if (arg1 == "Title")
-    {
-        LibraryLayout->clear();
-        QVector <Book> indexVector = LibHandler->bookList;
-        qSort(indexVector.begin(), indexVector.end(), TitleComparator);
-        LibraryLayout->clear();
-        for (int i = 0; i < indexVector.size(); i++)
-            LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
-        return;
-    }
-
+    LibHandler->sortBooks(arg1);
 }
