@@ -10,53 +10,14 @@
 #include "settings_layout.h"
 #include "search_window.h"
 #include "synchronization_layout.h"
+#include "fb2textparser.h"
 
 #include <QThread>
+#include <QDomDocument>
 
 namespace Ui {
 class ReadingWindow;
 }
-
-class TextParser : public QObject
-{
-    Q_OBJECT
-
-public:
-    TextParser(Book boo, settings* PSettings);
-    ~TextParser();
-
-    void setPageGeometry(int width, int height);
-    void startParse();
-    QString getCurrentPage();
-    int getPageCount();
-
-    QString getNextPage();
-    QString getPrevPage();
-    QString reparse();
-
-private:
-
-    int pageWidth;
-    int pageHeight;
-
-    int currentWidth;
-    int currentHeight;
-    short currentColumn;
-
-    int currentPage;
-    int pageCount;
-
-    Book book;
-    settings *ProgramSettings;
-
-    QString PageHTMLHeader;
-    QString PageHTMLBottom;
-    QString Page1;
-    QString Page2;
-
-    QStringList PagesList;
-    QVector <QPair<QString,QString>> ParagrafList;
-};
 
 class ReadingWindow : public QMainWindow
 {
@@ -130,12 +91,14 @@ private:
     QPushButton * ProfileButton;
     QPushButton * ProgramButton;
     QPushButton * ReaderButton;
+    QPushButton * SettingsExitButton;
 
     SearchWindow * Search;
 
     QString styles[5];
 
-    TextParser * BookParse;
+    FB2TextParser * BookParse;
 };
 
 #endif // READINGWINDOW_H
+

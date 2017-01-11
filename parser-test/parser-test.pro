@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     genresmap.cpp \
     synchronization.cpp \
     reading_window.cpp \
-    search_window.cpp
+    search_window.cpp \
+    fb2textparser.cpp
 
 HEADERS  += \
     login_window.h \
@@ -52,7 +53,8 @@ HEADERS  += \
     genresmap.h \
     synchronization.h \
     reading_window.h \
-    search_window.h
+    search_window.h \
+    fb2textparser.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \

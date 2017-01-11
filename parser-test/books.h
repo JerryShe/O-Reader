@@ -31,11 +31,15 @@ public:
     QString getLanguage();
     int getBookProgress();
 
+    QString getBookCodec();
+    void setBookCodec(QString BookCodec);
     QString File;
 
 private:
 
     int BookIndex;
+    QString BookCodec;
+
     QString Title;
     QString AuthorFirstName;
     QString AuthorMiddleName;
@@ -46,7 +50,7 @@ private:
     QString Language;
     QString SourceLanguage;
     QDateTime AddittionTime;
-    double BookProgress = 0;
+    int BookProgress = 0;
     QString CoverType;
     QString Cover;
 };

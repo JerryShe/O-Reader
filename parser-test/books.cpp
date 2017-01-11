@@ -30,6 +30,21 @@ Book::Book(QString fileName, GenresMap *Gmap)
                 ///выдать эксепшн - это не фикшн бук
             }
 
+            QDomNodeList childs = doc.childNodes();
+            for (int i = 0; i < childs.size(); i++)
+                if (childs.at(i).isProcessingInstruction())
+                {
+                    QString data = childs.at(i).toProcessingInstruction().data();
+                    int j = data.indexOf("encoding");
+                    if (j != -1)
+                    {
+                        j = data.indexOf("'", j);
+                        for (j += 1; j < data.size() && j < data.indexOf("'", j); j++)
+                            BookCodec += data[j];
+                    }
+                    break;
+                }
+
             //файл книги
             Book::File = fileName;
 
@@ -127,6 +142,7 @@ Book::Book(QString fileName, GenresMap *Gmap)
 void Book::writeToConsole()
 {
     qDebug()<<Book::File;
+    qDebug()<<Book::BookCodec;
     qDebug()<<Book::BookIndex;
     qDebug()<<Book::Title;
     qDebug()<<Book::AuthorFirstName;
@@ -143,6 +159,7 @@ void Book::writeToConsole()
 QDataStream &operator <<(QDataStream &out, const Book &BookElem)
 {
     out<<BookElem.File;
+    out<<BookElem.BookCodec;
     out<<BookElem.Title;
     out<<BookElem.AuthorFirstName;
     out<<BookElem.AuthorMiddleName;
@@ -164,6 +181,7 @@ QDataStream &operator <<(QDataStream &out, const Book &BookElem)
 QDataStream &operator >> (QDataStream &in, Book &BookElem)
 {
     in>>BookElem.File;
+    in>>BookElem.BookCodec;
     in>>BookElem.Title;
     in>>BookElem.AuthorFirstName;
     in>>BookElem.AuthorMiddleName;
@@ -253,4 +271,13 @@ QString Book::getSeries()
         return Series.first + ' ' + QString::number(Series.second);
     else
         return Series.first;
+}
+
+QString Book::getBookCodec()
+{
+    return BookCodec;
+}
+void Book::setBookCodec(QString codec)
+{
+    BookCodec = codec;
 }

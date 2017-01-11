@@ -442,3 +442,17 @@ void setReaderWindowMenuButtons(QString ButtonsStyle[], const QString style)
     }
 }
 
+void setReaderSettingsExitButton(QString ButtonsStyle[], const QString style)
+{
+    if (style == "Red")
+    {
+        ButtonsStyle[0] = "QPushButton{"
+                          "border-image: url(:/window_buttons/DarkExit.png);"
+                          "border: none;"
+                          "background:none;}"
+                          "color:white;}"
+                          "QPushButton:hover"
+                          "{background-color:rgb(147, 0, 60);}";
+    }
+}
+
