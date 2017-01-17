@@ -14,6 +14,7 @@
 
 #include <QThread>
 #include <QDomDocument>
+#include <QKeyEvent>
 
 namespace Ui {
 class ReadingWindow;
@@ -40,9 +41,9 @@ private slots:
 
     void setStyle(QString currentStyle);
 
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent * e);
+    void mousePressEvent(QMouseEvent * e);
+    void mouseReleaseEvent(QMouseEvent * e);
 
     void StartSearch(QString key, QString type);
     void NextSearchStep();
@@ -54,9 +55,17 @@ private slots:
     void changeSettingsTab(int i);
 
     void clockStep();
+    void updateProgress();
+
+    void resizeEvent(QResizeEvent * e);
+    void reprintText();
 
 signals:
     void showMainWindow();
+    void windowWasResized();
+
+protected:
+   virtual void keyPressEvent(QKeyEvent *event);
 
 private:
     QRect prev_geometry;

@@ -260,9 +260,14 @@ QString Book::getLanguage()
     return Language;
 }
 
-int Book::getBookProgress()
+unsigned int Book::getBookProgress()
 {
     return BookProgress;
+}
+
+void Book::setBookProgress(const unsigned int progress)
+{
+    BookProgress = progress;
 }
 
 QString Book::getSeries()

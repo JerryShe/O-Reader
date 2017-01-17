@@ -160,7 +160,7 @@ TextStyleSheet::TextStyleSheet()
     TextColor = "#000000";
 }
 
-TextStyleSheet::TextStyleSheet(QString Font, short Size, short Style, short Spacing, QString Align, QString color)
+TextStyleSheet::TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, QString Align, QString color)
     : FontFamily(Font), FontSize(Size), FontStyle(Style), LineSpacing(Spacing), TextAlign(Align), TextColor(color){}
 
 QDataStream &operator <<(QDataStream &out, const TextStyleSheet &TextStyleSheetElem)
@@ -291,6 +291,8 @@ void settings::saveStyle(const QString name, const ReadingStyle style)
     }
     else
         StylesMap[TextStylesNames.indexOf(name)] = style;
+
+    qDebug()<<"settings saved";
 }
 
 void settings::removeNamedStyle(QString name)

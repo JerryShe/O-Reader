@@ -46,6 +46,7 @@ void ReadingWindow::setStyle(QString currentStyle)
 ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::ReadingWindow)
 {
     ui->setupUi(this);
+    installEventFilter(this);
     ui->TextPage->setAlignment(Qt::AlignJustify);
     show();
     BookParse = new FB2TextParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height() - ui->TopBarWidget->height());
@@ -54,7 +55,9 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::Readi
 
     connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
     parserThread->start();
-    ui->TextPage->setHtml(BookParse->getPageFrom());
+    //ui->TextPage->setHtml(BookParse->getPageForward());
+    updateProgress();
+    connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintText()));
 
     ui->TextPage->setMouseTracking(true);
     ui->MainWidget->setMouseTracking(true);
@@ -251,6 +254,38 @@ void ReadingWindow::mouseReleaseEvent(QMouseEvent *e)
     }
 }
 
+void ReadingWindow::keyPressEvent(QKeyEvent *event)
+{
+    qDebug()<<"yepe, it's a key";
+    if (event->key() == Qt::Key_D || event->key() == Qt::Key_Space)
+    {
+        ui->TextPage->setHtml(BookParse->getPageForward());
+        updateProgress();
+        return;
+    }
+    if (event->key() == Qt::Key_A)
+    {
+        ui->TextPage->setHtml(BookParse->getPageBackward());
+        updateProgress();
+        return;
+    }
+}
+
+void ReadingWindow::resizeEvent(QResizeEvent *e)
+{
+    emit windowWasResized();
+}
+
+void ReadingWindow::reprintText()
+{
+    ui->TextPage->setHtml(BookParse->updatePage(ui->TextPage->width(), ui->TextPage->height() - ui->TopBarWidget->height()));
+}
+
+void ReadingWindow::updateProgress()
+{
+    ui->Progress->setText(QString::number(floor(BookParse->getProgress()*10)/10) + "%");
+}
+
 void ReadingWindow::ContentsButton_clicked()
 {
     MenuWidget->hide();
@@ -430,3 +465,5 @@ void ReadingWindow::BackToMainWindowButton_Clicked()
     emit showMainWindow();
     this->close();
 }
+
+

@@ -22,14 +22,15 @@ public:
     QString getAuthorName();
     QString getTitle();
     QImage getCover();
-    void setBookIndex(int index);
+    void setBookIndex(const int index);
     int getBookIndex();
 
     QStringList getAnnotation();
     QStringList getGenres();
     QString getSeries();
     QString getLanguage();
-    int getBookProgress();
+    unsigned int getBookProgress();
+    void setBookProgress(const unsigned int progress);
 
     QString getBookCodec();
     void setBookCodec(QString BookCodec);
@@ -50,7 +51,7 @@ private:
     QString Language;
     QString SourceLanguage;
     QDateTime AddittionTime;
-    int BookProgress = 0;
+    unsigned int BookProgress = 0;
     QString CoverType;
     QString Cover;
 };

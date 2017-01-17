@@ -6,6 +6,8 @@
 #include <settings.h>
 
 #include <QStack>
+#include <QTextStream>
+
 
 
 class FB2TextParser : public QObject
@@ -17,43 +19,69 @@ public:
     ~FB2TextParser();
 
 public:
-    void setPageGeometry(int width, int height);
+    void setPageGeometry(const int width, const int height);
 
     void parseBookText();
 
-    QString getPageFrom();
-    QString getPageTo();
-    QString updatePage();
+    float getProgress();
 
+    QString getPageForward();
+    QString getPageBackward();
 
 public slots:
-    void setHTMLinf();
-    void setFontMap();
-    void setSpacesWidth();
-    void setLinespaceMap();
+    QString updatePage(const int width, const int height);
+    QString updateSettings();
 
 private:
+    QStringList splitTextToWords(QString temp);
+    QTextStream* doc;
+
+    void setHTMLinf();
+    void setFontMap();
+    void setLinespaceMap();
+
     int getWordWidth(QString word);
-    int getWordHeight(QString word);
+    int getWordHeight();
 
     int getSpaceWidth();
     int getLinespaceMap();
 
+    void applyTag();
+    bool applyWord();
+    bool parseTag();
+    void takeTag();
+
+    void extractTag(QString tagBeg, QString tagEnd);
+
+    void debugSave(QString HTMLPage);
 
     QStringList bookText;
-    int pageWidth;
-    int pageHeight;
+    unsigned int pageWidth;
+    unsigned int pageHeight;
 
     QStringList Columns;
-    int currentWidth;
-    int currentHeight;
 
-    int currentBStrNum;
-    int currentEStrNum;
+    unsigned int pageBegin;
 
-    int strCount;
+    long long currentBStrNum,
+              currentTextPos,
+              currentEStrNum,
+              strCount;
+
+    int currentColumn;
+    int currentWordPos;
+
+    unsigned int wordWidth, wordHeight;
+    unsigned int currentWidth, currentHeight;
+    unsigned short stringStep;
+    unsigned int stringHeight;
+
+
+    bool tagType;  // 0 - open, 1 - close
+    bool parseDirection;    // 0 - forward, 1 - backward
 
     QString columnTale;
+    QString word, tag;
 
     Book book;
     settings *ProgramSettings;
@@ -64,8 +92,8 @@ private:
     QString PageHTMLSep;
 
     QStack <QString> tagStack;
+    QStack <QString> beginTagStack;
     QMap <QString, QFontMetrics*> fontMap;
-    QMap <QString, int> spacesMap;
     QMap <QString, double> linespaceMap;
 };
 

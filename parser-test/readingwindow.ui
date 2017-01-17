@@ -125,42 +125,31 @@ p, li { white-space: pre-wrap; }
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer_4">
+        <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::Fixed</enum>
-         </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>15</width>
+           <width>686</width>
            <height>0</height>
           </size>
          </property>
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="Clock">
-         <property name="minimumSize">
-          <size>
-           <width>50</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>50</width>
-           <height>25</height>
-          </size>
-         </property>
+        <widget class="QLabel" name="Progress">
          <property name="font">
           <font>
-           <pointsize>16</pointsize>
+           <family>Batang</family>
+           <pointsize>14</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+           <stylestrategy>NoAntialias</stylestrategy>
           </font>
          </property>
          <property name="text">
-          <string>clock</string>
+          <string>30%</string>
          </property>
         </widget>
        </item>
@@ -174,33 +163,51 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>15</width>
+           <width>50</width>
            <height>0</height>
           </size>
          </property>
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="Progress">
+        <widget class="QLabel" name="Clock">
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>25</height>
+          </size>
+         </property>
          <property name="font">
           <font>
-           <pointsize>16</pointsize>
-           <stylestrategy>PreferAntialias</stylestrategy>
+           <family>Batang</family>
+           <pointsize>14</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+           <stylestrategy>NoAntialias</stylestrategy>
           </font>
          </property>
          <property name="text">
-          <string>0/0</string>
+          <string>20:59:59</string>
          </property>
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
+        <spacer name="horizontalSpacer_4">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>686</width>
+           <width>50</width>
            <height>0</height>
           </size>
          </property>

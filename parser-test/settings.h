@@ -8,11 +8,11 @@
 struct TextStyleSheet
 {
     TextStyleSheet();
-    TextStyleSheet(QString Font, short Size, short Style, short Spacing, QString Align, QString color);
+    TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, QString Align, QString color);
 
     QString FontFamily;
-    short FontSize;          // from 6 to 76
-    short FontStyle;         // 00 - нормальный 01 - болд 10 - курсив 11 - болд+курсив
+    unsigned short FontSize;          // from 6 to 76
+    unsigned short FontStyle;         // 00 - нормальный 01 - болд 10 - курсив 11 - болд+курсив
     double LineSpacing;       // from 0,5 to 2
     QString TextAlign;         // 0 - justify, 1 - left, 2 - right, 3 - center
     QString TextColor;
@@ -25,13 +25,13 @@ struct ReadingStyle
 {
     ReadingStyle();
 
-    short ColumnCount;
+    unsigned short ColumnCount;
     bool BackgroundType;     //1 - color, 0 - image
     QString BackgroundImage;
     bool TextAntiAliasing;
-    short ParLeftTopIdent;   //xxyy, xx - left, yy - top
-    short TextLeftRightIdent;//xxyy, xx - left, yy - right
-    short TextTopBottomIdent;//xxyy, xx - top, yy - bottom
+    unsigned short ParLeftTopIdent;   //xxyy, xx - left, yy - top
+    unsigned short TextLeftRightIdent;//xxyy, xx - left, yy - right
+    unsigned short TextTopBottomIdent;//xxyy, xx - top, yy - bottom
 
     TextStyleSheet RegularTextStyle;
     TextStyleSheet EmphasizedTextStyle;
@@ -64,7 +64,7 @@ public:
     void setLibraryReprezentation(const bool val);
 
     short getLibraryIconSize();
-    void setLibraryIconSize(const short size);
+    void setLibraryIconSize(const unsigned short size);
 
     QString getCurrentTextStyle();
     void setCurrentTextStyle(const QString style);
@@ -92,8 +92,8 @@ private:
     QString InterfaceStyle;
     QString Language;
     bool LibraryReprezentation;
-    short LibraryIconBarSize;
-    short LibraryIconListSize;
+    unsigned short LibraryIconBarSize;
+    unsigned short LibraryIconListSize;
     bool HideTopBar;                 // 1 - показывать всегда, 0 - показывать при наведении
 
     QStringList TextStylesNames;
