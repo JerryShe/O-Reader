@@ -35,41 +35,32 @@ void MainWindow::libraryButtonsShow()
     for (int i = 0; i < ui->LibraryButtons->count(); i++)
         ui->LibraryButtons->itemAt(i)->widget()->show();
 }
-void MainWindow::settingsButtonsHide()
-{
-    for (int i = 0; i < ui->SettingsButtons->count(); i++)
-        ui->SettingsButtons->itemAt(i)->widget()->hide();
-}
-void MainWindow::settingsButtonsShow()
-{
-    for (int i = 0; i < ui->SettingsButtons->count(); i++)
-        ui->SettingsButtons->itemAt(i)->widget()->show();
-}
 
-
-void MainWindow::setStyle()
+void MainWindow::setWindowStyle(QString currentStyle)
 {
-    setWindowTopButtonsStyle(styleSheets, MainWindow::currentStyle);
+    setTopBarBackgroundColor(styleSheets, currentStyle);
+    ui->TopBarWidget->setStyleSheet(styleSheets[0]);
+
+    setWindowTopButtonsStyle(styleSheets, currentStyle);
     ui->min_button->setStyleSheet(styleSheets[0]);
     ui->full_size_button->setStyleSheet(styleSheets[1]);
-    ui->exit_button->setStyleSheet(styleSheets[2]);
 
-    setBackgroundWindowColor(styleSheets, MainWindow::currentStyle);
+    setExitButtonStyle(styleSheets, currentStyle);
+    ui->exit_button->setStyleSheet(styleSheets[0]);
+
+    setBackgroundWindowColor(styleSheets, currentStyle);
     ui->MainWidget->setStyleSheet(styleSheets[0]);
 
-    setTabButtonsStyle(tabsStyleSheets, MainWindow::currentStyle);
+    setTabButtonsStyle(tabsStyleSheets, currentStyle);
     ui->_Find->setStyleSheet(tabsStyleSheets[4]);
     ui->_AddBooks->setStyleSheet(tabsStyleSheets[0]);
     ui->_Delete->setStyleSheet(tabsStyleSheets[0]);
     ui->_Group->setStyleSheet(tabsStyleSheets[2]);
     ui->_Sort->setStyleSheet(tabsStyleSheets[2]);
-    ui->_SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
-    ui->_SettingsProgram->setStyleSheet(tabsStyleSheets[1]);
-    ui->_SettingsReader->setStyleSheet(tabsStyleSheets[0]);
     ui->_SortBox->setStyleSheet(tabsStyleSheets[3]);
     ui->_GroupBox->setStyleSheet(tabsStyleSheets[3]);
 
-    setMenusButtonsStyle(styleSheets, MainWindow::currentStyle);
+    setMenusButtonsStyle(styleSheets, currentStyle);
     ui->Settings->setStyleSheet(styleSheets[1]);
     ui->Synchronization->setStyleSheet(styleSheets[2]);
     ui->Logout->setStyleSheet(styleSheets[3]);
@@ -77,23 +68,8 @@ void MainWindow::setStyle()
     ui->LeftExpandingWidget->setStyleSheet(styleSheets[8]);
 }
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    MainWindow::prev_geometry = MainWindow::geometry();
-    LibraryLayout = new librarylayout();
-
-    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
-    MainWindow::setMouseTracking(true);
-
-    MainWindow::settingsButtonsHide();
-
-    ui->_SortBox->setView(new QListView());
-    ui->_GroupBox->setView(new QListView());
-
-    connect(ui->SettingsLayout, SIGNAL(tabChanged(int)), this, SLOT(settingsTabChanged(int)));
-    connect(LibraryLayout, SIGNAL(showBookPage(int)), this, SLOT(showBookPage(int)));
-
     resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
@@ -104,31 +80,56 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
 
     UserActions = new Synchronization();
-    ProgramSettings = new settings();
+    ProgramSettings = new settings(translator);
 
     ProgramSettings->moveToThread(HandlerThread);
     UserActions->moveToThread(HandlerThread);
+    HandlerThread->start();
 
-    ui->TabsLayout->addWidget(LibraryLayout, 0);
+    ProgramSettings->loadSettings();
+
+    ui->setupUi(this);
 
     LibHandler = new LibraryHandler(this);
     LibHandler->moveToThread(HandlerThread);
-
-    HandlerThread->start();
-    ProgramSettings->loadSettings();
-    currentStyle = ProgramSettings->getInterfaceStyle();
-    MainWindow::setStyle();
-    ui->SettingsLayout->setSettingsData(ProgramSettings);
-
+    LibraryLayout = new librarylayout();
+    ui->TabsLayout->addWidget(LibraryLayout, 0);
     LibHandler->loadBookList();
+
+    MainWindow::setWindowStyle(ProgramSettings->getInterfaceStyle());
+    ui->SettingsLayout->hide();
+    MainWindow::prev_geometry = MainWindow::geometry();
+
+    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
+    MainWindow::setMouseTracking(true);
+
+    ui->_SortBox->setView(new QListView());
+    ui->_GroupBox->setView(new QListView());
+
+    connect(LibraryLayout, SIGNAL(showBookPage(int)), this, SLOT(showBookPage(int)));
+
+    ui->SettingsLayout->setSettingsData(ProgramSettings);
+    LibraryLayout->setSettingsData(ProgramSettings);
 }
 
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+    }
+}
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete LibHandler;
     delete LibraryLayout;
+    delete UserActions;
+    delete ProgramSettings;
+    delete readingWindow;
+    delete searchWindow;
+    delete page;
+
 }
 
 void LibraryHandler::loadBookList()
@@ -232,7 +233,7 @@ void MainWindow::showBookPage(const int index)
         if (LibHandler->bookList[i].getBookIndex() == index)
             break;
 
-    page = new BookPage(LibHandler->bookList[i], currentStyle, this);
+    page = new BookPage(LibHandler->bookList[i], ProgramSettings->getInterfaceStyle(), this);
     connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
     connect(page, SIGNAL(deleteBook(int)), LibHandler, SLOT(deleteBook(int)));
 }
@@ -272,8 +273,8 @@ void MainWindow::on_exit_button_clicked()
 {
     ui->_Find->setChecked(false);
     AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x() - 300 + ui->exit_button->width(),
-                                                   ui->exit_button->mapToGlobal(QPoint(0,0)).y() + ui->exit_button->height(),"Exit?",
-                                                   MainWindow::currentStyle);
+                                                   ui->exit_button->mapToGlobal(QPoint(0,0)).y() + ui->exit_button->height(),QObject::tr("Exit?"),
+                                                   MainWindow::ProgramSettings->getInterfaceStyle());
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
@@ -363,7 +364,6 @@ void MainWindow::on_Library_clicked()
             case 2:
                 ui->Settings->setStyleSheet(styleSheets[1]);
                 ui->SettingsLayout->hideWithoutSaving();
-                MainWindow::settingsButtonsHide();
                 break;
             case 3:
                 ui->Synchronization->setStyleSheet(styleSheets[2]);
@@ -400,7 +400,6 @@ void MainWindow::on_Settings_clicked()
         MainWindow::activeWindow = 2;
 
         ui->SettingsLayout->show();
-        MainWindow::settingsButtonsShow();
         ui->Settings->setStyleSheet(styleSheets[5]);
     }
 }
@@ -420,7 +419,6 @@ void MainWindow::on_Synchronization_clicked()
             case 2:
                 ui->Settings->setStyleSheet(styleSheets[1]);
                 ui->SettingsLayout->hideWithoutSaving();
-                MainWindow::settingsButtonsHide();
                 break;
             default: break;
         }
@@ -438,8 +436,8 @@ void MainWindow::on_Logout_clicked()
         ui->Logout->setStyleSheet(styleSheets[7]);
 
     AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),
-                                                   ui->Logout->mapToGlobal(QPoint(0,0)).y(),"Logout?",
-                                                   MainWindow::currentStyle);
+                                                   ui->Logout->mapToGlobal(QPoint(0,0)).y(),QObject::tr("Logout?"),
+                                                   MainWindow::ProgramSettings->getInterfaceStyle());
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
@@ -460,23 +458,22 @@ void MainWindow::on__AddBooks_clicked()
     ui->_Find->setChecked(false);
     BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_AddBooks->mapToGlobal(QPoint(0,0)).x(),
                                                       ui->_AddBooks->mapToGlobal(QPoint(0,0)).y() + ui->_AddBooks->height(),
-                                                      ui->_AddBooks->size().width(), true, MainWindow::currentStyle);
+                                                      ui->_AddBooks->size().width(), true, MainWindow::ProgramSettings->getInterfaceStyle());
     connect(bookOrFolderAnsw, SIGNAL(AddBookSignal()), this, SLOT(addBooksFiles()));
     connect(bookOrFolderAnsw, SIGNAL(AddFolderSignal()), this, SLOT(addBooksFolder()));
 }
 
 void MainWindow::addBooksFolder()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString path = QFileDialog::getExistingDirectory(this, QObject::tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     LibHandler->AddFolder(path);
 }
 
 void MainWindow::addBooksFiles()
 {
-    QStringList fileList = QFileDialog::getOpenFileNames(this, "Open files", "", "(*.FB2 *.zip)");
+    QStringList fileList = QFileDialog::getOpenFileNames(this, QObject::tr("Open files"), "", "(*.FB2 *.zip)");
     LibHandler->AddBooks(fileList);
 }
-
 
 
 void MainWindow::on__Delete_clicked()
@@ -485,8 +482,8 @@ void MainWindow::on__Delete_clicked()
     if (LibraryLayout->getSelectedItemsCount() != 0)
     {
         AnswerDialog *answer_window = new AnswerDialog(ui->_Delete->mapToGlobal(QPoint(0,0)).x() - 300 + ui->_Delete->width(),
-                                                       ui->_Delete->mapToGlobal(QPoint(0,0)).y() + ui->_Delete->height(), "Delete books?",
-                                                       MainWindow::currentStyle);
+                                                       ui->_Delete->mapToGlobal(QPoint(0,0)).y() + ui->_Delete->height(), QObject::tr("Delete books?"),
+                                                       MainWindow::ProgramSettings->getInterfaceStyle());
         answer_window->show();
 
         if (answer_window->exec() == QDialog::Accepted)
@@ -552,42 +549,6 @@ void LibraryHandler::AddFolder(QString path)
     delete Gmap;
 }
 
-void MainWindow::settingsTabChanged(int tab)
-{
-    switch (tab)
-    {
-    case 0:
-        ui->_SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
-        break;
-    case 1:
-        ui->_SettingsProgram->setStyleSheet(tabsStyleSheets[0]);
-        break;
-    case 2:
-        ui->_SettingsReader->setStyleSheet(tabsStyleSheets[0]);
-        break;
-    default:
-        break;
-    }
-}
-
-void MainWindow::on__SettingsProfile_clicked()
-{
-    ui->SettingsLayout->showProfile();
-    ui->_SettingsProfile->setStyleSheet(tabsStyleSheets[1]);
-}
-
-void MainWindow::on__SettingsProgram_clicked()
-{
-    ui->SettingsLayout->showProgram();
-    ui->_SettingsProgram->setStyleSheet(tabsStyleSheets[1]);
-}
-
-void MainWindow::on__SettingsReader_clicked()
-{
-    ui->SettingsLayout->showReader();
-    ui->_SettingsReader->setStyleSheet(tabsStyleSheets[1]);
-}
-
 void MainWindow::on__ChangeViewMode_clicked()
 {
     LibraryLayout->changeViewMod();
@@ -609,21 +570,21 @@ void LibraryHandler::findBooks(QString token, QString mode)
     {
         needRefresh = true;
         window->LibraryLayout->clear();
-        if (mode == "Title")
+        if (mode == QObject::tr("Title"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
                     window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
             return;
         }
-        if (mode == "Author")
+        if (mode == QObject::tr("Author"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
                     window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
             return;
         }
-        if (mode == "Series")
+        if (mode == QObject::tr("Series"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
@@ -657,7 +618,7 @@ void MainWindow::on__Find_toggled(bool checked)
     }
     else
     {
-        searchWindow->close();
+        searchWindow->close();        
         if (LibHandler->needRefresh == true)
         {
             LibraryLayout->clear();
@@ -686,14 +647,14 @@ bool TitleComparator(Book &boo1, Book & boo2)
 
 void LibraryHandler::sortBooks(const QString mode)
 {
-    if (mode == "Date")
+    if (mode == QObject::tr("Date"))
     {
         window->LibraryLayout->clear();
         for (int i = 0; i < bookList.size(); i++)
             window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
         return;
     }
-    if (mode == "Author")
+    if (mode == QObject::tr("Author"))
     {
 
         QVector <Book> indexVector = bookList;
@@ -703,7 +664,7 @@ void LibraryHandler::sortBooks(const QString mode)
             window->LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
         return;
     }
-    if (mode == "Title")
+    if (mode == QObject::tr("Title"))
     {
         window->LibraryLayout->clear();
         QVector <Book> indexVector = bookList;

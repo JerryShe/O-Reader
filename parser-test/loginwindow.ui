@@ -398,7 +398,7 @@
          <bool>false</bool>
         </property>
         <property name="placeholderText">
-         <string notr="true">password</string>
+         <string>password</string>
         </property>
        </widget>
       </item>
@@ -441,7 +441,7 @@
          <bool>false</bool>
         </property>
         <property name="placeholderText">
-         <string notr="true">confirm password</string>
+         <string>confirm password</string>
         </property>
        </widget>
       </item>
@@ -488,7 +488,7 @@
            <string notr="true"/>
           </property>
           <property name="text">
-           <string notr="true">Remember my password</string>
+           <string>Remember my password</string>
           </property>
           <property name="iconSize">
            <size>
@@ -605,7 +605,7 @@
          <string notr="true"/>
         </property>
         <property name="text">
-         <string notr="true">Log in</string>
+         <string>Log in</string>
         </property>
         <property name="shortcut">
          <string notr="true"/>
@@ -625,7 +625,7 @@
        <widget class="QPushButton" name="Registration">
         <property name="minimumSize">
          <size>
-          <width>80</width>
+          <width>160</width>
           <height>18</height>
          </size>
         </property>

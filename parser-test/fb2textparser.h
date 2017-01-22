@@ -30,7 +30,7 @@ public:
 
 public slots:
     QString updatePage(const int width, const int height);
-    QString updateSettings();
+    QString updateSettings(const int width, const int height);
 
 private:
     QStringList splitTextToWords(QString temp);
@@ -48,18 +48,18 @@ private:
 
     void applyTag();
     bool applyWord();
-    bool parseTag();
+    int parseTag();
     void takeTag();
-
-    void extractTag(QString tagBeg, QString tagEnd);
 
     void debugSave(QString HTMLPage);
 
     QStringList bookText;
-    unsigned int pageWidth;
-    unsigned int pageHeight;
+    unsigned int columnWidth;
+    unsigned int columnHeight;
+    unsigned  int tableWidth;
 
     QStringList Columns;
+    QString HTMLPage;
 
     unsigned int pageBegin;
 
@@ -93,6 +93,7 @@ private:
 
     QStack <QString> tagStack;
     QStack <QString> beginTagStack;
+
     QMap <QString, QFontMetrics*> fontMap;
     QMap <QString, double> linespaceMap;
 };

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <main_window.h>
+#include <QTranslator>
+
 
 namespace Ui
 {
@@ -14,7 +16,7 @@ class LoginWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit LoginWindow(QWidget *parent = 0);
+    explicit LoginWindow(QTranslator* translator, QWidget *parent = 0);
     ~LoginWindow();
 
 private slots:
@@ -35,14 +37,15 @@ private slots:
 private:
     QString styleSheets [8];
     QString currentStyle;
+    QTranslator* LanguageTranslator;
 
     QRect prev_geometry;
 
-    // 0 - Main
-    // 1 - Registration - email
-    // 2 - Registration - confirm
-    // 3 - Recovery - email
-    // 4 - Recovery - confirm
+    /// 0 - Main
+    /// 1 - Registration - email
+    /// 2 - Registration - confirm
+    /// 3 - Recovery - email
+    /// 4 - Recovery - confirm
     int activePage = 0;
 
 

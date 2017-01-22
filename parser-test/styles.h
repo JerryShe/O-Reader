@@ -6,6 +6,10 @@ void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString styl
 
 void setBackgroundWindowColor(QString windowButtonsStyle [], const QString style);
 
+void setTopBarBackgroundColor(QString TopBarStyle [], const QString style);
+
+void setExitButtonStyle (QString exitbuttonStyle[], const QString style);
+
 void setLoginWindowStyle (QString windowButtonsStyle [], const QString style);
 
 void setMenusButtonsStyle (QString menuButtonsStyle [], const QString style);
@@ -29,6 +33,8 @@ void setProgramLayoutStyle(QString LayoutStyle[], const QString style);
 void setReaderLayoutStyle(QString LayoutStyle[], const QString style);
 
 void setProfileLayoutStyle(QString LayoutStyle[], const QString style);
+
+void setSavebuttonStyle(QString SavebuttonStyle[], const QString style);
 
 void setReaderWindowStyle(QString WindowStyle[], const QString style);
 

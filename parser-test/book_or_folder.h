@@ -6,7 +6,6 @@
 #include <QPoint>
 #include <QDialog>
 
-
 class BookOrFolder : public QDialog
 {
     Q_OBJECT

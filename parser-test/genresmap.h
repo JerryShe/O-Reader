@@ -10,7 +10,7 @@ public:
     QString getGenreFromMap(QString key);
 
 private:
-    QMap <QString, QString> GMap;
+    QMap <QString, QString> FB2GMap;
 };
 
 #endif // GENRESMAP_H

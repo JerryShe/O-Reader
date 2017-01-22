@@ -4,17 +4,19 @@
 #include <QString>
 #include <QVector>
 #include <QObject>
+#include <QMap>
+#include <QTranslator>
 
 struct TextStyleSheet
 {
     TextStyleSheet();
-    TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, QString Align, QString color);
+    TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, unsigned short Align, QString color);
 
     QString FontFamily;
     unsigned short FontSize;          // from 6 to 76
     unsigned short FontStyle;         // 00 - нормальный 01 - болд 10 - курсив 11 - болд+курсив
     double LineSpacing;       // from 0,5 to 2
-    QString TextAlign;         // 0 - justify, 1 - left, 2 - right, 3 - center
+    unsigned short TextAlign;         // 0 - justify, 1 - left, 2 - right, 3 - center
     QString TextColor;
 
     friend QDataStream &operator<<(QDataStream &out, const TextStyleSheet &TextStyleSheetElem);
@@ -46,7 +48,7 @@ struct ReadingStyle
 class settings : public QObject
 {
 public:
-    settings();
+    settings(QTranslator* translator);
     ~settings();
     void saveSettings();
     void loadSettings();
@@ -60,11 +62,25 @@ public:
     bool getHideTopBar();
     void setHideTopBar(bool n);
 
+    int getFForwardKey();
+    void setFForwardKey(int key);
+    int getSForwardKey();
+    void setSForwardKey(int key);
+    int getFBackwardKey();
+    void setFBackwardKey(int key);
+    int getSBackwardKey();
+    void setSBackwardKey(int key);
+    bool getTurnByWheel();
+    void setTurnByWheel(bool turn);
+
     bool getLibraryReprezentation();
     void setLibraryReprezentation(const bool val);
 
-    short getLibraryIconSize();
-    void setLibraryIconSize(const unsigned short size);
+    unsigned short getLibraryBarIconSize();
+    void setLibraryBarIconSize(const unsigned short size);
+
+    unsigned short getLibraryListIconSize();
+    void setLibraryListIconSize(const unsigned short size);
 
     QString getCurrentTextStyle();
     void setCurrentTextStyle(const QString style);
@@ -80,6 +96,8 @@ public:
     ReadingStyle getNamedStyle(const QString name);
     ReadingStyle getCurrentTextStyleElem();
 
+    QString getTextAlignName(unsigned short key);
+
     friend QDataStream &operator<<(QDataStream &out, const settings &SettingsElem);
     friend QDataStream &operator>>(QDataStream &out, settings &SettingsElem);
 
@@ -87,11 +105,21 @@ signals:
     void loadDone(){}
 
 private:
-
     QString LoginToken;
+    QString UserEmail;
+    QString UserPassword;
+
     QString InterfaceStyle;
     QString Language;
-    bool LibraryReprezentation;
+    QTranslator* LanguageTranslator;
+
+    int FKeyForwardPage;
+    int SKeyForwardPage;
+    int FKeyBackwardPage;
+    int SKeyBackwardPage;
+    bool PageTurnByWheel;
+
+    bool LibraryReprezentation;      // 0 - плитка, 1 - список
     unsigned short LibraryIconBarSize;
     unsigned short LibraryIconListSize;
     bool HideTopBar;                 // 1 - показывать всегда, 0 - показывать при наведении
@@ -100,6 +128,7 @@ private:
     QVector <ReadingStyle> StylesMap;
     QString currentStyle;
 
+    QMap <unsigned short, QString> textAlignMap;
 };
 
 #endif // SETTINGS_H

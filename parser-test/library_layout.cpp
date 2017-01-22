@@ -37,24 +37,74 @@ librarylayout::librarylayout(QWidget *widget)
     BookListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     BookListView->setDragDropMode(QAbstractItemView::NoDragDrop);
 
-    QString ListViewStyle[1];
-    setLibraryStyle (ListViewStyle, "Red");
-    BookListView->setStyleSheet(ListViewStyle[0]);
-
-    connect(BookListView, SIGNAL(doubleClicked(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
+    connect(BookListView, SIGNAL(activated(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
 
     librarylayout::setLayout(libraryGridLayout);
     libraryGridLayout->addWidget(BookListView, 0, 0);
     libraryGridLayout->setContentsMargins(20,20,0,0);
     BookListView->show();
+    ///BookListView->installEventFilter(this);
+    ///BookModel->installEventFilter(this);
 }
 
 librarylayout::~librarylayout()
 {
+    ProgramSettings->saveSettings();
     delete libraryGridLayout;
     delete BookListView;
     delete BookModel;
 }
+
+
+/*
+bool librarylayout::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+        if (KeyEvent->key() == Qt::Key_Enter)
+        {
+            QModelIndex mIndex = BookListView->selectionModel()->selectedIndexes().first();
+            if(mIndex.isValid())
+                emit(showBookPage(mIndex.data(Qt::WhatsThisRole).toInt()));
+            return true;
+        }
+
+        if (KeyEvent->modifiers() & Qt::ControlModifier)
+        {
+            if (KeyEvent->key() == Qt::Key_Minus)
+            {
+                iconDownscale();
+                return true;
+            }
+            if (KeyEvent->key() == Qt::Key_Plus)
+            {
+                iconUpscale();
+                return true;
+            }
+        }
+    }
+    else if (event->type() == QEvent::Wheel)
+    {
+        QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
+        if (Wheel->modifiers() & Qt::ControlModifier)
+        {
+            if (Wheel->delta() < 0)
+            {
+                iconDownscale();
+                return true;
+            }
+            if (Wheel->delta() > 0)
+            {
+                iconUpscale();
+                return true;
+            }
+        }
+    }
+    return false;
+
+}
+*/
 
 void librarylayout::showSelectedItem(QModelIndex mIndex)
 {
@@ -88,12 +138,14 @@ void librarylayout::changeViewMod()
         BookListView->setGridSize(QSize(IconListSize+5,IconListSize + 5));
         BookListView->setViewMode(QListView::ListMode);
         BookListView->setIconSize(QSize(IconListSize,IconListSize));
+        ProgramSettings->setLibraryReprezentation(true);
     }
     else
     {
         BookListView->setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
         BookListView->setViewMode(QListView::IconMode);
         BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
+        ProgramSettings->setLibraryReprezentation(false);
     }
 }
 
@@ -130,10 +182,13 @@ int librarylayout::getSelectedItemsCount()
 
 void librarylayout::clear()
 {
-    delete BookModel;
+    QStandardItemModel* temp = BookModel;
     BookModel = new QStandardItemModel(ListSize,ListSize);
+
     BookListView->setModel(BookModel);
     itemCount = 0;
+    temp->clear();
+    delete temp;
 }
 
 void librarylayout::groupBy(QString mode)
@@ -150,6 +205,7 @@ void librarylayout::iconUpscale()
             IconBarSize+=30;
             BookListView->setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
             BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
+            ProgramSettings->setLibraryBarIconSize(IconBarSize);
         }
     }
     else
@@ -159,6 +215,7 @@ void librarylayout::iconUpscale()
             IconListSize+=10;
             BookListView->setGridSize(QSize(IconListSize + 5,IconListSize + 5));
             BookListView->setIconSize(QSize(IconListSize,IconListSize));
+            ProgramSettings->setLibraryListIconSize(IconListSize);
         }
     }
 }
@@ -172,6 +229,7 @@ void librarylayout::iconDownscale()
             IconBarSize-=30;
             BookListView->setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
             BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
+            ProgramSettings->setLibraryBarIconSize(IconBarSize);
         }
     }
     else
@@ -181,11 +239,36 @@ void librarylayout::iconDownscale()
             IconListSize-=10;
             BookListView->setGridSize(QSize(IconListSize + 5,IconListSize + 5));
             BookListView->setIconSize(QSize(IconListSize,IconListSize));
+            ProgramSettings->setLibraryListIconSize(IconListSize);
         }
     }
 }
 
-void librarylayout::setSettingsData()
+void librarylayout::setSettingsData(settings* PSettings)
 {
+    ProgramSettings = PSettings;
+    QString ListViewStyle[1];
+    setLibraryStyle (ListViewStyle, ProgramSettings->getInterfaceStyle());
+    BookListView->setStyleSheet(ListViewStyle[0]);
 
+    IconBarSize = ProgramSettings->getLibraryBarIconSize();
+    IconListSize = ProgramSettings->getLibraryListIconSize();
+
+    if (IconBarSize < 80 || IconBarSize > 280)
+        IconBarSize = 140;
+    if (IconListSize < 20 || IconBarSize > 210)
+        IconListSize = 50;
+
+    if (ProgramSettings->getLibraryReprezentation())
+    {
+        BookListView->setGridSize(QSize(IconListSize+5,IconListSize + 5));
+        BookListView->setViewMode(QListView::ListMode);
+        BookListView->setIconSize(QSize(IconListSize,IconListSize));
+    }
+    else
+    {
+        BookListView->setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
+        BookListView->setViewMode(QListView::IconMode);
+        BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
+    }
 }

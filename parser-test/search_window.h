@@ -44,7 +44,6 @@ private:
 
     QLineEdit * TextBox;
     QComboBox * SearchTypeBox;
-
 };
 
 #endif // SEARCHWINDOW_H

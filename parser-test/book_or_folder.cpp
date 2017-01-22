@@ -14,8 +14,8 @@ BookOrFolder::BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString S
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(0);
 
-    bookButton = new QPushButton("Book");
-    folderButton = new QPushButton("Folder");
+    bookButton = new QPushButton(QObject::tr("Book"));
+    folderButton = new QPushButton(QObject::tr("Folder"));
 
     folderButton->setMinimumSize(hSize/2, 40);
     folderButton->setFlat(true);
@@ -40,7 +40,6 @@ BookOrFolder::BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString S
         connect(bookButton, SIGNAL(clicked()), this, SIGNAL(DeleteBookSignal()));
         connect(folderButton, SIGNAL(clicked()), this, SIGNAL(DeleteFolderSignal()));
     }
-
 
     layout->addWidget(bookButton, 0);
     layout->addWidget(folderButton, 1);

@@ -11,21 +11,28 @@
 #include <QTimer>
 #include <styles.h>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QWindow>
-
 #include <QThread>
 
 #include <QDebug>
 
 
 
+
 void ReadingWindow::setStyle(QString currentStyle)
 {
     QString styleSheets[8];
+
+    setTopBarBackgroundColor(styleSheets, currentStyle);
+    ui->TopBarWidget->setStyleSheet(styleSheets[0]);
+
     setWindowTopButtonsStyle(styleSheets, currentStyle);
     ui->min_button->setStyleSheet(styleSheets[0]);
     ui->full_size_button->setStyleSheet(styleSheets[1]);
-    ui->exit_button->setStyleSheet(styleSheets[2]);
+
+    setExitButtonStyle(styleSheets, currentStyle);
+    ui->exit_button->setStyleSheet(styleSheets[0]);
 
     setBackgroundWindowColor(styleSheets, currentStyle);
     ui->MainWidget->setStyleSheet(styleSheets[0]);
@@ -33,6 +40,7 @@ void ReadingWindow::setStyle(QString currentStyle)
     setReaderWindowStyle(styleSheets, currentStyle);
     ui->Clock->setStyleSheet(styleSheets[1]);
     ui->Progress->setStyleSheet(styleSheets[1]);
+    ui->BookName->setStyleSheet(styleSheets[1]);
     ui->MenuButton->setStyleSheet(styleSheets[0]);
 
     setReaderWindowMenuButtons(styleSheets, currentStyle);
@@ -46,18 +54,17 @@ void ReadingWindow::setStyle(QString currentStyle)
 ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::ReadingWindow)
 {
     ui->setupUi(this);
-    installEventFilter(this);
-    ui->TextPage->setAlignment(Qt::AlignJustify);
     show();
-    BookParse = new FB2TextParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height() - ui->TopBarWidget->height());
+    BookParse = new FB2TextParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height());
     parserThread = new QThread(this);
     BookParse->moveToThread(parserThread);
 
+    connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
     connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
     parserThread->start();
-    //ui->TextPage->setHtml(BookParse->getPageForward());
+    ui->TextPage->setHtml(BookParse->getPageForward());
     updateProgress();
-    connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintText()));
+    ui->BookName->setText(book.getAuthorName() + ": " + book.getTitle());
 
     ui->TextPage->setMouseTracking(true);
     ui->MainWidget->setMouseTracking(true);
@@ -109,26 +116,34 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::Readi
     QTimer *clockTimer = new QTimer(this);
     connect(clockTimer, SIGNAL(timeout()), this, SLOT(clockStep()));
     clockTimer->start(1000);
+
+    ui->TextPage->installEventFilter(this);
+    ui->TopBarWidget->installEventFilter(this);
+}
+
+void ReadingWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+    }
 }
 
 ReadingWindow::~ReadingWindow()
 {
     delete ui;
-    delete ProgramSettings;
     delete MenuWidget;
     delete MenuLayout;
     delete _BackToMainWindowButton;
     delete _ContentsButton;
     delete _SynchronizationButton;
     delete _FindButton;
+    delete _SettingsButton;
     delete SettingsPage;
-    delete WindowLayout;
-    delete SettingsTabsLayout;
+    delete SynchronizationPage;
+    delete Search;
     delete MiniWindow;
-    delete ProfileButton;
-    delete ProgramButton;
-    delete ReaderButton;
     delete parserThread;
+    delete BookParse;
 }
 
 
@@ -138,9 +153,10 @@ void ReadingWindow::clockStep()
     if (ProgramSettings->getHideTopBar() == true && this->isMaximized())
         if (!ui->TopBarWidget->isHidden() && MenuWidget->isHidden() && TopBarNeedHide)
         {
-            if (HidenTimer == 2)
+            if (HidenTimer == 4)
             {
                 ui->TopBarWidget->hide();
+                reprintResizedText();
                 HidenTimer = 0;
             }
             else
@@ -205,80 +221,117 @@ void ReadingWindow::on_MenuButton_clicked()
 
 }
 
-void ReadingWindow::mouseMoveEvent(QMouseEvent *e)
+bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (e->pos().y() <= 50 && ui->TopBarWidget->isHidden() && ProgramSettings->getHideTopBar())
+    switch (event->type())
     {
-        ui->TopBarWidget->show();
-        TopBarNeedHide = false;
-    }
-    if (e->pos().y() > 50 && !ui->TopBarWidget->isHidden())
-        TopBarNeedHide = true;
-
-
-    if (moving)
-    {
-        if (!isMaximized())
+        case QEvent::MouseMove:
         {
-            move(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7);
-            if (!MenuWidget->isHidden())
-                MenuWidget->move(ui->MenuButton->x(), ui->MenuButton->y() + ui->MenuButton->height());
+            QMouseEvent* MouseMoveEvent = static_cast<QMouseEvent*>(event);
+            if (ProgramSettings->getHideTopBar())
+            {
+                if (MouseMoveEvent->pos().y() <= 50 && ui->TopBarWidget->isHidden())
+                {
+                    ui->TopBarWidget->show();
+                    reprintResizedText();
+                    TopBarNeedHide = false;
+                }
+                if (MouseMoveEvent->pos().y() > 50 && !ui->TopBarWidget->isHidden())
+                    TopBarNeedHide = true;
+            }
+            if (moving)
+            {
+                if (!isMaximized())
+                {
+                    move(MouseMoveEvent->globalX() - lastPoint.x() - 7, MouseMoveEvent->globalY() - lastPoint.y() - 7);
+                    if (!MenuWidget->isHidden())
+                        MenuWidget->move(ui->MenuButton->x(), ui->MenuButton->y() + ui->MenuButton->height());
+                }
+                else
+                {
+                    prev_geometry.setY(MouseMoveEvent->globalY());
+                    normalGeometry() = prev_geometry;
+                    showNormal();
+                }
+            }
+            break;
         }
-        else
+
+        case QEvent::KeyPress:
         {
-            prev_geometry.setY(e->globalY());
-            normalGeometry() = prev_geometry;
-            showNormal();
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+            if (KeyEvent->key() == ProgramSettings->getFForwardKey() || KeyEvent->key() == ProgramSettings->getSForwardKey())
+            {
+                ui->TextPage->setHtml(BookParse->getPageForward());
+                updateProgress();
+            }
+            else
+            if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
+            {
+                ui->TextPage->setHtml(BookParse->getPageBackward());
+                updateProgress();
+            }
+            break;
         }
-    }
-}
 
-void ReadingWindow::mousePressEvent(QMouseEvent *e)
-{
-    if(e->button() == Qt::LeftButton)
-    {
-        if (e->pos().y() <= 20)
+        case QEvent::Wheel:
         {
-            moving = true;
-            lastPoint = e->pos();
+            if (ProgramSettings->getTurnByWheel() == true)
+            {
+                QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
+                if (Wheel->delta() < 0)
+                {
+                    ui->TextPage->setHtml(BookParse->getPageForward());
+                    updateProgress();
+                }
+                else if (Wheel->delta() > 0)
+                {
+                    ui->TextPage->setHtml(BookParse->getPageBackward());
+                    updateProgress();
+                }
+            }
+            break;
         }
+
+        case QEvent::MouseButtonPress:
+        {
+            QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+            if(MousePressEvent->button() == Qt::LeftButton)
+                if (MousePressEvent->pos().y() <= 20)
+                {
+                    moving = true;
+                    lastPoint = MousePressEvent->pos();
+                }
+            break;
+        }
+
+        case QEvent::MouseButtonRelease:
+        {
+            QMouseEvent* MouseReleaseEvent = static_cast<QMouseEvent*>(event);
+            if (MouseReleaseEvent->button() == Qt::LeftButton)
+            {
+                if (moving)
+                    moving = false;
+            }
+            break;
+        }
+
+        case QEvent::Resize:
+        {
+            emit windowWasResized();
+            break;
+        }
+
+        default:
+            break;
     }
+
+    return true;
 }
 
-void ReadingWindow::mouseReleaseEvent(QMouseEvent *e)
+void ReadingWindow::reprintResizedText()
 {
-    if (e->button() == Qt::LeftButton)
-    {
-        if (moving)
-            moving = false;
-    }
-}
-
-void ReadingWindow::keyPressEvent(QKeyEvent *event)
-{
-    qDebug()<<"yepe, it's a key";
-    if (event->key() == Qt::Key_D || event->key() == Qt::Key_Space)
-    {
-        ui->TextPage->setHtml(BookParse->getPageForward());
-        updateProgress();
-        return;
-    }
-    if (event->key() == Qt::Key_A)
-    {
-        ui->TextPage->setHtml(BookParse->getPageBackward());
-        updateProgress();
-        return;
-    }
-}
-
-void ReadingWindow::resizeEvent(QResizeEvent *e)
-{
-    emit windowWasResized();
-}
-
-void ReadingWindow::reprintText()
-{
-    ui->TextPage->setHtml(BookParse->updatePage(ui->TextPage->width(), ui->TextPage->height() - ui->TopBarWidget->height()));
+    ui->TextPage->setHtml(BookParse->updatePage(ui->TextPage->width(), ui->TextPage->height()));
 }
 
 void ReadingWindow::updateProgress()
@@ -315,11 +368,20 @@ void ReadingWindow::PrevSearchStep()
 
 }
 
+void ReadingWindow::reprintNewSettText()
+{
+    ui->TextPage->setHtml(BookParse->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
+}
+
 void ReadingWindow::SettingsButton_Clicked()
 {
     MenuWidget->hide();
 
     MiniWindow = new QDialog(this);
+    QString style[2];
+    setBackgroundWindowColor(style, ProgramSettings->getInterfaceStyle());
+    setStyleSheet(style[1]);
+
     MiniWindow->setWindowFlags(Qt::FramelessWindowHint);
 
     int frame, w, h;
@@ -334,95 +396,19 @@ void ReadingWindow::SettingsButton_Clicked()
     frame = (this->height() - h)/2;
 
     MiniWindow->setGeometry(frame, frame, w, h);
-
-    WindowLayout = new QVBoxLayout(MiniWindow);
-    WindowLayout->setContentsMargins(0,0,0,0);
-    WindowLayout->setSpacing(0);
+    MiniWindow->setContentsMargins(0,0,0,0);
+    settingsLayout = new QVBoxLayout(MiniWindow);
+    MiniWindow->setLayout(settingsLayout);
+    settingsLayout->setContentsMargins(0,0,0,0);
 
     SettingsPage = new settingslayout();
     SettingsPage->setSettingsData(ProgramSettings);
+    settingsLayout->addWidget(SettingsPage);
+    SettingsPage->addExitButton();
+    connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(close()));
+    connect(SettingsPage, SIGNAL(settingsChanged()), this, SLOT(reprintNewSettText()));
 
-    SettingsTabsLayout = new QHBoxLayout();
-    SettingsTabsLayout->setContentsMargins(0,0,0,0);
-
-    WindowLayout->addLayout(SettingsTabsLayout, 0);
-    WindowLayout->addWidget(SettingsPage, 1);
-
-    ProfileButton = new QPushButton("Profile", MiniWindow);
-    ProgramButton = new QPushButton("Program", MiniWindow);
-    ReaderButton = new QPushButton("Reader", MiniWindow);
-    SettingsExitButton = new QPushButton(MiniWindow);
-
-    int wSize = (w - 30)/3;
-    ProfileButton->setFixedSize(wSize, 30);
-    ProgramButton->setFixedSize(wSize, 30);
-    ReaderButton->setFixedSize(wSize, 30);
-    SettingsExitButton->setFixedSize(30, 30);
-
-
-    SettingsTabsLayout->addWidget(ProfileButton, 0);
-    SettingsTabsLayout->addWidget(ProgramButton, 1);
-    SettingsTabsLayout->addWidget(ReaderButton, 2);
-    SettingsTabsLayout->addWidget(SettingsExitButton, 3);
-
-    setReaderSettingsExitButton(styles, ProgramSettings->getInterfaceStyle());
-    SettingsExitButton->setStyleSheet(styles[0]);
-
-    setBackgroundWindowColor(styles, ProgramSettings->getInterfaceStyle());
-    MiniWindow->setStyleSheet(styles[1]);
-
-    setTabButtonsStyle(styles, ProgramSettings->getInterfaceStyle());
-    ProfileButton->setStyleSheet(styles[0]);
-    ProgramButton->setStyleSheet(styles[1]);
-    ReaderButton->setStyleSheet(styles[0]);
-
-    connect(ProfileButton, SIGNAL(clicked(bool)), SettingsPage, SLOT(showProfile()));
-    connect(ProfileButton, SIGNAL(clicked(bool)), this, SLOT(settings_profile_clicked()));
-
-    connect(ProgramButton, SIGNAL(clicked(bool)), SettingsPage, SLOT(showProgram()));
-    connect(ProgramButton, SIGNAL(clicked(bool)), this, SLOT(settings_program_clicked()));
-
-    connect(ReaderButton, SIGNAL(clicked(bool)), SettingsPage, SLOT(showReader()));
-    connect(ReaderButton, SIGNAL(clicked(bool)), this, SLOT(settings_reader_clicked()));
-
-    connect(SettingsExitButton, SIGNAL(clicked(bool)), MiniWindow, SLOT(close()));
-
-    SettingsPage->show();
     MiniWindow->show();
-}
-
-void ReadingWindow::settings_profile_clicked()
-{
-    ProfileButton->setStyleSheet(styles[1]);
-    changeSettingsTab(0);
-}
-void ReadingWindow::settings_program_clicked()
-{
-    ProgramButton->setStyleSheet(styles[1]);
-    changeSettingsTab(1);
-}
-void ReadingWindow::settings_reader_clicked()
-{
-    ReaderButton->setStyleSheet(styles[1]);
-    changeSettingsTab(2);
-}
-
-void ReadingWindow::changeSettingsTab(int i)
-{
-    switch (SettingsTab) {
-    case 0:
-        ProfileButton->setStyleSheet(styles[0]);
-        break;
-    case 1:
-        ProgramButton->setStyleSheet(styles[0]);
-        break;
-    case 2:
-        ReaderButton->setStyleSheet(styles[0]);
-        break;
-    default:
-        break;
-    }
-    SettingsTab = i;
 }
 
 void ReadingWindow::SynchronizationButton_Clicked()
@@ -445,18 +431,7 @@ void ReadingWindow::SynchronizationButton_Clicked()
 
     MiniWindow->setGeometry(this->x() + frame, this->y() + frame, w, h);
 
-    WindowLayout = new QVBoxLayout(MiniWindow);
-    WindowLayout->setContentsMargins(0,0,0,0);
-    WindowLayout->setSpacing(0);
 
-    SynchronizationPage = new synchronizationlayout(MiniWindow);
-    SynchronizationPage->setSettingsData(ProgramSettings);
-
-    WindowLayout->addWidget(SynchronizationPage, 0);
-    setBackgroundWindowColor(styles, ProgramSettings->getInterfaceStyle());
-    MiniWindow->setStyleSheet(styles[1]);
-
-    SynchronizationPage->show();
     MiniWindow->show();
 }
 

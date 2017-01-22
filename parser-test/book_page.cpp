@@ -14,18 +14,18 @@ void BookPage::setStyle(QString Style)
     BookPage::setStyleSheet(PageStyles[0]);
 
     ui->startReading->setStyleSheet(PageStyles[1]);
-    ui->deleteBook->setStyleSheet(PageStyles[5]);
-    ui->leftLine->setStyleSheet(PageStyles[6]);
-    ui->leftLine_2->setStyleSheet(PageStyles[6]);
+    ui->deleteBook->setStyleSheet(PageStyles[4]);
+    ui->leftLine->setStyleSheet(PageStyles[5]);
+    ui->leftLine_2->setStyleSheet(PageStyles[5]);
 
     ui->author->setStyleSheet(PageStyles[2]);
     ui->genres->setStyleSheet(PageStyles[2]);
     ui->title->setStyleSheet(PageStyles[2]);
     ui->series->setStyleSheet(PageStyles[2]);
+    ui->annotation->setStyleSheet(PageStyles[3]);
 
-    ui->exit_button->setStyleSheet(PageStyles[3]);
-
-    ui->annotation->setStyleSheet(PageStyles[4]);
+    setExitButtonStyle(PageStyles, Style);
+    ui->exit_button->setStyleSheet(PageStyles[0]);
 }
 
 BookPage::BookPage(Book book, QString Style, QWidget *parent) :
@@ -98,6 +98,7 @@ void BookPage::on_exit_button_clicked()
 
 void BookPage::on_startReading_clicked()
 {
+    this->hide();
     emit startReading(BookIndex);
     this->close();
 }

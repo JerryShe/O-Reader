@@ -44,8 +44,17 @@
       <property name="horizontalScrollBarPolicy">
        <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
+      <property name="autoFormatting">
+       <set>QTextEdit::AutoNone</set>
+      </property>
       <property name="documentTitle">
        <string notr="true"/>
+      </property>
+      <property name="lineWrapMode">
+       <enum>QTextEdit::FixedColumnWidth</enum>
+      </property>
+      <property name="lineWrapColumnOrWidth">
+       <number>2000</number>
       </property>
       <property name="html">
        <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -64,6 +73,9 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:10px; margin-bottom:10px; margin-left:15px; margin-right:15px; -qt-block-indent:0; text-indent:15px; line-height:100%;&quot;&gt;&lt;span style=&quot; font-size:10pt; color:#000000;&quot;&gt;И тут в рай вторглось нечто чуждое, будто пульсирующая зубная боль или чуть слышный комариный зуд. С могучим Бахом схлестнулось тоненькое треньканье. Чувствуя, как губы искажает оскал, я коснулся регулятора громкости, и великий орган жалобно захлебнулся молчанием. И дверной звонок прозвучал вполне отчетливо.&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
 &lt;p align=&quot;justify&quot; style=&quot; margin-top:10px; margin-bottom:10px; margin-left:15px; margin-right:15px; -qt-block-indent:0; text-indent:15px; line-height:100%;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-style:italic; color:#000000;&quot;&gt;Динь-динь…&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
+      <property name="tabStopWidth">
+       <number>80</number>
+      </property>
       <property name="textInteractionFlags">
        <set>Qt::NoTextInteraction</set>
       </property>
@@ -72,6 +84,9 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="searchPaths">
        <stringlist notr="true"/>
+      </property>
+      <property name="openLinks">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -119,8 +134,45 @@ p, li { white-space: pre-wrap; }
            <height>25</height>
           </size>
          </property>
+         <property name="font">
+          <font>
+           <family>Browallia New</family>
+           <pointsize>16</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="text">
-          <string>menu</string>
+          <string>Menu</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="BookName">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="midLineWidth">
+          <number>0</number>
+         </property>
+         <property name="text">
+          <string notr="true">Гаррисон Гарри</string>
          </property>
         </widget>
        </item>
@@ -149,7 +201,7 @@ p, li { white-space: pre-wrap; }
           </font>
          </property>
          <property name="text">
-          <string>30%</string>
+          <string notr="true">30%</string>
          </property>
         </widget>
        </item>
@@ -193,7 +245,7 @@ p, li { white-space: pre-wrap; }
           </font>
          </property>
          <property name="text">
-          <string>20:59:59</string>
+          <string notr="true">20:59:59</string>
          </property>
         </widget>
        </item>
@@ -408,7 +460,7 @@ p, li { white-space: pre-wrap; }
           <string notr="true"/>
          </property>
          <property name="text">
-          <string/>
+          <string notr="true"/>
          </property>
          <property name="shortcut">
           <string notr="true"/>
@@ -619,7 +671,7 @@ p, li { white-space: pre-wrap; }
           <string notr="true"/>
          </property>
          <property name="text">
-          <string/>
+          <string notr="true"/>
          </property>
          <property name="shortcut">
           <string notr="true"/>
@@ -842,7 +894,7 @@ p, li { white-space: pre-wrap; }
           <string notr="true"/>
          </property>
          <property name="text">
-          <string/>
+          <string notr="true"/>
          </property>
          <property name="shortcut">
           <string notr="true"/>

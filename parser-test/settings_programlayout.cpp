@@ -2,12 +2,21 @@
 #include "ui_settings_programlayout.h"
 #include "styles.h"
 
+#include <QKeyEvent>
+#include <QDebug>
+
 void Settings_ProgramLayout::setLayoutStyle()
 {
     QString a[2];
     setProgramLayoutStyle(a, ProgramSettings->getInterfaceStyle());
     this->setStyleSheet(a[0]);
-    ui->SaveButton->setStyleSheet(a[1]);
+    ui->FTurnForward->setStyleSheet(a[1]);
+    ui->STurnForward->setStyleSheet(a[1]);
+    ui->FTurnBackward->setStyleSheet(a[1]);
+    ui->STurnBackward->setStyleSheet(a[1]);
+
+    setSavebuttonStyle(savebuttonStyle, ProgramSettings->getInterfaceStyle());
+    ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
 }
 
 Settings_ProgramLayout::Settings_ProgramLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ProgramLayout)
@@ -25,6 +34,27 @@ void Settings_ProgramLayout::setProgramData()
     ui->InterfaceStyleBox->setCurrentText(ProgramSettings->getInterfaceStyle());
     ui->LanguageBox->setCurrentText(ProgramSettings->getCurrentLanguage());
     ui->TopBarShowBox->setCurrentIndex(ProgramSettings->getHideTopBar());
+    ui->TurnByWheelBox->setCurrentIndex(ProgramSettings->getTurnByWheel());
+
+    connect(ui->InterfaceStyleBox, SIGNAL(activated(QString)), this, SLOT(settChanged()));
+    connect(ui->LanguageBox, SIGNAL(activated(QString)), this, SLOT(settChanged()));
+    connect(ui->TopBarShowBox, SIGNAL(activated(QString)), this, SLOT(settChanged()));
+    connect(ui->TurnByWheelBox, SIGNAL(activated(QString)), this, SLOT(settChanged()));
+
+    ui->FTurnForward->setText(QKeySequence(ProgramSettings->getFForwardKey()).toString());
+    ui->STurnForward->setText(QKeySequence(ProgramSettings->getSForwardKey()).toString());
+    ui->FTurnBackward->setText(QKeySequence(ProgramSettings->getFBackwardKey()).toString());
+    ui->STurnBackward->setText(QKeySequence(ProgramSettings->getSBackwardKey()).toString());
+
+    ui->FTurnBackward->installEventFilter(this);
+    ui->FTurnForward->installEventFilter(this);
+    ui->STurnBackward->installEventFilter(this);
+    ui->STurnForward->installEventFilter(this);
+}
+
+void Settings_ProgramLayout::settChanged()
+{
+    emit settingsChanged(1);
 }
 
 void Settings_ProgramLayout::setSettingsData(settings *Settings)
@@ -32,7 +62,6 @@ void Settings_ProgramLayout::setSettingsData(settings *Settings)
     ProgramSettings = Settings;
     setLayoutStyle();
     setProgramData();
-
 }
 
 void Settings_ProgramLayout::on_InterfaceStyleBox_currentTextChanged(const QString &arg1)
@@ -51,4 +80,98 @@ void Settings_ProgramLayout::on_SaveButton_clicked()
     ProgramSettings->setLanguage(ui->LanguageBox->currentText());
     ProgramSettings->setInterfaceStyle(ui->InterfaceStyleBox->currentText());
     ProgramSettings->saveSettings();
+
+    emit settingsChanged(0);
+}
+
+void Settings_ProgramLayout::setSavebuttonView(int type)
+{
+    if (type)
+        ui->SaveButton->setStyleSheet(savebuttonStyle[1]);
+    else
+        ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
+}
+
+void Settings_ProgramLayout::on_FTurnForward_toggled(bool checked)
+{
+    ui->STurnForward->setChecked(false);
+    ui->STurnBackward->setChecked(false);
+    ui->FTurnBackward->setChecked(false);
+}
+
+void Settings_ProgramLayout::on_STurnForward_toggled(bool checked)
+{
+    ui->FTurnForward->setChecked(false);
+    ui->STurnBackward->setChecked(false);
+    ui->FTurnBackward->setChecked(false);
+}
+
+void Settings_ProgramLayout::on_FTurnBackward_toggled(bool checked)
+{
+    ui->STurnForward->setChecked(false);
+    ui->FTurnForward->setChecked(false);
+    ui->STurnBackward->setChecked(false);
+}
+
+void Settings_ProgramLayout::on_STurnBackward_toggled(bool checked)
+{
+    ui->STurnForward->setChecked(false);
+    ui->FTurnForward->setChecked(false);
+    ui->FTurnBackward->setChecked(false);
+}
+
+bool Settings_ProgramLayout::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress)
+    {
+        if (ui->FTurnForward->isChecked())
+        {
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+            ui->FTurnForward->setText(QKeySequence(KeyEvent->key()).toString());
+            ProgramSettings->setFForwardKey(KeyEvent->key());
+            ui->FTurnForward->setChecked(false);
+            emit settingsChanged(1);
+            return true;
+        }
+        else
+        if (ui->STurnForward->isChecked())
+        {
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+            ui->STurnForward->setText(QKeySequence(KeyEvent->key()).toString());
+            ProgramSettings->setSForwardKey(KeyEvent->key());
+            ui->STurnForward->setChecked(false);
+            emit settingsChanged(1);
+            return true;
+        }
+        else
+        if (ui->FTurnBackward->isChecked())
+        {
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+            ui->FTurnBackward->setText(QKeySequence(KeyEvent->key()).toString());
+            ProgramSettings->setFBackwardKey(KeyEvent->key());
+            ui->FTurnBackward->setChecked(false);
+            emit settingsChanged(1);
+            return true;
+        }
+        else
+        if (ui->STurnBackward->isChecked())
+        {
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+            ui->STurnBackward->setText(QKeySequence(KeyEvent->key()).toString());
+            ProgramSettings->setSBackwardKey(KeyEvent->key());
+            ui->STurnBackward->setChecked(false);
+            emit settingsChanged(1);
+            return true;
+        }
+    }
+    return false;
+}
+
+void Settings_ProgramLayout::on_LanguageBox_activated(const QString &arg1)
+{
+    if (arg1 != ProgramSettings->getCurrentLanguage())
+    {
+        ProgramSettings->setLanguage(arg1);
+        ui->retranslateUi(this);
+    }
 }

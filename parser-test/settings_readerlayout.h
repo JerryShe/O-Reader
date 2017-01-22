@@ -16,12 +16,13 @@ class Settings_ReaderLayout : public QFrame
 public:
     explicit Settings_ReaderLayout(QWidget *parent = 0);
     ~Settings_ReaderLayout();
+
     void setSettingsData(settings * const Settings);
 
     void setStyleData(const ReadingStyle style);
     ReadingStyle getStyleData();
 
-
+    void setSavebuttonView(int type);
 
 private slots:
     void on_OverallSettings_clicked();
@@ -32,8 +33,8 @@ private slots:
     void on_YepButton_clicked();
     void on_NopeButton_clicked();
     void on_SaveButton_clicked();
-    void updateTextBox();
-    void on_StyleBox_activated(const QString &arg1);
+    void updateTextBox();    
+    void on_StyleBox_activated(int index);
     void on_RegularColorBox_clicked();
     void on_TitleColorBox_clicked();
     void on_SubtitleColorBox_clicked();
@@ -42,13 +43,16 @@ private slots:
     void on_EmphasizedColorBox_clicked();
     void on_EmphasizedSettings_clicked();
     void on_BackgroundImageBox_clicked();
+    void on_BackgroundTypeBox_currentIndexChanged(int index);
 
     void setLayoutStyle();
 
-    void on_BackgroundTypeBox_currentTextChanged(const QString &arg1);
-
 signals:
-    void settingsChanged();
+    void settingsChanged(int type);
+
+protected:
+    void changeEvent(QEvent *event);
+
 
 private:
     Ui::Settings_ReaderLayout *ui;
@@ -56,6 +60,10 @@ private:
 
     settings * ProgramSettings;
     QString currentTextStyle;
+    QString currentBackgroundImage;
+    QString savebuttonStyle[2];
+
+    int changedSignal = 0;
 };
 
 #endif // SETTINGS_READERLAYOUT_H

@@ -10,6 +10,7 @@
 #include <QMainWindow>
 #include <QListView>
 #include <QStandardItemModel>
+#include <settings.h>
 
 
 
@@ -24,7 +25,7 @@ public:
     void addItem(int BookIndex, QString name, QString title, QImage cover);
     QVector <int> deleteItems();
     void deleteBook(int index);
-    void setSettingsData();
+    void setSettingsData(settings* PSettings);
 
     void setStyle(QString libraryStyle[]);
     void changeViewMod();
@@ -42,14 +43,18 @@ signals:
 private slots:
     void showSelectedItem(QModelIndex mIndex);
 
+///protected:
+   /// bool eventFilter(QObject *obj, QEvent *event);
+
 private:
-    QGridLayout *libraryGridLayout;
+    QGridLayout* libraryGridLayout;
+    QListView* BookListView;
+    QStandardItemModel* BookModel;
 
-    QListView *BookListView;
-    QStandardItemModel *BookModel;
+    settings* ProgramSettings;
 
-    int IconBarSize;
-    int IconListSize;
+    unsigned short IconBarSize;
+    unsigned short IconListSize;
     int ListSize;
     int itemCount;
 };

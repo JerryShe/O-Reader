@@ -6,8 +6,21 @@
 
 #include <QDebug>
 
-settings::settings()
-{}
+settings::settings(QTranslator *translator): LanguageTranslator(translator)
+{
+    textAlignMap.insert(0, "justify");
+    textAlignMap.insert(1, "left");
+    textAlignMap.insert(2, "right");
+    textAlignMap.insert(3, "center");
+}
+
+QString settings::getTextAlignName(unsigned short key)
+{
+    if (textAlignMap.contains(key))
+        return textAlignMap[key];
+    else
+        return "";
+}
 
 settings::~settings()
 {
@@ -51,8 +64,17 @@ void settings::loadSettings()
         QDataStream out(&SettingsFile);
         InterfaceStyle = "Red";
         Language = "English";
+        FKeyForwardPage = Qt::Key_Right;
+        SKeyForwardPage = Qt::Key_Space;
+        FKeyBackwardPage = Qt::Key_Left;
+        SKeyBackwardPage = -1;
+        PageTurnByWheel = true;
         LibraryReprezentation = false;
         HideTopBar = false;
+
+        LibraryReprezentation = false;
+        LibraryIconBarSize = 140;
+        LibraryIconListSize = 50;
 
         TextStylesNames.push_back("Standart");
         StylesMap.push_back(ReadingStyle());
@@ -69,6 +91,11 @@ QDataStream &operator<<(QDataStream &out, const settings &SettingsElem)
     out<<SettingsElem.LoginToken;
     out<<SettingsElem.InterfaceStyle;
     out<<SettingsElem.Language;
+    out<<SettingsElem.FKeyForwardPage;
+    out<<SettingsElem.SKeyForwardPage;
+    out<<SettingsElem.FKeyBackwardPage;
+    out<<SettingsElem.SKeyBackwardPage;
+    out<<SettingsElem.PageTurnByWheel;
     out<<SettingsElem.LibraryReprezentation;
     out<<SettingsElem.LibraryIconBarSize;
     out<<SettingsElem.LibraryIconListSize;
@@ -86,6 +113,11 @@ QDataStream &operator>>(QDataStream &in, settings &SettingsElem)
     in>>SettingsElem.LoginToken;
     in>>SettingsElem.InterfaceStyle;
     in>>SettingsElem.Language;
+    in>>SettingsElem.FKeyForwardPage;
+    in>>SettingsElem.SKeyForwardPage;
+    in>>SettingsElem.FKeyBackwardPage;
+    in>>SettingsElem.SKeyBackwardPage;
+    in>>SettingsElem.PageTurnByWheel;
     in>>SettingsElem.LibraryReprezentation;
     in>>SettingsElem.LibraryIconBarSize;
     in>>SettingsElem.LibraryIconListSize;
@@ -107,11 +139,11 @@ ReadingStyle::ReadingStyle()
     ParLeftTopIdent = 1510;
     TextLeftRightIdent = 1515;    
     TextTopBottomIdent = 1515;
-    RegularTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, "Justify", "#000000");
-    EmphasizedTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, "Justify", "#000000");
-    TitleStyle = TextStyleSheet("MS Shell Dlg 2", 12, 1, 1, "Center", "#000000");
-    SubtitleStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, "Right", "#000000");
-    NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, "Justify", "#000000");
+    RegularTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, 0, "#000000");
+    EmphasizedTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
+    TitleStyle = TextStyleSheet("MS Shell Dlg 2", 12, 1, 1, 3, "#000000");
+    SubtitleStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, 2, "#000000");
+    NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, 1, "#000000");
 }
 
 QDataStream &operator<<(QDataStream &out, const ReadingStyle &ReadingStyleElem)
@@ -156,11 +188,11 @@ TextStyleSheet::TextStyleSheet()
     FontSize = 8;
     FontStyle = 0;
     LineSpacing = 1.5;
-    TextAlign = "Justify";
+    TextAlign = 0;
     TextColor = "#000000";
 }
 
-TextStyleSheet::TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, QString Align, QString color)
+TextStyleSheet::TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, unsigned short Align, QString color)
     : FontFamily(Font), FontSize(Size), FontStyle(Style), LineSpacing(Spacing), TextAlign(Align), TextColor(color){}
 
 QDataStream &operator <<(QDataStream &out, const TextStyleSheet &TextStyleSheetElem)
@@ -208,15 +240,25 @@ void settings::setLibraryReprezentation(const bool val)
     LibraryReprezentation = val;
 }
 
-short settings::getLibraryIconSize()
+unsigned short settings::getLibraryBarIconSize()
 {
     return LibraryIconBarSize;
 }
 
-/*void settings::setLibraryIconBarSize(short size)
+unsigned short settings::getLibraryListIconSize()
+{
+    return LibraryIconBarSize;
+}
+
+void settings::setLibraryListIconSize(const unsigned short size)
+{
+    LibraryIconListSize = size;
+}
+
+void settings::setLibraryBarIconSize(const unsigned short size)
 {
     LibraryIconBarSize = size;
-}*/
+}
 
 QString settings::getCurrentLanguage()
 {
@@ -226,6 +268,16 @@ QString settings::getCurrentLanguage()
 void settings::setLanguage(const QString lang)
 {
     Language = lang;
+    bool done;
+    if (lang == "Русский")
+        done = LanguageTranslator->load("ru.qm", "LibraryResources/Languages");
+    if (lang == "English")
+        done = LanguageTranslator->load("en.qm", "LibraryResources/Languages");
+    if (!done)
+    {
+        qDebug()<<"error in opening lang-pack";
+        return;
+    }
 }
 
 bool settings::getHideTopBar()
@@ -261,6 +313,56 @@ void settings::setToken(QString token)
 QString settings::getToken()
 {
     return LoginToken;
+}
+
+int settings::getFForwardKey()
+{
+    return FKeyForwardPage;
+}
+
+void settings::setFForwardKey(int key)
+{
+    FKeyForwardPage = key;
+}
+
+int settings::getSForwardKey()
+{
+    return SKeyForwardPage;
+}
+
+void settings::setSForwardKey(int key)
+{
+    SKeyForwardPage = key;
+}
+
+int settings::getFBackwardKey()
+{
+    return FKeyBackwardPage;
+}
+
+void settings::setFBackwardKey(int key)
+{
+    FKeyBackwardPage = key;
+}
+
+int settings::getSBackwardKey()
+{
+    return SKeyBackwardPage;
+}
+
+void settings::setSBackwardKey(int key)
+{
+    SKeyBackwardPage = key;
+}
+
+bool settings::getTurnByWheel()
+{
+    return PageTurnByWheel;
+}
+
+void settings::setTurnByWheel(bool turn)
+{
+    PageTurnByWheel = turn;
 }
 
 ReadingStyle settings::getNamedStyle(const QString name)

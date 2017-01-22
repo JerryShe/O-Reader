@@ -6,6 +6,7 @@
 
 #include <QMouseEvent>
 #include <QString>
+#include <QDebug>
 
 
 void LoginWindow::setStyle()
@@ -14,14 +15,14 @@ void LoginWindow::setStyle()
 
     ui->min_button->setStyleSheet(LoginWindow::styleSheets[0]);
     ui->full_size_button->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->exit_button->setStyleSheet(LoginWindow::styleSheets[2]);
+
+    setExitButtonStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
+    ui->exit_button->setStyleSheet(LoginWindow::styleSheets[0]);
 
     setBackgroundWindowColor(LoginWindow::styleSheets, LoginWindow::currentStyle);
-
     ui->MainWidget->setStyleSheet(LoginWindow::styleSheets[0]);
 
     setLoginWindowStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
-
     ui->login->setStyleSheet(LoginWindow::styleSheets[0]);
     ui->Pass->setStyleSheet(LoginWindow::styleSheets[1]);
     ui->Name->setStyleSheet(LoginWindow::styleSheets[1]);
@@ -31,17 +32,8 @@ void LoginWindow::setStyle()
     ui->Remember->setStyleSheet(LoginWindow::styleSheets[4]);
 }
 
-LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::LoginWindow)
+LoginWindow::LoginWindow(QTranslator *translator, QWidget *parent) : QMainWindow(parent), ui(new Ui::LoginWindow), LanguageTranslator(translator)
 {
-
-    ui->setupUi(this);
-    LoginWindow::prev_geometry = LoginWindow::geometry();
-    ui->repeatPassword->hide();
-    ui->Error->hide();
-
-    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
-    LoginWindow::setMouseTracking(true);
-
     QFile SettingsFile("LibraryResources/Settings.conf");
 
     if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -54,8 +46,16 @@ LoginWindow::LoginWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::Logi
     {
         currentStyle = "Red";
     }
+    SettingsFile.close();
 
+    ui->setupUi(this);
     LoginWindow::setStyle();
+    LoginWindow::prev_geometry = LoginWindow::geometry();
+    ui->repeatPassword->hide();
+    ui->Error->hide();
+
+    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
+    LoginWindow::setMouseTracking(true);
 }
 
 LoginWindow::~LoginWindow()
@@ -67,18 +67,18 @@ LoginWindow::~LoginWindow()
 void LoginWindow::backToMainPage()
 {
     LoginWindow::activePage = 0;
-    ui->Name->setPlaceholderText("email");
+    ui->Name->setPlaceholderText(QObject::tr("email"));
     ui->Name->clear();
     ui->Error->hide();
-    ui->Pass->setPlaceholderText("password");
+    ui->Pass->setPlaceholderText(QObject::tr("password"));
     ui->Pass->clear();
     ui->Pass->show();
     ui->repeatPassword->hide();
     ui->repeatPassword->clear();
     ui->Remember->show();
-    ui->Registration->setText("Create account");
+    ui->Registration->setText(QObject::tr("Create account"));
     ui->Recovery->show();
-    ui->login->setText("Log in");
+    ui->login->setText(QObject::tr("Log in"));
 }
 
 void LoginWindow::on_exit_button_clicked()
@@ -132,11 +132,11 @@ void LoginWindow::on_Registration_clicked()
     else
     {
         LoginWindow::activePage = 1;
-        ui->login->setText("Sign up");
+        ui->login->setText(QObject::tr("Sign up"));
         ui->repeatPassword->show();
         ui->Remember->hide();
         ui->Recovery->hide();
-        ui->Registration->setText("Back");
+        ui->Registration->setText(QObject::tr("Back"));
     }
 }
 
@@ -149,7 +149,7 @@ void LoginWindow::on_login_clicked()
     case 0:
         // здесь надо вставить проверку пароля на серве
         // если соединения с сервером нет, то сказать, что программа будет работать в автономном режиме и проверить пароль локально
-        main_window = new MainWindow();
+        main_window = new MainWindow(LanguageTranslator);
         main_window->setWindowFlags(Qt::CustomizeWindowHint);
         main_window->show();
         LoginWindow::close();
@@ -157,11 +157,11 @@ void LoginWindow::on_login_clicked()
     case 1:
         //здесь надо пингануть серву, чтобы зарегал пользователя и выслал код подтверждения
         LoginWindow::activePage = 2;
-        ui->Name->setPlaceholderText("enter code from email");
+        ui->Name->setPlaceholderText(QObject::tr("enter code from email"));
         ui->Name->clear();
         ui->Pass->hide();
         ui->repeatPassword->hide();
-        ui->login->setText("Verify account");
+        ui->login->setText(QObject::tr("Verify account"));
         return;
 
     case 2:
@@ -183,9 +183,9 @@ void LoginWindow::on_login_clicked()
             //здесь надо вставить проверку легитимности введенного email
             //и выслать код смены пароля с серва пользователю
             LoginWindow::activePage = 4;
-            ui->Name->setPlaceholderText("enter code from email");
+            ui->Name->setPlaceholderText(QObject::tr("enter code from email"));
             ui->Name->clear();
-            ui->Pass->setPlaceholderText("new password");
+            ui->Pass->setPlaceholderText(QObject::tr("new password"));
             ui->Pass->clear();
             ui->Pass->show();
             ui->repeatPassword->clear();
@@ -214,9 +214,9 @@ void LoginWindow::on_Recovery_clicked()
     ui->Pass->hide();
     ui->repeatPassword->hide();
     ui->Remember->hide();
-    ui->Registration->setText("Back");
+    ui->Registration->setText(QObject::tr("Back"));
     ui->Recovery->hide();
-    ui->login->setText("Change password");
+    ui->login->setText(QObject::tr("Change password"));
 }
 
 

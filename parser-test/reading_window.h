@@ -25,7 +25,7 @@ class ReadingWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ReadingWindow(settings * PSettings, Book book);
+    explicit ReadingWindow(settings* PSettings, Book book);
     ~ReadingWindow();
 
 private slots:
@@ -41,31 +41,23 @@ private slots:
 
     void setStyle(QString currentStyle);
 
-    void mouseMoveEvent(QMouseEvent * e);
-    void mousePressEvent(QMouseEvent * e);
-    void mouseReleaseEvent(QMouseEvent * e);
-
     void StartSearch(QString key, QString type);
     void NextSearchStep();
     void PrevSearchStep();
 
-    void settings_profile_clicked();
-    void settings_program_clicked();
-    void settings_reader_clicked();
-    void changeSettingsTab(int i);
-
     void clockStep();
     void updateProgress();
 
-    void resizeEvent(QResizeEvent * e);
-    void reprintText();
+    void reprintResizedText();
+    void reprintNewSettText();
 
 signals:
     void showMainWindow();
     void windowWasResized();
 
 protected:
-   virtual void keyPressEvent(QKeyEvent *event);
+   bool eventFilter(QObject *obj, QEvent *event);
+   void changeEvent(QEvent *event);
 
 private:
     QRect prev_geometry;
@@ -77,36 +69,30 @@ private:
 
     int SettingsTab;
 
-    Ui::ReadingWindow *ui;
-    QThread * HandlerThread;
-    settings * ProgramSettings;
+    Ui::ReadingWindow* ui;
+    QThread* HandlerThread;
+    settings* ProgramSettings;
 
-    QWidget * MenuWidget;
-    QVBoxLayout * MenuLayout;
-    QPushButton * _BackToMainWindowButton;
-    QPushButton * _ContentsButton;
-    QPushButton * _SynchronizationButton;
-    QPushButton * _FindButton;
-    QPushButton * _SettingsButton;
+    QWidget* MenuWidget;
+    QVBoxLayout* MenuLayout;
+    QPushButton* _BackToMainWindowButton;
+    QPushButton* _ContentsButton;
+    QPushButton* _SynchronizationButton;
+    QPushButton* _FindButton;
+    QPushButton* _SettingsButton;
 
-    settingslayout *SettingsPage;
-    synchronizationlayout *SynchronizationPage;
+    QThread* parserThread;
 
-    QThread * parserThread;
+    QDialog*MiniWindow;
+    QVBoxLayout* settingsLayout;
+    settingslayout* SettingsPage;
+    synchronizationlayout* SynchronizationPage;
 
-    QVBoxLayout * WindowLayout;
-    QHBoxLayout * SettingsTabsLayout;
-    QDialog *MiniWindow;
-    QPushButton * ProfileButton;
-    QPushButton * ProgramButton;
-    QPushButton * ReaderButton;
-    QPushButton * SettingsExitButton;
-
-    SearchWindow * Search;
+    SearchWindow* Search;
 
     QString styles[5];
 
-    FB2TextParser * BookParse;
+    FB2TextParser* BookParse;
 };
 
 #endif // READINGWINDOW_H

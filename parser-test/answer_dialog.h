@@ -6,8 +6,6 @@
 #include <QPushButton>
 #include <QLabel>
 
-
-
 class AnswerDialog : public QDialog
 {
     Q_OBJECT

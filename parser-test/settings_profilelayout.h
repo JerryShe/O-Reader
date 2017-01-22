@@ -14,16 +14,27 @@ class Settings_ProfileLayout : public QFrame
 
 public:
     explicit Settings_ProfileLayout(QWidget *parent = 0);
-    ~Settings_ProfileLayout();    
+    ~Settings_ProfileLayout();
+
     void setSettingsData(settings *Settings);
     void setLayoutStyle();
+    void setSavebuttonView(int type);
 
 private slots:
     void on_ChangePasswordButton_clicked();
+    void on_SaveButton_clicked();
+
+protected:
+    void changeEvent(QEvent *event);
+
+
+signals:
+    void settingsChanged(int type);
 
 private:
     Ui::Settings_ProfileLayout *ui;
     settings *ProgramSettings;
+    QString savebuttonStyle[2];
 };
 
 #endif // SETTINGS_PROFILELAYOUT_H

@@ -9,6 +9,7 @@
 #include <QGridLayout>
 #include <QFrame>
 #include <QFile>
+#include <QTranslator>
 
 #include "library_layout.h"
 #include "books.h"
@@ -34,13 +35,11 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QTranslator *translator, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
     void showWindow();
-
-    void settingsTabChanged(int tab);
 
     void on_exit_button_clicked();
     void on_full_size_button_clicked();
@@ -51,9 +50,7 @@ private slots:
     void mouseReleaseEvent(QMouseEvent *e);
 
     void libraryButtonsHide();
-    void settingsButtonsHide();
     void libraryButtonsShow();
-    void settingsButtonsShow();
 
     void returnButton();
 
@@ -62,13 +59,10 @@ private slots:
     void on_Synchronization_clicked();
     void on_Logout_clicked();
     void on__AddBooks_clicked();
-    void on__SettingsProfile_clicked();
-    void on__SettingsProgram_clicked();
-    void on__SettingsReader_clicked();    
 
     void on__SortBox_activated(const QString &arg1);
 
-    void setStyle();
+    void setWindowStyle(QString currentStyle);
 
     void on__Delete_clicked();
     void on__ChangeViewMode_clicked();
@@ -81,6 +75,9 @@ private slots:
 
     void addBooksFolder();
     void addBooksFiles();
+
+protected:
+    void changeEvent(QEvent *event);
 
 private:
     int activeWindow = 1;
@@ -100,15 +97,15 @@ private:
     int lastWindowWidth;
     int resizingFrame = 5;
 
-    Ui::MainWindow * ui;
+    Ui::MainWindow* ui;
 
-    librarylayout * LibraryLayout;
-    Synchronization *UserActions;
-    settings *ProgramSettings;
+    librarylayout* LibraryLayout;
+    Synchronization* UserActions;
+    settings* ProgramSettings;
 
-    ReadingWindow * readingWindow;
-    SearchWindow * searchWindow;
-    BookPage * page;
+    ReadingWindow* readingWindow;
+    SearchWindow* searchWindow;
+    BookPage* page;
 
     QString resoursesFolderPath;
 
@@ -118,6 +115,9 @@ private:
     friend class LibraryHandler;
 };
 
+
+
+/////////////////////////////////////////////////////////
 class LibraryHandler: public QObject
 {
     Q_OBJECT
@@ -155,8 +155,5 @@ public:
 private:
     MainWindow * window;
 };
-
-
-
 
 #endif // MAINWINDOW_H

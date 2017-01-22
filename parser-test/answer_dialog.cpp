@@ -12,11 +12,11 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
     AnswerDialog::setWindowFlags(Qt::FramelessWindowHint);
     AnswerDialog::setWindowFlags(Qt::Popup);
 
-    AnswerDialog::yes = new QPushButton("&Yes");
+    AnswerDialog::yes = new QPushButton(QObject::tr("Yes"));
     AnswerDialog::yes->setFlat(true);
     AnswerDialog::yes->setMinimumHeight(25);
 
-    AnswerDialog::no = new QPushButton("No");
+    AnswerDialog::no = new QPushButton(QObject::tr("No"));
     AnswerDialog::no->setFlat(true);
     AnswerDialog::no->setMinimumHeight(25);    
 
@@ -43,9 +43,7 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
     windowLayout->addWidget(AnswerDialog::message,0,Qt::AlignCenter);
     windowLayout->addLayout(buttonLayout);
 
-
     setLayout(windowLayout);
-
 }
 
 AnswerDialog::~AnswerDialog()

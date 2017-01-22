@@ -6,13 +6,15 @@
 
 void SearchWindow::setStyle(QString style)
 {
-    QString styleList[5];
+    QString styleList[3];
     setSearchWindowStyle(styleList, style);
+    YepButton->setStyleSheet(styleList[0]);
+    NopeButton->setStyleSheet(styleList[0]);
+    TextBox->setStyleSheet(styleList[1]);
+    SearchTypeBox->setStyleSheet(styleList[2]);
+
+    setExitButtonStyle(styleList, style);
     exit_button->setStyleSheet(styleList[0]);
-    YepButton->setStyleSheet(styleList[1]);
-    NopeButton->setStyleSheet(styleList[1]);
-    TextBox->setStyleSheet(styleList[2]);
-    SearchTypeBox->setStyleSheet(styleList[3]);
 }
 
 SearchWindow::SearchWindow(int posX, int posY, QString style, bool mode, QWidget * parent): QDialog(parent)
@@ -66,10 +68,10 @@ SearchWindow::SearchWindow(int posX, int posY, QString style, bool mode, QWidget
         TextBox->setFixedSize(250, 30);
         SearchTypeBox->setFixedSize(150, 30);
         YepButton->setFixedSize(200,25);
-        YepButton->setText("Previous");
+        YepButton->setText(QObject::tr("Previous"));
         NopeButton->setFixedSize(200,25);
-        NopeButton->setText("Next");
-        a<<"From the beginning"<<"From the end"<<"From the current position";
+        NopeButton->setText(QObject::tr("Next"));
+        a<<QObject::tr("From the beginning")<<QObject::tr("From the end")<<QObject::tr("From the current position");
 
         TopLayout->setContentsMargins(0,0,0,0);
         TopLayout->setSpacing(0);
@@ -88,10 +90,10 @@ SearchWindow::SearchWindow(int posX, int posY, QString style, bool mode, QWidget
         TextBox->setFixedSize(200, 35);
         SearchTypeBox->setFixedSize(100, 35);
         YepButton->setFixedSize(150,35);
-        YepButton->setText("Find");
+        YepButton->setText(QObject::tr("Find", "button in find window"));
         NopeButton->setFixedSize(150,35);
-        NopeButton->setText("Cancel");
-        a<<"Author"<<"Title"<<"Series";
+        NopeButton->setText(QObject::tr("Cancel"));
+        a<<QObject::tr("Author")<<QObject::tr("Title")<<QObject::tr("Series");
     }
     SearchTypeBox->addItems(a);
     this->setLayout(VLayout);

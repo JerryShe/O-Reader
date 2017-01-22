@@ -17,26 +17,45 @@ public:
 
     void setSettingsData(settings *Settings);
     void hideWithoutSaving();
+    void setSettWindowStyle();
 
 signals:
-    void tabChanged(int prevTab);
+    void settingsClosed();
+    void settingsChanged();
 
 public slots:
     void showProfile();
     void showProgram();
     void showReader();
+    void addExitButton();
+
+private slots:
+    void updateSavebuttons(int type);
+    void exit_button_clicked();
+
+protected:
+    void changeEvent(QEvent *event);
 
 private:
 
-    QHBoxLayout *settingsMainLayout;
-    settings * ProgramSettings;
+    QVBoxLayout* MainLayout;
+    QHBoxLayout* TabsLayout;
 
     Settings_ProfileLayout *ProfileWidget;  //0
     Settings_ProgramLayout *ProgramWidget;  //2
     Settings_ReaderLayout *ReaderWidget;    //1
 
+    QHBoxLayout* ButtonsLayout;
+    QPushButton* _SettingsProfile;
+    QPushButton* _SettingsProgram;
+    QPushButton* _SettingsReader;
+    QPushButton* exit_button;
+
     short currentTab = 1;
-    QString Style;
+    bool settingsWasChanged = false;
+    QString tabsStyleSheets[5];
+
+    settings * ProgramSettings;
 };
 
 #endif // SETTINGSLAYOUT_H

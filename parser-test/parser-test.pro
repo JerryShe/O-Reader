@@ -1,17 +1,13 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-06-27T17:57:22
-#
-#-------------------------------------------------
-
 QT       += core gui
 QT       += xml
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = parser-test
+TARGET = Reader
 TEMPLATE = app
+TRANSLATIONS = en.ts\
+               ru.ts
 
 
 SOURCES += main.cpp\
@@ -29,11 +25,11 @@ SOURCES += main.cpp\
     settings_profilelayout.cpp \
     settings_readerlayout.cpp \
     book_page.cpp \
-    genresmap.cpp \
     synchronization.cpp \
     reading_window.cpp \
     search_window.cpp \
-    fb2textparser.cpp
+    fb2textparser.cpp \
+    genresmap.cpp
 
 HEADERS  += \
     login_window.h \
@@ -50,11 +46,11 @@ HEADERS  += \
     settings_profilelayout.h \
     settings_readerlayout.h \
     book_page.h \
-    genresmap.h \
     synchronization.h \
     reading_window.h \
     search_window.h \
-    fb2textparser.h
+    fb2textparser.h \
+    genresmap.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \
