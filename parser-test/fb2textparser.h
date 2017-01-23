@@ -15,22 +15,27 @@ class FB2TextParser : public QObject
     Q_OBJECT
 
 public:
-    FB2TextParser(Book boo, settings* PSettings, int width, int height);
+    FB2TextParser(Book *boo, settings* PSettings, int width, int height);
     ~FB2TextParser();
 
 public:
     void setPageGeometry(const int width, const int height);
-
     void parseBookText();
-
     float getProgress();
 
     QString getPageForward();
     QString getPageBackward();
 
+    QStringList getBookContentTable();
+    long long getCurrentSectionIndex();
+
 public slots:
     QString updatePage(const int width, const int height);
     QString updateSettings(const int width, const int height);
+    QString goToSection(int sectionIndex);
+
+signals:
+    void saveBookProgress();
 
 private:
     QStringList splitTextToWords(QString temp);
@@ -56,7 +61,7 @@ private:
     QStringList bookText;
     unsigned int columnWidth;
     unsigned int columnHeight;
-    unsigned  int tableWidth;
+    unsigned int tableWidth;
 
     QStringList Columns;
     QString HTMLPage;
@@ -83,7 +88,7 @@ private:
     QString columnTale;
     QString word, tag;
 
-    Book book;
+    Book *book;
     settings *ProgramSettings;
     ReadingStyle CurStyle;
 
@@ -96,6 +101,10 @@ private:
 
     QMap <QString, QFontMetrics*> fontMap;
     QMap <QString, double> linespaceMap;
+
+    QStringList TableOfContentsText;
+    QVector <long long> TableOfContentsIndexes;
+
 };
 
 #endif // FB2TEXTPARSER_H

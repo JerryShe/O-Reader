@@ -7,6 +7,7 @@
 #include "search_window.h"
 #include "settings.h"
 #include "styles.h"
+#include "booktableofcontents.h"
 
 #include <QTimer>
 #include <styles.h>
@@ -22,7 +23,7 @@
 
 void ReadingWindow::setStyle(QString currentStyle)
 {
-    QString styleSheets[8];
+    QString styleSheets[6];
 
     setTopBarBackgroundColor(styleSheets, currentStyle);
     ui->TopBarWidget->setStyleSheet(styleSheets[0]);
@@ -44,14 +45,14 @@ void ReadingWindow::setStyle(QString currentStyle)
     ui->MenuButton->setStyleSheet(styleSheets[0]);
 
     setReaderWindowMenuButtons(styleSheets, currentStyle);
-    _BackToMainWindowButton->setStyleSheet(styleSheets[0]);
-    _ContentsButton->setStyleSheet(styleSheets[0]);
-    _SynchronizationButton->setStyleSheet(styleSheets[0]);
-    _FindButton->setStyleSheet(styleSheets[0]);
-    _SettingsButton->setStyleSheet(styleSheets[0]);
+    MenuBackToMainWindowButton->setStyleSheet(styleSheets[4]);
+    MenuContentsButton->setStyleSheet(styleSheets[0]);
+    MenuSynchronizationButton->setStyleSheet(styleSheets[3]);
+    MenuFindButton->setStyleSheet(styleSheets[1]);
+    MenuSettingsButton->setStyleSheet(styleSheets[2]);
 }
 
-ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::ReadingWindow)
+ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::ReadingWindow)
 {
     ui->setupUi(this);
     show();
@@ -64,7 +65,8 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::Readi
     parserThread->start();
     ui->TextPage->setHtml(BookParse->getPageForward());
     updateProgress();
-    ui->BookName->setText(book.getAuthorName() + ": " + book.getTitle());
+    connect(BookParse, SIGNAL(saveBookProgress()), this, SLOT(saveBookPos()));
+    ui->BookName->setText(book->getAuthorName() + ": " + book->getTitle());
 
     ui->TextPage->setMouseTracking(true);
     ui->MainWidget->setMouseTracking(true);
@@ -84,30 +86,30 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book book) : ui(new Ui::Readi
     MenuLayout->setContentsMargins(0,0,0,0);
     MenuLayout->setSpacing(0);
 
-    _ContentsButton = new QPushButton("cont");
-    _ContentsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
-    MenuLayout->addWidget(_ContentsButton, 0);
-    connect(_ContentsButton, SIGNAL(clicked(bool)), this, SLOT(ContentsButton_clicked()));
+    MenuContentsButton = new QPushButton();
+    MenuContentsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
+    MenuLayout->addWidget(MenuContentsButton, 0);
+    connect(MenuContentsButton, SIGNAL(clicked(bool)), this, SLOT(ContentsButton_clicked()));
 
-    _FindButton = new QPushButton("find");
-    _FindButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
-    MenuLayout->addWidget(_FindButton, 1);
-    connect(_FindButton, SIGNAL(clicked(bool)), this, SLOT(FindButton_Clicked()));
+    MenuFindButton = new QPushButton();
+    MenuFindButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
+    MenuLayout->addWidget(MenuFindButton, 1);
+    connect(MenuFindButton, SIGNAL(clicked(bool)), this, SLOT(FindButton_Clicked()));
 
-    _SettingsButton = new QPushButton("sett");
-    _SettingsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
-    MenuLayout->addWidget(_SettingsButton, 2);
-    connect(_SettingsButton, SIGNAL(clicked(bool)), this, SLOT(SettingsButton_Clicked()));
+    MenuSettingsButton = new QPushButton();
+    MenuSettingsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
+    MenuLayout->addWidget(MenuSettingsButton, 2);
+    connect(MenuSettingsButton, SIGNAL(clicked(bool)), this, SLOT(SettingsButton_Clicked()));
 
-    _SynchronizationButton = new QPushButton("synch");
-    _SynchronizationButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
-    MenuLayout->addWidget(_SynchronizationButton, 3);
-    connect(_SynchronizationButton, SIGNAL(clicked(bool)), this, SLOT(SynchronizationButton_Clicked()));
+    MenuSynchronizationButton = new QPushButton();
+    MenuSynchronizationButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
+    MenuLayout->addWidget(MenuSynchronizationButton, 3);
+    connect(MenuSynchronizationButton, SIGNAL(clicked(bool)), this, SLOT(SynchronizationButton_Clicked()));
 
-    _BackToMainWindowButton = new QPushButton("back");
-    _BackToMainWindowButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
-    MenuLayout->addWidget(_BackToMainWindowButton, 4);
-    connect(_BackToMainWindowButton, SIGNAL(clicked(bool)), this, SLOT(BackToMainWindowButton_Clicked()));
+    MenuBackToMainWindowButton = new QPushButton();
+    MenuBackToMainWindowButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
+    MenuLayout->addWidget(MenuBackToMainWindowButton, 4);
+    connect(MenuBackToMainWindowButton, SIGNAL(clicked(bool)), this, SLOT(BackToMainWindowButton_Clicked()));
 
     ProgramSettings = PSettings;
     setStyle(ProgramSettings->getInterfaceStyle());
@@ -133,11 +135,11 @@ ReadingWindow::~ReadingWindow()
     delete ui;
     delete MenuWidget;
     delete MenuLayout;
-    delete _BackToMainWindowButton;
-    delete _ContentsButton;
-    delete _SynchronizationButton;
-    delete _FindButton;
-    delete _SettingsButton;
+    delete MenuBackToMainWindowButton;
+    delete MenuContentsButton;
+    delete MenuSynchronizationButton;
+    delete MenuFindButton;
+    delete MenuSettingsButton;
     delete SettingsPage;
     delete SynchronizationPage;
     delete Search;
@@ -149,7 +151,7 @@ ReadingWindow::~ReadingWindow()
 
 void ReadingWindow::clockStep()
 {
-    ui->Clock->setText(QDateTime::currentDateTime().toString("hh:mm:ss"));
+    ui->Clock->setText(QDateTime::currentDateTime().toString("hh:mm"));
     if (ProgramSettings->getHideTopBar() == true && this->isMaximized())
         if (!ui->TopBarWidget->isHidden() && MenuWidget->isHidden() && TopBarNeedHide)
         {
@@ -342,6 +344,22 @@ void ReadingWindow::updateProgress()
 void ReadingWindow::ContentsButton_clicked()
 {
     MenuWidget->hide();
+    BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookParse->getBookContentTable(), BookParse->getCurrentSectionIndex(), this);
+    tableWindow->move(0, ui->MenuButton->height());
+    connect(tableWindow, SIGNAL(goToSection(int)), this, SLOT(goToSection(int)));
+    if (tableWindow->exec() == QDialog::Rejected)
+        delete tableWindow;
+}
+
+void ReadingWindow::goToSection(int sectionIndex)
+{
+    ui->TextPage->setHtml(BookParse->goToSection(sectionIndex));
+}
+
+void ReadingWindow::saveBookPos()
+{
+    qDebug()<<"save wtf";
+    emit saveBookProgress();
 }
 
 void ReadingWindow::FindButton_Clicked()
@@ -397,13 +415,13 @@ void ReadingWindow::SettingsButton_Clicked()
 
     MiniWindow->setGeometry(frame, frame, w, h);
     MiniWindow->setContentsMargins(0,0,0,0);
-    settingsLayout = new QVBoxLayout(MiniWindow);
-    MiniWindow->setLayout(settingsLayout);
-    settingsLayout->setContentsMargins(0,0,0,0);
+    MiniWindowLayout = new QVBoxLayout(MiniWindow);
+    MiniWindow->setLayout(MiniWindowLayout);
+    MiniWindowLayout->setContentsMargins(0,0,0,0);
 
     SettingsPage = new settingslayout();
     SettingsPage->setSettingsData(ProgramSettings);
-    settingsLayout->addWidget(SettingsPage);
+    MiniWindowLayout->addWidget(SettingsPage);
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(close()));
     connect(SettingsPage, SIGNAL(settingsChanged()), this, SLOT(reprintNewSettText()));

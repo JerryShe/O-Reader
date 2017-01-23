@@ -29,8 +29,10 @@ public:
     QStringList getGenres();
     QString getSeries();
     QString getLanguage();
-    unsigned int getBookProgress();
-    void setBookProgress(const unsigned int progress);
+    long long getBookProgress();
+    float getBookProgressPocent();
+    QStringList getBookProgressTagStack();
+    void setBookProgress(const long long progress,double procent, QStringList tagStack);
 
     QString getBookCodec();
     void setBookCodec(QString BookCodec);
@@ -51,7 +53,9 @@ private:
     QString Language;
     QString SourceLanguage;
     QDateTime AddittionTime;
-    unsigned int BookProgress = 0;
+    long long Progress = 0;
+    float ProgressProcent = 0;
+    QStringList ProgressTagStack;
     QString CoverType;
     QString Cover;
 };

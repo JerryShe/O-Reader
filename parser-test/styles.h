@@ -18,6 +18,8 @@ void setWindowButtonsStyle (QString windowButtonsStyle [], const QString style);
 
 void setTabButtonsStyle (QString tabButtonsStyle [], const QString style);
 
+void setLibraryLayoutButtons (QString buttonsStyle [], const QString style);
+
 void setAnswerDialogStyle (QString windowStyle [], const QString style);
 
 void setBookOrFolderStyle (QString buttonStyle [], const QString style);
@@ -41,3 +43,5 @@ void setReaderWindowStyle(QString WindowStyle[], const QString style);
 void setReaderWindowMenuButtons(QString ButtonsStyle[], const QString style);
 
 void setReaderSettingsExitButton(QString ButtonsStyle[], const QString style);
+
+void setReaderTableOfContents(QString WindowStyle[], const QString style);

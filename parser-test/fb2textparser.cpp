@@ -7,13 +7,15 @@
 #include <QFontMetrics>
 
 
-FB2TextParser::FB2TextParser(Book boo, settings* PSettings, int width, int height)
+FB2TextParser::FB2TextParser(Book *boo, settings* PSettings, int width, int height)
 {
     book = boo;
     ProgramSettings = PSettings;
-    currentEStrNum = currentBStrNum = book.getBookProgress();
+    currentEStrNum = currentBStrNum = book->getBookProgress();
     currentTextPos = 0;
-    tagStack.push("Text");
+    tagStack.fromList(book->getBookProgressTagStack());
+    if (tagStack.size() == 0)
+        tagStack.push("Text");
 
     parseBookText();
     setHTMLinf();
@@ -237,13 +239,11 @@ QStringList FB2TextParser::splitTextToWords(QString temp)
 
 void FB2TextParser::parseBookText()
 {
-    QFile bookFile(book.File);
+    QFile bookFile(book->File);
     if (bookFile.open(QIODevice::ReadOnly))
     {
-
         doc = new QTextStream(&bookFile);
-        doc->setCodec(book.getBookCodec().toStdString().c_str());
-        //qDebug()<<"parsing start: "<<book.File;
+        doc->setCodec(book->getBookCodec().toStdString().c_str());
 
         QString temp;
 
@@ -278,8 +278,48 @@ void FB2TextParser::parseBookText()
         qDebug()<<"невозможно открыть файл книги";
     }
 
-    //qDebug()<<"parsing end"<<strCount;
+
+    //создаем оглавление книги
+    for (long long i = 0; i < strCount; i++)
+        if (bookText[i] == "<section>")
+        {
+            if (bookText[++i] == "<TitleText>")
+            {
+                long long pos;
+                QString text;
+                for (pos = i + 1; pos < strCount && bookText[pos][0] == '<'; pos++);
+                for (; pos < strCount && bookText[pos] != "</TitleText>"; pos++)
+                    if (bookText[pos][0] != '<')
+                        text += bookText[pos] + " ";
+                TableOfContentsText.append(text);
+                TableOfContentsIndexes.append(i);
+                i = pos;
+            }
+        }
 }
+
+QStringList FB2TextParser::getBookContentTable()
+{
+    return TableOfContentsText;
+}
+
+long long FB2TextParser::getCurrentSectionIndex()
+{
+    int pos;
+    for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; pos++);
+    //qDebug()<<"curcur"<<TableOfContentsText[pos];
+    return pos;
+}
+
+QString FB2TextParser::goToSection(int sectionIndex)
+{
+    currentEStrNum = TableOfContentsIndexes[sectionIndex];
+    tagStack.clear();
+    tagStack.append("Text");
+    parseDirection = false;
+    return getPageForward();
+}
+
 
 int FB2TextParser::getWordHeight()
 {
@@ -505,7 +545,8 @@ QString FB2TextParser::getPageForward()
 
         Columns.clear();
         currentTextPos = currentBStrNum = currentEStrNum;
-        book.setBookProgress(currentBStrNum);
+        book->setBookProgress(currentBStrNum, getProgress(), tagStack.toList());
+        emit saveBookProgress();
         wordWidth = wordHeight = 0;
         tagType = 0;
 
@@ -626,7 +667,9 @@ QString FB2TextParser::getPageBackward()
         }
         currentBStrNum = currentTextPos + 1;
 
-        book.setBookProgress(currentBStrNum);
+        book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
+        emit saveBookProgress();
+
 
         HTMLPage = Columns[CurStyle.ColumnCount - 1];
         for (int i = CurStyle.ColumnCount - 2; i >= 0; i--)

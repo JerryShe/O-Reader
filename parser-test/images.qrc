@@ -24,4 +24,25 @@
     <qresource prefix="/noImage">
         <file>noImage.png</file>
     </qresource>
+    <qresource prefix="/arrows">
+        <file>LightArrow.png</file>
+    </qresource>
+    <qresource prefix="/LibraryLayoutButtons">
+        <file>LightBarView.png</file>
+        <file>LightDownscale.png</file>
+        <file>LightListView.png</file>
+        <file>LightUpscale.png</file>
+    </qresource>
+    <qresource prefix="/ReadingButtons">
+        <file>LightMenuLibrary.png</file>
+        <file>LightMenuSettings.png</file>
+        <file>LightMenuSynchronization.png</file>
+        <file>LightMenuContents.png</file>
+        <file>LightMenuSearch.png</file>
+    </qresource>
+    <qresource prefix="/SettingsLayoutButtons">
+        <file>LightDeleteButton.png</file>
+        <file>LightNopeButton.png</file>
+        <file>LightYepButton.png</file>
+    </qresource>
 </RCC>

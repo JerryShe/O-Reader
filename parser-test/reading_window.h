@@ -25,7 +25,7 @@ class ReadingWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ReadingWindow(settings* PSettings, Book book);
+    explicit ReadingWindow(settings* PSettings, Book *book);
     ~ReadingWindow();
 
 private slots:
@@ -51,9 +51,13 @@ private slots:
     void reprintResizedText();
     void reprintNewSettText();
 
+    void goToSection(int sectionIndex);
+    void saveBookPos();
+
 signals:
     void showMainWindow();
     void windowWasResized();
+    void saveBookProgress();
 
 protected:
    bool eventFilter(QObject *obj, QEvent *event);
@@ -75,16 +79,16 @@ private:
 
     QWidget* MenuWidget;
     QVBoxLayout* MenuLayout;
-    QPushButton* _BackToMainWindowButton;
-    QPushButton* _ContentsButton;
-    QPushButton* _SynchronizationButton;
-    QPushButton* _FindButton;
-    QPushButton* _SettingsButton;
+    QPushButton* MenuBackToMainWindowButton;
+    QPushButton* MenuContentsButton;
+    QPushButton* MenuSynchronizationButton;
+    QPushButton* MenuFindButton;
+    QPushButton* MenuSettingsButton;
 
     QThread* parserThread;
 
     QDialog*MiniWindow;
-    QVBoxLayout* settingsLayout;
+    QVBoxLayout* MiniWindowLayout;
     settingslayout* SettingsPage;
     synchronizationlayout* SynchronizationPage;
 

@@ -41,6 +41,11 @@ void MainWindow::setWindowStyle(QString currentStyle)
     setTopBarBackgroundColor(styleSheets, currentStyle);
     ui->TopBarWidget->setStyleSheet(styleSheets[0]);
 
+    setLibraryLayoutButtons(styleSheets, currentStyle);
+    ui->_ChangeViewMode->setStyleSheet(styleSheets[0]);
+    ui->_Upscale->setStyleSheet(styleSheets[1]);
+    ui->_Downscale->setStyleSheet(styleSheets[2]);
+
     setWindowTopButtonsStyle(styleSheets, currentStyle);
     ui->min_button->setStyleSheet(styleSheets[0]);
     ui->full_size_button->setStyleSheet(styleSheets[1]);
@@ -89,11 +94,18 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
     ProgramSettings->loadSettings();
 
     ui->setupUi(this);
+    ui->_Group->hide();
+    ui->_GroupBox->hide();
 
     LibHandler = new LibraryHandler(this);
     LibHandler->moveToThread(HandlerThread);
     LibraryLayout = new librarylayout();
     ui->TabsLayout->addWidget(LibraryLayout, 0);
+    if (ProgramSettings->getLibraryReprezentation())
+    {
+        LibraryLayout->changeViewMod();
+        ui->_ChangeViewMode->setChecked(true);
+    }
     LibHandler->loadBookList();
 
     MainWindow::setWindowStyle(ProgramSettings->getInterfaceStyle());
@@ -129,7 +141,6 @@ MainWindow::~MainWindow()
     delete readingWindow;
     delete searchWindow;
     delete page;
-
 }
 
 void LibraryHandler::loadBookList()
@@ -159,6 +170,7 @@ void LibraryHandler::loadBookList()
 
 void LibraryHandler::saveBookList()
 {
+    qDebug()<<"saving books";
     QFile bookFileList(window->resoursesFolderPath + "/BookList.lb");
 
     if(bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
@@ -169,7 +181,7 @@ void LibraryHandler::saveBookList()
     {
         qDebug() << "Failed to Create File" << endl;
         ///оповещение - невозможно открыть или создать файл библиотеки
-        /// return;
+        return;
     }
 
     QDataStream out(&bookFileList);
@@ -216,7 +228,7 @@ void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
         boo.setBookIndex(currentBookIndex++);
         bookList.push_back(boo);
 
-        window->UserActions->addAction(1, file, -1, "");
+        window->UserActions->addAction(1, file, 0);
         window->LibraryLayout->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
 
     }
@@ -245,10 +257,11 @@ void MainWindow::startReading(const int BookIndex)
         if (LibHandler->bookList[i].getBookIndex() == BookIndex)
             break;
 
-    readingWindow = new ReadingWindow(ProgramSettings, LibHandler->bookList[i]);
+    readingWindow = new ReadingWindow(ProgramSettings, &LibHandler->bookList[i]);
     readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
     connect(readingWindow, SIGNAL(showMainWindow()), this, SLOT(showWindow()));
     readingWindow->show();
+    connect(readingWindow, SIGNAL(saveBookProgress()), LibHandler, SLOT(saveBookList()));
     this->hide();
 }
 
@@ -258,7 +271,7 @@ void LibraryHandler::deleteBook(const int index)
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getBookIndex() == index)
         {
-            window->UserActions->addAction(2, bookList.at(i).File, -1, "");
+            window->UserActions->addAction(2, bookList.at(i).File, 0);
             bookList.remove(i);
             break;
         }
@@ -280,6 +293,8 @@ void MainWindow::on_exit_button_clicked()
     if (answer_window->exec() == QDialog::Accepted)
     {
         delete answer_window;
+        UserActions->saveLog();
+        ProgramSettings->saveSettings();
         exit(0);
     }
     else
@@ -435,7 +450,7 @@ void MainWindow::on_Logout_clicked()
     if (MainWindow::activeWindow != 4)
         ui->Logout->setStyleSheet(styleSheets[7]);
 
-    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(90,0)).x(),
+    AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(ui->Logout->width(),0)).x(),
                                                    ui->Logout->mapToGlobal(QPoint(0,0)).y(),QObject::tr("Logout?"),
                                                    MainWindow::ProgramSettings->getInterfaceStyle());
     answer_window->show();
@@ -475,7 +490,6 @@ void MainWindow::addBooksFiles()
     LibHandler->AddBooks(fileList);
 }
 
-
 void MainWindow::on__Delete_clicked()
 {
     ui->_Find->setChecked(false);
@@ -501,7 +515,7 @@ void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
         {
             if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
             {
-                window->UserActions->addAction(2, bookList.at(j).File, -1, "");
+                window->UserActions->addAction(2, bookList.at(j).File, 0);
                 bookList.remove(j);
                 break;
             }
@@ -549,9 +563,10 @@ void LibraryHandler::AddFolder(QString path)
     delete Gmap;
 }
 
-void MainWindow::on__ChangeViewMode_clicked()
+void MainWindow::on__ChangeViewMode_toggled(bool checked)
 {
     LibraryLayout->changeViewMod();
+    ProgramSettings->setLibraryReprezentation(checked);
 }
 
 void MainWindow::on__Upscale_clicked()
@@ -680,3 +695,5 @@ void MainWindow::on__SortBox_activated(const QString &arg1)
 {
     LibHandler->sortBooks(arg1);
 }
+
+

@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QDataStream>
 #include <QDebug>
+#include <QString>
 
 
 Synchronization::Synchronization()
@@ -11,22 +12,20 @@ Synchronization::Synchronization()
     loadLog();
 }
 
-Synchronization::action::action(QDateTime time, int index, QString fileName, int Bindex, QString data)
+Synchronization::action::action(short index, QString itemSpec, QString data)
 {
-        actionTime = time;
-        actionIndex = index;
-        file = fileName;
-        bookIndex = Bindex;
-        dataChanges = data;
+    actionTime = QDateTime::currentDateTime();
+    actionIndex = index;
+    spec = itemSpec;
+    dataChanges = data;
 }
 
-Synchronization::action::action(int index, QString fileName, int Bindex, QString data)
+Synchronization::action::action(short index, QDateTime time, QString itemSpec, QString data)
 {
-        actionTime = QDateTime::currentDateTime();
-        actionIndex = index;
-        file = fileName;
-        bookIndex = Bindex;
-        dataChanges = data;
+    actionTime = time;
+    actionIndex = index;
+    spec = itemSpec;
+    dataChanges = data;
 }
 
 void Synchronization::loadLog()
@@ -50,21 +49,19 @@ void Synchronization::loadLog()
     }
 
     QDataStream in(&LogList);
+    short actionIndex;
     QDateTime actionTime;
-    int actionIndex;
-    QString file;
-    int bookIndex;
+    QString spec;
     QString dataChanges;
 
     while (!in.atEnd())
     {
-        in>>actionTime;
         in>>actionIndex;
-        in>>file;
-        in>>bookIndex;
+        in>>actionTime;
+        in>>spec;
         in>>dataChanges;
 
-        SynchroQueue.enqueue(action(actionTime, actionIndex, file, bookIndex, dataChanges));
+        SynchroQueue.enqueue(action(actionIndex, actionTime, spec, dataChanges));
     }
     LogList.close();
 }
@@ -98,8 +95,7 @@ void Synchronization::saveLog()
         temp = SynchroQueue.at(i);
         out<<temp.actionTime;
         out<<temp.actionIndex;
-        out<<temp.file;
-        out<<temp.bookIndex;
+        out<<temp.spec;
         out<<temp.dataChanges;
     }
     LogList.close();
@@ -131,53 +127,4 @@ int Synchronization::synchronizeFromServer()
  * Изменение настроек - 5
  * Добавление фона - 6
  */
-void Synchronization::addAction(int actionIndex, QString file, int bookIndex, QString dataChanges)
-{
-    switch (actionIndex)
-    {
-    case 1:
-        break;
 
-    case 2:
-        for (int i = 0; i < SynchroQueue.size(); i++)
-            if (SynchroQueue.at(i).actionIndex == 1 && file == SynchroQueue.at(i).file)
-            {
-                SynchroQueue.removeAt(i);
-                return;
-            }
-        break;
-
-    case 3:
-        for (int i = 0; i < SynchroQueue.size(); i++)
-            if (SynchroQueue.at(i).actionIndex == 3 && bookIndex == SynchroQueue.at(i).bookIndex)
-            {
-                SynchroQueue.removeAt(i);
-                break;
-            }
-        break;
-
-    case 4:
-        break;
-
-    case 5:
-        for (int i = 0; i < SynchroQueue.size(); i++)
-            if (SynchroQueue.at(i).actionIndex == 5)
-            {
-                SynchroQueue.removeAt(i);
-                break;
-            }
-        break;
-
-    case 6:
-        for (int i = 0; i < SynchroQueue.size(); i++)
-            if (SynchroQueue.at(i).actionIndex == 6)
-            {
-                SynchroQueue.removeAt(i);
-                break;
-            }
-        break;
-
-    }
-
-    SynchroQueue.enqueue(action(actionIndex, file, bookIndex, dataChanges));
-}

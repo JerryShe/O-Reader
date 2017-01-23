@@ -62,6 +62,7 @@ private:
     QString currentTextStyle;
     QString currentBackgroundImage;
     QString savebuttonStyle[2];
+    QString nopeButtonStyle[2];
 
     int changedSignal = 0;
 };

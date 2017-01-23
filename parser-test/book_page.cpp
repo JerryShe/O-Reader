@@ -22,6 +22,7 @@ void BookPage::setStyle(QString Style)
     ui->genres->setStyleSheet(PageStyles[2]);
     ui->title->setStyleSheet(PageStyles[2]);
     ui->series->setStyleSheet(PageStyles[2]);
+    ui->BookProgress->setStyleSheet(PageStyles[2]);
     ui->annotation->setStyleSheet(PageStyles[3]);
 
     setExitButtonStyle(PageStyles, Style);
@@ -74,6 +75,8 @@ BookPage::BookPage(Book book, QString Style, QWidget *parent) :
 
     metrics = QFontMetrics(ui->series->font());
     ui->series->setText(metrics.elidedText(book.getSeries(), Qt::ElideRight, textWidth));
+
+    ui->BookProgress->setText(QString::number(floor(book.getBookProgressPocent()*10)/10) + "%");
 
     list = book.getGenres();
     temp = list[0];

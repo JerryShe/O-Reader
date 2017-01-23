@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     reading_window.cpp \
     search_window.cpp \
     fb2textparser.cpp \
-    genresmap.cpp
+    genresmap.cpp \
+    booktableofcontents.cpp
 
 HEADERS  += \
     login_window.h \
@@ -50,7 +51,8 @@ HEADERS  += \
     reading_window.h \
     search_window.h \
     fb2textparser.h \
-    genresmap.h
+    genresmap.h \
+    booktableofcontents.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \
@@ -58,7 +60,8 @@ FORMS    += mainwindow.ui \
     settings_profilelayout.ui \
     settings_readerlayout.ui \
     book_page.ui \
-    readingwindow.ui
+    readingwindow.ui \
+    booktableofcontents.ui
 
 RESOURCES += \
     images.qrc

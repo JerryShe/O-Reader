@@ -6,7 +6,7 @@
 
 AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
 {
-    AnswerDialog::resize(300,90);
+    AnswerDialog::resize(300,70);
     AnswerDialog::move(pos_x, pos_y);
 
     AnswerDialog::setWindowFlags(Qt::FramelessWindowHint);

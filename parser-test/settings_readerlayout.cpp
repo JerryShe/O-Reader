@@ -8,9 +8,13 @@
 
 void Settings_ReaderLayout::setLayoutStyle()
 {
-    QString a[3];
+    QString a[5];
     setReaderLayoutStyle(a, ProgramSettings->getInterfaceStyle());
     this->setStyleSheet(a[0]);
+    ui->YepButton->setStyleSheet(a[2]);
+    ui->NopeButton->setStyleSheet(a[3]);
+    nopeButtonStyle[0] = a[3];
+    nopeButtonStyle[1] = a[4];
     ui->ReaderSettingsContent->setStyleSheet(a[1]);
     setSavebuttonStyle(savebuttonStyle, ProgramSettings->getInterfaceStyle());
     ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
@@ -412,11 +416,12 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
 {
     if (!ui->NewStyleName->isHidden())
     {
+        ui->NopeButton->setStyleSheet(nopeButtonStyle[0]);
         ui->NewStyleName->hide();
         ui->StyleBox->show();
         ui->YepButton->hide();
     }
-    else if (ui->StyleBox->currentText() != "Standart")
+    else if (ui->StyleBox->currentText() != "Standart" && ui->StyleBox->currentText() != QObject::tr("Add new style..."))
     {
         AnswerDialog *answer_window = new AnswerDialog(ui->NopeButton->mapToGlobal(QPoint(0,0)).x() + ui->NopeButton->width(),
                                                        ui->NopeButton->mapToGlobal(QPoint(0,0)).y() + ui->NopeButton->height(),
@@ -554,6 +559,7 @@ void Settings_ReaderLayout::on_StyleBox_activated(int index)
         ui->NewStyleName->setText(QObject::tr("New style"));
         ui->StyleBox->hide();
         ui->YepButton->show();
+        ui->NopeButton->setStyleSheet(nopeButtonStyle[1]);
         return;
     }
 

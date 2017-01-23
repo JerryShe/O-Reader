@@ -15,7 +15,7 @@ Book::Book(QString fileName, GenresMap *Gmap)
 {
     Book::File = fileName;
 
-    Book::BookProgress = 0;
+    Book::Progress = 0;
 
     QFile bookFile(fileName);
     if (bookFile.open(QIODevice::ReadOnly))
@@ -171,7 +171,9 @@ QDataStream &operator <<(QDataStream &out, const Book &BookElem)
     out<<BookElem.Language;
     out<<BookElem.SourceLanguage;
     out<<BookElem.AddittionTime;
-    out<<BookElem.BookProgress;
+    out<<BookElem.Progress;
+    out<<BookElem.ProgressTagStack;
+    out<<BookElem.ProgressProcent;
     out<<BookElem.CoverType;
     out<<BookElem.Cover;
 
@@ -193,7 +195,9 @@ QDataStream &operator >> (QDataStream &in, Book &BookElem)
     in>>BookElem.Language;
     in>>BookElem.SourceLanguage;
     in>>BookElem.AddittionTime;
-    in>>BookElem.BookProgress;
+    in>>BookElem.Progress;
+    in>>BookElem.ProgressTagStack;
+    in>>BookElem.ProgressProcent;
     in>>BookElem.CoverType;
     in>>BookElem.Cover;
 
@@ -260,14 +264,26 @@ QString Book::getLanguage()
     return Language;
 }
 
-unsigned int Book::getBookProgress()
+long long Book::getBookProgress()
 {
-    return BookProgress;
+    return Progress;
 }
 
-void Book::setBookProgress(const unsigned int progress)
+QStringList Book::getBookProgressTagStack()
 {
-    BookProgress = progress;
+    return ProgressTagStack;
+}
+
+float Book::getBookProgressPocent()
+{
+    return ProgressProcent;
+}
+
+void Book::setBookProgress(const long long progress, double procent, QStringList tagStack)
+{
+    Progress = progress;
+    ProgressProcent = procent;
+    ProgressTagStack = tagStack;
 }
 
 QString Book::getSeries()
