@@ -71,7 +71,7 @@ private:
     QPoint lastPoint;
     int resizingFrame = 5;
 
-    int SettingsTab;
+    bool ActiveWindow;   // 0 - главное, 1 - не главное
 
     Ui::ReadingWindow* ui;
     QThread* HandlerThread;

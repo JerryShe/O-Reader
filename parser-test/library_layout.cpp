@@ -162,6 +162,8 @@ QVector <int> librarylayout::deleteItems()
         BookModel->removeRow(SelectedItems.first().row());
         SelectedItems = BookListView->selectionModel()->selectedIndexes();
     }
+
+    itemCount = itemCount - deletedItems.size();
     return deletedItems;
 }
 

@@ -78,7 +78,6 @@ settingslayout::~settingslayout()
     delete ProfileWidget;
     delete ProgramWidget;
     delete ReaderWidget;
-    delete ProgramSettings;
     delete exit_button;
 }
 

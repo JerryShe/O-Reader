@@ -607,20 +607,34 @@ void setReaderTableOfContents(QString WindowStyle[], const QString style)
 {
     if (style == "Red")
     {
-        WindowStyle[0] =  "QListView{"
-                          "border:none;"
-                          "outline: 0px;"
-                          "background-color: rgb(162, 0, 70);"
-                          "color:white;}"
-                          "QListView::item:selected{"
-                          "background-color:rgb(151, 151, 227);"
-                          "border:none;}";
+        WindowStyle[0] =    "QListView{"
+                            "border:none;"
+                            "outline: 0px;"
+                            "background-color: rgb(162, 0, 70);"
+                            "color:white;}"
+                            "QListView::item:selected{"
+                            "background-color:rgb(151, 151, 227);"
+                            "border:none;}"
 
-        WindowStyle[1] =  "QPushButton "
-                          "{background-color: rgb(162, 0, 70);"
-                          "border:none;"
-                          "color:white;}"
-                          "QPushButton:hover"
-                          "{background-color:rgb(147, 0, 60);}";
+                            "QScrollBar:vertical {"
+                            "border: none;"
+                            "background: rgb(150, 0, 60);"
+                            "width: 10px;"
+                            "margin: 0px;}"
+                            "QScrollBar::handle:vertical {"
+                            "border: none;"
+                            "background: white;"
+                            "min-height: 20px;}"
+                            "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
+                            "height: 0px;}"
+                            "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {"
+                            "background: none;}";
+
+        WindowStyle[1] =    "QPushButton "
+                            "{background-color: rgb(162, 0, 70);"
+                            "border:none;"
+                            "color:white;}"
+                            "QPushButton:hover"
+                            "{background-color:rgb(147, 0, 60);}";
     }
 }

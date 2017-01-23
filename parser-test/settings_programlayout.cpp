@@ -127,40 +127,61 @@ bool Settings_ProgramLayout::eventFilter(QObject *obj, QEvent *event)
         if (ui->FTurnForward->isChecked())
         {
             QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-            ui->FTurnForward->setText(QKeySequence(KeyEvent->key()).toString());
-            ProgramSettings->setFForwardKey(KeyEvent->key());
-            ui->FTurnForward->setChecked(false);
-            emit settingsChanged(1);
+
+            if (KeyEvent->key() != ProgramSettings->getSForwardKey()
+                    && KeyEvent->key() != ProgramSettings->getFBackwardKey()
+                    && KeyEvent->key() != ProgramSettings->getSBackwardKey())
+            {
+                ui->FTurnForward->setText(QKeySequence(KeyEvent->key()).toString());
+                ProgramSettings->setFForwardKey(KeyEvent->key());
+                ui->FTurnForward->setChecked(false);
+                emit settingsChanged(1);
+            }
             return true;
         }
         else
         if (ui->STurnForward->isChecked())
         {
             QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-            ui->STurnForward->setText(QKeySequence(KeyEvent->key()).toString());
-            ProgramSettings->setSForwardKey(KeyEvent->key());
-            ui->STurnForward->setChecked(false);
-            emit settingsChanged(1);
+            if (KeyEvent->key() != ProgramSettings->getFForwardKey()
+                    && KeyEvent->key() != ProgramSettings->getFBackwardKey()
+                    && KeyEvent->key() != ProgramSettings->getSBackwardKey())
+            {
+                ui->STurnForward->setText(QKeySequence(KeyEvent->key()).toString());
+                ProgramSettings->setSForwardKey(KeyEvent->key());
+                ui->STurnForward->setChecked(false);
+                emit settingsChanged(1);
+            }
             return true;
         }
         else
         if (ui->FTurnBackward->isChecked())
         {
             QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-            ui->FTurnBackward->setText(QKeySequence(KeyEvent->key()).toString());
-            ProgramSettings->setFBackwardKey(KeyEvent->key());
-            ui->FTurnBackward->setChecked(false);
-            emit settingsChanged(1);
+            if (KeyEvent->key() != ProgramSettings->getFForwardKey()
+                    && KeyEvent->key() != ProgramSettings->getSForwardKey()
+                    && KeyEvent->key() != ProgramSettings->getSBackwardKey())
+            {
+                ui->FTurnBackward->setText(QKeySequence(KeyEvent->key()).toString());
+                ProgramSettings->setFBackwardKey(KeyEvent->key());
+                ui->FTurnBackward->setChecked(false);
+                emit settingsChanged(1);
+            }
             return true;
         }
         else
         if (ui->STurnBackward->isChecked())
         {
             QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-            ui->STurnBackward->setText(QKeySequence(KeyEvent->key()).toString());
-            ProgramSettings->setSBackwardKey(KeyEvent->key());
-            ui->STurnBackward->setChecked(false);
-            emit settingsChanged(1);
+            if (KeyEvent->key() != ProgramSettings->getFForwardKey()
+                    && KeyEvent->key() != ProgramSettings->getSForwardKey()
+                    && KeyEvent->key() != ProgramSettings->getFBackwardKey())
+            {
+                ui->STurnBackward->setText(QKeySequence(KeyEvent->key()).toString());
+                ProgramSettings->setSBackwardKey(KeyEvent->key());
+                ui->STurnBackward->setChecked(false);
+                emit settingsChanged(1);
+            }
             return true;
         }
     }

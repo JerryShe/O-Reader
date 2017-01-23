@@ -617,7 +617,7 @@ QString FB2TextParser::getPageForward()
         HTMLPage = Columns[0];
         for (int i = 1; i < CurStyle.ColumnCount; i++)
             HTMLPage += PageHTMLSep + Columns[i];
-
+        //debugSave(PageHTMLHeader + HTMLPage + PageHTMLBottom);
     }
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
@@ -722,7 +722,7 @@ QString FB2TextParser::updateSettings(const int width, const int height)
 float FB2TextParser::getProgress()
 {
     if (currentBStrNum > 0 && strCount)
-        return (((float)currentBStrNum/(float)strCount) * 100);
+        return (((float)currentEStrNum/(float)strCount) * 100);
     else
         return 0;
 }

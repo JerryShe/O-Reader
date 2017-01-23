@@ -141,6 +141,7 @@ MainWindow::~MainWindow()
     delete readingWindow;
     delete searchWindow;
     delete page;
+    delete HandlerThread;
 }
 
 void LibraryHandler::loadBookList()
