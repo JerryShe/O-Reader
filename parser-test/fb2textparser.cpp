@@ -7,12 +7,42 @@
 #include <QFontMetrics>
 
 
-FB2TextParser::FB2TextParser(Book *boo, settings* PSettings, int width, int height)
+FB2TextParser::FB2TextParser()
+{
+    columnWidth = 0;
+    columnHeight = 0;
+    tableWidth = 0;
+
+    pageBegin = 0;
+
+    currentBStrNum = 0;
+    currentTextPos = 0;
+    currentEStrNum = 0;
+    strCount = 0;
+
+    currentColumn = 0;
+    currentWordPos = 0;
+
+    wordWidth = 0;
+    wordHeight = 0;
+
+    currentWidth = 0;
+    currentHeight = 0;
+    stringStep = 0;
+    stringHeight = 0;
+
+    tagType = false;
+    parseDirection = false;
+}
+
+QString FB2TextParser::startParser(Book *boo, settings *PSettings, int width, int height)
 {
     book = boo;
     ProgramSettings = PSettings;
     currentEStrNum = currentBStrNum = book->getBookProgress();
     currentTextPos = 0;
+
+
     tagStack.fromList(book->getBookProgressTagStack());
     if (tagStack.size() == 0)
         tagStack.push("Text");
@@ -22,6 +52,8 @@ FB2TextParser::FB2TextParser(Book *boo, settings* PSettings, int width, int heig
     setFontMap();
     setLinespaceMap();
     setPageGeometry(width, height);
+
+    return getPageForward();
 }
 
 FB2TextParser::~FB2TextParser()
@@ -68,13 +100,11 @@ void FB2TextParser::setPageGeometry(int width, int height)
     columnWidth = (width - 10 - 30*(CurStyle.ColumnCount-1) - CurStyle.TextLeftRightIdent/100 - CurStyle.TextLeftRightIdent%100)/CurStyle.ColumnCount;
     tableWidth = columnWidth*CurStyle.ColumnCount + 10 + 30*(CurStyle.ColumnCount-1) + CurStyle.TextLeftRightIdent/100 + CurStyle.TextLeftRightIdent%100;
     columnHeight = height - 20 - CurStyle.TextTopBottomIdent/100 - CurStyle.TextTopBottomIdent%100;
-    //qDebug()<<"WH: "<<columnWidth<<columnHeight<<tableWidth;
 }
 
 void FB2TextParser::setHTMLinf()
 {
     CurStyle = ProgramSettings->getCurrentTextStyleElem();
-    //qDebug()<<CurStyle.TextLeftRightIdent;
 
     QString fileName;
     if (CurStyle.BackgroundType == false)
@@ -307,7 +337,6 @@ long long FB2TextParser::getCurrentSectionIndex()
 {
     int pos;
     for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; pos++);
-    //qDebug()<<"curcur"<<TableOfContentsText[pos];
     return pos;
 }
 
@@ -350,7 +379,6 @@ int FB2TextParser::getSpaceWidth()
 int FB2TextParser::parseTag()
 {
     tag = tag.mid(1, tag.size()-2);
-
     if (tag[0] == '/')
     {
         tag  = tag.remove(0, 1);
@@ -358,10 +386,8 @@ int FB2TextParser::parseTag()
     }
     else
         tagType = false;
-
     if (tag == "p /")
         return 0;
-
     if (tag == "p")
     {
         if (tagType == parseDirection)
@@ -456,19 +482,21 @@ int FB2TextParser::parseTag()
 
 void FB2TextParser::applyTag()
 {
-    if (tagStack.back() == tag)
+    if (tag != "")
     {
-        if (tagType == !parseDirection)
+        if (tagStack.back() == tag)
         {
-            word = "";
-            tagStack.pop();
+            if (tagType == !parseDirection)
+            {
+                word = "";
+                tagStack.pop();
+            }
+        }
+        else if (tagType == parseDirection)
+        {
+            tagStack.push(tag);
         }
     }
-    else if (tagType == parseDirection)
-    {
-        tagStack.push(tag);
-    }
-    //qDebug()<<tagStack;
 }
 
 bool FB2TextParser::applyWord()
@@ -483,7 +511,6 @@ bool FB2TextParser::applyWord()
             {
                 //перенос на сл колонку
                 //отрезать stringWordCount слов от колонки
-                //qDebug()<<"<------- Yepe, it's column ------->";
                 if (parseDirection)
                     currentTextPos++;
                 else
@@ -494,13 +521,6 @@ bool FB2TextParser::applyWord()
 
         wordWidth = getWordWidth(word);
 
-        /*
-        if (!parseDirection)
-            qDebug()<<word<<": "<< wordHeight << wordWidth << currentHeight + wordHeight << currentWidth;
-        else
-            qDebug()<<word<<": "<< wordHeight << wordWidth << columnHeight - currentHeight << currentWidth;
-        */
-
         if (currentWidth + wordWidth + getSpaceWidth() > columnWidth)
         {
             if (currentWidth + wordWidth > columnWidth)
@@ -508,13 +528,11 @@ bool FB2TextParser::applyWord()
                 if (currentHeight + stringHeight + wordHeight  > columnHeight)
                 {
                     //переносим колонку
-                    //qDebug()<<"<------- Yepe, it's column №1 ------->";
                     return false;
                 }
                 else
                 {
                     //переносим строку
-                    //qDebug()<<"Yepe, it's line №1 ->>>>>"<< currentHeight<<stringHeight;
                     currentHeight += stringHeight;
                     currentWidth = wordWidth;
 
@@ -559,30 +577,33 @@ QString FB2TextParser::getPageForward()
 
             currentHeight = currentWidth = 0;
             stringHeight = 0;
-
-            for (; currentTextPos < strCount; currentTextPos++)
+            for (; currentTextPos < strCount && currentTextPos < bookText.size(); currentTextPos++)
             {
-                if (bookText[currentTextPos][0] == '<')
+                if (bookText[currentTextPos].size())
                 {
-                    tag = bookText[currentTextPos];
-                    int parseResalt = parseTag();
-                    if (parseResalt == 1)
-                        applyTag();
-                    else
-                        if (parseResalt == 2)
-                            continue;
+                    if (bookText[currentTextPos][0] == '<')
+                    {
 
-                    /// отработать переход секции
+                        tag = bookText[currentTextPos];
+                        int parseResalt = parseTag();
+                        if (parseResalt == 1)
+                            applyTag();
+                        else
+                            if (parseResalt == 2)
+                                continue;
 
+                        /// отработать переход секции
+
+                        else
+                            if (parseResalt == 3)
+                                break;
+                    }
                     else
-                        if (parseResalt == 3)
+                    {
+                        word = bookText[currentTextPos];
+                        if (!applyWord())
                             break;
-                }
-                else
-                {
-                    word = bookText[currentTextPos];
-                    if (!applyWord())
-                        break;
+                    }
                 }
                 Columns[currentColumn] += bookText[currentTextPos];
                 if (bookText[currentTextPos].right(1) != "-")
@@ -593,12 +614,10 @@ QString FB2TextParser::getPageForward()
                 Columns[currentColumn] += "</" + tagStack[p] + ">";
             currentEStrNum = currentTextPos;
         }
-
         HTMLPage = Columns[0];
         for (int i = 1; i < CurStyle.ColumnCount; i++)
             HTMLPage += PageHTMLSep + Columns[i];
 
-        //debugSave(HTMLPage);
     }
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
@@ -675,7 +694,6 @@ QString FB2TextParser::getPageBackward()
         for (int i = CurStyle.ColumnCount - 2; i >= 0; i--)
             HTMLPage += PageHTMLSep + Columns[i];
 
-        //debugSave(HTMLPage);
     }
 
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;

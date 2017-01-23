@@ -87,7 +87,7 @@ private:
 
     QThread* parserThread;
 
-    QDialog*MiniWindow;
+    QDialog* MiniWindow;
     QVBoxLayout* MiniWindowLayout;
     settingslayout* SettingsPage;
     synchronizationlayout* SynchronizationPage;

@@ -13,6 +13,7 @@ using namespace std;
 
 Book::Book(QString fileName, GenresMap *Gmap)
 {
+    CoverType = "noImage";
     Book::File = fileName;
 
     Book::Progress = 0;
@@ -111,7 +112,7 @@ Book::Book(QString fileName, GenresMap *Gmap)
                 else
                 {
                     if (coverName.at(0) == '#')
-                        coverName = coverName.right(coverName.size() - coverName.indexOf('#') - 1);
+                        coverName = coverName.right(coverName.size() - 1);
 
                     nodeList = doc.elementsByTagName("binary");
                     for (int i = 0; i < nodeList.size(); i++)
@@ -221,9 +222,7 @@ QImage Book::getCover()
     {
         QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
-        if (CoverType == "image/jpeg")
-            tempImage = QImage::fromData(BinaryCover, "JPEG");
-        if (CoverType == "image/jpg")
+        if (CoverType == "image/jpeg" || CoverType == "image/jpg")
             tempImage = QImage::fromData(BinaryCover, "JPG");
         if (CoverType == "image/png")
             tempImage = QImage::fromData(BinaryCover, "PNG");

@@ -76,7 +76,6 @@ private slots:
     void addBooksFolder();
     void addBooksFiles();
 
-
 protected:
     void changeEvent(QEvent *event);
 

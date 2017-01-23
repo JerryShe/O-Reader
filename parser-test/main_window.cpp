@@ -258,12 +258,17 @@ void MainWindow::startReading(const int BookIndex)
             break;
 
     readingWindow = new ReadingWindow(ProgramSettings, &LibHandler->bookList[i]);
+
     readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
+
     connect(readingWindow, SIGNAL(showMainWindow()), this, SLOT(showWindow()));
+
     readingWindow->show();
+
     connect(readingWindow, SIGNAL(saveBookProgress()), LibHandler, SLOT(saveBookList()));
     this->hide();
 }
+
 
 void LibraryHandler::deleteBook(const int index)
 {
@@ -280,6 +285,7 @@ void LibraryHandler::deleteBook(const int index)
 void MainWindow::showWindow()
 {
     this->show();
+    readingWindow->close();
 }
 
 void MainWindow::on_exit_button_clicked()

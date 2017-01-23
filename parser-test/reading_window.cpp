@@ -19,8 +19,6 @@
 #include <QDebug>
 
 
-
-
 void ReadingWindow::setStyle(QString currentStyle)
 {
     QString styleSheets[6];
@@ -54,28 +52,25 @@ void ReadingWindow::setStyle(QString currentStyle)
 
 ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::ReadingWindow)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
     show();
-    BookParse = new FB2TextParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height());
+    BookParse = new FB2TextParser();
     parserThread = new QThread(this);
     BookParse->moveToThread(parserThread);
 
     connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
-    connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
     parserThread->start();
-    ui->TextPage->setHtml(BookParse->getPageForward());
+    ui->TextPage->setHtml(BookParse->startParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
     connect(BookParse, SIGNAL(saveBookProgress()), this, SLOT(saveBookPos()));
     ui->BookName->setText(book->getAuthorName() + ": " + book->getTitle());
-
     ui->TextPage->setMouseTracking(true);
     ui->MainWidget->setMouseTracking(true);
-
     setMouseTracking(true);
     prev_geometry = geometry();
     TopBarNeedHide = true;
     HidenTimer = 0;
-
     MenuWidget = new QWidget(this);
 
     MenuWidget->hide();
@@ -86,27 +81,27 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::Read
     MenuLayout->setContentsMargins(0,0,0,0);
     MenuLayout->setSpacing(0);
 
-    MenuContentsButton = new QPushButton();
+    MenuContentsButton = new QPushButton(this);
     MenuContentsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuContentsButton, 0);
     connect(MenuContentsButton, SIGNAL(clicked(bool)), this, SLOT(ContentsButton_clicked()));
 
-    MenuFindButton = new QPushButton();
+    MenuFindButton = new QPushButton(this);
     MenuFindButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuFindButton, 1);
     connect(MenuFindButton, SIGNAL(clicked(bool)), this, SLOT(FindButton_Clicked()));
 
-    MenuSettingsButton = new QPushButton();
+    MenuSettingsButton = new QPushButton(this);
     MenuSettingsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuSettingsButton, 2);
     connect(MenuSettingsButton, SIGNAL(clicked(bool)), this, SLOT(SettingsButton_Clicked()));
 
-    MenuSynchronizationButton = new QPushButton();
+    MenuSynchronizationButton = new QPushButton(this);
     MenuSynchronizationButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuSynchronizationButton, 3);
     connect(MenuSynchronizationButton, SIGNAL(clicked(bool)), this, SLOT(SynchronizationButton_Clicked()));
 
-    MenuBackToMainWindowButton = new QPushButton();
+    MenuBackToMainWindowButton = new QPushButton(this);
     MenuBackToMainWindowButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuBackToMainWindowButton, 4);
     connect(MenuBackToMainWindowButton, SIGNAL(clicked(bool)), this, SLOT(BackToMainWindowButton_Clicked()));
@@ -118,7 +113,6 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::Read
     QTimer *clockTimer = new QTimer(this);
     connect(clockTimer, SIGNAL(timeout()), this, SLOT(clockStep()));
     clockTimer->start(1000);
-
     ui->TextPage->installEventFilter(this);
     ui->TopBarWidget->installEventFilter(this);
 }
@@ -133,18 +127,16 @@ void ReadingWindow::changeEvent(QEvent *event)
 ReadingWindow::~ReadingWindow()
 {
     delete ui;
-    delete MenuWidget;
+/*
     delete MenuLayout;
-    delete MenuBackToMainWindowButton;
-    delete MenuContentsButton;
-    delete MenuSynchronizationButton;
-    delete MenuFindButton;
-    delete MenuSettingsButton;
+    qDebug()<<"delete8";
+
     delete SettingsPage;
-    delete SynchronizationPage;
+    qDebug()<<"delete11";
+
     delete Search;
-    delete MiniWindow;
-    delete parserThread;
+*/
+
     delete BookParse;
 }
 
@@ -205,6 +197,7 @@ void ReadingWindow::on_exit_button_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
     {
+        parserThread->quit();
         exit(0);
     }
     else
@@ -455,8 +448,8 @@ void ReadingWindow::SynchronizationButton_Clicked()
 
 void ReadingWindow::BackToMainWindowButton_Clicked()
 {
+    parserThread->quit();
     emit showMainWindow();
-    this->close();
 }
 
 
