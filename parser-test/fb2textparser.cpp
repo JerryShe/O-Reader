@@ -336,13 +336,15 @@ QStringList FB2TextParser::getBookContentTable()
 long long FB2TextParser::getCurrentSectionIndex()
 {
     int pos;
-    for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; pos++);
+    for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; ++pos);
+    if (currentBStrNum > TableOfContentsIndexes.back())
+        return TableOfContentsIndexes.size() - 1;
     return pos;
 }
 
 QString FB2TextParser::goToSection(int sectionIndex)
 {
-    currentEStrNum = TableOfContentsIndexes[sectionIndex];
+    currentTextPos = currentEStrNum = TableOfContentsIndexes[sectionIndex];
     tagStack.clear();
     tagStack.append("Text");
     parseDirection = false;

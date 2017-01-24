@@ -295,29 +295,28 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
     }
 }
 
-//TODO: переделать стиль кнопок
 ///////////////////////////диалог подтверждения///////////////////////////
 void setAnswerDialogStyle (QString windowStyle [], const QString style)
 {
     if (style == "Red")
     {
-        windowStyle[0] = "AnswerDialog{background-color:rgb(130, 0, 55);}";
+        windowStyle[0] =    "QWidget"
+                            "{background-color:rgb(130, 0, 55);"
+                            "color:white;}";
 
         windowStyle[1] =    "QPushButton"
-                            "{background-color:rgb(25, 156, 255);"
+                            "{background-color:rgb(160, 0, 0);"
                             "border: none;}"
                             "QPushButton:hover"
-                            "{background-color:rgb(25, 156, 255);"
+                            "{background-color:rgb(190, 0, 0);"
                             "border: none;}";
 
         windowStyle[2] =    "QPushButton"
-                            "{background-color: rgb(162, 0, 70);"
+                            "{background-color: rgb(60, 90, 130);"
                             "border: none;}"
                             "QPushButton:hover"
-                            "{background-color:rgb(210, 68, 68);"
+                            "{background-color:rgb(80, 110, 150);"
                             "border: none;}";
-
-        windowStyle[3] =    "color: white";
     }
 }
 
@@ -401,12 +400,9 @@ void setProgramLayoutStyle(QString LayoutStyle[], const QString style)
 {
     if (style == "Red")
     {
-        LayoutStyle[0] =    "#Settings_ProgramLayout"
+        LayoutStyle[0] =    "QWidget"
                             "{background-color:rgb(150, 0, 60);"
                             "color:white;}"
-
-                            "line"
-                            "{background-color:red;}"
 
                             "QComboBox:editable, QComboBox:!editable, QComboBox::drop-down:editable{"
                             "border:none;"
@@ -442,9 +438,14 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
 {
     if (style == "Red")
     {
-        LayoutStyle[0] =    "#Settings_ReaderLayout"
+        LayoutStyle[0] =    "QWidget"
                             "{background-color:rgb(150, 0, 60);"
                             "color:white;}"
+
+                            "QLineEdit{"
+                            "border:none;"
+                            "background-color: rgb(130, 0, 55);}"
+
 
                             "QComboBox:editable, QComboBox:!editable, QComboBox::drop-down:editable{"
                             "border:none;"
@@ -461,14 +462,7 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
                             "outline: 0px;"
                             "border:none;"
                             "color:white;"
-                            "min-height: 35px;}";
-
-        LayoutStyle[1] =    "#ReaderSettingsContent"
-                            "{background-color:rgb(150, 0, 60);"
-                            "color:white;}"
-
-                            "line"
-                            "{background-color:red;}"
+                            "min-height: 35px;}"
 
                             "QPushButton"
                             "{border:none;"
@@ -481,25 +475,25 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
                             "{border:none;"
                             "color:white;"
                             "background-image: url(:SettingsLayoutButtons/LightYepButton.png);"
-                            "background-color: rgb(162, 0, 70);}"
+                            "background-color: rgb(150, 0, 60);}"
                             "#YepButton:hover"
-                            "{background-color:rgb(147, 0, 60);}";
+                            "{background-color:rgb(137, 0, 60);}";
 
         LayoutStyle[3] =    "#NopeButton"
                             "{border:none;"
                             "color:white;"
-                            "background-color: rgb(162, 0, 70);"
+                            "background-color: rgb(150, 0, 60);"
                             "background-image: url(:SettingsLayoutButtons/LightDeleteButton.png);}"
                             "#NopeButton:hover"
-                            "{background-color:rgb(147, 0, 60);}";
+                            "{background-color:rgb(200, 0, 0);}";
 
         LayoutStyle[4] =    "#NopeButton"
                             "{border:none;"
                             "color:white;"
-                            "background-color: rgb(162, 0, 70);"
+                            "background-color: rgb(150, 0, 60);"
                             "background-image: url(:SettingsLayoutButtons/LightNopeButton.png);}"
                             "#NopeButton:hover"
-                            "{background-color:rgb(147, 0, 60);}";
+                            "{background-color:rgb(137, 0, 60);}";
     }
 }
 
@@ -507,9 +501,10 @@ void setProfileLayoutStyle(QString LayoutStyle[], const QString style)
 {
     if (style == "Red")
     {
-        LayoutStyle[0] =    "#Settings_ProfileLayout"
+        LayoutStyle[0] =    "QWidget"
                             "{background-color:rgb(150, 0, 60);"
-                            "color: white;}"
+                            "border:none;"
+                            "color:white;}"
 
                             "QComboBox:editable, QComboBox:!editable, QComboBox::drop-down:editable{"
                             "border:none;"

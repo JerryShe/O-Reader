@@ -16,7 +16,7 @@ void Settings_ReaderLayout::setLayoutStyle()
     ui->NopeButton->setStyleSheet(a[3]);
     nopeButtonStyle[0] = a[3];
     nopeButtonStyle[1] = a[4];
-    ui->ReaderSettingsContent->setStyleSheet(a[1]);
+    ui->ReaderSettingsContent->setStyleSheet(a[0]);
     setSavebuttonStyle(savebuttonStyle, ProgramSettings->getInterfaceStyle());
     ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
 }

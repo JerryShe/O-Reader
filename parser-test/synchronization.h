@@ -5,32 +5,33 @@
 #include <QDataStream>
 #include <QObject>
 
+enum UActions
+{
+    AddBook,
+    DeleteBook,
+    UpdateProgress,
+    UpdateBookInf,
+    UpdateSettings,
+    AddBackground
+};
 
-//TODO: сделать enum
+
 
 class Synchronization : public QObject
 {
 
 private:
 
-    /* Добавление книги - 1: файл
-     * Удаление книги - 2: файл
-     * Изменение прогресса - 3: индекс, значение
-     * Редактирование описания - 4: индекс, значение
-     * Изменение настроек - 5:
-     * Добавление фона - 6: файл
-     */
-
     struct action
     {
-        short actionIndex;
+        int actionIndex;
         QDateTime actionTime;
         QString spec;
         QString dataChanges;
 
         action(){}
-        action(short index, QString itemSpec, QString data);
-        action(short index, QDateTime time, QString itemSpec, QString data);
+        action(int index, QString itemSpec, QString data);
+        action(int index, QDateTime time, QString itemSpec, QString data);
     };
 
     QQueue <action> SynchroQueue;
@@ -46,19 +47,19 @@ public:
     void saveLog();
     void loadLog();
 
-    template <typename T1, typename T2> void addAction(int actionIndex, T1 fArg, T2 sArg)
+    template <typename T1, typename T2> void addAction(UActions actionIndex, T1 fArg, T2 sArg)
     {
         QString newFArg, newSArg;
 
         switch (actionIndex)
         {
-        case 1:
+        case UActions::AddBook:
             newFArg = fArg;
             break;
 
-        case 2:
+        case UActions::DeleteBook:
             for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == 1 && fArg == SynchroQueue.at(i).spec)
+                if (UActions::AddBook == SynchroQueue.at(i).actionIndex && fArg == SynchroQueue.at(i).spec)
                 {
                     SynchroQueue.removeAt(i);
                     return;
@@ -66,9 +67,9 @@ public:
             newFArg = fArg;
             break;
 
-        case 3:
+        case UActions::UpdateProgress:
             for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == 3 && fArg == SynchroQueue.at(i).spec)
+                if (SynchroQueue.at(i).actionIndex == UActions::UpdateProgress && fArg == SynchroQueue.at(i).spec)
                 {
                     SynchroQueue.removeAt(i);
                     break;
@@ -77,12 +78,12 @@ public:
             newSArg = QString::number(sArg);
             break;
 
-        case 4:
+        case UActions::UpdateBookInf:
             break;
 
-        case 5:
+        case UActions::UpdateSettings:
             for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == 5)
+                if (SynchroQueue.at(i).actionIndex == UActions::UpdateSettings)
                 {
                     SynchroQueue.removeAt(i);
                     break;
@@ -92,9 +93,9 @@ public:
             newSArg = sArg;
             break;
 
-        case 6:
+        case UActions::AddBackground:
             for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == 6)
+                if (SynchroQueue.at(i).actionIndex == UActions::AddBackground)
                 {
                     SynchroQueue.removeAt(i);
                     break;

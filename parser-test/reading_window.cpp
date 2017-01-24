@@ -62,6 +62,7 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::Read
 
     connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
     parserThread->start();
+    connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
     ui->TextPage->setHtml(BookParse->startParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
     connect(BookParse, SIGNAL(saveBookProgress()), this, SLOT(saveBookPos()));
@@ -133,16 +134,6 @@ void ReadingWindow::changeEvent(QEvent *event)
 ReadingWindow::~ReadingWindow()
 {
     delete ui;
-/*
-    delete MenuLayout;
-    qDebug()<<"delete8";
-
-    delete SettingsPage;
-    qDebug()<<"delete11";
-
-    delete Search;
-*/
-
     delete BookParse;
 }
 
@@ -422,6 +413,7 @@ void ReadingWindow::ContentsButton_clicked()
 void ReadingWindow::goToSection(int sectionIndex)
 {
     ui->TextPage->setHtml(BookParse->goToSection(sectionIndex));
+    updateProgress();
 }
 
 void ReadingWindow::saveBookPos()

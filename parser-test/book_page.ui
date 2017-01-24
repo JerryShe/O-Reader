@@ -120,7 +120,7 @@
          <widget class="QPushButton" name="startReading">
           <property name="minimumSize">
            <size>
-            <width>70</width>
+            <width>90</width>
             <height>30</height>
            </size>
           </property>
@@ -152,7 +152,7 @@
          <widget class="QPushButton" name="deleteBook">
           <property name="minimumSize">
            <size>
-            <width>70</width>
+            <width>90</width>
             <height>30</height>
            </size>
           </property>

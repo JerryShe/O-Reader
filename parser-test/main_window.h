@@ -20,6 +20,7 @@
 #include "settings.h"
 #include "reading_window.h"
 #include "search_window.h"
+#include "libraryhandler.h"
 
 
 namespace Ui
@@ -28,7 +29,6 @@ namespace Ui
 }
 
 class LibraryHandler;
-
 
 class MainWindow : public QMainWindow
 {
@@ -111,49 +111,8 @@ private:
 
     QThread * HandlerThread;
 
-    LibraryHandler * LibHandler;
     friend class LibraryHandler;
-};
-
-
-
-/////////////////////////////////////////////////////////
-class LibraryHandler: public QObject
-{
-    Q_OBJECT
-
-public:
-    LibraryHandler(MainWindow *par)
-    {
-        window = par;
-        currentBookIndex = 0;
-        filesMask<<"*.fb2"<<"*.zip";
-    }
-
-public slots:
-    void AddBooks(const QStringList fileList);
-    void AddFolder(const QString path);
-    void deleteBook(const int index);
-    void deleteBooks(QVector <int> deletedItemsIndexes);
-
-    void openNewBooks(const QString fileList, GenresMap *Gmap);
-    QString getFileTipe(const QString fileName);
-
-    void findBooks(QString key, QString mode);
-
-    void loadBookList();
-    void saveBookList();
-
-    void sortBooks(const QString mode);
-
-public:
-    bool needRefresh = false;
-    QStringList filesMask;
-    QVector <Book> bookList;
-    int currentBookIndex;
-
-private:
-    MainWindow * window;
+    LibraryHandler * LibHandler;
 };
 
 #endif // MAINWINDOW_H

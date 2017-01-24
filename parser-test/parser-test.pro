@@ -9,6 +9,7 @@ TEMPLATE = app
 TRANSLATIONS = en.ts\
                ru.ts
 
+RC_FILE = app.rc
 
 SOURCES += main.cpp\
     main_window.cpp \
@@ -30,7 +31,8 @@ SOURCES += main.cpp\
     search_window.cpp \
     fb2textparser.cpp \
     genresmap.cpp \
-    booktableofcontents.cpp
+    booktableofcontents.cpp \
+    libraryhandler.cpp
 
 HEADERS  += \
     login_window.h \
@@ -52,7 +54,8 @@ HEADERS  += \
     search_window.h \
     fb2textparser.h \
     genresmap.h \
-    booktableofcontents.h
+    booktableofcontents.h \
+    libraryhandler.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \

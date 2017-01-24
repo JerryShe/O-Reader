@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     SettingsFile.close();
 
     QTranslator* LanguageTranslator = new QTranslator;
-    bool done;
+    bool done = false;
     if (currentLanguage == "Русский")
         done = LanguageTranslator->load("ru.qm", "LibraryResources/Languages");
     if (currentLanguage == "English")

@@ -12,7 +12,7 @@ Synchronization::Synchronization()
     loadLog();
 }
 
-Synchronization::action::action(short index, QString itemSpec, QString data)
+Synchronization::action::action(int index, QString itemSpec, QString data)
 {
     actionTime = QDateTime::currentDateTime();
     actionIndex = index;
@@ -20,7 +20,7 @@ Synchronization::action::action(short index, QString itemSpec, QString data)
     dataChanges = data;
 }
 
-Synchronization::action::action(short index, QDateTime time, QString itemSpec, QString data)
+Synchronization::action::action(int index, QDateTime time, QString itemSpec, QString data)
 {
     actionTime = time;
     actionIndex = index;
@@ -49,7 +49,8 @@ void Synchronization::loadLog()
     }
 
     QDataStream in(&LogList);
-    short actionIndex;
+    unsigned short actionIndex;
+    UActions actionI;
     QDateTime actionTime;
     QString spec;
     QString dataChanges;
@@ -57,11 +58,15 @@ void Synchronization::loadLog()
     while (!in.atEnd())
     {
         in>>actionIndex;
+        if (actionIndex < 6)
+            actionI = static_cast<UActions>(actionIndex);
+        else
+            continue;
         in>>actionTime;
         in>>spec;
         in>>dataChanges;
 
-        SynchroQueue.enqueue(action(actionIndex, actionTime, spec, dataChanges));
+        SynchroQueue.enqueue(action(actionI, actionTime, spec, dataChanges));
     }
     LogList.close();
 }
@@ -119,12 +124,4 @@ int Synchronization::synchronizeFromServer()
     loadLog();
     return 0;
 }
-
-/* Добавление книги - 1: файл
- * Удаление книги - 2: файл
- * Изменение прогресса - 3: индекс, значение
- * Редактирование описания - 4: индекс, значение
- * Изменение настроек - 5
- * Добавление фона - 6
- */
 
