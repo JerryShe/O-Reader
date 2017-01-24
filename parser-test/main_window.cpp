@@ -10,9 +10,6 @@
 #include "settings.h"
 #include "library_layout.h"
 
-#include <qxmlstream.h>
-#include <QtXml/qdom.h>
-
 #include <QFileDialog>
 
 #include <QSizePolicy>
@@ -23,8 +20,6 @@
 #include <QDebug>
 
 #include <QThread>
-
-//TODO: поймать цыган
 
 void MainWindow::libraryButtonsHide()
 {
@@ -388,7 +383,7 @@ void MainWindow::addBooksFolder()
 
 void MainWindow::addBooksFiles()
 {
-    QStringList fileList = QFileDialog::getOpenFileNames(this, QObject::tr("Open files"), "", "(*.FB2 *.zip)");
+    QStringList fileList = QFileDialog::getOpenFileNames(this, QObject::tr("Open files"), "", "(*.FB2)");
     LibHandler->AddBooks(fileList);
 }
 
@@ -408,8 +403,6 @@ void MainWindow::on__Delete_clicked()
             delete answer_window;
     }
 }
-
-
 
 void MainWindow::on__ChangeViewMode_toggled(bool checked)
 {
@@ -459,7 +452,6 @@ void MainWindow::on__Find_toggled(bool checked)
         }
     }
 }
-
 
 void MainWindow::on__SortBox_activated(const QString &arg1)
 {

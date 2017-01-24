@@ -5,6 +5,8 @@
 #include <QDataStream>
 #include <QImage>
 #include <QIcon>
+#include <QUrl>
+#include <QBuffer>
 #include "genresmap.h"
 
 #include <qdebug.h>
@@ -46,7 +48,6 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
                     }
                     break;
                 }
-
             if (BookCodec == "")
             {
                 result = false;
@@ -139,18 +140,50 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
                             break;
                         }
                     }
+
+                    QImage tempImage;
+                    QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
+
+                    if (CoverType == "image/jpeg" || CoverType == "image/jpg")
+                        tempImage = QImage::fromData(BinaryCover, "JPG");
+                    if (CoverType == "image/png")
+                        tempImage = QImage::fromData(BinaryCover, "PNG");
+
+                    if (tempImage.height() > 750 || tempImage.width() > 600)
+                    {
+                        if (tempImage.height() > 750)
+                            tempImage.scaledToHeight(750);
+                        else
+                            tempImage.scaledToWidth(600);
+
+                        QByteArray ba;
+                        QBuffer bu(&ba);
+
+                        if (CoverType == "image/jpeg" || CoverType == "image/jpg")
+                            tempImage.save(&bu, "JPG");
+                        if (CoverType == "image/png")
+                            tempImage.save(&bu, "PNG");
+
+                        Cover = ba.toBase64();
+                    }
+
+
                 }
             }
             else
                 CoverType = "noImage";
         }
         else
+        {
             result = false;
+            return;
+        }
     }
     else
+    {
         result = false;
-
-    result = true;
+        return;
+    }
 }
 
 void Book::writeToConsole()
@@ -220,7 +253,7 @@ QDataStream &operator >> (QDataStream &in, Book &BookElem)
 
 QString Book::getAuthorName()
 {
-        return AuthorFirstName + ' ' + AuthorLastName;
+    return AuthorFirstName + ' ' + AuthorLastName;
 }
 
 QString Book::getTitle()

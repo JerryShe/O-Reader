@@ -7,7 +7,7 @@ LibraryHandler::LibraryHandler(MainWindow* MWindow)
 {
     window = MWindow;
     currentBookIndex = 0;
-    filesMask<<"*.fb2"<<"*.zip";
+    filesMask<<"*.fb2";
 }
 
 void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
@@ -45,15 +45,14 @@ void LibraryHandler::AddBooks(const QStringList fileList)
 
 void LibraryHandler::AddFolder(QString path)
 {
-    QStringList fileList;
-
     if (path.isEmpty())
         return;
+
+    QStringList fileList;
 
     QDirIterator it(path, filesMask, QDir::Files, QDirIterator::Subdirectories);
     while (it.hasNext())
         fileList << it.next();
-
     if (!fileList.size())
         return;
 
@@ -72,7 +71,7 @@ void LibraryHandler::loadBookList()
     QFile bookFileList(window->resoursesFolderPath + "/BookList.lb");
 
     if(bookFileList.open(QIODevice::ReadOnly | QIODevice::Text ))
-        qDebug() << "File Has Been Created" << endl;
+        qDebug() << "File Has Been Opened" << endl;
     else
     {
         qDebug() << "Failed to Create File" << endl;
@@ -99,7 +98,7 @@ void LibraryHandler::saveBookList()
 
     if(bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
     {
-        qDebug() << "Book File Has Been Created" << endl;
+        qDebug() << "Book File Has Been Opened" << endl;
     }
     else
     {
@@ -127,6 +126,7 @@ QString LibraryHandler::getFileTipe(const QString fileName)
         return "zip";
     if (tipe == ".FB2" || tipe == ".fb2")
         return "fb2";
+
     return "unknown format!";
 }
 
@@ -146,10 +146,14 @@ void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
 
     if (tipe == "fb2")
     {
-        bool result;
+        bool result = true;
         Book boo(result, file, Gmap);
         if (!result)
+        {
+            /// оповещение - невозможно открыть как fb2
+            qDebug()<<"Invalid FB2 file!";
             return;
+        }
 
         boo.setBookIndex(currentBookIndex++);
         bookList.push_back(boo);
@@ -251,6 +255,4 @@ void LibraryHandler::findBooks(QString token, QString mode)
             return;
         }
     }
-    else
-        return;
 }

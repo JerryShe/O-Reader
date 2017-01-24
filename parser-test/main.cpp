@@ -1,13 +1,14 @@
 #include "login_window.h"
 #include <QApplication>
 #include <QTranslator>
+#include <QUrl>
 #include <QDebug>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    QFile SettingsFile("LibraryResources/Settings.conf");
+    QFile SettingsFile(QUrl::fromLocalFile("LibraryResources/Settings.conf").toString());
     QString currentLanguage;
     if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -23,9 +24,9 @@ int main(int argc, char *argv[])
     QTranslator* LanguageTranslator = new QTranslator;
     bool done = false;
     if (currentLanguage == "Русский")
-        done = LanguageTranslator->load("ru.qm", "LibraryResources/Languages");
+        done = LanguageTranslator->load("ru.qm", QUrl::fromLocalFile("LibraryResources/Languages").toString());
     if (currentLanguage == "English")
-        done = LanguageTranslator->load("en.qm", "LibraryResources/Languages");
+        done = LanguageTranslator->load("en.qm", QUrl::fromLocalFile("LibraryResources/Languages").toString());
     if (done)
         qApp->installTranslator(LanguageTranslator);
 

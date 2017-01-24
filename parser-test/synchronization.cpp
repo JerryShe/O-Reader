@@ -38,7 +38,7 @@ void Synchronization::loadLog()
     QFile LogList(resoursesFolderPath + "/ChangesLogs.log");
 
     if(LogList.open(QIODevice::ReadOnly | QIODevice::Text ))
-        qDebug() << "Log File Has Been Created" << endl;
+        qDebug() << "Log File Has Been Opened" << endl;
     else
     {
         qDebug() << "Log Failed to Create File" << endl;
@@ -83,7 +83,7 @@ void Synchronization::saveLog()
     QFile LogList(resoursesFolderPath + "/ChangesLogs.log");
 
     if(LogList.open(QIODevice::WriteOnly | QIODevice::Text ))
-        qDebug() << "Log File Has Been Created" << endl;
+        qDebug() << "Log File Has Been Opened" << endl;
     else
     {
         qDebug() << "Log Failed to Create File" << endl;
