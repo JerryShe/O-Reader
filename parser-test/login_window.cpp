@@ -47,6 +47,7 @@ LoginWindow::LoginWindow(QTranslator *translator, QWidget *parent) : QMainWindow
         currentStyle = "Red";
     }
     SettingsFile.close();
+    LanguageTranslator = translator;
 
     ui->setupUi(this);
     LoginWindow::setStyle();

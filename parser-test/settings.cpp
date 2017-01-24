@@ -69,6 +69,7 @@ void settings::loadSettings()
         FKeyBackwardPage = Qt::Key_Left;
         SKeyBackwardPage = -1;
         PageTurnByWheel = true;
+        PageTurnByTap = false;
         LibraryReprezentation = false;
         HideTopBar = false;
 
@@ -96,6 +97,7 @@ QDataStream &operator<<(QDataStream &out, const settings &SettingsElem)
     out<<SettingsElem.FKeyBackwardPage;
     out<<SettingsElem.SKeyBackwardPage;
     out<<SettingsElem.PageTurnByWheel;
+    out<<SettingsElem.PageTurnByTap;
     out<<SettingsElem.LibraryReprezentation;
     out<<SettingsElem.LibraryIconBarSize;
     out<<SettingsElem.LibraryIconListSize;
@@ -118,6 +120,7 @@ QDataStream &operator>>(QDataStream &in, settings &SettingsElem)
     in>>SettingsElem.FKeyBackwardPage;
     in>>SettingsElem.SKeyBackwardPage;
     in>>SettingsElem.PageTurnByWheel;
+    in>>SettingsElem.PageTurnByTap;
     in>>SettingsElem.LibraryReprezentation;
     in>>SettingsElem.LibraryIconBarSize;
     in>>SettingsElem.LibraryIconListSize;
@@ -363,6 +366,16 @@ bool settings::getTurnByWheel()
 void settings::setTurnByWheel(bool turn)
 {
     PageTurnByWheel = turn;
+}
+
+bool settings::getTurnByTap()
+{
+    return PageTurnByTap;
+}
+
+void settings::setTurnByTap(bool turn)
+{
+    PageTurnByTap = turn;
 }
 
 ReadingStyle settings::getNamedStyle(const QString name)

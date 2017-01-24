@@ -82,6 +82,9 @@
          <height>30</height>
         </size>
        </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="text">
         <string>Close</string>
        </property>

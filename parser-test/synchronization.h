@@ -6,6 +6,8 @@
 #include <QObject>
 
 
+//TODO: сделать enum
+
 class Synchronization : public QObject
 {
 
@@ -103,7 +105,6 @@ public:
 
         SynchroQueue.enqueue(action(actionIndex, newFArg, newSArg));
     }
-
 };
 
 #endif // SYNCHRONIZATION_H

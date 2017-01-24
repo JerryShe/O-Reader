@@ -11,7 +11,7 @@
 
 using namespace std;
 
-Book::Book(QString fileName, GenresMap *Gmap)
+Book::Book(bool &result, QString fileName, GenresMap *Gmap)
 {
     CoverType = "noImage";
     Book::File = fileName;
@@ -28,7 +28,8 @@ Book::Book(QString fileName, GenresMap *Gmap)
 
             if (doc.namedItem("FictionBook").nodeName().isNull())
             {
-                ///выдать эксепшн - это не фикшн бук
+                result = false;
+                return;
             }
 
             QDomNodeList childs = doc.childNodes();
@@ -45,6 +46,12 @@ Book::Book(QString fileName, GenresMap *Gmap)
                     }
                     break;
                 }
+
+            if (BookCodec == "")
+            {
+                result = false;
+                return;
+            }
 
             //файл книги
             Book::File = fileName;
@@ -137,7 +144,13 @@ Book::Book(QString fileName, GenresMap *Gmap)
             else
                 CoverType = "noImage";
         }
+        else
+            result = false;
     }
+    else
+        result = false;
+
+    result = true;
 }
 
 void Book::writeToConsole()

@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include "styles.h"
+#include <QListView>
 
 void Settings_ReaderLayout::setLayoutStyle()
 {
@@ -79,6 +80,48 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
     connect(ui->NoteStyleBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->NoteLineSpacingBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->NoteAlignmentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
+
+    ui->StyleBox->setView(new QListView());
+
+    ui->BackgroundTypeBox->setView(new QListView());
+    ui->ColumnNumberBox->setView(new QListView());
+    ui->TextAntiAliasingBox->setView(new QListView());
+    ui->ParagraphLeftIdentBox->setView(new QListView());
+    ui->ParagraphTopIdentBox->setView(new QListView());
+    ui->TextLeftIdentBox->setView(new QListView());
+    ui->TextRightIdentBox->setView(new QListView());
+    ui->TextTopIndentBox->setView(new QListView());
+    ui->TextBottomIndentBox->setView(new QListView());
+
+    ui->RegularNameBox->setView(new QListView());
+    ui->RegularSizeBox->setView(new QListView());
+    ui->RegularStyleBox->setView(new QListView());
+    ui->RegularLineSpacingBox->setView(new QListView());
+    ui->RegularAlignmentBox->setView(new QListView());
+
+    ui->EmphasizedNameBox->setView(new QListView());
+    ui->EmphasizedSizeBox->setView(new QListView());
+    ui->EmphasizedStyleBox->setView(new QListView());
+    ui->EmphasizedLineSpacingBox->setView(new QListView());
+    ui->EmphasizedAlignmentBox->setView(new QListView());
+
+    ui->TitleNameBox->setView(new QListView());
+    ui->TitleSizeBox->setView(new QListView());
+    ui->TitleStyleBox->setView(new QListView());
+    ui->TitleLineSpacingBox->setView(new QListView());
+    ui->TitleAlignmentBox->setView(new QListView());
+
+    ui->SubtitleNameBox->setView(new QListView());
+    ui->SubtitleSizeBox->setView(new QListView());
+    ui->SubtitleStyleBox->setView(new QListView());
+    ui->SubtitleLineSpacingBox->setView(new QListView());
+    ui->SubtitleAlignmentBox->setView(new QListView());
+
+    ui->NoteNameBox->setView(new QListView());
+    ui->NoteSizeBox->setView(new QListView());
+    ui->NoteStyleBox->setView(new QListView());
+    ui->NoteLineSpacingBox->setView(new QListView());
+    ui->NoteAlignmentBox->setView(new QListView());
 }
 
 void Settings_ReaderLayout::changeEvent(QEvent *event)

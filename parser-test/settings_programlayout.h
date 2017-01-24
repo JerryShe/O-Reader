@@ -36,6 +36,10 @@ private slots:
 
     void on_LanguageBox_activated(const QString &arg1);
 
+    void on_TurnByWheelBox_activated(int index);
+
+    void on_TurnByTapBox_activated(int index);
+
 signals:
     void InterfaceStyleChanged();
     void LanguageChanged();

@@ -296,6 +296,8 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
 }
 
 //TODO: переделать стиль кнопок
+//TODO: сменить задний фон удаления стиля
+//TODO: увеличить кнопку delete в странице книги
 ///////////////////////////диалог подтверждения///////////////////////////
 void setAnswerDialogStyle (QString windowStyle [], const QString style)
 {

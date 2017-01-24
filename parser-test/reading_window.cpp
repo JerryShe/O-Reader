@@ -313,12 +313,62 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         {
             QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
             if(MousePressEvent->button() == Qt::LeftButton)
-                if (MousePressEvent->pos().y() <= 20)
+            {
+                if (MousePressEvent->pos().y() > 20)
+                {
+                    if (ProgramSettings->getTurnByTap())
+                    {
+                        qDebug()<<MousePressEvent->pos().x()<<MousePressEvent->pos().y();
+                        if (MousePressEvent->pos().x() > this->size().width() - 100)
+                        {
+                            qDebug()<<"1";
+                            ui->TextPage->setHtml(BookParse->getPageForward());
+                            updateProgress();
+                        }
+                        else
+                        if (MousePressEvent->pos().x() < 100)
+                        {
+                            qDebug()<<"2";
+                            ui->TextPage->setHtml(BookParse->getPageBackward());
+                            updateProgress();
+                        }
+                    }
+                }
+                else
                 {
                     moving = true;
                     lastPoint = MousePressEvent->pos();
                 }
+            }
             break;
+        }
+
+        case QEvent::MouseButtonDblClick:
+        {
+            QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+            if(MousePressEvent->button() == Qt::LeftButton)
+            {
+                if (MousePressEvent->pos().y() > 20)
+                {
+                    if (ProgramSettings->getTurnByTap())
+                    {
+                        qDebug()<<MousePressEvent->pos().x()<<MousePressEvent->pos().y();
+                        if (MousePressEvent->pos().x() > this->size().width() - 100)
+                        {
+                            qDebug()<<"1";
+                            ui->TextPage->setHtml(BookParse->getPageForward());
+                            updateProgress();
+                        }
+                        else
+                        if (MousePressEvent->pos().x() < 100)
+                        {
+                            qDebug()<<"2";
+                            ui->TextPage->setHtml(BookParse->getPageBackward());
+                            updateProgress();
+                        }
+                    }
+                }
+            }
         }
 
         case QEvent::MouseButtonRelease:
@@ -376,7 +426,6 @@ void ReadingWindow::goToSection(int sectionIndex)
 
 void ReadingWindow::saveBookPos()
 {
-    qDebug()<<"save wtf";
     emit saveBookProgress();
 }
 

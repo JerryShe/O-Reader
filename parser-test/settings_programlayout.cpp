@@ -4,6 +4,7 @@
 
 #include <QKeyEvent>
 #include <QDebug>
+#include <QListView>
 
 void Settings_ProgramLayout::setLayoutStyle()
 {
@@ -22,6 +23,11 @@ void Settings_ProgramLayout::setLayoutStyle()
 Settings_ProgramLayout::Settings_ProgramLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ProgramLayout)
 {
     ui->setupUi(this);
+    ui->InterfaceStyleBox->setView(new QListView());
+    ui->LanguageBox->setView(new QListView());
+    ui->TopBarShowBox->setView(new QListView());
+    ui->TurnByTapBox->setView(new QListView());
+    ui->TurnByWheelBox->setView(new QListView());
 }
 
 Settings_ProgramLayout::~Settings_ProgramLayout()
@@ -35,6 +41,7 @@ void Settings_ProgramLayout::setProgramData()
     ui->LanguageBox->setCurrentText(ProgramSettings->getCurrentLanguage());
     ui->TopBarShowBox->setCurrentIndex(ProgramSettings->getHideTopBar());
     ui->TurnByWheelBox->setCurrentIndex(ProgramSettings->getTurnByWheel());
+    ui->TurnByTapBox->setCurrentIndex(ProgramSettings->getTurnByTap());
 
     connect(ui->InterfaceStyleBox, SIGNAL(activated(QString)), this, SLOT(settChanged()));
     connect(ui->LanguageBox, SIGNAL(activated(QString)), this, SLOT(settChanged()));
@@ -194,5 +201,25 @@ void Settings_ProgramLayout::on_LanguageBox_activated(const QString &arg1)
     {
         ProgramSettings->setLanguage(arg1);
         ui->retranslateUi(this);
+    }
+}
+
+
+void Settings_ProgramLayout::on_TurnByWheelBox_activated(int index)
+{
+    if (index != ProgramSettings->getTurnByWheel())
+    {
+        ProgramSettings->setTurnByWheel(index);
+        emit settingsChanged(1);
+    }
+}
+
+
+void Settings_ProgramLayout::on_TurnByTapBox_activated(int index)
+{
+    if (index != ProgramSettings->getTurnByTap())
+    {
+        ProgramSettings->setTurnByTap(index);
+        emit settingsChanged(1);
     }
 }

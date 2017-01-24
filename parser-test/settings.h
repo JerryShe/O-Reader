@@ -70,8 +70,12 @@ public:
     void setFBackwardKey(int key);
     int getSBackwardKey();
     void setSBackwardKey(int key);
+
     bool getTurnByWheel();
     void setTurnByWheel(bool turn);
+
+    bool getTurnByTap();
+    void setTurnByTap(bool turn);
 
     bool getLibraryReprezentation();
     void setLibraryReprezentation(const bool val);
@@ -118,6 +122,7 @@ private:
     int FKeyBackwardPage;
     int SKeyBackwardPage;
     bool PageTurnByWheel;
+    bool PageTurnByTap;
 
     bool LibraryReprezentation;      // 0 - плитка, 1 - список
     unsigned short LibraryIconBarSize;

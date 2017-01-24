@@ -13,7 +13,7 @@
 class Book
 {
 public:
-    Book(QString FileName, GenresMap *Gmap);
+    Book(bool &result, QString FileName, GenresMap *Gmap);
     Book(){}
     friend QDataStream &operator<<(QDataStream &out, const Book &BookElem);
     friend QDataStream &operator>>(QDataStream &out, Book &BookElem);
