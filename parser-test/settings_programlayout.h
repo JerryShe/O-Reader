@@ -25,7 +25,6 @@ public:
 private slots:
     void setProgramData();
     void on_InterfaceStyleBox_currentTextChanged(const QString &arg1);
-    void on_LanguageBox_currentTextChanged(const QString &arg1);
     void on_SaveButton_clicked();
     void settChanged();
 

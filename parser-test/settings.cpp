@@ -51,10 +51,11 @@ void settings::saveSettings()
     {
         QDataStream out(&SettingsFile);
         out<<*this;
+        qDebug()<<"settings saved";
+        SettingsFile.close();
     }
     else
         qDebug()<<"save settings wtf";
-    SettingsFile.close();
 }
 
 void settings::loadSettings()

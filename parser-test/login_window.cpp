@@ -2,6 +2,7 @@
 #include "login_window.h"
 #include "ui_loginwindow.h"
 #include "answer_dialog.h"
+#include "settings.h"
 
 #include <QMouseEvent>
 #include <QString>

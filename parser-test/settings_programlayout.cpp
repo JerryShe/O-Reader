@@ -76,15 +76,9 @@ void Settings_ProgramLayout::on_InterfaceStyleBox_currentTextChanged(const QStri
     emit InterfaceStyleChanged();
 }
 
-void Settings_ProgramLayout::on_LanguageBox_currentTextChanged(const QString &arg1)
-{
-    emit LanguageChanged();
-}
-
 void Settings_ProgramLayout::on_SaveButton_clicked()
 {
     ProgramSettings->setHideTopBar(ui->TopBarShowBox->currentIndex());
-    ProgramSettings->setLanguage(ui->LanguageBox->currentText());
     ProgramSettings->setInterfaceStyle(ui->InterfaceStyleBox->currentText());
     ProgramSettings->saveSettings();
 
@@ -200,6 +194,7 @@ void Settings_ProgramLayout::on_LanguageBox_activated(const QString &arg1)
     if (arg1 != ProgramSettings->getCurrentLanguage())
     {
         ProgramSettings->setLanguage(arg1);
+        emit settingsChanged(1);
     }
 }
 

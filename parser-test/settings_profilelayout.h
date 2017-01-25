@@ -27,7 +27,6 @@ private slots:
 protected:
     void changeEvent(QEvent *event);
 
-
 signals:
     void settingsChanged(int type);
 

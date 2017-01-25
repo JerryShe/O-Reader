@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    QFile SettingsFile(QUrl::fromLocalFile("LibraryResources/Settings.conf").toString());
+    QFile SettingsFile("LibraryResources/Settings.conf");
     QString currentLanguage;
     if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -22,21 +22,22 @@ int main(int argc, char *argv[])
         in>>currentLanguage;
         in>>currentLanguage;
         in>>currentLanguage;
+        SettingsFile.close();
     }
     else
         currentLanguage = "English";
-    SettingsFile.close();
 
-    QTranslator* LanguageTranslator = new QTranslator;
+
+    QTranslator LanguageTranslator;
     bool done = false;
     if (currentLanguage == "Русский")
-        done = LanguageTranslator->load("ru.qm", "LibraryResources/Languages");
+        done = LanguageTranslator.load("ru.qm", "LibraryResources/Languages");
     if (currentLanguage == "English")
-        done = LanguageTranslator->load("en.qm", "LibraryResources/Languages");
+        done = LanguageTranslator.load("en.qm", "LibraryResources/Languages");
     if (done)
-        qApp->installTranslator(LanguageTranslator);
+        qApp->installTranslator(&LanguageTranslator);
 
-    LoginWindow login_window(LanguageTranslator);
+    LoginWindow login_window(&LanguageTranslator);
 
     if (CurrentOS)
         login_window.setWindowFlags(Qt::CustomizeWindowHint);

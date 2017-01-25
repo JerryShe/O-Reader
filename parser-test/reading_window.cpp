@@ -487,6 +487,7 @@ void ReadingWindow::SettingsButton_Clicked()
     MiniWindowLayout->setContentsMargins(0,0,0,0);
 
     SettingsPage = new settingslayout(MiniWindow);
+    SettingsPage->setSettingsData();
     MiniWindowLayout->addWidget(SettingsPage);
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(close()));
