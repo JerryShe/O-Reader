@@ -25,7 +25,7 @@ class ReadingWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ReadingWindow(settings* PSettings, Book *book);
+    explicit ReadingWindow(Book *book);
     ~ReadingWindow();
 
 private slots:

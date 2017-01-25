@@ -16,7 +16,7 @@ class FB2TextParser : public QObject
 
 public:
     FB2TextParser();
-    QString startParser(Book *boo, settings* PSettings, int width, int height);
+    QString startParser(Book *boo, int width, int height);
     ~FB2TextParser();
 
 public:

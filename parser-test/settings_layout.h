@@ -15,7 +15,7 @@ public:
     explicit settingslayout(QWidget *Parent=0);
     ~settingslayout();
 
-    void setSettingsData(settings *Settings);
+    void setSettingsData();
     void hideWithoutSaving();
     void setSettWindowStyle();
 

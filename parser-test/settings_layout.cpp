@@ -63,13 +63,13 @@ settingslayout::settingslayout(QWidget *Parent)
     ReaderWidget->hide();
 }
 
-void settingslayout::setSettingsData(settings *Settings)
+void settingslayout::setSettingsData()
 {
-    ProgramSettings = Settings;
+    ProgramSettings = settings::getSettings();
     setSettWindowStyle();
-    ReaderWidget->setSettingsData(Settings);
-    ProgramWidget->setSettingsData(Settings);
-    ProfileWidget->setSettingsData(Settings);
+    ReaderWidget->setSettingsData();
+    ProgramWidget->setSettingsData();
+    ProfileWidget->setSettingsData();
 }
 
 settingslayout::~settingslayout()

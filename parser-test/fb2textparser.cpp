@@ -35,10 +35,10 @@ FB2TextParser::FB2TextParser()
     parseDirection = false;
 }
 
-QString FB2TextParser::startParser(Book *boo, settings *PSettings, int width, int height)
+QString FB2TextParser::startParser(Book *boo, int width, int height)
 {
     book = boo;
-    ProgramSettings = PSettings;
+    ProgramSettings = settings::getSettings();
     currentEStrNum = currentBStrNum = book->getBookProgress();
     currentTextPos = 0;
 

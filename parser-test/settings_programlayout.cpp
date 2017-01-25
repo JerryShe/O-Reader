@@ -64,9 +64,9 @@ void Settings_ProgramLayout::settChanged()
     emit settingsChanged(1);
 }
 
-void Settings_ProgramLayout::setSettingsData(settings *Settings)
+void Settings_ProgramLayout::setSettingsData()
 {
-    ProgramSettings = Settings;
+    ProgramSettings = settings::getSettings();
     setLayoutStyle();
     setProgramData();
 }
@@ -200,6 +200,12 @@ void Settings_ProgramLayout::on_LanguageBox_activated(const QString &arg1)
     if (arg1 != ProgramSettings->getCurrentLanguage())
     {
         ProgramSettings->setLanguage(arg1);
+    }
+}
+
+void Settings_ProgramLayout::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
         ui->retranslateUi(this);
     }
 }

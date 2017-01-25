@@ -16,7 +16,7 @@ public:
     explicit Settings_ProfileLayout(QWidget *parent = 0);
     ~Settings_ProfileLayout();
 
-    void setSettingsData(settings *Settings);
+    void setSettingsData();
     void setLayoutStyle();
     void setSavebuttonView(int type);
 

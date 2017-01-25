@@ -30,9 +30,9 @@ int main(int argc, char *argv[])
     QTranslator* LanguageTranslator = new QTranslator;
     bool done = false;
     if (currentLanguage == "Русский")
-        done = LanguageTranslator->load("ru.qm", QUrl::fromLocalFile("LibraryResources/Languages").toString());
+        done = LanguageTranslator->load("ru.qm", "LibraryResources/Languages");
     if (currentLanguage == "English")
-        done = LanguageTranslator->load("en.qm", QUrl::fromLocalFile("LibraryResources/Languages").toString());
+        done = LanguageTranslator->load("en.qm", "LibraryResources/Languages");
     if (done)
         qApp->installTranslator(LanguageTranslator);
 

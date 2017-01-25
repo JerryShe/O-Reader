@@ -6,12 +6,24 @@
 
 #include <QDebug>
 
-settings::settings(QTranslator *translator): LanguageTranslator(translator)
+settings::settings()
 {
     textAlignMap.insert(0, "justify");
     textAlignMap.insert(1, "left");
     textAlignMap.insert(2, "right");
     textAlignMap.insert(3, "center");
+    loadSettings();
+}
+
+settings* settings::getSettings()
+{
+    static settings ProgramSettings;
+    return &ProgramSettings;
+}
+
+void settings::setTranslator(QTranslator* translator)
+{
+    LanguageTranslator = translator;
 }
 
 QString settings::getTextAlignName(unsigned short key)
@@ -385,6 +397,7 @@ ReadingStyle settings::getNamedStyle(const QString name)
         return StylesMap.at(index);
     else
         qDebug()<<"style name wtf";
+    return StylesMap.at(0);
 }
 
 ReadingStyle settings::getCurrentTextStyleElem()

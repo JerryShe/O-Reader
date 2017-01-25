@@ -23,9 +23,9 @@ Settings_ProfileLayout::~Settings_ProfileLayout()
 }
 
 
-void Settings_ProfileLayout::setSettingsData(settings *Settings)
+void Settings_ProfileLayout::setSettingsData()
 {
-    ProgramSettings = Settings;
+    ProgramSettings = settings::getSettings();
     setLayoutStyle();
 }
 

@@ -48,8 +48,9 @@ struct ReadingStyle
 class settings : public QObject
 {
 public:
-    settings(QTranslator* translator);
-    ~settings();
+    static settings* getSettings();
+    void setTranslator(QTranslator* translator);
+
     void saveSettings();
     void loadSettings();
 
@@ -109,6 +110,9 @@ signals:
     void loadDone(){}
 
 private:
+    settings();
+    ~settings();
+
     QString LoginToken;
     QString UserEmail;
     QString UserPassword;

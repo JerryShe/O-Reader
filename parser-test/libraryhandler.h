@@ -14,7 +14,7 @@ class LibraryHandler: public QObject
     Q_OBJECT
 
 public:
-    LibraryHandler(librarylayout* LWidget, Synchronization* UActions);
+    LibraryHandler(librarylayout* LWidget);
 
 public slots:
     void AddBooks(const QStringList fileList);

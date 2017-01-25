@@ -375,9 +375,9 @@ ReadingStyle Settings_ReaderLayout::getStyleData()
     return style;
 }
 
-void Settings_ReaderLayout::setSettingsData(settings * const Settings)
+void Settings_ReaderLayout::setSettingsData()
 {
-    ProgramSettings = Settings;
+    ProgramSettings = settings::getSettings();
     setLayoutStyle();
     ui->NewStyleName->hide();
     ui->YepButton->hide();

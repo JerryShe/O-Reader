@@ -17,7 +17,7 @@ public:
     explicit Settings_ReaderLayout(QWidget *parent = 0);
     ~Settings_ReaderLayout();
 
-    void setSettingsData(settings * const Settings);
+    void setSettingsData();
 
     void setStyleData(const ReadingStyle style);
     ReadingStyle getStyleData();

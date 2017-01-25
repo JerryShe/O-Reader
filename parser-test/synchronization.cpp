@@ -12,6 +12,17 @@ Synchronization::Synchronization()
     loadLog();
 }
 
+Synchronization::~Synchronization()
+{
+
+}
+
+Synchronization* Synchronization::getSynchronization()
+{
+    static Synchronization UserActions;
+    return &UserActions;
+}
+
 Synchronization::action::action(int index, QString itemSpec, QString data)
 {
     actionTime = QDateTime::currentDateTime();

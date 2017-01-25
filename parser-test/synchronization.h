@@ -15,12 +15,12 @@ enum UActions
     AddBackground
 };
 
-
-
 class Synchronization : public QObject
 {
 
 private:
+    Synchronization();
+    ~Synchronization();
 
     struct action
     {
@@ -37,10 +37,10 @@ private:
     QQueue <action> SynchroQueue;
 
 public:
+    static Synchronization* getSynchronization();
+
     friend QDataStream &operator>>(QDataStream &in, action &actionElem);
     friend QDataStream &operator<<(QDataStream &out, const action &actionElem);
-
-    Synchronization();
 
     int synchronizeToServer();
     int synchronizeFromServer();

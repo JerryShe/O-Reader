@@ -21,7 +21,7 @@ public:
     void addItem(int BookIndex, QString name, QString title, QImage cover);
     QVector <int> deleteItems();
     void deleteBook(int index);
-    void setSettingsData(settings* PSettings);
+    void setSettingsData();
 
     void setStyle(QString libraryStyle[]);
     void changeViewMod();

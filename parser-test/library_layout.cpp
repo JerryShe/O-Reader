@@ -196,9 +196,9 @@ void librarylayout::iconDownscale()
     }
 }
 
-void librarylayout::setSettingsData(settings* PSettings)
+void librarylayout::setSettingsData()
 {
-    ProgramSettings = PSettings;
+    ProgramSettings = settings::getSettings();
     QString ListViewStyle[1];
     setLibraryStyle (ListViewStyle, ProgramSettings->getInterfaceStyle());
     BookListView->setStyleSheet(ListViewStyle[0]);

@@ -3,11 +3,11 @@
 #include <QDebug>
 
 
-LibraryHandler::LibraryHandler(librarylayout *LWidget, Synchronization* UActions)
+LibraryHandler::LibraryHandler(librarylayout *LWidget)
 {
     resoursesFolderPath = "LibraryResources";
     LibraryWidget = LWidget;
-    UserActions = UActions;
+    UserActions = Synchronization::getSynchronization();;
     currentBookIndex = 0;
     filesMask<<"*.fb2";
 }

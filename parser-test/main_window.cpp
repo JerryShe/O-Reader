@@ -84,8 +84,9 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
     HandlerThread = new QThread(this);
     connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
 
-    UserActions = new Synchronization();
-    ProgramSettings = new settings(translator);
+    UserActions = Synchronization::getSynchronization();
+    ProgramSettings = settings::getSettings();
+    ProgramSettings->setTranslator(translator);
 
     ProgramSettings->moveToThread(HandlerThread);
     UserActions->moveToThread(HandlerThread);
@@ -98,7 +99,7 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
     ui->_GroupBox->hide();
 
     LibraryLayout = new librarylayout();
-    LibHandler = new LibraryHandler(LibraryLayout, UserActions);
+    LibHandler = new LibraryHandler(LibraryLayout);
     LibHandler->moveToThread(HandlerThread);
 
     ui->TabsLayout->addWidget(LibraryLayout, 0);
@@ -121,8 +122,8 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
 
     connect(LibraryLayout, SIGNAL(showBookPage(int)), this, SLOT(showBookPage(int)));
 
-    ui->SettingsLayout->setSettingsData(ProgramSettings);
-    LibraryLayout->setSettingsData(ProgramSettings);
+    ui->SettingsLayout->setSettingsData();
+    LibraryLayout->setSettingsData();
 }
 
 void MainWindow::changeEvent(QEvent *event)
@@ -137,15 +138,11 @@ MainWindow::~MainWindow()
     delete ui;
     delete LibHandler;
     delete LibraryLayout;
-    delete UserActions;
-    delete ProgramSettings;
     delete readingWindow;
     delete searchWindow;
     delete page;
     delete HandlerThread;
 }
-
-
 
 void MainWindow::showBookPage(const int index)
 {
@@ -156,7 +153,7 @@ void MainWindow::showBookPage(const int index)
 
 void MainWindow::startReading(const int index)
 {
-    readingWindow = new ReadingWindow(ProgramSettings, LibHandler->getBookByIndex(index));
+    readingWindow = new ReadingWindow(LibHandler->getBookByIndex(index));
 
     if (CurrentOS)
         readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
@@ -164,10 +161,10 @@ void MainWindow::startReading(const int index)
         readingWindow->setWindowFlags(Qt::Dialog);
 
     connect(readingWindow, SIGNAL(showMainWindow()), this, SLOT(showWindow()));
+    connect(readingWindow, SIGNAL(saveBookProgress()), LibHandler, SLOT(saveBookList()));
 
     readingWindow->show();
 
-    connect(readingWindow, SIGNAL(saveBookProgress()), LibHandler, SLOT(saveBookList()));
     this->hide();
 }
 

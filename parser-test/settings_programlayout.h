@@ -17,7 +17,7 @@ public:
     explicit Settings_ProgramLayout(QWidget *parent = 0);
     ~Settings_ProgramLayout();
 
-    void setSettingsData(settings *Settings);
+    void setSettingsData();
     void setLayoutStyle();
 
     void setSavebuttonView(int type);
@@ -35,10 +35,10 @@ private slots:
     void on_STurnBackward_toggled(bool checked);
 
     void on_LanguageBox_activated(const QString &arg1);
-
     void on_TurnByWheelBox_activated(int index);
-
     void on_TurnByTapBox_activated(int index);
+
+    void changeEvent(QEvent *event);
 
 signals:
     void InterfaceStyleChanged();

@@ -56,7 +56,7 @@ void ReadingWindow::setStyle(QString currentStyle)
     MenuSettingsButton->setStyleSheet(styleSheets[2]);
 }
 
-ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::ReadingWindow)
+ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
 {
     ActiveWindow = false;
     setAttribute(Qt::WA_DeleteOnClose);
@@ -69,7 +69,7 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::Read
     connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
     parserThread->start();
     connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
-    ui->TextPage->setHtml(BookParse->startParser(book, PSettings,ui->TextPage->width(), ui->TextPage->height()));
+    ui->TextPage->setHtml(BookParse->startParser(book,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
     connect(BookParse, SIGNAL(saveBookProgress()), this, SLOT(saveBookPos()));
     ui->BookName->setText(book->getAuthorName() + ": " + book->getTitle());
@@ -115,7 +115,7 @@ ReadingWindow::ReadingWindow(settings * PSettings, Book *book) : ui(new Ui::Read
     MenuLayout->addWidget(MenuBackToMainWindowButton);
     connect(MenuBackToMainWindowButton, SIGNAL(clicked(bool)), this, SLOT(BackToMainWindowButton_Clicked()));
 
-    ProgramSettings = PSettings;
+    ProgramSettings = settings::getSettings();
     setStyle(ProgramSettings->getInterfaceStyle());
     ui->Clock->setText(QTime::currentTime().toString("hh:mm"));
 
@@ -487,7 +487,6 @@ void ReadingWindow::SettingsButton_Clicked()
     MiniWindowLayout->setContentsMargins(0,0,0,0);
 
     SettingsPage = new settingslayout(MiniWindow);
-    SettingsPage->setSettingsData(ProgramSettings);
     MiniWindowLayout->addWidget(SettingsPage);
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(close()));
@@ -497,7 +496,6 @@ void ReadingWindow::SettingsButton_Clicked()
 
     if (MiniWindow->exec() == QDialog::Rejected)
     {
-        //MiniWindow->clo
         delete MiniWindow;
         ActiveWindow = false;
     }
