@@ -1,13 +1,9 @@
 #ifndef LIBRARYLAYOUT_H
 #define LIBRARYLAYOUT_H
 
-#include <QWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <QScrollArea>
-#include <QPushButton>
-#include <QMainWindow>
 #include <QListView>
 #include <QStandardItemModel>
 #include <settings.h>
@@ -42,9 +38,6 @@ signals:
 
 private slots:
     void showSelectedItem(QModelIndex mIndex);
-
-///protected:
-   /// bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     QGridLayout* libraryGridLayout;

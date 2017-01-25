@@ -8,6 +8,12 @@
 #include <QString>
 #include <QDebug>
 
+#if defined(Q_OS_LINUX)
+    #define CurrentOS 0
+#elif defined(Q_OS_WIN)
+    #define CurrentOS 1
+#endif
+
 
 void LoginWindow::setStyle()
 {
@@ -89,6 +95,7 @@ void LoginWindow::on_exit_button_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
     {
+        delete answer_window;
         exit(0);
     }
     else
@@ -151,7 +158,12 @@ void LoginWindow::on_login_clicked()
         // здесь надо вставить проверку пароля на серве
         // если соединения с сервером нет, то сказать, что программа будет работать в автономном режиме и проверить пароль локально
         main_window = new MainWindow(LanguageTranslator);
-        main_window->setWindowFlags(Qt::CustomizeWindowHint);
+
+        if (CurrentOS)
+            main_window->setWindowFlags(Qt::CustomizeWindowHint);
+        else
+            main_window->setWindowFlags(Qt::Dialog);
+
         main_window->show();
         LoginWindow::close();
 

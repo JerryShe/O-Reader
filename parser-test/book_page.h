@@ -13,7 +13,7 @@ class BookPage : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit BookPage(Book book, QString Style, QWidget *parent = 0);
+    explicit BookPage(Book* book, QString Style, QWidget *parent = 0);
     ~BookPage();
     void readBook();
 

@@ -3,9 +3,11 @@
 #include <QDebug>
 
 
-LibraryHandler::LibraryHandler(MainWindow* MWindow)
+LibraryHandler::LibraryHandler(librarylayout *LWidget, Synchronization* UActions)
 {
-    window = MWindow;
+    resoursesFolderPath = "LibraryResources";
+    LibraryWidget = LWidget;
+    UserActions = UActions;
     currentBookIndex = 0;
     filesMask<<"*.fb2";
 }
@@ -18,14 +20,17 @@ void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
         {
             if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
             {
-                window->UserActions->addAction(UActions::DeleteBook, bookList.at(j).File, 0);
+                UserActions->addAction(UActions::DeleteBook, bookList.at(j).File, 0);
                 bookList.remove(j);
                 break;
             }
         }
     }
     if (deletedItemsIndexes.size())
+    {
         saveBookList();
+        RefreshLibrary();
+    }
 }
 
 void LibraryHandler::AddBooks(const QStringList fileList)
@@ -68,7 +73,7 @@ void LibraryHandler::AddFolder(QString path)
 
 void LibraryHandler::loadBookList()
 {
-    QFile bookFileList(window->resoursesFolderPath + "/BookList.lb");
+    QFile bookFileList(resoursesFolderPath + "/BookList.lb");
 
     if(bookFileList.open(QIODevice::ReadOnly | QIODevice::Text ))
         qDebug() << "File Has Been Opened" << endl;
@@ -86,7 +91,7 @@ void LibraryHandler::loadBookList()
         in>>temp;
         temp.setBookIndex(currentBookIndex++);
         bookList.push_back(temp);
-        window->LibraryLayout->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
+        LibraryWidget->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
     }
     bookFileList.close();
 }
@@ -94,7 +99,7 @@ void LibraryHandler::loadBookList()
 
 void LibraryHandler::saveBookList()
 {
-    QFile bookFileList(window->resoursesFolderPath + "/BookList.lb");
+    QFile bookFileList(resoursesFolderPath + "/BookList.lb");
 
     if(bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
     {
@@ -112,7 +117,7 @@ void LibraryHandler::saveBookList()
         out<<bookList[i];
 
     bookFileList.close();
-    window->UserActions->saveLog();
+    UserActions->saveLog();
 }
 
 
@@ -158,8 +163,8 @@ void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
         boo.setBookIndex(currentBookIndex++);
         bookList.push_back(boo);
 
-        window->UserActions->addAction(UActions::AddBook, file, 0);
-        window->LibraryLayout->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
+        UserActions->addAction(UActions::AddBook, file, 0);
+        LibraryWidget->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
     }
     if (tipe == "zip")
     {
@@ -169,11 +174,11 @@ void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
 
 void LibraryHandler::deleteBook(const int index)
 {
-    window->LibraryLayout->deleteBook(index);
+    LibraryWidget->deleteBook(index);
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getBookIndex() == index)
         {
-            window->UserActions->addAction(UActions::DeleteBook, bookList.at(i).File, 0);
+            UserActions->addAction(UActions::DeleteBook, bookList.at(i).File, 0);
             bookList.remove(i);
             break;
         }
@@ -199,9 +204,9 @@ void LibraryHandler::sortBooks(const QString mode)
 {
     if (mode == QObject::tr("Date"))
     {
-        window->LibraryLayout->clear();
+        LibraryWidget->clear();
         for (int i = 0; i < bookList.size(); i++)
-            window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+            LibraryWidget->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
         return;
     }
     if (mode == QObject::tr("Author"))
@@ -209,19 +214,19 @@ void LibraryHandler::sortBooks(const QString mode)
 
         QVector <Book> indexVector = bookList;
         qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
-        window->LibraryLayout->clear();
+        LibraryWidget->clear();
         for (int i = 0; i < indexVector.size(); i++)
-            window->LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+            LibraryWidget->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
         return;
     }
     if (mode == QObject::tr("Title"))
     {
-        window->LibraryLayout->clear();
+        LibraryWidget->clear();
         QVector <Book> indexVector = bookList;
         qSort(indexVector.begin(), indexVector.end(), TitleComparator);
-        window->LibraryLayout->clear();
+        LibraryWidget->clear();
         for (int i = 0; i < indexVector.size(); i++)
-            window->LibraryLayout->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+            LibraryWidget->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
         return;
     }
 }
@@ -232,27 +237,47 @@ void LibraryHandler::findBooks(QString token, QString mode)
     if (token != "")
     {
         needRefresh = true;
-        window->LibraryLayout->clear();
+        LibraryWidget->clear();
         if (mode == QObject::tr("Title"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+                    LibraryWidget->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
             return;
         }
         if (mode == QObject::tr("Author"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+                    LibraryWidget->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
             return;
         }
         if (mode == QObject::tr("Series"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    window->LibraryLayout->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+                    LibraryWidget->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
             return;
         }
+    }
+}
+
+Book* LibraryHandler::getBookByIndex(int index)
+{
+    int i;
+    for (i = 0; i < bookList.size(); i++)
+        if (bookList[i].getBookIndex() == index)
+            break;
+    return &bookList[i];
+}
+
+void LibraryHandler::RefreshLibrary()
+{
+    if (needRefresh == true)
+    {
+        LibraryWidget->clear();
+        needRefresh = false;
+        for (int i = 0; i < bookList.size(); i++)
+            LibraryWidget->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
     }
 }

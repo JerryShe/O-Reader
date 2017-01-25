@@ -10,12 +10,12 @@ BookOrFolder::BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString S
     BookOrFolder::setWindowFlags(Qt::FramelessWindowHint);
     BookOrFolder::setWindowFlags(Qt::Popup);
 
-    layout = new QHBoxLayout;
+    layout = new QHBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(0);
 
-    bookButton = new QPushButton(QObject::tr("Book"));
-    folderButton = new QPushButton(QObject::tr("Folder"));
+    bookButton = new QPushButton(QObject::tr("Book"), this);
+    folderButton = new QPushButton(QObject::tr("Folder"), this);
 
     folderButton->setMinimumSize(hSize/2, 40);
     folderButton->setFlat(true);
@@ -48,8 +48,4 @@ BookOrFolder::BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString S
 }
 
 BookOrFolder::~BookOrFolder()
-{
-    delete layout;
-    delete bookButton;
-    delete folderButton;
-}
+{}

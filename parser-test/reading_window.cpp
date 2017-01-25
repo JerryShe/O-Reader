@@ -18,6 +18,12 @@
 
 #include <QDebug>
 
+#if defined(Q_OS_LINUX)
+    #define CurrentOS 0
+#elif defined(Q_OS_WIN)
+    #define CurrentOS 1
+#endif
+
 
 void ReadingWindow::setStyle(QString currentStyle)
 {
@@ -204,6 +210,7 @@ void ReadingWindow::on_exit_button_clicked()
     if (answer_window->exec() == QDialog::Accepted)
     {
         parserThread->quit();
+        delete answer_window;
         exit(0);
     }
     else

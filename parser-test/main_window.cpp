@@ -11,15 +11,19 @@
 #include "library_layout.h"
 
 #include <QFileDialog>
-
 #include <QSizePolicy>
 #include <QKeyEvent>
 #include <QProcess>
 #include <QListWidget>
+#include <QThread>
+
+#if defined(Q_OS_LINUX)
+    #define CurrentOS 0
+#elif defined(Q_OS_WIN)
+    #define CurrentOS 1
+#endif
 
 #include <QDebug>
-
-#include <QThread>
 
 void MainWindow::libraryButtonsHide()
 {
@@ -93,9 +97,10 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
     ui->_Group->hide();
     ui->_GroupBox->hide();
 
-    LibHandler = new LibraryHandler(this);
-    LibHandler->moveToThread(HandlerThread);
     LibraryLayout = new librarylayout();
+    LibHandler = new LibraryHandler(LibraryLayout, UserActions);
+    LibHandler->moveToThread(HandlerThread);
+
     ui->TabsLayout->addWidget(LibraryLayout, 0);
     if (ProgramSettings->getLibraryReprezentation())
     {
@@ -144,26 +149,19 @@ MainWindow::~MainWindow()
 
 void MainWindow::showBookPage(const int index)
 {
-    int i;
-    for (i = 0; i < LibHandler->bookList.size(); i++)
-        if (LibHandler->bookList[i].getBookIndex() == index)
-            break;
-
-    page = new BookPage(LibHandler->bookList[i], ProgramSettings->getInterfaceStyle(), this);
+    page = new BookPage(LibHandler->getBookByIndex(index), ProgramSettings->getInterfaceStyle(), this);
     connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
     connect(page, SIGNAL(deleteBook(int)), LibHandler, SLOT(deleteBook(int)));
 }
 
-void MainWindow::startReading(const int BookIndex)
+void MainWindow::startReading(const int index)
 {
-    int i;
-    for (i = 0; i < LibHandler->bookList.size(); i++)
-        if (LibHandler->bookList[i].getBookIndex() == BookIndex)
-            break;
+    readingWindow = new ReadingWindow(ProgramSettings, LibHandler->getBookByIndex(index));
 
-    readingWindow = new ReadingWindow(ProgramSettings, &LibHandler->bookList[i]);
-
-    readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
+    if (CurrentOS)
+        readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
+    else
+        readingWindow->setWindowFlags(Qt::Dialog);
 
     connect(readingWindow, SIGNAL(showMainWindow()), this, SLOT(showWindow()));
 
@@ -443,13 +441,7 @@ void MainWindow::on__Find_toggled(bool checked)
     else
     {
         searchWindow->close();        
-        if (LibHandler->needRefresh == true)
-        {
-            LibraryLayout->clear();
-            LibHandler->needRefresh = false;
-            for (int i = 0; i < LibHandler->bookList.size(); i++)
-                LibraryLayout->addItem(LibHandler->bookList[i].getBookIndex(), LibHandler->bookList[i].getAuthorName(), LibHandler->bookList[i].getTitle(), LibHandler->bookList[i].getCover());
-        }
+        LibHandler->RefreshLibrary();
     }
 }
 

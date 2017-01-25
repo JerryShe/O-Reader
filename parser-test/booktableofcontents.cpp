@@ -18,7 +18,6 @@ BookTableOfContents::BookTableOfContents(QString style, QStringList contentList,
 {
     setWindowFlags(Qt::FramelessWindowHint);
     ui->setupUi(this);
-    //ui->TableOfContents->setView(new QListView());
     setWindowStyle(style);
     ui->TableOfContents->addItems(contentList);
     ui->TableOfContents->setCurrentRow(currentPos);

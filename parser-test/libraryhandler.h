@@ -3,17 +3,18 @@
 
 #include <QString>
 #include <QObject>
-#include "main_window.h"
-#include "ui_mainwindow.h"
+#include <library_layout.h>
+#include <synchronization.h>
+#include "genresmap.h"
+#include "books.h"
 
-class MainWindow;
 
 class LibraryHandler: public QObject
 {
     Q_OBJECT
 
 public:
-    LibraryHandler(MainWindow* MWindow);
+    LibraryHandler(librarylayout* LWidget, Synchronization* UActions);
 
 public slots:
     void AddBooks(const QStringList fileList);
@@ -26,19 +27,23 @@ public slots:
 
     void findBooks(QString key, QString mode);
 
+    Book* getBookByIndex(int index);
+
+    void RefreshLibrary();
+
     void loadBookList();
     void saveBookList();
 
     void sortBooks(const QString mode);
 
-public:
+private:
+    librarylayout* LibraryWidget;
+    Synchronization* UserActions;
+    QString resoursesFolderPath;
     bool needRefresh = false;
     QStringList filesMask;
     QVector <Book> bookList;
     int currentBookIndex;
-
-private:
-    MainWindow * window;
 };
 
 #endif // LIBRARYHANDLER_H

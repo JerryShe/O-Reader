@@ -1,13 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-
 #include <QMainWindow>
 #include <QRect>
 #include <QEvent>
-#include <QPalette>
 #include <QGridLayout>
-#include <QFrame>
 #include <QFile>
 #include <QTranslator>
 
@@ -28,7 +25,6 @@ namespace Ui
     class MainWindow;
 }
 
-class LibraryHandler;
 
 class MainWindow : public QMainWindow
 {
@@ -99,10 +95,6 @@ private:
 
     Ui::MainWindow* ui;
 
-    librarylayout* LibraryLayout;
-    Synchronization* UserActions;
-    settings* ProgramSettings;
-
     ReadingWindow* readingWindow;
     SearchWindow* searchWindow;
     BookPage* page;
@@ -110,9 +102,10 @@ private:
     QString resoursesFolderPath;
 
     QThread * HandlerThread;
-
-    friend class LibraryHandler;
     LibraryHandler * LibHandler;
+    librarylayout* LibraryLayout;
+    Synchronization* UserActions;
+    settings* ProgramSettings;
 };
 
 #endif // MAINWINDOW_H

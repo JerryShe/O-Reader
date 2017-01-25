@@ -4,6 +4,12 @@
 #include <QUrl>
 #include <QDebug>
 
+#if defined(Q_OS_LINUX)
+    #define CurrentOS 0
+#elif defined(Q_OS_WIN)
+    #define CurrentOS 1
+#endif
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -31,7 +37,12 @@ int main(int argc, char *argv[])
         qApp->installTranslator(LanguageTranslator);
 
     LoginWindow login_window(LanguageTranslator);
-    login_window.setWindowFlags(Qt::CustomizeWindowHint);
+
+    if (CurrentOS)
+        login_window.setWindowFlags(Qt::CustomizeWindowHint);
+    else
+        login_window.setWindowFlags(Qt::Dialog);
+
     login_window.show();
 
     return app.exec();

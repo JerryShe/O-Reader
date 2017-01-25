@@ -1,6 +1,5 @@
 #include "answer_dialog.h"
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+
 #include <styles.h>
 
 
@@ -12,15 +11,15 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
     setWindowFlags(Qt::FramelessWindowHint);
     setWindowFlags(Qt::Popup);
 
-    yes = new QPushButton(QObject::tr("Yes"));
+    yes = new QPushButton(QObject::tr("Yes"), this);
     yes->setFlat(true);
     yes->setMinimumHeight(25);
 
-    no = new QPushButton(QObject::tr("No"));
+    no = new QPushButton(QObject::tr("No"), this);
     no->setFlat(true);
     no->setMinimumHeight(25);
 
-    message= new QLabel(text);
+    message = new QLabel(text, this);
     message->setFont(QFont("MS Shell Dlg 2", 12, QFont::Normal));
 
     //////////////////////////////////////////////////////////////
@@ -34,11 +33,11 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
     connect(yes, SIGNAL(clicked()), SLOT(accept()));
     connect(no, SIGNAL(clicked()), SLOT(reject()));
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(yes);
     buttonLayout->addWidget(no);
 
-    QVBoxLayout *windowLayout = new QVBoxLayout;
+    windowLayout = new QVBoxLayout(this);
     windowLayout->addWidget(message,0,Qt::AlignCenter);
     windowLayout->addLayout(buttonLayout);
 
@@ -47,7 +46,5 @@ AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
 
 AnswerDialog::~AnswerDialog()
 {
-    delete message;
-    delete yes;
-    delete no;
+    delete buttonLayout;
 }

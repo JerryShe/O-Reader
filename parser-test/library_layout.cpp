@@ -43,8 +43,6 @@ librarylayout::librarylayout(QWidget *widget)
     libraryGridLayout->addWidget(BookListView, 0, 0);
     libraryGridLayout->setContentsMargins(20,20,0,0);
     BookListView->show();
-    ///BookListView->installEventFilter(this);
-    ///BookModel->installEventFilter(this);
 }
 
 librarylayout::~librarylayout()
@@ -54,57 +52,6 @@ librarylayout::~librarylayout()
     delete BookListView;
     delete BookModel;
 }
-
-
-/*
-bool librarylayout::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress)
-    {
-        QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-        if (KeyEvent->key() == Qt::Key_Enter)
-        {
-            QModelIndex mIndex = BookListView->selectionModel()->selectedIndexes().first();
-            if(mIndex.isValid())
-                emit(showBookPage(mIndex.data(Qt::WhatsThisRole).toInt()));
-            return true;
-        }
-
-        if (KeyEvent->modifiers() & Qt::ControlModifier)
-        {
-            if (KeyEvent->key() == Qt::Key_Minus)
-            {
-                iconDownscale();
-                return true;
-            }
-            if (KeyEvent->key() == Qt::Key_Plus)
-            {
-                iconUpscale();
-                return true;
-            }
-        }
-    }
-    else if (event->type() == QEvent::Wheel)
-    {
-        QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
-        if (Wheel->modifiers() & Qt::ControlModifier)
-        {
-            if (Wheel->delta() < 0)
-            {
-                iconDownscale();
-                return true;
-            }
-            if (Wheel->delta() > 0)
-            {
-                iconUpscale();
-                return true;
-            }
-        }
-    }
-    return false;
-
-}
-*/
 
 void librarylayout::showSelectedItem(QModelIndex mIndex)
 {
@@ -164,6 +111,9 @@ QVector <int> librarylayout::deleteItems()
     }
 
     itemCount = itemCount - deletedItems.size();
+    qDebug()<<BookModel->rowCount();
+    if (!BookModel->rowCount())
+        clear();
     return deletedItems;
 }
 

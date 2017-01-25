@@ -29,13 +29,13 @@ void BookPage::setStyle(QString Style)
     ui->exit_button->setStyleSheet(PageStyles[0]);
 }
 
-BookPage::BookPage(Book book, QString Style, QWidget *parent) :
+BookPage::BookPage(Book* book, QString Style, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::BookPage)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    BookIndex = book.getBookIndex();
+    BookIndex = book->getBookIndex();
     ui->setupUi(this);
     setStyle(Style);
     style = Style;
@@ -45,7 +45,7 @@ BookPage::BookPage(Book book, QString Style, QWidget *parent) :
 
     this->setGeometry(parent->x() + 180, parent->y() + 100, parent->width() - 270, parent->height() - 200);
 
-    QStringList list = book.getAnnotation();
+    QStringList list = book->getAnnotation();
     QString temp = "     ";
     for (int i = 0; i < list.size(); i++)
         if (list[i] != "")
@@ -60,7 +60,7 @@ BookPage::BookPage(Book book, QString Style, QWidget *parent) :
     ui->annotation->setReadOnly(true);
     ui->annotation->setAlignment(Qt::AlignJustify);
 
-    QPixmap cover = QPixmap::fromImage(book.getCover());
+    QPixmap cover = QPixmap::fromImage(book->getCover());
     ui->Image->setMaximumSize(cover.size());
     ui->Image->setMinimumSize(cover.size());
     ui->Image->setPixmap(cover);
@@ -70,17 +70,17 @@ BookPage::BookPage(Book book, QString Style, QWidget *parent) :
             - ui->startReading->width() - ui->VerticalButtonBlock->contentsMargins().right() - 2;
 
     QFontMetrics metrics(ui->author->font());
-    ui->author->setText(metrics.elidedText(book.getAuthorName(), Qt::ElideRight, textWidth));
+    ui->author->setText(metrics.elidedText(book->getAuthorName(), Qt::ElideRight, textWidth));
 
     metrics = QFontMetrics(ui->title->font());
-    ui->title->setText(metrics.elidedText(book.getTitle(), Qt::ElideRight, textWidth));
+    ui->title->setText(metrics.elidedText(book->getTitle(), Qt::ElideRight, textWidth));
 
     metrics = QFontMetrics(ui->series->font());
-    ui->series->setText(metrics.elidedText(book.getSeries(), Qt::ElideRight, textWidth));
+    ui->series->setText(metrics.elidedText(book->getSeries(), Qt::ElideRight, textWidth));
 
-    ui->BookProgress->setText(QString::number(floor(book.getBookProgressPocent()*10)/10) + "%");
+    ui->BookProgress->setText(QString::number(floor(book->getBookProgressPocent()*10)/10) + "%");
 
-    list = book.getGenres();
+    list = book->getGenres();
     temp = list[0];
     for (int i = 1; i < list.size(); i++)
         temp += ", " + list[i];

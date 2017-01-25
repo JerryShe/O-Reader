@@ -5,6 +5,8 @@
 #include <QDialog>
 #include <QPushButton>
 #include <QLabel>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 class AnswerDialog : public QDialog
 {
@@ -15,6 +17,8 @@ public:
 
 private:
     QLabel *message;
+    QHBoxLayout *buttonLayout;
+    QVBoxLayout *windowLayout;
     QPushButton *yes;
     QPushButton *no;
     QString styles[3];
