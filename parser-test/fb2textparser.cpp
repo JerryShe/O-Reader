@@ -585,7 +585,6 @@ QString FB2TextParser::getPageForward()
                 {
                     if (bookText[currentTextPos][0] == '<')
                     {
-
                         tag = bookText[currentTextPos];
                         int parseResalt = parseTag();
                         if (parseResalt == 1)

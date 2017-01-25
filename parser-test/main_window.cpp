@@ -130,6 +130,8 @@ void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange) {
         ui->retranslateUi(this);
+        ui->_Group->hide();
+        ui->_GroupBox->hide();
     }
 }
 
