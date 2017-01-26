@@ -1,48 +1,27 @@
 <RCC>
-    <qresource prefix="/checkbox_buttons">
-        <file>LightCheck_no.png</file>
-        <file>LightCheck_ok.png</file>
-    </qresource>
-    <qresource prefix="/window_buttons">
-        <file>DarkExit.png</file>
-        <file>DarkFull_size.png</file>
-        <file>DarkMin.png</file>
-        <file>LightExit.png</file>
-        <file>LightFull_size.png</file>
-        <file>LightMin.png</file>
-    </qresource>
-    <qresource prefix="/menu_buttons">
-        <file>DarkLibrary_img.png</file>
-        <file>DarkLogout_img.png</file>
-        <file>DarkSettings_img.png</file>
-        <file>DarkSynchronization_img.png</file>
-        <file>LightLibrary_img.png</file>
-        <file>LightLogout_img.png</file>
-        <file>LightSettings_img.png</file>
-        <file>LightSynchronization_img.png</file>
-    </qresource>
-    <qresource prefix="/noImage">
-        <file>noImage.png</file>
-    </qresource>
-    <qresource prefix="/arrows">
-        <file>LightArrow.png</file>
-    </qresource>
-    <qresource prefix="/LibraryLayoutButtons">
-        <file>LightBarView.png</file>
-        <file>LightDownscale.png</file>
-        <file>LightListView.png</file>
-        <file>LightUpscale.png</file>
-    </qresource>
-    <qresource prefix="/ReadingButtons">
-        <file>LightMenuLibrary.png</file>
-        <file>LightMenuSettings.png</file>
-        <file>LightMenuSynchronization.png</file>
-        <file>LightMenuContents.png</file>
-        <file>LightMenuSearch.png</file>
-    </qresource>
-    <qresource prefix="/SettingsLayoutButtons">
-        <file>LightDeleteButton.png</file>
-        <file>LightNopeButton.png</file>
-        <file>LightYepButton.png</file>
+    <qresource prefix="/">
+        <file>Images/LightArrow.png</file>
+        <file>Images/LightBarView.png</file>
+        <file>Images/LightCheck_no.png</file>
+        <file>Images/LightCheck_ok.png</file>
+        <file>Images/LightDeleteButton.png</file>
+        <file>Images/LightDownscale.png</file>
+        <file>Images/LightExit.png</file>
+        <file>Images/LightFull_size.png</file>
+        <file>Images/LightLibrary_img.png</file>
+        <file>Images/LightListView.png</file>
+        <file>Images/LightLogout_img.png</file>
+        <file>Images/LightMenuContents.png</file>
+        <file>Images/LightMenuLibrary.png</file>
+        <file>Images/LightMenuSearch.png</file>
+        <file>Images/LightMenuSettings.png</file>
+        <file>Images/LightMenuSynchronization.png</file>
+        <file>Images/LightMin.png</file>
+        <file>Images/LightNopeButton.png</file>
+        <file>Images/LightSettings_img.png</file>
+        <file>Images/LightSynchronization_img.png</file>
+        <file>Images/LightUpscale.png</file>
+        <file>Images/LightYepButton.png</file>
+        <file>Images/noImage.png</file>
     </qresource>
 </RCC>

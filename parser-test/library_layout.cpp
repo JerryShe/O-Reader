@@ -26,13 +26,6 @@ librarylayout::librarylayout(QWidget *widget)
     BookModel = new QStandardItemModel(ListSize,ListSize);
     BookListView->setModel(BookModel);
 
-    IconBarSize = 140;
-    IconListSize = 50;
-
-    BookListView->setViewMode(QListView::IconMode);
-    BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
-    BookListView->setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
-
     BookListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     BookListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     BookListView->setDragDropMode(QAbstractItemView::NoDragDrop);
@@ -47,7 +40,6 @@ librarylayout::librarylayout(QWidget *widget)
 
 librarylayout::~librarylayout()
 {
-    ProgramSettings->saveSettings();
     delete libraryGridLayout;
     delete BookListView;
     delete BookModel;

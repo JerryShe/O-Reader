@@ -7,14 +7,14 @@ void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString styl
     if (style == "Red")
     {
         windowButtonsStyle[0] = "#min_button{"
-                                "border-image: url(:/window_buttons/LightMin.png);"
+                                "border-image: url(:/Images/LightMin.png);"
                                 "border: none;"
                                 "background:none;}"
                                 "#min_button:hover{"
                                 "background-color:rgb(150, 0, 65);}";
 
         windowButtonsStyle[1] = "#full_size_button{"
-                                "border-image: url(:/window_buttons/LightFull_size.png);"
+                                "border-image: url(:/Images/LightFull_size.png);"
                                 "border: none;"
                                 "background:none;}"
                                 "#full_size_button:hover{"
@@ -27,7 +27,7 @@ void setExitButtonStyle (QString exitbuttonStyle [], const QString style)
     if (style == "Red")
     {
         exitbuttonStyle[0] = "QPushButton{"
-                             "border-image: url(:/window_buttons/LightExit.png);"
+                             "border-image: url(:/Images/LightExit.png);"
                              "border: none;"
                              "background:none;}"
                              "QPushButton:hover {"
@@ -105,8 +105,8 @@ void setLoginWindowStyle (QString windowButtonsStyle [], const QString style)
 
         windowButtonsStyle[4] = "#Remember{color: white;}"
                                 "#Remember:hover{color: rgb(151, 151, 227);}"
-                                "#Remember::indicator:off{image: url(:/checkbox_buttons/LightCheck_no.png);}"
-                                "#Remember::indicator:on{image: url(:/checkbox_buttons/LightCheck_ok.png);}";
+                                "#Remember::indicator:off{image: url(:/Images/LightCheck_no.png);}"
+                                "#Remember::indicator:on{image: url(:/Images/LightCheck_ok.png);}";
 
     }
 }
@@ -119,56 +119,56 @@ void setMenusButtonsStyle (QString menuButtonsStyle [], const QString style)
     {
         menuButtonsStyle[0] =  " #Library "
                                " {background-color: rgb(162, 0, 70); "
-                               " background-image: url(:/menu_buttons/LightLibrary_img.png);"
+                               " background-image: url(:/Images/LightLibrary_img.png);"
                                " border:none;} "
                                " #Library:hover "
                                " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[1] =  " #Settings "
                                " {background-color: rgb(162, 0, 70); "
-                               " background-image: url(:/menu_buttons/LightSettings_img.png);"
+                               " background-image: url(:/Images/LightSettings_img.png);"
                                " border:none;} "
                                " #Settings:hover "
                                " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[2] =  " #Synchronization "
                                " {background-color: rgb(162, 0, 70); "
-                               " background-image: url(:/menu_buttons/LightSynchronization_img.png);"
+                               " background-image: url(:/Images/LightSynchronization_img.png);"
                                " border:none;} "
                                " #Synchronization:hover "
                                " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[3] = " #Logout "
                               " {background-color: rgb(162, 0, 70); "
-                              " background-image: url(:/menu_buttons/LightLogout_img.png);"
+                              " background-image: url(:/Images/LightLogout_img.png);"
                               " border:none;} "
                               " #Logout:hover "
                               " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[4] = " #Library "
                               " {background-color: rgb(150, 0, 60); "
-                              " background-image: url(:/menu_buttons/LightLibrary_img.png);"
+                              " background-image: url(:/Images/LightLibrary_img.png);"
                               " border:none;} "
                               " #Library:hover "
                               " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[5] = " #Settings "
                               " {background-color: rgb(150, 0, 60); "
-                              " background-image: url(:/menu_buttons/LightSettings_img.png);"
+                              " background-image: url(:/Images/LightSettings_img.png);"
                               " border:none;} "
                               " #Settings:hover "
                               " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[6] = " #Synchronization "
                               " {background-color: rgb(150, 0, 60); "
-                              " background-image: url(:/menu_buttons/LightSynchronization_img.png);"
+                              " background-image: url(:/Images/LightSynchronization_img.png);"
                               " border:none;} "
                               " #Synchronization:hover "
                               " { background-color:rgb(147, 0, 60); } ";
 
         menuButtonsStyle[7] = " #Logout "
                               " {background-color: rgb(150, 0, 60); "
-                              " background-image: url(:/menu_buttons/LightLogout_img.png);"
+                              " background-image: url(:/Images/LightLogout_img.png);"
                               " border:none;} "
                               " #Logout:hover "
                               " { background-color:rgb(147, 0, 60); } ";
@@ -239,23 +239,23 @@ void setLibraryLayoutButtons (QString buttonsStyle [], const QString style)
     {
         buttonsStyle[0] =   "#_ChangeViewMode"
                             "{background-color: rgb(162, 0, 70);"
-                            "background-image: url(:/LibraryLayoutButtons/LightBarView.png);"
+                            "background-image: url(:/Images/LightBarView.png);"
                             "border:none;}"
                             "#_ChangeViewMode:hover, #_ChangeViewMode:checked:hover"
                             "{background-color: rgb(147, 0, 60);}"
                             "#_ChangeViewMode:checked"
-                            "{background-image: url(:/LibraryLayoutButtons/LightListView.png);}";
+                            "{background-image: url(:/Images/LightListView.png);}";
 
         buttonsStyle[1] =   "#_Upscale "
                             "{background-color: rgb(162, 0, 70);"
-                            "background-image: url(:/LibraryLayoutButtons/LightUpscale.png);"
+                            "background-image: url(:/Images/LightUpscale.png);"
                             "border:none;}"
                             "#_Upscale:hover"
                             "{background-color:rgb(147, 0, 60);}";
 
         buttonsStyle[2] =   "#_Downscale"
                             "{background-color: rgb(162, 0, 70);"
-                            "background-image: url(:/LibraryLayoutButtons/LightDownscale.png);"
+                            "background-image: url(:/Images/LightDownscale.png);"
                             "border:none;}"
                             "#_Downscale:hover"
                             "{background-color:rgb(147, 0, 60);}";
@@ -411,7 +411,7 @@ void setProgramLayoutStyle(QString LayoutStyle[], const QString style)
                             "QComboBox::drop-down{"
                             "border:none;}"
                             "QComboBox::down-arrow, QComboBox::up-arrow{"
-                            "image: url(:/arrows/LightArrow.png);}"
+                            "image: url(:/Images/LightArrow.png);}"
                             "QComboBox:editable:hover, QComboBox:!editable:hover, QComboBox QAbstractItemView::item:selected{"
                             "background-color: rgb(120, 0, 45);}"
                             "QComboBox QAbstractItemView, QComboBox QAbstractItemView::item{"
@@ -454,7 +454,7 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
                             "QComboBox::drop-down{"
                             "border:none;}"
                             "QComboBox::down-arrow, QComboBox::up-arrow{"
-                            "image: url(:/arrows/LightArrow.png);}"
+                            "image: url(:/Images/LightArrow.png);}"
                             "QComboBox:editable:hover, QComboBox:!editable:hover, QComboBox QAbstractItemView::item:selected{"
                             "background-color: rgb(120, 0, 45);}"
                             "QComboBox QAbstractItemView, QComboBox QAbstractItemView::item{"
@@ -474,7 +474,7 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
         LayoutStyle[2] =    "#YepButton"
                             "{border:none;"
                             "color:white;"
-                            "background-image: url(:SettingsLayoutButtons/LightYepButton.png);"
+                            "background-image: url(:Images/LightYepButton.png);"
                             "background-color: rgb(150, 0, 60);}"
                             "#YepButton:hover"
                             "{background-color:rgb(137, 0, 60);}";
@@ -483,7 +483,7 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
                             "{border:none;"
                             "color:white;"
                             "background-color: rgb(150, 0, 60);"
-                            "background-image: url(:SettingsLayoutButtons/LightDeleteButton.png);}"
+                            "background-image: url(:Images/LightDeleteButton.png);}"
                             "#NopeButton:hover"
                             "{background-color:rgb(200, 0, 0);}";
 
@@ -491,7 +491,7 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
                             "{border:none;"
                             "color:white;"
                             "background-color: rgb(150, 0, 60);"
-                            "background-image: url(:SettingsLayoutButtons/LightNopeButton.png);}"
+                            "background-image: url(:Images/LightNopeButton.png);}"
                             "#NopeButton:hover"
                             "{background-color:rgb(137, 0, 60);}";
     }
@@ -513,7 +513,7 @@ void setProfileLayoutStyle(QString LayoutStyle[], const QString style)
                             "QComboBox::drop-down{"
                             "border:none;}"
                             "QComboBox::down-arrow, QComboBox::up-arrow{"
-                            "image: url(:/arrows/LightArrow.png);}"
+                            "image: url(:/Images/LightArrow.png);}"
                             "QComboBox:editable:hover, QComboBox:!editable:hover, QComboBox QAbstractItemView::item:selected{"
                             "background-color: rgb(120, 0, 45);}"
                             "QComboBox QAbstractItemView, QComboBox QAbstractItemView::item{"
@@ -567,35 +567,35 @@ void setReaderWindowMenuButtons(QString ButtonsStyle[], const QString style)
         ButtonsStyle[0] =   "QPushButton{"
                             "background-color: rgb(162, 0, 70);"
                             "border:none;"
-                            "background-image: url(:/ReadingButtons/LightMenuContents.png);}"
+                            "background-image: url(:/Images/LightMenuContents.png);}"
                             "QPushButton:hover{"
                             "background-color:rgb(147, 0, 60);}";
 
         ButtonsStyle[1] =   "QPushButton{"
                             "background-color: rgb(162, 0, 70);"
                             "border:none;"
-                            "background-image: url(:/ReadingButtons/LightMenuSearch.png);}"
+                            "background-image: url(:/Images/LightMenuSearch.png);}"
                             "QPushButton:hover"
                             "{background-color:rgb(147, 0, 60);}";
 
         ButtonsStyle[2] =   "QPushButton"
                             "{background-color: rgb(162, 0, 70);"
                             "border:none;"
-                            "background-image: url(:/ReadingButtons/LightMenuSettings.png);}"
+                            "background-image: url(:/Images/LightMenuSettings.png);}"
                             "QPushButton:hover"
                             "{background-color:rgb(147, 0, 60);}";
 
         ButtonsStyle[3] =   "QPushButton"
                             "{background-color: rgb(162, 0, 70);"
                             "border:none;"
-                            "background-image: url(:/ReadingButtons/LightMenuSynchronization.png);}"
+                            "background-image: url(:/Images/LightMenuSynchronization.png);}"
                             "QPushButton:hover"
                             "{background-color:rgb(147, 0, 60);}";
 
         ButtonsStyle[4] =   "QPushButton"
                             "{background-color: rgb(162, 0, 70);"
                             "border:none;"
-                            "background-image: url(:/ReadingButtons/LightMenuLibrary.png);}"
+                            "background-image: url(:/Images/LightMenuLibrary.png);}"
                             "QPushButton:hover"
                             "{background-color:rgb(147, 0, 60);}";
     }

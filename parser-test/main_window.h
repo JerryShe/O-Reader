@@ -35,7 +35,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void showWindow();
+    void showWindow(bool closeType);
 
     void on_exit_button_clicked();
     void on_full_size_button_clicked();

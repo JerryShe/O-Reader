@@ -62,7 +62,7 @@ ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
     setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
     show();
-    BookParse = new FB2TextParser();
+    BookParse = new FB2TextPaginator();
     parserThread = new QThread(this);
     BookParse->moveToThread(parserThread);
 
@@ -71,7 +71,6 @@ ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
     connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
     ui->TextPage->setHtml(BookParse->startParser(book,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
-    connect(BookParse, SIGNAL(saveBookProgress()), this, SLOT(saveBookPos()));
     ui->BookName->setText(book->getAuthorName() + ": " + book->getTitle());
     ui->TextPage->setMouseTracking(true);
     ui->MainWidget->setMouseTracking(true);
@@ -124,10 +123,6 @@ ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
     clockTimer->start(1000);
     ui->TextPage->installEventFilter(this);
     ui->TopBarWidget->installEventFilter(this);
-    //ui->exit_button->installEventFilter(this);
-    //ui->MenuButton->installEventFilter(this);
-    //ui->full_size_button->installEventFilter(this);
-    //ui->min_button->installEventFilter(this);
 }
 
 void ReadingWindow::changeEvent(QEvent *event)
@@ -202,16 +197,16 @@ void ReadingWindow::on_exit_button_clicked()
     if (ActiveWindow)
         return;
 
-    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x() - 300 + ui->exit_button->width(),
-                                                   ui->exit_button->mapToGlobal(QPoint(0,0)).y() + ui->exit_button->height(),"Exit?",
-                                                   ProgramSettings->getInterfaceStyle());
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(ui->exit_button->width() - 300, ui->exit_button->height())),
+                                                   QObject::tr("Exit?"),
+                                                   ProgramSettings->getInterfaceStyle(),
+                                                   this);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        parserThread->quit();
-        delete answer_window;
-        exit(0);
+        delete answer_window;        
+        emit showMainWindow(true);
     }
     else
         delete answer_window;
@@ -423,15 +418,11 @@ void ReadingWindow::goToSection(int sectionIndex)
     updateProgress();
 }
 
-void ReadingWindow::saveBookPos()
-{
-    emit saveBookProgress();
-}
-
 void ReadingWindow::FindButton_Clicked()
 {
     MenuWidget->hide();
-    Search = new SearchWindow(0, this->height() - 80, ProgramSettings->getInterfaceStyle(), true, this);
+    Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
+
     connect(Search, SIGNAL(startSearch(QString,QString)), this, SLOT(StartSearch(QString,QString)));
     connect(Search, SIGNAL(nextResult()), this, SLOT(NextSearchStep()));
     connect(Search, SIGNAL(previousResult()), this, SLOT(PrevSearchStep()));
@@ -531,8 +522,7 @@ void ReadingWindow::SynchronizationButton_Clicked()
 
 void ReadingWindow::BackToMainWindowButton_Clicked()
 {
-    parserThread->quit();
-    emit showMainWindow();
+    emit showMainWindow(false);
 }
 
 

@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QBuffer>
 #include "genresmap.h"
+#include "synchronization.h"
 
 #include <qdebug.h>
 
@@ -60,7 +61,7 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
             QDomNode titleInfo = doc.elementsByTagName("title-info").item(0);
             if (titleInfo.isNull())
             {
-                ///выдать эксепшн - не найден title-info
+                ///выдать сообщение - не найден title-info
             }
 
             //название книги
@@ -113,61 +114,61 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
             {
                 QString coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("l:href", "");
                 if (coverName.isEmpty())
-                    coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("xlink:href", "");
-
-                if (coverName.isEmpty())
-                    CoverType = "noImage";
-                else
                 {
-                    if (coverName.at(0) == '#')
-                        coverName = coverName.right(coverName.size() - 1);
-
-                    nodeList = doc.elementsByTagName("binary");
-                    for (int i = 0; i < nodeList.size(); i++)
+                    coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("xlink:href", "");
+                    if (coverName.isEmpty())
                     {
-                        if (nodeList.at(i).toElement().attribute("id") == coverName)
-                        {
-                            CoverType = nodeList.at(i).toElement().attribute("content-type");
-
-                            Cover = nodeList.at(i).toElement().text();
-
-                            for (int i = 0; i < Cover.size(); i++)
-                                if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
-                                {
-                                    Cover.replace(i, 2, " ");
-                                    i++;
-                                }
-                            break;
-                        }
+                        CoverType = "noImage";
+                        return;
                     }
+                }
 
-                    QImage tempImage;
-                    QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
+                if (coverName.at(0) == '#')
+                    coverName = coverName.right(coverName.size() - 1);
+
+                nodeList = doc.elementsByTagName("binary");
+                for (int i = 0; i < nodeList.size(); i++)
+                {
+                    if (nodeList.at(i).toElement().attribute("id") == coverName)
+                    {
+                        CoverType = nodeList.at(i).toElement().attribute("content-type");
+
+                        Cover = nodeList.at(i).toElement().text();
+
+                        for (int i = 0; i < Cover.size(); i++)
+                            if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
+                            {
+                                Cover.replace(i, 2, " ");
+                                i++;
+                            }
+                        break;
+                    }
+                }
+
+                QImage tempImage;
+                QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
+
+                if (CoverType == "image/jpeg" || CoverType == "image/jpg")
+                    tempImage = QImage::fromData(BinaryCover, "JPG");
+                if (CoverType == "image/png")
+                    tempImage = QImage::fromData(BinaryCover, "PNG");
+
+                if (tempImage.height() > 750 || tempImage.width() > 600)
+                {
+                    if (tempImage.height() > 750)
+                        tempImage.scaledToHeight(750);
+                    else
+                        tempImage.scaledToWidth(600);
+
+                    QByteArray ba;
+                    QBuffer bu(&ba);
 
                     if (CoverType == "image/jpeg" || CoverType == "image/jpg")
-                        tempImage = QImage::fromData(BinaryCover, "JPG");
+                        tempImage.save(&bu, "JPG");
                     if (CoverType == "image/png")
-                        tempImage = QImage::fromData(BinaryCover, "PNG");
+                        tempImage.save(&bu, "PNG");
 
-                    if (tempImage.height() > 750 || tempImage.width() > 600)
-                    {
-                        if (tempImage.height() > 750)
-                            tempImage.scaledToHeight(750);
-                        else
-                            tempImage.scaledToWidth(600);
-
-                        QByteArray ba;
-                        QBuffer bu(&ba);
-
-                        if (CoverType == "image/jpeg" || CoverType == "image/jpg")
-                            tempImage.save(&bu, "JPG");
-                        if (CoverType == "image/png")
-                            tempImage.save(&bu, "PNG");
-
-                        Cover = ba.toBase64();
-                    }
-
-
+                    Cover = ba.toBase64();
                 }
             }
             else
@@ -176,14 +177,11 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
         else
         {
             result = false;
-            return;
+            bookFile.close();
         }
     }
     else
-    {
         result = false;
-        return;
-    }
 }
 
 void Book::writeToConsole()
@@ -274,7 +272,7 @@ QImage Book::getCover()
             tempImage = QImage::fromData(BinaryCover, "PNG");
     }
     else
-        tempImage = QImage(":/noImage/noImage.png");
+        tempImage = QImage(":/Images/noImage.png");
 
     if (tempImage.size().width() > 200)
         tempImage = tempImage.scaledToWidth(200);
@@ -329,6 +327,7 @@ void Book::setBookProgress(const long long progress, double procent, QStringList
     Progress = progress;
     ProgressProcent = procent;
     ProgressTagStack = tagStack;
+    Synchronization::getSynchronization()->addAction(UActions::UpdateProgress, File, Progress);
 }
 
 QString Book::getSeries()

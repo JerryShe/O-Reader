@@ -17,10 +17,10 @@ INPUT(
 ./release\synchronization.o
 ./release\reading_window.o
 ./release\search_window.o
-./release\fb2textparser.o
 ./release\genresmap.o
 ./release\booktableofcontents.o
 ./release\libraryhandler.o
+./release\fb2textpaginator.o
 ./release\qrc_images.o
 ./release\moc_login_window.o
 ./release\moc_main_window.o
@@ -35,7 +35,7 @@ INPUT(
 ./release\moc_book_page.o
 ./release\moc_reading_window.o
 ./release\moc_search_window.o
-./release\moc_fb2textparser.o
 ./release\moc_booktableofcontents.o
 ./release\moc_libraryhandler.o
+./release\moc_fb2textpaginator.o
 );

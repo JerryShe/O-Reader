@@ -51,9 +51,9 @@ settingslayout::settingslayout(QWidget *Parent)
     _SettingsProgram->setFixedHeight(30);
     _SettingsReader->setFixedHeight(30);
 
-    ButtonsLayout->addWidget(_SettingsProfile,1);
-    ButtonsLayout->addWidget(_SettingsProgram,1);
-    ButtonsLayout->addWidget(_SettingsReader,1);
+    ButtonsLayout->addWidget(_SettingsProfile);
+    ButtonsLayout->addWidget(_SettingsProgram);
+    ButtonsLayout->addWidget(_SettingsReader);
 
     connect(this->_SettingsProfile, SIGNAL(clicked(bool)), this, SLOT(showProfile()));
     connect(this->_SettingsProgram, SIGNAL(clicked(bool)), this, SLOT(showProgram()));
@@ -66,6 +66,7 @@ settingslayout::settingslayout(QWidget *Parent)
 void settingslayout::setSettingsData()
 {
     ProgramSettings = settings::getSettings();
+    UserActions = Synchronization::getSynchronization();
     setSettWindowStyle();
     ReaderWidget->setSettingsData();
     ProgramWidget->setSettingsData();
@@ -186,6 +187,8 @@ void settingslayout::updateSavebuttons(int type)
 
     if (type)
         settingsWasChanged = true;
+    else if (settingsWasChanged == true)
+        UserActions->addAction(UActions::UpdateSettings, "kostil");
 }
 
 void settingslayout::changeEvent(QEvent *event)

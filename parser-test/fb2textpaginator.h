@@ -1,5 +1,5 @@
-#ifndef FB2TEXTPARSER_H
-#define FB2TEXTPARSER_H
+#ifndef FB2TEXTPAGINATOR_H
+#define FB2TEXTPAGINATOR_H
 
 #include <QStringList>
 #include <books.h>
@@ -10,14 +10,14 @@
 
 
 
-class FB2TextParser : public QObject
+class FB2TextPaginator : public QObject
 {
     Q_OBJECT
 
 public:
-    FB2TextParser();
-    QString startParser(Book *boo, int width, int height);
-    ~FB2TextParser();
+    FB2TextPaginator();
+    QString startParser(Book *OpeningBook, int Pwidth, int Pheight);
+    ~FB2TextPaginator();
 
 public:
     void setPageGeometry(const int width, const int height);
@@ -35,11 +35,10 @@ public slots:
     QString updateSettings(const int width, const int height);
     QString goToSection(int sectionIndex);
 
-signals:
-    void saveBookProgress();
-
 private:
     QStringList splitTextToWords(QString temp);
+    void createTableOfContents();
+
     QTextStream* doc;
 
     void setHTMLinf();
@@ -55,7 +54,7 @@ private:
     void applyTag();
     bool applyWord();
     int parseTag();
-    void takeTag();
+    void findTagsTale();
 
     void debugSave(QString HTMLPage);
 
@@ -70,9 +69,9 @@ private:
     unsigned int pageBegin;
 
     long long currentBStrNum,
-              currentTextPos,
-              currentEStrNum,
-              strCount;
+                 currentTextPos,
+                 currentEStrNum,
+                 strCount;
 
     int currentColumn;
     int currentWordPos;
@@ -108,4 +107,4 @@ private:
 
 };
 
-#endif // FB2TEXTPARSER_H
+#endif // FB2TEXTPAGINATOR_H

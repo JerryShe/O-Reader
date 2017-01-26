@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'loginwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -252,8 +252,8 @@ public:
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(Remember->sizePolicy().hasHeightForWidth());
         Remember->setSizePolicy(sizePolicy2);
-        Remember->setMinimumSize(QSize(145, 22));
-        Remember->setMaximumSize(QSize(150, 22));
+        Remember->setMinimumSize(QSize(175, 22));
+        Remember->setMaximumSize(QSize(175, 22));
         QFont font4;
         font4.setStyleStrategy(QFont::PreferAntialias);
         Remember->setFont(font4);
@@ -268,7 +268,7 @@ public:
 
         horizontalLayout->addWidget(Remember);
 
-        horizontalSpacer = new QSpacerItem(128, 20, QSizePolicy::Fixed, QSizePolicy::Minimum);
+        horizontalSpacer = new QSpacerItem(128, 20, QSizePolicy::Preferred, QSizePolicy::Minimum);
 
         horizontalLayout->addItem(horizontalSpacer);
 
@@ -345,20 +345,20 @@ public:
 
     void retranslateUi(QMainWindow *LoginWindow)
     {
-        LoginWindow->setWindowTitle(QApplication::translate("LoginWindow", "Reader", 0));
+        LoginWindow->setWindowTitle(QApplication::translate("LoginWindow", "Reader", Q_NULLPTR));
         min_button->setText(QString());
         full_size_button->setText(QString());
         exit_button->setText(QString());
-        Error->setText(QApplication::translate("LoginWindow", "Error!", 0));
+        Error->setText(QApplication::translate("LoginWindow", "Error!", Q_NULLPTR));
         Name->setInputMask(QString());
         Name->setText(QString());
-        Name->setPlaceholderText(QApplication::translate("LoginWindow", "email", 0));
-        Pass->setPlaceholderText(QApplication::translate("LoginWindow", "password", 0));
-        repeatPassword->setPlaceholderText(QApplication::translate("LoginWindow", "confirm password", 0));
-        Remember->setText(QApplication::translate("LoginWindow", "Remember my password", 0));
-        Recovery->setText(QApplication::translate("LoginWindow", "Forgot your password?", 0));
-        login->setText(QApplication::translate("LoginWindow", "Log in", 0));
-        Registration->setText(QApplication::translate("LoginWindow", "Create account", 0));
+        Name->setPlaceholderText(QApplication::translate("LoginWindow", "email", Q_NULLPTR));
+        Pass->setPlaceholderText(QApplication::translate("LoginWindow", "password", Q_NULLPTR));
+        repeatPassword->setPlaceholderText(QApplication::translate("LoginWindow", "confirm password", Q_NULLPTR));
+        Remember->setText(QApplication::translate("LoginWindow", "Remember my password", Q_NULLPTR));
+        Recovery->setText(QApplication::translate("LoginWindow", "Forgot your password?", Q_NULLPTR));
+        login->setText(QApplication::translate("LoginWindow", "Log in", Q_NULLPTR));
+        Registration->setText(QApplication::translate("LoginWindow", "Create account", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -453,6 +453,7 @@ void Settings_ReaderLayout::on_YepButton_clicked()
     ui->StyleBox->addItem(ui->NewStyleName->text());
     ProgramSettings->saveStyle(ui->NewStyleName->text(), getStyleData());
     ui->StyleBox->setCurrentText(ui->NewStyleName->text());
+    ui->NopeButton->setStyleSheet(nopeButtonStyle[0]);
 }
 
 void Settings_ReaderLayout::on_NopeButton_clicked()
@@ -466,9 +467,10 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
     }
     else if (ui->StyleBox->currentText() != "Standart" && ui->StyleBox->currentText() != QObject::tr("Add new style..."))
     {
-        AnswerDialog *answer_window = new AnswerDialog(ui->NopeButton->mapToGlobal(QPoint(0,0)).x() + ui->NopeButton->width(),
-                                                       ui->NopeButton->mapToGlobal(QPoint(0,0)).y() + ui->NopeButton->height(),
-                                                       QObject::tr("Delete style?"), ProgramSettings->getInterfaceStyle());
+        AnswerDialog *answer_window = new AnswerDialog(ui->NopeButton->mapToGlobal(QPoint(ui->NopeButton->width(), ui->NopeButton->height())),
+                                                       QObject::tr("Delete style?"),
+                                                       ProgramSettings->getInterfaceStyle(),
+                                                       this);
         answer_window->show();
 
         if (answer_window->exec() == QDialog::Accepted)

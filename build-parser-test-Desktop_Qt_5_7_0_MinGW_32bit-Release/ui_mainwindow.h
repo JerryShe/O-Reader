@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -471,26 +471,26 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Reader", 0));
-        _Find->setText(QApplication::translate("MainWindow", "Find", 0));
-        _Sort->setText(QApplication::translate("MainWindow", "Sort by: ", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Reader", Q_NULLPTR));
+        _Find->setText(QApplication::translate("MainWindow", "Find", Q_NULLPTR));
+        _Sort->setText(QApplication::translate("MainWindow", "Sort by: ", Q_NULLPTR));
         _SortBox->clear();
         _SortBox->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "Date", 0)
-         << QApplication::translate("MainWindow", "Author", 0)
-         << QApplication::translate("MainWindow", "Title", 0)
+         << QApplication::translate("MainWindow", "Date", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Author", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Title", Q_NULLPTR)
         );
-        _Group->setText(QApplication::translate("MainWindow", "Group by: ", 0));
+        _Group->setText(QApplication::translate("MainWindow", "Group by: ", Q_NULLPTR));
         _GroupBox->clear();
         _GroupBox->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "None", 0)
-         << QApplication::translate("MainWindow", "Author", 0)
-         << QApplication::translate("MainWindow", "Title", 0)
-         << QApplication::translate("MainWindow", "Genre", 0)
-         << QApplication::translate("MainWindow", "Book series", 0)
+         << QApplication::translate("MainWindow", "None", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Author", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Title", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Genre", Q_NULLPTR)
+         << QApplication::translate("MainWindow", "Book series", Q_NULLPTR)
         );
-        _AddBooks->setText(QApplication::translate("MainWindow", "Add", 0));
-        _Delete->setText(QApplication::translate("MainWindow", "Delete", 0));
+        _AddBooks->setText(QApplication::translate("MainWindow", "Add", Q_NULLPTR));
+        _Delete->setText(QApplication::translate("MainWindow", "Delete", Q_NULLPTR));
     } // retranslateUi
 
 };

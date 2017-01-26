@@ -10,7 +10,7 @@
 #include "settings_layout.h"
 #include "search_window.h"
 #include "synchronization_layout.h"
-#include "fb2textparser.h"
+#include "fb2textpaginator.h"
 
 #include <QThread>
 #include <QDomDocument>
@@ -52,12 +52,10 @@ private slots:
     void reprintNewSettText();
 
     void goToSection(int sectionIndex);
-    void saveBookPos();
 
 signals:
-    void showMainWindow();
+    void showMainWindow(bool closeType);
     void windowWasResized();
-    void saveBookProgress();
 
 protected:
    bool eventFilter(QObject *obj, QEvent *event);
@@ -96,7 +94,7 @@ private:
 
     QString styles[5];
 
-    FB2TextParser* BookParse;
+    FB2TextPaginator* BookParse;
 };
 
 #endif // READINGWINDOW_H

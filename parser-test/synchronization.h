@@ -5,6 +5,8 @@
 #include <QDataStream>
 #include <QObject>
 
+#include <QDebug>
+
 enum UActions
 {
     AddBook,
@@ -15,6 +17,21 @@ enum UActions
     AddBackground
 };
 
+struct action
+{
+    int actionIndex;
+    quint64 actionTime;
+    QString spec;
+    QString dataChanges;
+
+    action(){}
+    action(int index, QString itemSpec, QString data);
+    action(int index, quint64 time, QString itemSpec, QString data);
+
+    friend QDataStream &operator>>(QDataStream &in, action &actionElem);
+    friend QDataStream &operator<<(QDataStream &out, const action &actionElem);
+};
+
 class Synchronization : public QObject
 {
 
@@ -22,89 +39,90 @@ private:
     Synchronization();
     ~Synchronization();
 
-    struct action
-    {
-        int actionIndex;
-        QDateTime actionTime;
-        QString spec;
-        QString dataChanges;
+    QQueue <action> BookQueue;
+    QQueue <action> FileQueue;
 
-        action(){}
-        action(int index, QString itemSpec, QString data);
-        action(int index, QDateTime time, QString itemSpec, QString data);
-    };
+    bool SettingsChanged;
+    quint64 SettingsChangedTime;
 
-    QQueue <action> SynchroQueue;
+    QString getNumber(QString item);
+    QString getNumber(int item);
 
 public:
     static Synchronization* getSynchronization();
-
-    friend QDataStream &operator>>(QDataStream &in, action &actionElem);
-    friend QDataStream &operator<<(QDataStream &out, const action &actionElem);
 
     int synchronizeToServer();
     int synchronizeFromServer();
     void saveLog();
     void loadLog();
 
-    template <typename T1, typename T2> void addAction(UActions actionIndex, T1 fArg, T2 sArg)
+
+
+    /// Добавление книги - 1: файл, индекс
+    /// Удаление книги - 2: файл, индекс
+    /// Изменение прогресса - 3: индекс, значение
+    /// Редактирование описания - 4: индекс, значение
+    /// Изменение настроек - 5
+    /// Добавление фона - 6: файл
+
+    template <typename T1> void addAction(UActions actionIndex, T1 qualifier, long long data = 0)
     {
-        QString newFArg, newSArg;
+        qDebug()<<static_cast<int>(actionIndex)<<qualifier<<data;
+
+        QString Squalifier, Sdata;
 
         switch (actionIndex)
         {
         case UActions::AddBook:
-            newFArg = fArg;
-            break;
+            Sdata = QString::number(data);
+            FileQueue.enqueue(action(actionIndex, qualifier, Sdata));
+            return;
 
         case UActions::DeleteBook:
-            for (int i = 0; i < SynchroQueue.size(); i++)
-                if (UActions::AddBook == SynchroQueue.at(i).actionIndex && fArg == SynchroQueue.at(i).spec)
+            for (int i = 0; i < FileQueue.size(); i++)
+                if (UActions::AddBook == FileQueue.at(i).actionIndex && qualifier == FileQueue.at(i).spec)
                 {
-                    SynchroQueue.removeAt(i);
+                    FileQueue.removeAt(i);
                     return;
                 }
-            newFArg = fArg;
-            break;
+            FileQueue.enqueue(action(actionIndex, qualifier, Sdata));
+            return;
 
         case UActions::UpdateProgress:
-            for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == UActions::UpdateProgress && fArg == SynchroQueue.at(i).spec)
+            for (int i = 0; i < BookQueue.size(); i++)
+                if (BookQueue.at(i).actionIndex == UActions::UpdateProgress && qualifier == BookQueue.at(i).spec)
                 {
-                    SynchroQueue.removeAt(i);
-                    break;
+                    BookQueue[i].actionTime = QDateTime::currentMSecsSinceEpoch();
+                    BookQueue[i].dataChanges = getNumber(data);
+                    return;
                 }
-            //newFArg = QString::number(fArg);
-            newSArg = QString::number(sArg);
-            break;
+            Squalifier = getNumber(qualifier);
+            Sdata = QString::number(data);
+            BookQueue.enqueue(action(actionIndex, Squalifier, Sdata));
+            return;
 
         case UActions::UpdateBookInf:
-            break;
+            for (int i = 0; i < BookQueue.size(); i++)
+                if (BookQueue.at(i).actionIndex == UActions::UpdateProgress && qualifier == BookQueue.at(i).spec)
+                {
+                    BookQueue[i].actionTime = QDateTime::currentMSecsSinceEpoch();
+                    BookQueue[i].dataChanges = getNumber(data);
+                    return;
+                }
+            Squalifier = getNumber(qualifier);
+            Sdata = QString::number(data);
+            BookQueue.enqueue(action(actionIndex, Squalifier, Sdata));
+            return;
 
         case UActions::UpdateSettings:
-            for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == UActions::UpdateSettings)
-                {
-                    SynchroQueue.removeAt(i);
-                    break;
-                }
-
-            //newFArg = QString::number(fArg);
-            newSArg = sArg;
-            break;
+            SettingsChanged = true;
+            SettingsChangedTime = QDateTime::currentMSecsSinceEpoch();
+            return;
 
         case UActions::AddBackground:
-            for (int i = 0; i < SynchroQueue.size(); i++)
-                if (SynchroQueue.at(i).actionIndex == UActions::AddBackground)
-                {
-                    SynchroQueue.removeAt(i);
-                    break;
-                }
-            newFArg = fArg;
+            FileQueue.enqueue(action(actionIndex, qualifier, Sdata));
             break;
         }
-
-        SynchroQueue.enqueue(action(actionIndex, newFArg, newSArg));
     }
 };
 

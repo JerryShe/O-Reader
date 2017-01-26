@@ -1,4 +1,4 @@
-#include "fb2textparser.h"
+#include "fb2textpaginator.h"
 #include <QFont>
 #include <QFile>
 #include <QDebug>
@@ -6,8 +6,130 @@
 #include <QString>
 #include <QFontMetrics>
 
+QStringList FB2TextPaginator::splitTextToWords(QString temp)
+{
+    QStringList tempList;
+    tempList.append(temp);
+    for (int i = 0; i < tempList.size(); i++)
+    {
+        int pos = tempList[i].indexOf("<");
+        if (pos > 0)
+        {
+            tempList.append(tempList[i].right(tempList[i].size() - pos));
+            tempList[i] = tempList[i].left(pos);
+            i++;
+        }
 
-FB2TextParser::FB2TextParser()
+        if (tempList[i][0] == '<')
+        {
+            pos = tempList[i].indexOf(">");
+            if (pos == -1)
+            {
+                do
+                {
+                    doc->operator >>(temp);
+                    tempList[i].append(" " + temp);
+                }
+                while (temp.indexOf(">") == -1);
+            }
+
+            if (pos != tempList[i].size() - 1)
+            {
+                tempList.append(tempList[i].right(tempList[i].size() - pos - 1));
+                tempList[i] = tempList[i].left(pos + 1);
+            }
+        }
+    }
+
+    for (int i = 0; i < tempList.size(); i++)
+    {
+        if (tempList[i][0] != '<')
+        {
+            int pos = tempList[i].indexOf("-");
+            if (pos > 0 && pos != tempList[i].size() - 1)
+            {
+                QStringList newTemp = tempList[i].split("-");
+                if (newTemp.size() > 1)
+                {
+                    for (int j = 0; j < newTemp.size() - 1; j++)
+                        newTemp[j] += "-";
+
+                    tempList.removeAt(i);
+
+                    for (int j = 0; j < newTemp.size(); j++)
+                        tempList.insert(i++, newTemp[j]);
+                }
+            }
+        }
+        else
+        {
+            if (tempList[i] == "<title>")
+                tempList[i] = "<TitleText>";
+            if (tempList[i] == "</title>")
+                tempList[i] = "</TitleText>";
+            if (tempList[i] == "<empty-line/>")
+                tempList[i] = "<br/>";
+            if (tempList[i] == "<subtitle>")
+            {
+                tempList[i] = "<p>";
+                tempList.insert(++i, "<epigraph>");
+            }
+            if (tempList[i] == "</subtitle>")
+            {
+                tempList[i] = "</epigraph>";
+                tempList.insert(++i, "</p>");
+            }
+        }
+    }
+    return tempList;
+}
+
+void FB2TextPaginator::parseBookText()
+{
+    QFile bookFile(book->File);
+    if (bookFile.open(QIODevice::ReadOnly))
+    {
+        doc = new QTextStream(&bookFile);
+        doc->setCodec(book->getBookCodec().toStdString().c_str());
+
+        QString temp;
+
+        do
+            doc->operator >>(temp);
+        while(temp.indexOf("<body>") == -1);
+        temp = temp.remove(0, temp.indexOf("<body>") + 6);
+        bookText.append(splitTextToWords(temp));
+
+        bool flag = true;
+        while(!doc->atEnd())
+        {
+            doc->operator >>(temp);
+            if (temp.indexOf("<binary") != -1)
+                flag = false;
+
+            if (flag)
+            {
+                bookText.append(splitTextToWords(temp));
+                strCount = bookText.size();
+            }
+            else
+                bookText.append(temp);
+        }
+
+        bookText.back() = bookText.back().remove(bookText.back().indexOf("</FictionBook>"), bookText.back().size());
+
+        bookFile.close();
+    }
+    else
+    {
+        qDebug()<<"невозможно открыть файл книги";
+    }
+
+    delete doc;
+}
+
+
+FB2TextPaginator::FB2TextPaginator()
 {
     columnWidth = 0;
     columnHeight = 0;
@@ -35,9 +157,11 @@ FB2TextParser::FB2TextParser()
     parseDirection = false;
 }
 
-QString FB2TextParser::startParser(Book *boo, int width, int height)
+
+
+QString FB2TextPaginator::startParser(Book *OpeningBook, int Pwidth, int Pheight)
 {
-    book = boo;
+    book = OpeningBook;
     ProgramSettings = settings::getSettings();
     currentEStrNum = currentBStrNum = book->getBookProgress();
     currentTextPos = 0;
@@ -48,22 +172,23 @@ QString FB2TextParser::startParser(Book *boo, int width, int height)
         tagStack.push("Text");
 
     parseBookText();
+    createTableOfContents();
     setHTMLinf();
     setFontMap();
     setLinespaceMap();
-    setPageGeometry(width, height);
+    setPageGeometry(Pwidth, Pheight);
 
     return getPageForward();
 }
 
-FB2TextParser::~FB2TextParser()
+FB2TextPaginator::~FB2TextPaginator()
 {
-    foreach (auto a, fontMap) {
-        delete a;
+    foreach (auto FontMetricsPointer, fontMap) {
+        delete FontMetricsPointer;
     }
 }
 
-void FB2TextParser::setFontMap()
+void FB2TextPaginator::setFontMap()
 {
 
     QFont textFont(CurStyle.RegularTextStyle.FontFamily, CurStyle.RegularTextStyle.FontSize, 49*(CurStyle.RegularTextStyle.FontStyle%2) + 50, CurStyle.RegularTextStyle.FontStyle/10);
@@ -85,7 +210,7 @@ void FB2TextParser::setFontMap()
     fontMap.insert("Note", new QFontMetrics(noteFont));
 }
 
-void FB2TextParser::setLinespaceMap()
+void FB2TextPaginator::setLinespaceMap()
 {
     linespaceMap.insert("Text", CurStyle.RegularTextStyle.LineSpacing * fontMap["Text"]->lineSpacing());
     linespaceMap.insert("strong", CurStyle.RegularTextStyle.LineSpacing * fontMap["strong"]->lineSpacing());
@@ -95,14 +220,14 @@ void FB2TextParser::setLinespaceMap()
     linespaceMap.insert("Note", CurStyle.NoteStyle.LineSpacing * fontMap["Note"]->lineSpacing());
 }
 
-void FB2TextParser::setPageGeometry(int width, int height)
+void FB2TextPaginator::setPageGeometry(int width, int height)
 {
     columnWidth = (width - 10 - 30*(CurStyle.ColumnCount-1) - CurStyle.TextLeftRightIdent/100 - CurStyle.TextLeftRightIdent%100)/CurStyle.ColumnCount;
     tableWidth = columnWidth*CurStyle.ColumnCount + 10 + 30*(CurStyle.ColumnCount-1) + CurStyle.TextLeftRightIdent/100 + CurStyle.TextLeftRightIdent%100;
     columnHeight = height - 20 - CurStyle.TextTopBottomIdent/100 - CurStyle.TextTopBottomIdent%100;
 }
 
-void FB2TextParser::setHTMLinf()
+void FB2TextPaginator::setHTMLinf()
 {
     CurStyle = ProgramSettings->getCurrentTextStyleElem();
 
@@ -189,127 +314,8 @@ void FB2TextParser::setHTMLinf()
     PageHTMLBottom = "</Text></td></tr></table></body>";
 }
 
-QStringList FB2TextParser::splitTextToWords(QString temp)
+void FB2TextPaginator::createTableOfContents()
 {
-    QStringList tempList;
-    tempList.append(temp);
-    for (int i = 0; i < tempList.size(); i++)
-    {
-        int pos = tempList[i].indexOf("<");
-        if (pos > 0)
-        {
-            tempList.append(tempList[i].right(tempList[i].size() - pos));
-            tempList[i] = tempList[i].left(pos);
-            i++;
-        }
-
-        if (tempList[i][0] == '<')
-        {
-            pos = tempList[i].indexOf(">");
-            if (pos == -1)
-            {
-                do
-                {
-                    doc->operator >>(temp);
-                    tempList[i].append(" " + temp);
-                }
-                while (temp.indexOf(">") == -1);
-            }
-
-            if (pos != tempList[i].size() - 1)
-            {
-                tempList.append(tempList[i].right(tempList[i].size() - pos - 1));
-                tempList[i] = tempList[i].left(pos + 1);
-            }
-        }
-    }
-
-    for (int i = 0; i < tempList.size(); i++)
-    {
-        if (tempList[i][0] != '<')
-        {
-            int pos = tempList[i].indexOf("-");
-            if (pos > 0 && pos != tempList[i].size() - 1)
-            {
-                QStringList newTemp = tempList[i].split("-");
-                if (newTemp.size() > 1)
-                {
-                    for (int j = 0; j < newTemp.size() - 1; j++)
-                        newTemp[j] += "-";
-
-                    tempList.removeAt(i);
-
-                    for (int j = 0; j < newTemp.size(); j++)
-                        tempList.insert(i++, newTemp[j]);
-                }
-            }
-        }
-        else
-        {
-            if (tempList[i] == "<title>")
-                tempList[i] = "<TitleText>";
-            if (tempList[i] == "</title>")
-                tempList[i] = "</TitleText>";
-            if (tempList[i] == "<empty-line/>")
-                tempList[i] = "<br/>";
-            if (tempList[i] == "<subtitle>")
-            {
-                tempList[i] = "<p>";
-                tempList.insert(++i, "<epigraph>");
-            }
-            if (tempList[i] == "</subtitle>")
-            {
-                tempList[i] = "</epigraph>";
-                tempList.insert(++i, "</p>");
-            }
-        }
-    }
-    return tempList;
-}
-
-void FB2TextParser::parseBookText()
-{
-    QFile bookFile(book->File);
-    if (bookFile.open(QIODevice::ReadOnly))
-    {
-        doc = new QTextStream(&bookFile);
-        doc->setCodec(book->getBookCodec().toStdString().c_str());
-
-        QString temp;
-
-        do
-            doc->operator >>(temp);
-        while(temp.indexOf("<body>") == -1);
-        temp = temp.remove(0, temp.indexOf("<body>") + 6);
-        bookText.append(splitTextToWords(temp));
-
-        bool flag = true;
-        while(!doc->atEnd())
-        {
-            doc->operator >>(temp);
-            if (temp.indexOf("<binary") != -1)
-                flag = false;
-
-            if (flag)
-            {
-                bookText.append(splitTextToWords(temp));
-                strCount = bookText.size();
-            }
-            else
-                bookText.append(temp);
-        }
-
-        bookText.back() = bookText.back().remove(bookText.back().indexOf("</FictionBook>"), bookText.back().size());
-
-        bookFile.close();
-    }
-    else
-    {
-        qDebug()<<"невозможно открыть файл книги";
-    }
-
-
-    //создаем оглавление книги
     for (long long i = 0; i < strCount; i++)
         if (bookText[i] == "<section>")
         {
@@ -328,12 +334,12 @@ void FB2TextParser::parseBookText()
         }
 }
 
-QStringList FB2TextParser::getBookContentTable()
+QStringList FB2TextPaginator::getBookContentTable()
 {
     return TableOfContentsText;
 }
 
-long long FB2TextParser::getCurrentSectionIndex()
+long long FB2TextPaginator::getCurrentSectionIndex()
 {
     int pos;
     for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; ++pos);
@@ -342,7 +348,7 @@ long long FB2TextParser::getCurrentSectionIndex()
     return pos;
 }
 
-QString FB2TextParser::goToSection(int sectionIndex)
+QString FB2TextPaginator::goToSection(int sectionIndex)
 {
     currentTextPos = currentEStrNum = TableOfContentsIndexes[sectionIndex];
     tagStack.clear();
@@ -352,7 +358,7 @@ QString FB2TextParser::goToSection(int sectionIndex)
 }
 
 
-int FB2TextParser::getWordHeight()
+int FB2TextPaginator::getWordHeight()
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (linespaceMap.contains(tagStack[i]))
@@ -360,7 +366,7 @@ int FB2TextParser::getWordHeight()
     return linespaceMap[tagStack[0]];
 }
 
-int FB2TextParser::getWordWidth(QString word)
+int FB2TextPaginator::getWordWidth(QString word)
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontMap.contains(tagStack[i]))
@@ -368,7 +374,7 @@ int FB2TextParser::getWordWidth(QString word)
     return fontMap[tagStack[0]]->width(word);
 }
 
-int FB2TextParser::getSpaceWidth()
+int FB2TextPaginator::getSpaceWidth()
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontMap.contains(tagStack[i]))
@@ -377,8 +383,40 @@ int FB2TextParser::getSpaceWidth()
 }
 
 
+void FB2TextPaginator::findTagsTale()
+{
+    bool realParseDirection = parseDirection;
+    int parseResalt = 1;
+    parseDirection = true;
+
+    do
+    {
+        if (parseResalt == 1)
+            applyTag();
+
+        if (realParseDirection)
+            Columns[currentColumn].prepend(bookText[currentTextPos]);
+        else
+            Columns[currentColumn].remove(Columns[currentColumn].lastIndexOf(bookText[currentTextPos]), bookText[currentTextPos].size());
+
+        if (bookText[currentTextPos-1][0] == '<')
+        {
+            tag = bookText[--currentTextPos];
+            parseResalt = parseTag();
+            if (tagType == true && parseResalt != 2)
+                break;
+        }
+        else
+            break;
+    }
+    while(currentTextPos > 0);
+    currentTextPos++;
+    parseDirection = realParseDirection;
+}
+
+
 // 1 - нужный тег, 0 - бесполезный тег, 2 - лишний тег, 3 - тег перевода колонки
-int FB2TextParser::parseTag()
+int FB2TextPaginator::parseTag()
 {
     tag = tag.mid(1, tag.size()-2);
     if (tag[0] == '/')
@@ -396,36 +434,9 @@ int FB2TextParser::parseTag()
         {
             if (currentHeight + stringHeight + (CurStyle.ParLeftTopIdent%100)*((int)!parseDirection) > columnHeight)
             {
-                bool realParseDirection = parseDirection;
-                int parseResalt = 1;
-                parseDirection = true;
-
-                do
-                {
-                    if (parseResalt == 1)
-                        applyTag();
-
-                    if (realParseDirection)
-                        Columns[currentColumn].prepend(bookText[currentTextPos]);
-                    else
-                        Columns[currentColumn].remove(Columns[currentColumn].lastIndexOf(bookText[currentTextPos]), bookText[currentTextPos].size());
-
-                    if (bookText[currentTextPos-1][0] == '<')
-                    {
-                        tag = bookText[--currentTextPos];
-                        parseResalt = parseTag();
-                        if (tagType == true && parseResalt != 2)
-                            break;
-                    }
-                    else
-                        break;
-                }
-                while(currentTextPos > 0);
-                currentTextPos++;
-                parseDirection = realParseDirection;
+                findTagsTale();
                 return 3;
             }
-
         }
         else
         {
@@ -482,7 +493,7 @@ int FB2TextParser::parseTag()
     return 2;
 }
 
-void FB2TextParser::applyTag()
+void FB2TextPaginator::applyTag()
 {
     if (tag != "")
     {
@@ -501,7 +512,7 @@ void FB2TextParser::applyTag()
     }
 }
 
-bool FB2TextParser::applyWord()
+bool FB2TextPaginator::applyWord()
 {
     if (word != "")
     {
@@ -552,7 +563,7 @@ bool FB2TextParser::applyWord()
 }
 
 
-QString FB2TextParser::getPageForward()
+QString FB2TextPaginator::getPageForward()
 {
     if (currentTextPos < strCount)
     {
@@ -566,7 +577,6 @@ QString FB2TextParser::getPageForward()
         Columns.clear();
         currentTextPos = currentBStrNum = currentEStrNum;
         book->setBookProgress(currentBStrNum, getProgress(), tagStack.toList());
-        emit saveBookProgress();
         wordWidth = wordHeight = 0;
         tagType = 0;
 
@@ -624,7 +634,7 @@ QString FB2TextParser::getPageForward()
 }
 
 
-QString FB2TextParser::getPageBackward()
+QString FB2TextPaginator::getPageBackward()
 {
     if (currentBStrNum > 0)
     {
@@ -688,8 +698,6 @@ QString FB2TextParser::getPageBackward()
         currentBStrNum = currentTextPos + 1;
 
         book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
-        emit saveBookProgress();
-
 
         HTMLPage = Columns[CurStyle.ColumnCount - 1];
         for (int i = CurStyle.ColumnCount - 2; i >= 0; i--)
@@ -701,7 +709,7 @@ QString FB2TextParser::getPageBackward()
 }
 
 
-QString FB2TextParser::updatePage(const int width, const int height)
+QString FB2TextPaginator::updatePage(const int width, const int height)
 {
     setPageGeometry(width, height);
     currentEStrNum = currentBStrNum;
@@ -709,7 +717,7 @@ QString FB2TextParser::updatePage(const int width, const int height)
     return getPageForward();
 }
 
-QString FB2TextParser::updateSettings(const int width, const int height)
+QString FB2TextPaginator::updateSettings(const int width, const int height)
 {
     setPageGeometry(width, height);
     setHTMLinf();
@@ -720,7 +728,7 @@ QString FB2TextParser::updateSettings(const int width, const int height)
     return getPageForward();
 }
 
-float FB2TextParser::getProgress()
+float FB2TextPaginator::getProgress()
 {
     if (currentBStrNum > 0 && strCount)
         return (((float)currentEStrNum/(float)strCount) * 100);
@@ -728,7 +736,7 @@ float FB2TextParser::getProgress()
         return 0;
 }
 
-void FB2TextParser::debugSave(QString HTMLPage)
+void FB2TextPaginator::debugSave(QString HTMLPage)
 {
     QFile asd("F:/asd.html");
     asd.open(QIODevice::WriteOnly);

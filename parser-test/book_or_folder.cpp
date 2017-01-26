@@ -3,12 +3,13 @@
 
 #include <QPushButton>
 
-BookOrFolder::BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString Style)
+BookOrFolder::BookOrFolder(QPoint position, int hSize, QString Style, QWidget *parent)
 {
-    BookOrFolder::resize(hSize, 40);
-    BookOrFolder::move(pos_x, pos_y);
-    BookOrFolder::setWindowFlags(Qt::FramelessWindowHint);
-    BookOrFolder::setWindowFlags(Qt::Popup);
+    setParent(parent);
+    resize(hSize, 40);
+    move(position);
+    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::Popup);
 
     layout = new QHBoxLayout(this);
     layout->setContentsMargins(0,0,0,0);
@@ -18,33 +19,22 @@ BookOrFolder::BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString S
     folderButton = new QPushButton(QObject::tr("Folder"), this);
 
     folderButton->setMinimumSize(hSize/2, 40);
-    folderButton->setFlat(true);
-
-    bookButton->setMinimumSize(hSize/2, 40);
-    bookButton->setFlat(true);
+    bookButton->setFixedSize(hSize/2, 40);
 
     QString buttonsStyle[2];
     setBookOrFolderStyle(buttonsStyle, Style);
 
-    BookOrFolder::setStyleSheet("BookOrButton{backgroud-color:none; border:none;}");
+    setStyleSheet("BookOrButton{backgroud-color:none; border:none;}");
     bookButton->setStyleSheet(buttonsStyle[0]);
     folderButton->setStyleSheet(buttonsStyle[0]);
 
-    if (mode == true)       // 1 - идет добавление, 0 - удаление
-    {
-        connect(bookButton, SIGNAL(clicked()), this, SIGNAL(AddBookSignal()));
-        connect(folderButton, SIGNAL(clicked()), this, SIGNAL(AddFolderSignal()));
-    }
-    if (mode == false)
-    {
-        connect(bookButton, SIGNAL(clicked()), this, SIGNAL(DeleteBookSignal()));
-        connect(folderButton, SIGNAL(clicked()), this, SIGNAL(DeleteFolderSignal()));
-    }
+    connect(bookButton, SIGNAL(clicked()), this, SIGNAL(AddBookSignal()));
+    connect(folderButton, SIGNAL(clicked()), this, SIGNAL(AddFolderSignal()));
 
     layout->addWidget(bookButton, 0);
     layout->addWidget(folderButton, 1);
-    BookOrFolder::setLayout(layout);
-    BookOrFolder::show();
+    setLayout(layout);
+    show();
 }
 
 BookOrFolder::~BookOrFolder()

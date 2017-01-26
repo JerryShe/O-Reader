@@ -9,12 +9,13 @@
 
 Synchronization::Synchronization()
 {
+    SettingsChanged = false;
     loadLog();
 }
 
 Synchronization::~Synchronization()
 {
-
+    saveLog();
 }
 
 Synchronization* Synchronization::getSynchronization()
@@ -23,15 +24,15 @@ Synchronization* Synchronization::getSynchronization()
     return &UserActions;
 }
 
-Synchronization::action::action(int index, QString itemSpec, QString data)
+action::action(int index, QString itemSpec, QString data)
 {
-    actionTime = QDateTime::currentDateTime();
+    actionTime = QDateTime::currentMSecsSinceEpoch();
     actionIndex = index;
     spec = itemSpec;
     dataChanges = data;
 }
 
-Synchronization::action::action(int index, QDateTime time, QString itemSpec, QString data)
+action::action(int index, quint64 time, QString itemSpec, QString data)
 {
     actionTime = time;
     actionIndex = index;
@@ -60,31 +61,20 @@ void Synchronization::loadLog()
     }
 
     QDataStream in(&LogList);
-    unsigned short actionIndex;
-    UActions actionI;
-    QDateTime actionTime;
-    QString spec;
-    QString dataChanges;
 
-    while (!in.atEnd())
-    {
-        in>>actionIndex;
-        if (actionIndex < 6)
-            actionI = static_cast<UActions>(actionIndex);
-        else
-            continue;
-        in>>actionTime;
-        in>>spec;
-        in>>dataChanges;
+    in>>SettingsChanged;
+    if (SettingsChanged)
+        in>>SettingsChangedTime;
 
-        SynchroQueue.enqueue(action(actionI, actionTime, spec, dataChanges));
-    }
+    in>>BookQueue;
+    in>>FileQueue;
+
     LogList.close();
 }
 
 void Synchronization::saveLog()
 {
-    if (SynchroQueue.isEmpty())
+    if (BookQueue.isEmpty())
         return;
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -105,15 +95,14 @@ void Synchronization::saveLog()
     }
 
     QDataStream out(&LogList);
-    action temp;
-    for (int i = 0; i < SynchroQueue.size(); i++)
-    {
-        temp = SynchroQueue.at(i);
-        out<<temp.actionTime;
-        out<<temp.actionIndex;
-        out<<temp.spec;
-        out<<temp.dataChanges;
-    }
+    out<<SettingsChanged;
+    if (SettingsChanged)
+        out<<SettingsChangedTime;
+
+    out<<BookQueue;
+    out<<FileQueue;
+
+    qDebug()<<"log saved";
     LogList.close();
 }
 
@@ -134,5 +123,33 @@ int Synchronization::synchronizeFromServer()
     //применяем изменения
     loadLog();
     return 0;
+}
+
+QString Synchronization::getNumber(QString item)
+{
+    return item;
+}
+
+QString Synchronization::getNumber(int item)
+{
+    return QString::number(item);
+}
+
+QDataStream &operator>>(QDataStream &in, action &actionElem)
+{
+    in>>actionElem.actionIndex;
+    in>>actionElem.actionTime;
+    in>>actionElem.spec;
+    in>>actionElem.dataChanges;
+    return in;
+}
+
+QDataStream &operator<<(QDataStream &out, const action &actionElem)
+{
+    out<<actionElem.actionIndex;
+    out<<actionElem.actionTime;
+    out<<actionElem.spec;
+    out<<actionElem.dataChanges;
+    return out;
 }
 

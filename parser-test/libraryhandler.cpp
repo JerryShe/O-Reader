@@ -12,6 +12,11 @@ LibraryHandler::LibraryHandler(librarylayout *LWidget)
     filesMask<<"*.fb2";
 }
 
+LibraryHandler::~LibraryHandler()
+{
+    saveBookList();
+}
+
 void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
 {
     for (int i = 0; i < deletedItemsIndexes.size(); i++)
@@ -20,7 +25,7 @@ void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
         {
             if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
             {
-                UserActions->addAction(UActions::DeleteBook, bookList.at(j).File, 0);
+                UserActions->addAction(UActions::DeleteBook, bookList.at(j).File);
                 bookList.remove(j);
                 break;
             }
@@ -29,6 +34,7 @@ void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
     if (deletedItemsIndexes.size())
     {
         saveBookList();
+        UserActions->saveLog();
         RefreshLibrary();
     }
 }
@@ -41,10 +47,11 @@ void LibraryHandler::AddBooks(const QStringList fileList)
     GenresMap *Gmap = new GenresMap();
 
     for (int i = 0; i < fileList.size(); i++)
-        openNewBooks(fileList[i], Gmap);
+        openNewBook(fileList[i], Gmap);
 
-    delete Gmap;
+    UserActions->saveLog();
     saveBookList();
+    delete Gmap;
 }
 
 
@@ -64,9 +71,10 @@ void LibraryHandler::AddFolder(QString path)
     GenresMap *Gmap = new GenresMap();
 
     for (int i = 0; i < fileList.size(); ++i)
-        openNewBooks(fileList[i], Gmap);
+        openNewBook(fileList[i], Gmap);
 
     saveBookList();
+    UserActions->saveLog();
     delete Gmap;
 }
 
@@ -116,8 +124,8 @@ void LibraryHandler::saveBookList()
     for (int i = 0; i < bookList.size(); i++)
         out<<bookList[i];
 
+    qDebug()<<"books saved";
     bookFileList.close();
-    UserActions->saveLog();
 }
 
 
@@ -136,7 +144,7 @@ QString LibraryHandler::getFileTipe(const QString fileName)
 }
 
 
-void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
+void LibraryHandler::openNewBook(const QString file, GenresMap *Gmap)
 {
     for (int j = 0; j < bookList.size(); j++)
     {
@@ -163,7 +171,7 @@ void LibraryHandler::openNewBooks(const QString file, GenresMap *Gmap)
         boo.setBookIndex(currentBookIndex++);
         bookList.push_back(boo);
 
-        UserActions->addAction(UActions::AddBook, file, 0);
+        UserActions->addAction(UActions::AddBook, file);
         LibraryWidget->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
     }
     if (tipe == "zip")
@@ -178,7 +186,7 @@ void LibraryHandler::deleteBook(const int index)
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getBookIndex() == index)
         {
-            UserActions->addAction(UActions::DeleteBook, bookList.at(i).File, 0);
+            UserActions->addAction(UActions::DeleteBook, bookList.at(i).File);
             bookList.remove(i);
             break;
         }

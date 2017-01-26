@@ -15,6 +15,7 @@ class LibraryHandler: public QObject
 
 public:
     LibraryHandler(librarylayout* LWidget);
+    ~LibraryHandler();
 
 public slots:
     void AddBooks(const QStringList fileList);
@@ -22,7 +23,7 @@ public slots:
     void deleteBook(const int index);
     void deleteBooks(QVector <int> deletedItemsIndexes);
 
-    void openNewBooks(const QString fileList, GenresMap *Gmap);
+    void openNewBook(const QString fileList, GenresMap *Gmap);
     QString getFileTipe(const QString fileName);
 
     void findBooks(QString key, QString mode);

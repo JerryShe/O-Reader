@@ -7,6 +7,8 @@
 #include "settings_programlayout.h"
 #include "settings_profilelayout.h"
 #include "settings_readerlayout.h"
+#include <synchronization.h>
+
 
 class settingslayout : public QWidget
 {
@@ -50,6 +52,8 @@ private:
     QPushButton* _SettingsProgram;
     QPushButton* _SettingsReader;
     QPushButton* exit_button;
+
+    Synchronization* UserActions;
 
     short currentTab = 1;
     bool settingsWasChanged = false;

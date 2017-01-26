@@ -5,9 +5,11 @@ QT       += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Reader
+
 TEMPLATE = app
-TRANSLATIONS = en.ts\
-               ru.ts
+
+TRANSLATIONS = Languages/en.ts\
+               Languages/ru.ts
 
 RC_FILE = app.rc
 
@@ -29,10 +31,10 @@ SOURCES += main.cpp\
     synchronization.cpp \
     reading_window.cpp \
     search_window.cpp \
-    fb2textparser.cpp \
     genresmap.cpp \
     booktableofcontents.cpp \
-    libraryhandler.cpp
+    libraryhandler.cpp \
+    fb2textpaginator.cpp
 
 HEADERS  += \
     login_window.h \
@@ -52,10 +54,10 @@ HEADERS  += \
     synchronization.h \
     reading_window.h \
     search_window.h \
-    fb2textparser.h \
     genresmap.h \
     booktableofcontents.h \
-    libraryhandler.h
+    libraryhandler.h \
+    fb2textpaginator.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \

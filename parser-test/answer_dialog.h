@@ -12,7 +12,7 @@ class AnswerDialog : public QDialog
 {
     Q_OBJECT
 public:
-    AnswerDialog(int pos_x, int pos_y, QString text, QString Style);
+    AnswerDialog(QPoint position, QString text, QString Style, QWidget* parent);
     ~AnswerDialog();
 
 private:

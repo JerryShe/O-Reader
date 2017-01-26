@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'readingwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -300,8 +300,8 @@ public:
 
     void retranslateUi(QMainWindow *ReadingWindow)
     {
-        ReadingWindow->setWindowTitle(QApplication::translate("ReadingWindow", "Reader", 0));
-        MenuButton->setText(QApplication::translate("ReadingWindow", "Menu", 0));
+        ReadingWindow->setWindowTitle(QApplication::translate("ReadingWindow", "Reader", Q_NULLPTR));
+        MenuButton->setText(QApplication::translate("ReadingWindow", "Menu", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -17,11 +17,11 @@ void SearchWindow::setStyle(QString style)
     exit_button->setStyleSheet(styleList[0]);
 }
 
-SearchWindow::SearchWindow(int posX, int posY, QString style, bool mode, QWidget * parent): QDialog(parent)
+SearchWindow::SearchWindow(QPoint position, QString style, bool mode, QWidget * parent): QDialog(parent)
 {
     workMode = mode;
     hide();
-    move(posX, posY);
+    move(position);
     setWindowFlags(Qt::FramelessWindowHint);
 
     VLayout = new QVBoxLayout(this);

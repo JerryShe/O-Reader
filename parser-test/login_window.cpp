@@ -90,7 +90,10 @@ void LoginWindow::backToMainPage()
 
 void LoginWindow::on_exit_button_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(0,0)).x() - 300 + ui->exit_button->width(),ui->exit_button->mapToGlobal(QPoint(0,0)).y() + ui->exit_button->height(),"Exit?", currentStyle);
+    AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(ui->exit_button->width() - 300, ui->exit_button->height())),
+                                                   QObject::tr("Exit?"),
+                                                   currentStyle,
+                                                   this);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)

@@ -106,9 +106,10 @@ void BookPage::on_startReading_clicked()
 
 void BookPage::on_deleteBook_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(0,0)).x() - 300,
-                                                   ui->deleteBook->mapToGlobal(QPoint(0,0)).y() - 90 + ui->exit_button->height(),"Delete book?",
-                                                   style);
+    AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(- 300, ui->exit_button->height())),
+                                                   QObject::tr("Delete book?"),
+                                                   style,
+                                                   this);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)

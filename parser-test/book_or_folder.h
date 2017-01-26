@@ -10,7 +10,7 @@ class BookOrFolder : public QDialog
 {
     Q_OBJECT
 public:
-    BookOrFolder(int pos_x, int pos_y, int hSize, bool mode, QString Style);
+    BookOrFolder(QPoint position, int hSize, QString Style, QWidget *parent);
     ~BookOrFolder();
 
 signals:

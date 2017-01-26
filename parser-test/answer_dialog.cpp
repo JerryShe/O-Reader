@@ -3,10 +3,11 @@
 #include <styles.h>
 
 
-AnswerDialog::AnswerDialog(int pos_x, int pos_y, QString text, QString Style)
+AnswerDialog::AnswerDialog(QPoint position, QString text, QString Style, QWidget *parent)
 {
+    setParent(parent);
     resize(300,70);
-    move(pos_x, pos_y);
+    move(position);
 
     setWindowFlags(Qt::FramelessWindowHint);
     setWindowFlags(Qt::Popup);
