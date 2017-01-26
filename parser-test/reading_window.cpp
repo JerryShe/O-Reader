@@ -62,14 +62,14 @@ ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
     setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
     show();
-    BookParse = new FB2TextPaginator();
+    BookPaginator = new FB2TextPaginator();
     parserThread = new QThread(this);
-    BookParse->moveToThread(parserThread);
+    BookPaginator->moveToThread(parserThread);
 
     connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
     parserThread->start();
     connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
-    ui->TextPage->setHtml(BookParse->startParser(book,ui->TextPage->width(), ui->TextPage->height()));
+    ui->TextPage->setHtml(BookPaginator->startParser(book,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
     ui->BookName->setText(book->getAuthorName() + ": " + book->getTitle());
     ui->TextPage->setMouseTracking(true);
@@ -135,7 +135,7 @@ void ReadingWindow::changeEvent(QEvent *event)
 ReadingWindow::~ReadingWindow()
 {
     delete ui;
-    delete BookParse;
+    delete BookPaginator;
 }
 
 
@@ -271,13 +271,13 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
             if (KeyEvent->key() == ProgramSettings->getFForwardKey() || KeyEvent->key() == ProgramSettings->getSForwardKey())
             {
-                ui->TextPage->setHtml(BookParse->getPageForward());
+                ui->TextPage->setHtml(BookPaginator->getPageForward());
                 updateProgress();
             }
             else
             if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
             {
-                ui->TextPage->setHtml(BookParse->getPageBackward());
+                ui->TextPage->setHtml(BookPaginator->getPageBackward());
                 updateProgress();
             }
             break;
@@ -290,12 +290,12 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
                 if (Wheel->delta() < 0)
                 {
-                    ui->TextPage->setHtml(BookParse->getPageForward());
+                    ui->TextPage->setHtml(BookPaginator->getPageForward());
                     updateProgress();
                 }
                 else if (Wheel->delta() > 0)
                 {
-                    ui->TextPage->setHtml(BookParse->getPageBackward());
+                    ui->TextPage->setHtml(BookPaginator->getPageBackward());
                     updateProgress();
                 }
             }
@@ -315,14 +315,14 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                         if (MousePressEvent->pos().x() > this->size().width() - 100)
                         {
                             qDebug()<<"1";
-                            ui->TextPage->setHtml(BookParse->getPageForward());
+                            ui->TextPage->setHtml(BookPaginator->getPageForward());
                             updateProgress();
                         }
                         else
                         if (MousePressEvent->pos().x() < 100)
                         {
                             qDebug()<<"2";
-                            ui->TextPage->setHtml(BookParse->getPageBackward());
+                            ui->TextPage->setHtml(BookPaginator->getPageBackward());
                             updateProgress();
                         }
                     }
@@ -349,14 +349,14 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                         if (MousePressEvent->pos().x() > this->size().width() - 100)
                         {
                             qDebug()<<"1";
-                            ui->TextPage->setHtml(BookParse->getPageForward());
+                            ui->TextPage->setHtml(BookPaginator->getPageForward());
                             updateProgress();
                         }
                         else
                         if (MousePressEvent->pos().x() < 100)
                         {
                             qDebug()<<"2";
-                            ui->TextPage->setHtml(BookParse->getPageBackward());
+                            ui->TextPage->setHtml(BookPaginator->getPageBackward());
                             updateProgress();
                         }
                     }
@@ -390,19 +390,19 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 
 void ReadingWindow::reprintResizedText()
 {
-    ui->TextPage->setHtml(BookParse->updatePage(ui->TextPage->width(), ui->TextPage->height()));
+    ui->TextPage->setHtml(BookPaginator->updatePage(ui->TextPage->width(), ui->TextPage->height()));
 }
 
 void ReadingWindow::updateProgress()
 {
-    ui->Progress->setText(QString::number(floor(BookParse->getProgress()*10)/10) + "%");
+    ui->Progress->setText(QString::number(floor(BookPaginator->getProgress()*10)/10) + "%");
 }
 
 void ReadingWindow::ContentsButton_clicked()
 {
     ActiveWindow = true;
     MenuWidget->hide();
-    BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookParse->getBookContentTable(), BookParse->getCurrentSectionIndex(), this);
+    BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), BookPaginator->getCurrentSectionIndex(), this);
     tableWindow->move(0, ui->MenuButton->height());
     connect(tableWindow, SIGNAL(goToSection(int)), this, SLOT(goToSection(int)));
     if (tableWindow->exec() == QDialog::Rejected)
@@ -414,7 +414,7 @@ void ReadingWindow::ContentsButton_clicked()
 
 void ReadingWindow::goToSection(int sectionIndex)
 {
-    ui->TextPage->setHtml(BookParse->goToSection(sectionIndex));
+    ui->TextPage->setHtml(BookPaginator->goToSection(sectionIndex));
     updateProgress();
 }
 
@@ -445,7 +445,7 @@ void ReadingWindow::PrevSearchStep()
 
 void ReadingWindow::reprintNewSettText()
 {
-    ui->TextPage->setHtml(BookParse->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
+    ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
 }
 
 void ReadingWindow::SettingsButton_Clicked()

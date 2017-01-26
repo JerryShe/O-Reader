@@ -49,6 +49,9 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+build-parser-test-Desktop_Qt_5_7_0_MinGW_32bit-Release/
+build-parser-test-g-Release/
+build-parser-test-Desktop_Qt_5_7_0_MinGW_32bit-Debug/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -77,6 +80,7 @@ build/
 *.pidb
 *.log
 *.scc
+*.stash
 
 # Visual C++ cache files
 ipch/

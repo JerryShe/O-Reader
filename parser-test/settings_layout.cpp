@@ -97,8 +97,6 @@ void settingslayout::exit_button_clicked()
 {
     hideWithoutSaving();
     emit settingsClosed();
-    if (settingsWasChanged)
-        emit settingsChanged();
     close();
 }
 

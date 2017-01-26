@@ -94,7 +94,7 @@ private:
 
     QString styles[5];
 
-    FB2TextPaginator* BookParse;
+    FB2TextPaginator* BookPaginator;
 };
 
 #endif // READINGWINDOW_H
