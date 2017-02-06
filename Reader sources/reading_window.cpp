@@ -8,9 +8,10 @@
 #include "settings.h"
 #include "styles.h"
 #include "booktableofcontents.h"
+#include "styles.h"
+
 
 #include <QTimer>
-#include <styles.h>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QWindow>

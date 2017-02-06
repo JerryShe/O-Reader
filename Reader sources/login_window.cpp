@@ -1,4 +1,4 @@
-#include <styles.h>
+#include "styles.h"
 #include "login_window.h"
 #include "ui_loginwindow.h"
 #include "answer_dialog.h"

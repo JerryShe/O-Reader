@@ -1,7 +1,6 @@
 #include "books.h"
-#include "QFile"
-#include "QDomDocument"
-#include <iostream>
+#include <QFile>
+#include <QDomDocument>
 #include <QDataStream>
 #include <QImage>
 #include <QIcon>
