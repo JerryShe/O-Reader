@@ -7,7 +7,7 @@
 #include "settings_programlayout.h"
 #include "settings_profilelayout.h"
 #include "settings_readerlayout.h"
-#include <synchronization.h>
+#include "synchronization.h"
 
 
 class settingslayout : public QWidget

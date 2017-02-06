@@ -68,6 +68,3 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     images.qrc
-
-
-

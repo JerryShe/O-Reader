@@ -2,7 +2,7 @@
 #define SETTINGS_PROFILELAYOUT_H
 
 #include <QFrame>
-#include <settings.h>
+#include "settings.h"
 
 namespace Ui {
 class Settings_ProfileLayout;

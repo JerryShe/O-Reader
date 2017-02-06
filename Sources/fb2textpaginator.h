@@ -2,8 +2,8 @@
 #define FB2TEXTPAGINATOR_H
 
 #include <QStringList>
-#include <books.h>
-#include <settings.h>
+#include "books.h"
+#include "settings.h"
 
 #include <QStack>
 #include <QTextStream>

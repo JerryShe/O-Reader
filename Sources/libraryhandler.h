@@ -3,8 +3,8 @@
 
 #include <QString>
 #include <QObject>
-#include <library_layout.h>
-#include <synchronization.h>
+#include "library_layout.h"
+#include "synchronization.h"
 #include "genresmap.h"
 #include "books.h"
 

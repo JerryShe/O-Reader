@@ -6,7 +6,7 @@
 #include <QGridLayout>
 #include <QListView>
 #include <QStandardItemModel>
-#include <settings.h>
+#include "settings.h"
 
 
 

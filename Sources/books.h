@@ -8,7 +8,7 @@
 #include <QDataStream>
 #include <QIcon>
 
-#include <genresmap.h>
+#include "genresmap.h"
 
 class Book
 {

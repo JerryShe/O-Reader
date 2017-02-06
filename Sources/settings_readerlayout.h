@@ -2,8 +2,8 @@
 #define SETTINGS_READERLAYOUT_H
 
 #include <QFrame>
-#include <settings.h>
-#include <answer_dialog.h>
+#include "settings.h"
+#include "answer_dialog.h"
 
 namespace Ui {
 class Settings_ReaderLayout;

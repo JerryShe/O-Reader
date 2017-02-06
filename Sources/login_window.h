@@ -2,7 +2,7 @@
 #define LOGINWINDOW_H
 
 #include <QMainWindow>
-#include <main_window.h>
+#include "main_window.h"
 #include <QTranslator>
 
 

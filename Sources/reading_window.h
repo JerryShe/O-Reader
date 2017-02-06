@@ -2,10 +2,10 @@
 #define READINGWINDOW_H
 
 #include <QMainWindow>
-#include <books.h>
-#include <answer_dialog.h>
+#include "books.h"
+#include "answer_dialog.h"
 #include <QThread>
-#include <settings.h>
+#include "settings.h"
 #include <QVBoxLayout>
 #include "settings_layout.h"
 #include "search_window.h"

@@ -2,7 +2,7 @@
 #define SETTINGS_PROGRAMLAYOUT_H
 
 #include <QFrame>
-#include <settings.h>
+#include "settings.h"
 #include <QTranslator>
 
 namespace Ui {
