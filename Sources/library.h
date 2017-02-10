@@ -9,7 +9,7 @@
 
 
 
-class library : public QWidget
+class library : public QListView
 {
     Q_OBJECT
 
@@ -39,9 +39,7 @@ private slots:
     void showSelectedItem(QModelIndex mIndex);
 
 private:
-    QGridLayout* libraryGridLayout;
-    QListView* BookListView;
-    QStandardItemModel* BookModel;
+     QStandardItemModel* BookModel;
 
     settings* ProgramSettings;
 

@@ -44,6 +44,8 @@ private slots:
 
 protected:
     void changeEvent(QEvent *event);
+    void dropEvent(QDropEvent *e);
+    void dragEnterEvent(QDragEnterEvent *e);
 
 signals:
     void showBookPage(int index);

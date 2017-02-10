@@ -71,7 +71,6 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
 
     ui->setupUi(this);
 
-
     ui->SettingsWidget->hide();
     prev_geometry = geometry();
 

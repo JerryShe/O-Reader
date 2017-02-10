@@ -8,9 +8,10 @@
 #include "book_page.h"
 
 #include <QFileDialog>
+#include <QDropEvent>
+#include <QMimeData>
 
 #include <QThread>
-
 
 
 void LibraryLayout::setStyle()
@@ -37,6 +38,7 @@ void LibraryLayout::setStyle()
 LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::LibraryLayout)
 {
     ui->setupUi(this);
+    setAcceptDrops(true);
 
     ui->_SortBox->setView(new QListView());
     ui->_GroupBox->setView(new QListView());
@@ -81,6 +83,30 @@ void LibraryLayout::changeEvent(QEvent *event)
         ui->retranslateUi(this);
     }
 }
+
+void LibraryLayout::dropEvent(QDropEvent *e)
+{
+    QStringList fileList;
+    foreach (const QUrl &url, e->mimeData()->urls()) {
+        QString file = url.toLocalFile();
+        QFileInfo fileInf (file);
+        if (fileInf.isDir())
+            LibHandler->AddFolder(file);
+        else
+            if (fileInf.isFile())
+                fileList.append(file);
+    }
+    if (fileList.size() != 0)
+        LibHandler->AddBooks(fileList);
+}
+
+void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
+{
+    if (e->mimeData()->hasUrls()) {
+        e->acceptProposedAction();
+    }
+}
+
 
 void LibraryLayout::on__AddBooks_clicked()
 {

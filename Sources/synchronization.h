@@ -67,7 +67,7 @@ public:
 
     template <typename T1> void addAction(UActions actionIndex, T1 qualifier, long long data = 0)
     {
-        qDebug()<<static_cast<int>(actionIndex)<<qualifier<<data;
+        //qDebug()<<static_cast<int>(actionIndex)<<qualifier<<data;
 
         QString Squalifier, Sdata;
 
