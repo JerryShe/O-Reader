@@ -10,10 +10,12 @@
 
 void settingslayout::setSettWindowStyle()
 {
+    QString tabsStyleSheets[5];
+
     setTabButtonsStyle(tabsStyleSheets, ProgramSettings->getInterfaceStyle());
-    _SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
-    _SettingsProgram->setStyleSheet(tabsStyleSheets[1]);
-    _SettingsReader->setStyleSheet(tabsStyleSheets[0]);
+
+    for (int i = 0; i < tabSwitcher->getTabCount(); i++)
+        tabSwitcher->setButtonStyleSheet(i, tabsStyleSheets[1], tabsStyleSheets[0]);
 
     this->setStyleSheet("QLabel{color:white;}");
 }
@@ -43,24 +45,24 @@ settingslayout::settingslayout(QWidget *Parent)
     MainLayout->addLayout(ButtonsLayout);
     MainLayout->addLayout(TabsLayout);
 
-    _SettingsProfile = new QPushButton(QObject::tr("Profile"), this);
-    _SettingsProgram = new QPushButton(QObject::tr("Program"), this);
-    _SettingsReader = new QPushButton(QObject::tr("Reader"), this);
+    ProfileButton = new QPushButton(QObject::tr("Profile"), this);
+    ProgramButton = new QPushButton(QObject::tr("Program"), this);
+    ReaderButton = new QPushButton(QObject::tr("Reader"), this);
 
-    _SettingsProfile->setFixedHeight(30);
-    _SettingsProgram->setFixedHeight(30);
-    _SettingsReader->setFixedHeight(30);
+    ProfileButton->setFixedHeight(30);
+    ProgramButton->setFixedHeight(30);
+    ReaderButton->setFixedHeight(30);
 
-    ButtonsLayout->addWidget(_SettingsProfile);
-    ButtonsLayout->addWidget(_SettingsProgram);
-    ButtonsLayout->addWidget(_SettingsReader);
+    ButtonsLayout->addWidget(ProfileButton);
+    ButtonsLayout->addWidget(ProgramButton);
+    ButtonsLayout->addWidget(ReaderButton);
 
-    connect(this->_SettingsProfile, SIGNAL(clicked(bool)), this, SLOT(showProfile()));
-    connect(this->_SettingsProgram, SIGNAL(clicked(bool)), this, SLOT(showProgram()));
-    connect(this->_SettingsReader, SIGNAL(clicked(bool)), this, SLOT(showReader()));
+    tabSwitcher = new QTabSwitcher(this);
 
-    ProfileWidget->hide();
-    ReaderWidget->hide();
+    tabSwitcher->addTab(ProfileWidget, ProfileButton);
+    tabSwitcher->addTab(ProgramWidget, ProgramButton);
+    tabSwitcher->addTab(ReaderWidget, ReaderButton);
+
 }
 
 void settingslayout::setSettingsData()
@@ -68,6 +70,8 @@ void settingslayout::setSettingsData()
     ProgramSettings = settings::getSettings();
     UserActions = Synchronization::getSynchronization();
     setSettWindowStyle();
+    tabSwitcher->start(1);
+
     ReaderWidget->setSettingsData();
     ProgramWidget->setSettingsData();
     ProfileWidget->setSettingsData();
@@ -80,6 +84,7 @@ settingslayout::~settingslayout()
     delete ProgramWidget;
     delete ReaderWidget;
     delete exit_button;
+    delete tabSwitcher;
 }
 
 void settingslayout::addExitButton()
@@ -98,77 +103,6 @@ void settingslayout::exit_button_clicked()
     hideWithoutSaving();
     emit settingsClosed();
     close();
-}
-
-
-void settingslayout::showProfile()
-{
-    switch (currentTab)
-    {
-    case 0:
-        break;
-    case 1:
-        ProgramWidget->hide();
-        _SettingsProgram->setStyleSheet(tabsStyleSheets[0]);
-        ProfileWidget->show();
-        break;
-    case 2:
-        ReaderWidget->hide();
-        _SettingsReader->setStyleSheet(tabsStyleSheets[0]);
-        ProfileWidget->show();
-        break;
-    default:
-        break;
-    }
-    currentTab = 0;
-    _SettingsProfile->setStyleSheet(tabsStyleSheets[1]);
-}
-
-void settingslayout::showProgram()
-{
-    switch (currentTab)
-    {
-    case 0:
-        ProfileWidget->hide();
-        _SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
-        ProgramWidget->show();
-        break;
-    case 1:
-        break;
-    case 2:
-        ReaderWidget->hide();
-        _SettingsReader->setStyleSheet(tabsStyleSheets[0]);
-        ProgramWidget->show();
-        break;
-    default:
-        break;
-    }
-    currentTab = 1;
-    _SettingsProgram->setStyleSheet(tabsStyleSheets[1]);
-}
-
-void settingslayout::showReader()
-{
-    switch (currentTab)
-    {
-    case 0:
-        ProfileWidget->hide();
-        _SettingsProfile->setStyleSheet(tabsStyleSheets[0]);
-        ReaderWidget->show();
-        break;
-    case 1:
-        ProgramWidget->hide();
-        _SettingsProgram->setStyleSheet(tabsStyleSheets[0]);
-        ReaderWidget->show();
-        break;
-    case 2:
-        break;
-    default:
-        break;
-    }
-    currentTab = 2;
-    _SettingsReader->setStyleSheet(tabsStyleSheets[1]);
-
 }
 
 void settingslayout::hideWithoutSaving()
@@ -192,8 +126,8 @@ void settingslayout::updateSavebuttons(int type)
 void settingslayout::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange) {
-        _SettingsProfile->setText(QObject::tr("Profile"));
-        _SettingsProgram->setText(QObject::tr("Program"));
-        _SettingsReader->setText(QObject::tr("Reader"));
+        ProfileButton->setText(QObject::tr("Profile"));
+        ProgramButton->setText(QObject::tr("Program"));
+        ReaderButton->setText(QObject::tr("Reader"));
     }
 }

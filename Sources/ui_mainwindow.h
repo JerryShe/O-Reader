@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.7.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -13,7 +13,6 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QComboBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QMainWindow>
@@ -21,6 +20,7 @@
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <library_layout.h>
 #include "settings_layout.h"
 #include "synchronization_layout.h"
 
@@ -45,20 +45,9 @@ public:
     QWidget *LeftExpandingWidget;
     QPushButton *Logout;
     QVBoxLayout *TabsLayout;
-    QVBoxLayout *ButtonsLayout;
-    QHBoxLayout *LibraryButtons;
-    QPushButton *_Find;
-    QPushButton *_Sort;
-    QComboBox *_SortBox;
-    QPushButton *_Group;
-    QComboBox *_GroupBox;
-    QPushButton *_AddBooks;
-    QPushButton *_Delete;
-    QPushButton *_ChangeViewMode;
-    QPushButton *_Upscale;
-    QPushButton *_Downscale;
-    settingslayout *SettingsLayout;
-    synchronizationlayout *SynchronizationLayout;
+    LibraryLayout *LibraryWidget;
+    settingslayout *SettingsWidget;
+    synchronizationlayout *SynchronizationWidget;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -312,140 +301,28 @@ public:
         TabsLayout->setObjectName(QStringLiteral("TabsLayout"));
         TabsLayout->setSizeConstraint(QLayout::SetFixedSize);
         TabsLayout->setContentsMargins(-1, -1, -1, 0);
-        ButtonsLayout = new QVBoxLayout();
-        ButtonsLayout->setSpacing(0);
-        ButtonsLayout->setObjectName(QStringLiteral("ButtonsLayout"));
-        ButtonsLayout->setSizeConstraint(QLayout::SetMinimumSize);
-        LibraryButtons = new QHBoxLayout();
-        LibraryButtons->setSpacing(0);
-        LibraryButtons->setObjectName(QStringLiteral("LibraryButtons"));
-        LibraryButtons->setSizeConstraint(QLayout::SetMinimumSize);
-        LibraryButtons->setContentsMargins(-1, 0, -1, -1);
-        _Find = new QPushButton(MainWidget);
-        _Find->setObjectName(QStringLiteral("_Find"));
-        QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(_Find->sizePolicy().hasHeightForWidth());
-        _Find->setSizePolicy(sizePolicy3);
-        _Find->setMinimumSize(QSize(120, 30));
-        _Find->setMaximumSize(QSize(16777215, 30));
-        _Find->setCheckable(true);
+        LibraryWidget = new LibraryLayout(MainWidget);
+        LibraryWidget->setObjectName(QStringLiteral("LibraryWidget"));
+        sizePolicy.setHeightForWidth(LibraryWidget->sizePolicy().hasHeightForWidth());
+        LibraryWidget->setSizePolicy(sizePolicy);
 
-        LibraryButtons->addWidget(_Find);
+        TabsLayout->addWidget(LibraryWidget);
 
-        _Sort = new QPushButton(MainWidget);
-        _Sort->setObjectName(QStringLiteral("_Sort"));
-        _Sort->setMinimumSize(QSize(120, 30));
-        _Sort->setMaximumSize(QSize(16777215, 30));
-        _Sort->setStyleSheet(QStringLiteral(""));
+        SettingsWidget = new settingslayout(MainWidget);
+        SettingsWidget->setObjectName(QStringLiteral("SettingsWidget"));
+        sizePolicy.setHeightForWidth(SettingsWidget->sizePolicy().hasHeightForWidth());
+        SettingsWidget->setSizePolicy(sizePolicy);
+        SettingsWidget->setMinimumSize(QSize(100, 100));
 
-        LibraryButtons->addWidget(_Sort);
+        TabsLayout->addWidget(SettingsWidget);
 
-        _SortBox = new QComboBox(MainWidget);
-        _SortBox->setObjectName(QStringLiteral("_SortBox"));
-        _SortBox->setMinimumSize(QSize(0, 30));
-        _SortBox->setStyleSheet(QStringLiteral(""));
-        _SortBox->setInsertPolicy(QComboBox::InsertAtTop);
-        _SortBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-        _SortBox->setIconSize(QSize(0, 0));
-        _SortBox->setFrame(false);
+        SynchronizationWidget = new synchronizationlayout(MainWidget);
+        SynchronizationWidget->setObjectName(QStringLiteral("SynchronizationWidget"));
+        sizePolicy.setHeightForWidth(SynchronizationWidget->sizePolicy().hasHeightForWidth());
+        SynchronizationWidget->setSizePolicy(sizePolicy);
+        SynchronizationWidget->setMinimumSize(QSize(100, 100));
 
-        LibraryButtons->addWidget(_SortBox);
-
-        _Group = new QPushButton(MainWidget);
-        _Group->setObjectName(QStringLiteral("_Group"));
-        _Group->setEnabled(false);
-        _Group->setMinimumSize(QSize(120, 30));
-        _Group->setMaximumSize(QSize(16777215, 30));
-
-        LibraryButtons->addWidget(_Group);
-
-        _GroupBox = new QComboBox(MainWidget);
-        _GroupBox->setObjectName(QStringLiteral("_GroupBox"));
-        _GroupBox->setEnabled(false);
-        _GroupBox->setMinimumSize(QSize(101, 30));
-        _GroupBox->setStyleSheet(QStringLiteral(""));
-        _GroupBox->setInsertPolicy(QComboBox::InsertAtTop);
-        _GroupBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-        _GroupBox->setFrame(false);
-
-        LibraryButtons->addWidget(_GroupBox);
-
-        _AddBooks = new QPushButton(MainWidget);
-        _AddBooks->setObjectName(QStringLiteral("_AddBooks"));
-        sizePolicy3.setHeightForWidth(_AddBooks->sizePolicy().hasHeightForWidth());
-        _AddBooks->setSizePolicy(sizePolicy3);
-        _AddBooks->setMinimumSize(QSize(120, 30));
-        _AddBooks->setMaximumSize(QSize(16777215, 30));
-
-        LibraryButtons->addWidget(_AddBooks);
-
-        _Delete = new QPushButton(MainWidget);
-        _Delete->setObjectName(QStringLiteral("_Delete"));
-        sizePolicy3.setHeightForWidth(_Delete->sizePolicy().hasHeightForWidth());
-        _Delete->setSizePolicy(sizePolicy3);
-        _Delete->setMinimumSize(QSize(120, 30));
-        _Delete->setMaximumSize(QSize(16777215, 30));
-
-        LibraryButtons->addWidget(_Delete);
-
-        _ChangeViewMode = new QPushButton(MainWidget);
-        _ChangeViewMode->setObjectName(QStringLiteral("_ChangeViewMode"));
-        _ChangeViewMode->setMinimumSize(QSize(30, 30));
-        _ChangeViewMode->setMaximumSize(QSize(30, 30));
-        _ChangeViewMode->setText(QStringLiteral(""));
-        _ChangeViewMode->setShortcut(QStringLiteral(""));
-        _ChangeViewMode->setCheckable(true);
-
-        LibraryButtons->addWidget(_ChangeViewMode);
-
-        _Upscale = new QPushButton(MainWidget);
-        _Upscale->setObjectName(QStringLiteral("_Upscale"));
-        _Upscale->setMinimumSize(QSize(30, 30));
-        _Upscale->setMaximumSize(QSize(30, 30));
-        _Upscale->setText(QStringLiteral(""));
-        _Upscale->setShortcut(QStringLiteral(""));
-
-        LibraryButtons->addWidget(_Upscale);
-
-        _Downscale = new QPushButton(MainWidget);
-        _Downscale->setObjectName(QStringLiteral("_Downscale"));
-        _Downscale->setMinimumSize(QSize(30, 30));
-        _Downscale->setMaximumSize(QSize(30, 30));
-        _Downscale->setText(QStringLiteral(""));
-        _Downscale->setShortcut(QStringLiteral(""));
-
-        LibraryButtons->addWidget(_Downscale);
-
-        LibraryButtons->setStretch(0, 2);
-        LibraryButtons->setStretch(1, 1);
-        LibraryButtons->setStretch(2, 1);
-        LibraryButtons->setStretch(3, 1);
-        LibraryButtons->setStretch(4, 1);
-        LibraryButtons->setStretch(5, 2);
-        LibraryButtons->setStretch(6, 2);
-
-        ButtonsLayout->addLayout(LibraryButtons);
-
-
-        TabsLayout->addLayout(ButtonsLayout);
-
-        SettingsLayout = new settingslayout(MainWidget);
-        SettingsLayout->setObjectName(QStringLiteral("SettingsLayout"));
-        sizePolicy.setHeightForWidth(SettingsLayout->sizePolicy().hasHeightForWidth());
-        SettingsLayout->setSizePolicy(sizePolicy);
-        SettingsLayout->setMinimumSize(QSize(100, 100));
-
-        TabsLayout->addWidget(SettingsLayout);
-
-        SynchronizationLayout = new synchronizationlayout(MainWidget);
-        SynchronizationLayout->setObjectName(QStringLiteral("SynchronizationLayout"));
-        sizePolicy.setHeightForWidth(SynchronizationLayout->sizePolicy().hasHeightForWidth());
-        SynchronizationLayout->setSizePolicy(sizePolicy);
-        SynchronizationLayout->setMinimumSize(QSize(100, 100));
-
-        TabsLayout->addWidget(SynchronizationLayout);
+        TabsLayout->addWidget(SynchronizationWidget);
 
 
         horizontalLayout_2->addLayout(TabsLayout);
@@ -471,26 +348,7 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Reader", 0));
-        _Find->setText(QApplication::translate("MainWindow", "Find", 0));
-        _Sort->setText(QApplication::translate("MainWindow", "Sort by: ", 0));
-        _SortBox->clear();
-        _SortBox->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "Date", 0)
-         << QApplication::translate("MainWindow", "Author", 0)
-         << QApplication::translate("MainWindow", "Title", 0)
-        );
-        _Group->setText(QApplication::translate("MainWindow", "Group by: ", 0));
-        _GroupBox->clear();
-        _GroupBox->insertItems(0, QStringList()
-         << QApplication::translate("MainWindow", "None", 0)
-         << QApplication::translate("MainWindow", "Author", 0)
-         << QApplication::translate("MainWindow", "Title", 0)
-         << QApplication::translate("MainWindow", "Genre", 0)
-         << QApplication::translate("MainWindow", "Book series", 0)
-        );
-        _AddBooks->setText(QApplication::translate("MainWindow", "Add", 0));
-        _Delete->setText(QApplication::translate("MainWindow", "Delete", 0));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Reader", Q_NULLPTR));
     } // retranslateUi
 
 };

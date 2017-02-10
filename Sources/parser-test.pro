@@ -14,7 +14,6 @@ RC_FILE = app.rc
 SOURCES += main.cpp\
     main_window.cpp \
     login_window.cpp \
-    library_layout.cpp \
     answer_dialog.cpp \
     styles.cpp \
     settings_layout.cpp \
@@ -31,13 +30,15 @@ SOURCES += main.cpp\
     search_window.cpp \
     genresmap.cpp \
     booktableofcontents.cpp \
-    libraryhandler.cpp \
-    fb2textpaginator.cpp
+    fb2textpaginator.cpp \
+    library.cpp \
+    library_layout.cpp \
+    library_handler.cpp \
+    QTabSwitcher.cpp
 
 HEADERS  += \
     login_window.h \
     main_window.h \
-    library_layout.h \
     answer_dialog.h \
     styles.h \
     settings_layout.h \
@@ -54,8 +55,11 @@ HEADERS  += \
     search_window.h \
     genresmap.h \
     booktableofcontents.h \
-    libraryhandler.h \
-    fb2textpaginator.h
+    fb2textpaginator.h \
+    library.h \
+    library_layout.h \
+    library_handler.h \
+    QTabSwitcher.h
 
 FORMS    += mainwindow.ui \
             loginwindow.ui \
@@ -64,7 +68,8 @@ FORMS    += mainwindow.ui \
     settings_readerlayout.ui \
     book_page.ui \
     readingwindow.ui \
-    booktableofcontents.ui
+    booktableofcontents.ui \
+    library_layout.ui
 
 RESOURCES += \
     images.qrc

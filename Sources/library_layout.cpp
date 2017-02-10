@@ -1,218 +1,187 @@
 #include "library_layout.h"
+#include "ui_library_layout.h"
+
 #include "styles.h"
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QGridLayout>
-#include <QScrollArea>
-#include <QPair>
-#include <QMouseEvent>
-#include <QMessageBox>
-#include <QDebug>
-#include <QCoreApplication>
+#include "book_or_folder.h"
+#include "answer_dialog.h"
+#include "book_page.h"
 
-librarylayout::librarylayout(QWidget *widget)
+#include <QFileDialog>
+
+#include <QThread>
+
+
+
+void LibraryLayout::setStyle()
 {
-    setParent(widget);
-    libraryGridLayout = new QGridLayout(this);
+    QString styleSheets[5];
+    QString currentStyle = ProgramSettings->getInterfaceStyle();
 
-    BookListView = new QListView();
+    setLibraryLayoutButtons(styleSheets, currentStyle);
+    ui->_ChangeViewMode->setStyleSheet(styleSheets[0]);
+    ui->_Upscale->setStyleSheet(styleSheets[1]);
+    ui->_Downscale->setStyleSheet(styleSheets[2]);
 
-    BookListView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
-    BookListView->setResizeMode(QListView::Adjust);
-
-    ListSize = 2;
-    itemCount = 0;
-    BookModel = new QStandardItemModel(ListSize,ListSize);
-    BookListView->setModel(BookModel);
-
-    BookListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    BookListView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    BookListView->setDragDropMode(QAbstractItemView::NoDragDrop);
-
-    connect(BookListView, SIGNAL(activated(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
-
-    librarylayout::setLayout(libraryGridLayout);
-    libraryGridLayout->addWidget(BookListView, 0, 0);
-    libraryGridLayout->setContentsMargins(20,20,0,0);
-    BookListView->show();
-}
-
-librarylayout::~librarylayout()
-{
-    delete libraryGridLayout;
-    delete BookListView;
-    delete BookModel;
-}
-
-void librarylayout::showSelectedItem(QModelIndex mIndex)
-{
-   if (!mIndex.isValid())
-      return;
-
-   emit(showBookPage(mIndex.data(Qt::WhatsThisRole).toInt()));
+    setTabButtonsStyle(styleSheets, currentStyle);
+    ui->_Find->setStyleSheet(styleSheets[4]);
+    ui->_AddBooks->setStyleSheet(styleSheets[0]);
+    ui->_Delete->setStyleSheet(styleSheets[0]);
+    ui->_Group->setStyleSheet(styleSheets[2]);
+    ui->_Sort->setStyleSheet(styleSheets[2]);
+    ui->_SortBox->setStyleSheet(styleSheets[3]);
+    ui->_GroupBox->setStyleSheet(styleSheets[3]);
 }
 
 
-void librarylayout::addItem(int BookIndex, QString name, QString title, QImage cover)
+LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::LibraryLayout)
 {
-    BookModel->setRowCount(itemCount+1);
+    ui->setupUi(this);
 
-    QIcon coverIcon = QIcon(QPixmap::fromImage(cover));
+    ui->_SortBox->setView(new QListView());
+    ui->_GroupBox->setView(new QListView());
 
-    QModelIndex index = BookModel->index(itemCount++,0);
-    BookModel->setData(index, name + '\n' + title, Qt::DisplayRole);
-    BookModel->setData(index, name + '\n' + title, Qt::ToolTipRole);
-    BookModel->setData(index, BookIndex, Qt::WhatsThisRole);
-    BookModel->setData(index, coverIcon, Qt::DecorationRole);
+    HandlerThread = new QThread(this);
+    connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
 
-    QCoreApplication::processEvents();
-}
+    Library = new library();
+    LibHandler = new LibraryHandler(Library);
+    LibHandler->moveToThread(HandlerThread);
 
+    HandlerThread->start();
 
-void librarylayout::changeViewMod()
-{
-    if (BookListView->viewMode() == QListView::IconMode)
-    {
-        BookListView->setGridSize(QSize(IconListSize+5,IconListSize + 5));
-        BookListView->setViewMode(QListView::ListMode);
-        BookListView->setIconSize(QSize(IconListSize,IconListSize));
-        ProgramSettings->setLibraryReprezentation(true);
-    }
-    else
-    {
-        BookListView->setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
-        BookListView->setViewMode(QListView::IconMode);
-        BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
-        ProgramSettings->setLibraryReprezentation(false);
-    }
-}
-
-QVector <int> librarylayout::deleteItems()
-{
-    QVector <int> deletedItems;
-
-    QModelIndexList SelectedItems = BookListView->selectionModel()->selectedIndexes();
-    for (int i = 0; i < SelectedItems.size(); i++)
-        deletedItems.push_back(SelectedItems.at(i).data(Qt::WhatsThisRole).toInt());
-
-    while(SelectedItems.size())
-    {
-        BookModel->removeRow(SelectedItems.first().row());
-        SelectedItems = BookListView->selectionModel()->selectedIndexes();
-    }
-
-    itemCount = itemCount - deletedItems.size();
-    qDebug()<<BookModel->rowCount();
-    if (!BookModel->rowCount())
-        clear();
-    return deletedItems;
-}
-
-void librarylayout::deleteBook(int index)
-{
-    int i;
-    for (i = 0; i < BookModel->rowCount(); i++)
-        if (BookModel->item(i,0)->data(Qt::WhatsThisRole) == index)
-            break;
-
-    BookModel->removeRow(i);
-}
-
-int librarylayout::getSelectedItemsCount()
-{
-    return BookListView->selectionModel()->selectedIndexes().size();
-}
-
-void librarylayout::clear()
-{
-    QStandardItemModel* temp = BookModel;
-    BookModel = new QStandardItemModel(ListSize,ListSize);
-
-    BookListView->setModel(BookModel);
-    itemCount = 0;
-    temp->clear();
-    delete temp;
-}
-
-void librarylayout::groupBy(QString mode)
-{
-
-}
-
-void librarylayout::iconUpscale()
-{
-    if (BookListView->viewMode() == QListView::IconMode)
-    {
-        if (IconBarSize < 260)
-        {
-            IconBarSize+=30;
-            BookListView->setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
-            ProgramSettings->setLibraryBarIconSize(IconBarSize);
-        }
-    }
-    else
-    {
-        if (IconListSize < 200)
-        {
-            IconListSize+=10;
-            BookListView->setGridSize(QSize(IconListSize + 5,IconListSize + 5));
-            BookListView->setIconSize(QSize(IconListSize,IconListSize));
-            ProgramSettings->setLibraryListIconSize(IconListSize);
-        }
-    }
-}
-
-void librarylayout::iconDownscale()
-{
-    if (BookListView->viewMode() == QListView::IconMode)
-    {
-        if (IconBarSize > 110)
-        {
-            IconBarSize-=30;
-            BookListView->setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
-            ProgramSettings->setLibraryBarIconSize(IconBarSize);
-        }
-    }
-    else
-    {
-        if (IconListSize > 30)
-        {
-            IconListSize-=10;
-            BookListView->setGridSize(QSize(IconListSize + 5,IconListSize + 5));
-            BookListView->setIconSize(QSize(IconListSize,IconListSize));
-            ProgramSettings->setLibraryListIconSize(IconListSize);
-        }
-    }
-}
-
-void librarylayout::setSettingsData()
-{
     ProgramSettings = settings::getSettings();
-    QString ListViewStyle[1];
-    setLibraryStyle (ListViewStyle, ProgramSettings->getInterfaceStyle());
-    BookListView->setStyleSheet(ListViewStyle[0]);
+    setStyle();
 
-    IconBarSize = ProgramSettings->getLibraryBarIconSize();
-    IconListSize = ProgramSettings->getLibraryListIconSize();
-
-    if (IconBarSize < 80 || IconBarSize > 280)
-        IconBarSize = 140;
-    if (IconListSize < 20 || IconBarSize > 210)
-        IconListSize = 50;
+    ui->VLayout->addWidget(Library, 1);
 
     if (ProgramSettings->getLibraryReprezentation())
     {
-        BookListView->setGridSize(QSize(IconListSize+5,IconListSize + 5));
-        BookListView->setViewMode(QListView::ListMode);
-        BookListView->setIconSize(QSize(IconListSize,IconListSize));
+        Library->changeViewMod();
+        ui->_ChangeViewMode->setChecked(true);
+    }
+
+    LibHandler->loadBookList();
+    Library->setSettingsData();
+
+    connect(Library, SIGNAL(showBookPage(int)), this, SIGNAL(showBookPage(int)));
+}
+
+LibraryLayout::~LibraryLayout()
+{
+    delete ui;
+    delete LibHandler;
+    delete Library;
+    delete HandlerThread;
+}
+
+void LibraryLayout::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+    }
+}
+
+void LibraryLayout::on__AddBooks_clicked()
+{
+    ui->_Find->setChecked(false);
+    BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_AddBooks->mapToGlobal(QPoint(0,ui->_AddBooks->height())),
+                                                      ui->_AddBooks->size().width(), ProgramSettings->getInterfaceStyle(), this);
+
+    connect(bookOrFolderAnsw, SIGNAL(AddBookSignal()), this, SLOT(addBooksFromFiles()));
+    connect(bookOrFolderAnsw, SIGNAL(AddFolderSignal()), this, SLOT(addBooksFromFolder()));
+}
+
+void LibraryLayout::addBooksFromFolder()
+{
+    QString path = QFileDialog::getExistingDirectory(this, QObject::tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    LibHandler->AddFolder(path);
+}
+
+void LibraryLayout::addBooksFromFiles()
+{
+    QStringList fileList = QFileDialog::getOpenFileNames(this, QObject::tr("Open files"), "", "(*.FB2)");
+    LibHandler->AddBooks(fileList);
+}
+
+void LibraryLayout::on__Delete_clicked()
+{
+    ui->_Find->setChecked(false);
+    if (Library->getSelectedItemsCount() != 0)
+    {
+        AnswerDialog *answer_window = new AnswerDialog(ui->_Delete->mapToGlobal(QPoint(ui->_Delete->width() - 300, ui->_Delete->height())),
+                                                       QObject::tr("Delete books?"),
+                                                       ProgramSettings->getInterfaceStyle(),
+                                                       this);
+        answer_window->show();
+
+        if (answer_window->exec() == QDialog::Accepted)
+            LibHandler->deleteBooks(Library->deleteItems());
+        else
+            delete answer_window;
+    }
+}
+
+void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
+{
+    Library->changeViewMod();
+    ProgramSettings->setLibraryReprezentation(checked);
+}
+
+void LibraryLayout::on__Upscale_clicked()
+{
+    Library->iconUpscale();
+}
+
+void LibraryLayout::on__Downscale_clicked()
+{
+    Library->iconDownscale();
+}
+
+void LibraryLayout::on__SortBox_activated(const QString &arg1)
+{
+    LibHandler->sortBooks(arg1);
+}
+
+void LibraryLayout::on__Find_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        searchWindow = new SearchWindow(QPoint(ui->_Find->x(),ui->_Find->y() + ui->_Find->height()),
+                                        ProgramSettings->getInterfaceStyle(), false,
+                                        this);
+        //            _____   ___
+        //  \  /\  /    |     |__
+        //   \/  \/     |     |
+        // MEGA BUG, Wiiiiii
+
+        connect(searchWindow, SIGNAL(startSearch(QString,QString)), LibHandler, SLOT(findBooks(QString, QString)));
+        connect(searchWindow, SIGNAL(finished(int)), this, SLOT(deactiveFindButton()));
     }
     else
     {
-        BookListView->setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
-        BookListView->setViewMode(QListView::IconMode);
-        BookListView->setIconSize(QSize(IconBarSize,IconBarSize));
+        searchWindow->close();
+        LibHandler->RefreshLibrary();
     }
+}
+
+void LibraryLayout::deactiveFindButton()
+{
+    ui->_Find->setChecked(false);
+}
+
+
+void LibraryLayout::saveBookList()
+{
+    LibHandler->saveBookList();
+}
+
+Book* LibraryLayout::getBookByIndex(int index)
+{
+    return LibHandler->getBookByIndex(index);
+}
+
+void LibraryLayout::deleteBook(int index)
+{
+    LibHandler->deleteBook(index);
 }

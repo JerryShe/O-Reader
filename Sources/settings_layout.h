@@ -2,12 +2,15 @@
 #define SETTINGSLAYOUT_H
 
 #include <QWidget>
-#include <QGridLayout>
+#include <QVBoxLayout>
 #include <QHBoxLayout>
+
 #include "settings_programlayout.h"
 #include "settings_profilelayout.h"
 #include "settings_readerlayout.h"
 #include "synchronization.h"
+
+#include "QTabSwitcher.h"
 
 
 class settingslayout : public QWidget
@@ -26,9 +29,6 @@ signals:
     void settingsChanged();
 
 public slots:
-    void showProfile();
-    void showProgram();
-    void showReader();
     void addExitButton();
 
 private slots:
@@ -43,21 +43,21 @@ private:
     QVBoxLayout* MainLayout;
     QHBoxLayout* TabsLayout;
 
-    Settings_ProfileLayout *ProfileWidget;  //0
-    Settings_ProgramLayout *ProgramWidget;  //2
-    Settings_ReaderLayout *ReaderWidget;    //1
+    Settings_ProfileLayout *ProfileWidget;
+    Settings_ProgramLayout *ProgramWidget;
+    Settings_ReaderLayout *ReaderWidget;
 
     QHBoxLayout* ButtonsLayout;
-    QPushButton* _SettingsProfile;
-    QPushButton* _SettingsProgram;
-    QPushButton* _SettingsReader;
+    QPushButton* ProfileButton;
+    QPushButton* ProgramButton;
+    QPushButton* ReaderButton;
     QPushButton* exit_button;
 
     Synchronization* UserActions;
 
-    short currentTab = 1;
+    QTabSwitcher* tabSwitcher;
+
     bool settingsWasChanged = false;
-    QString tabsStyleSheets[5];
 
     settings * ProgramSettings;
 };
