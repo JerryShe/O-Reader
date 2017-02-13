@@ -7,6 +7,9 @@
 
 #include <QDebug>
 
+#include <books.h>
+#include <settings.h>
+
 enum UActions
 {
     AddBook,
@@ -19,18 +22,23 @@ enum UActions
 
 struct action
 {
-    int actionIndex;
+    unsigned int actionIndex;
     quint64 actionTime;
     QString spec;
     QString dataChanges;
 
     action(){}
-    action(int index, QString itemSpec, QString data);
-    action(int index, quint64 time, QString itemSpec, QString data);
+    action(unsigned int index, QString itemSpec, QString data);
+    action(unsigned int index, quint64 time, QString itemSpec, QString data);
 
     friend QDataStream &operator>>(QDataStream &in, action &actionElem);
     friend QDataStream &operator<<(QDataStream &out, const action &actionElem);
 };
+
+
+
+
+
 
 class Synchronization : public QObject
 {
@@ -39,22 +47,35 @@ private:
     Synchronization();
     ~Synchronization();
 
+    QString getNumber(QString item);
+    QString getNumber(int item);
+
+
+
     QQueue <action> BookQueue;
     QQueue <action> FileQueue;
 
     bool SettingsChanged;
     quint64 SettingsChangedTime;
 
-    QString getNumber(QString item);
-    QString getNumber(int item);
+    int LastOpenedWindow;
+
+    unsigned int LastOpenedBookIndex;
 
 public:
     static Synchronization* getSynchronization();
 
+    int getLastOpenedWindow();
+    void setLastOpenedWindow(unsigned int index);
+
+    unsigned int getLastOpenedBookIndex();
+    void setLastOpenedBookIndex(unsigned int index);
+
     int synchronizeToServer();
     int synchronizeFromServer();
-    void saveLog();
-    void loadLog();
+
+    bool saveLog();
+    bool loadLog();
 
 
 

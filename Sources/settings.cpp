@@ -6,27 +6,26 @@
 
 #include <QDebug>
 
-settings::settings()
+Settings::Settings()
 {
     textAlignMap.insert(0, "justify");
     textAlignMap.insert(1, "left");
     textAlignMap.insert(2, "right");
     textAlignMap.insert(3, "center");
-    loadSettings();
 }
 
-settings* settings::getSettings()
+Settings* Settings::getSettings()
 {
-    static settings ProgramSettings;
+    static Settings ProgramSettings;
     return &ProgramSettings;
 }
 
-void settings::setTranslator(QTranslator* translator)
+void Settings::setTranslator(QTranslator* translator)
 {
     LanguageTranslator = translator;
 }
 
-QString settings::getTextAlignName(unsigned short key)
+QString Settings::getTextAlignName(unsigned short key)
 {
     if (textAlignMap.contains(key))
         return textAlignMap[key];
@@ -34,12 +33,12 @@ QString settings::getTextAlignName(unsigned short key)
         return "";
 }
 
-settings::~settings()
+Settings::~Settings()
 {
-    saveSettings();
+    //saveSettings();
 }
 
-void settings::saveSettings()
+bool Settings::saveSettings()
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -55,10 +54,14 @@ void settings::saveSettings()
         SettingsFile.close();
     }
     else
+    {
         qDebug()<<"save settings wtf";
+    }
+    return 1;
 }
 
-void settings::loadSettings()
+
+bool Settings::loadSettings()
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -68,11 +71,13 @@ void settings::loadSettings()
 
     if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        qDebug()<<"settings loaded";
         QDataStream in(&SettingsFile);
         in>>*this;
     }
     else
     {
+        qDebug()<<"settings created";
         SettingsFile.open((QIODevice::WriteOnly | QIODevice::Text));
         QDataStream out(&SettingsFile);
         InterfaceStyle = "Red";
@@ -94,13 +99,13 @@ void settings::loadSettings()
         StylesMap.push_back(ReadingStyle());
         currentStyle = "Standart";
         out<<*this;
-        return;
+        return 1;
     }
     SettingsFile.close();
-    emit loadDone();
+    return 1;
 }
 
-QDataStream &operator<<(QDataStream &out, const settings &SettingsElem)
+QDataStream &operator<<(QDataStream &out, const Settings &SettingsElem)
 {
     out<<SettingsElem.LoginToken;
     out<<SettingsElem.InterfaceStyle;
@@ -123,7 +128,7 @@ QDataStream &operator<<(QDataStream &out, const settings &SettingsElem)
 }
 
 
-QDataStream &operator>>(QDataStream &in, settings &SettingsElem)
+QDataStream &operator>>(QDataStream &in, Settings &SettingsElem)
 {
     in>>SettingsElem.LoginToken;
     in>>SettingsElem.InterfaceStyle;
@@ -236,52 +241,52 @@ QDataStream &operator >>(QDataStream &in, TextStyleSheet &TextStyleSheetElem)
 }
 
 
-QString settings::getInterfaceStyle()
+QString Settings::getInterfaceStyle()
 {
     return InterfaceStyle;
 }
 
-void settings::setInterfaceStyle(const QString style)
+void Settings::setInterfaceStyle(const QString style)
 {
     InterfaceStyle = style;
 }
 
-bool settings::getLibraryReprezentation()
+bool Settings::getLibraryReprezentation()
 {
     return LibraryReprezentation;
 }
 
-void settings::setLibraryReprezentation(const bool val)
+void Settings::setLibraryReprezentation(const bool val)
 {
     LibraryReprezentation = val;
 }
 
-unsigned short settings::getLibraryBarIconSize()
+unsigned short Settings::getLibraryBarIconSize()
 {
     return LibraryIconBarSize;
 }
 
-unsigned short settings::getLibraryListIconSize()
+unsigned short Settings::getLibraryListIconSize()
 {
     return LibraryIconBarSize;
 }
 
-void settings::setLibraryListIconSize(const unsigned short size)
+void Settings::setLibraryListIconSize(const unsigned short size)
 {
     LibraryIconListSize = size;
 }
 
-void settings::setLibraryBarIconSize(const unsigned short size)
+void Settings::setLibraryBarIconSize(const unsigned short size)
 {
     LibraryIconBarSize = size;
 }
 
-QString settings::getCurrentLanguage()
+QString Settings::getCurrentLanguage()
 {
     return Language;
 }
 
-void settings::setLanguage(const QString lang)
+void Settings::setLanguage(const QString lang)
 {
     Language = lang;
     bool done;
@@ -296,102 +301,102 @@ void settings::setLanguage(const QString lang)
     }
 }
 
-bool settings::getHideTopBar()
+bool Settings::getHideTopBar()
 {
     return HideTopBar;
 }
 
-void settings::setHideTopBar(bool n)
+void Settings::setHideTopBar(bool n)
 {
     HideTopBar = n;
 }
 
-QString settings::getCurrentTextStyle()
+QString Settings::getCurrentTextStyle()
 {
     return currentStyle;
 }
 
-void settings::setCurrentTextStyle(const QString style)
+void Settings::setCurrentTextStyle(const QString style)
 {
     currentStyle = style;
 }
 
-QStringList settings::getTextStylesList()
+QStringList Settings::getTextStylesList()
 {
     return TextStylesNames;
 }
 
-void settings::setToken(QString token)
+void Settings::setToken(QString token)
 {
     LoginToken = token;
 }
 
-QString settings::getToken()
+QString Settings::getToken()
 {
     return LoginToken;
 }
 
-int settings::getFForwardKey()
+int Settings::getFForwardKey()
 {
     return FKeyForwardPage;
 }
 
-void settings::setFForwardKey(int key)
+void Settings::setFForwardKey(int key)
 {
     FKeyForwardPage = key;
 }
 
-int settings::getSForwardKey()
+int Settings::getSForwardKey()
 {
     return SKeyForwardPage;
 }
 
-void settings::setSForwardKey(int key)
+void Settings::setSForwardKey(int key)
 {
     SKeyForwardPage = key;
 }
 
-int settings::getFBackwardKey()
+int Settings::getFBackwardKey()
 {
     return FKeyBackwardPage;
 }
 
-void settings::setFBackwardKey(int key)
+void Settings::setFBackwardKey(int key)
 {
     FKeyBackwardPage = key;
 }
 
-int settings::getSBackwardKey()
+int Settings::getSBackwardKey()
 {
     return SKeyBackwardPage;
 }
 
-void settings::setSBackwardKey(int key)
+void Settings::setSBackwardKey(int key)
 {
     SKeyBackwardPage = key;
 }
 
-bool settings::getTurnByWheel()
+bool Settings::getTurnByWheel()
 {
     return PageTurnByWheel;
 }
 
-void settings::setTurnByWheel(bool turn)
+void Settings::setTurnByWheel(bool turn)
 {
     PageTurnByWheel = turn;
 }
 
-bool settings::getTurnByTap()
+bool Settings::getTurnByTap()
 {
     return PageTurnByTap;
 }
 
-void settings::setTurnByTap(bool turn)
+void Settings::setTurnByTap(bool turn)
 {
     PageTurnByTap = turn;
 }
 
-ReadingStyle settings::getNamedStyle(const QString name)
+ReadingStyle Settings::getNamedStyle(const QString name)
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)
@@ -401,12 +406,12 @@ ReadingStyle settings::getNamedStyle(const QString name)
     return StylesMap.at(0);
 }
 
-ReadingStyle settings::getCurrentTextStyleElem()
+ReadingStyle Settings::getCurrentTextStyleElem()
 {
     return StylesMap.at(TextStylesNames.indexOf(currentStyle));
 }
 
-void settings::saveStyle(const QString name, const ReadingStyle style)
+void Settings::saveStyle(const QString name, const ReadingStyle style)
 {
     if (StylesMap.size() != TextStylesNames.size())
     {
@@ -424,7 +429,7 @@ void settings::saveStyle(const QString name, const ReadingStyle style)
     qDebug()<<"settings saved";
 }
 
-void settings::removeNamedStyle(QString name)
+void Settings::removeNamedStyle(QString name)
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)

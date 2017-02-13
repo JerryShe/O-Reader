@@ -12,8 +12,6 @@ TRANSLATIONS = Languages/en.ts\
 RC_FILE = app.rc
 
 SOURCES += main.cpp\
-    main_window.cpp \
-    login_window.cpp \
     answer_dialog.cpp \
     styles.cpp \
     settings_layout.cpp \
@@ -26,19 +24,20 @@ SOURCES += main.cpp\
     settings_readerlayout.cpp \
     book_page.cpp \
     synchronization.cpp \
-    reading_window.cpp \
-    search_window.cpp \
     genresmap.cpp \
     booktableofcontents.cpp \
     fb2textpaginator.cpp \
     library.cpp \
     library_layout.cpp \
     library_handler.cpp \
-    QTabSwitcher.cpp
+    QTabSwitcher.cpp \
+    searchwindow.cpp \
+    main_window.cpp \
+    login_window.cpp \
+    reading_window.cpp \
+    window_manager.cpp
 
 HEADERS  += \
-    login_window.h \
-    main_window.h \
     answer_dialog.h \
     styles.h \
     settings_layout.h \
@@ -51,7 +50,6 @@ HEADERS  += \
     settings_readerlayout.h \
     book_page.h \
     synchronization.h \
-    reading_window.h \
     search_window.h \
     genresmap.h \
     booktableofcontents.h \
@@ -59,17 +57,23 @@ HEADERS  += \
     library.h \
     library_layout.h \
     library_handler.h \
-    QTabSwitcher.h
+    QTabSwitcher.h \
+    reading_window_копия.h \
+    main_window.h \
+    login_window.h \
+    reading_window.h \
+    window_manager.h
 
-FORMS    += mainwindow.ui \
-            loginwindow.ui \
+FORMS    += \
     settings_programlayout.ui \
     settings_profilelayout.ui \
     settings_readerlayout.ui \
     book_page.ui \
-    readingwindow.ui \
     booktableofcontents.ui \
-    library_layout.ui
+    library_layout.ui \
+    main_window.ui \
+    login_window.ui \
+    reading_window.ui
 
 RESOURCES += \
     images.qrc

@@ -59,7 +59,7 @@ private:
 
     bool settingsWasChanged = false;
 
-    settings * ProgramSettings;
+    Settings * ProgramSettings;
 };
 
 #endif // SETTINGSLAYOUT_H

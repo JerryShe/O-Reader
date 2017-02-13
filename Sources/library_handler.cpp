@@ -3,22 +3,56 @@
 #include <QDebug>
 
 
-LibraryHandler::LibraryHandler(library *LWidget)
+LibraryHandler* LibraryHandler::getLibraryHandler()
+{
+    static LibraryHandler LibHandler;
+    return &LibHandler;
+}
+
+LibraryHandler::LibraryHandler()
 {
     resoursesFolderPath = "LibraryResources";
-    LibraryWidget = LWidget;
-    UserActions = Synchronization::getSynchronization();;
+    LibraryWidget = 0;
+    UserActions = Synchronization::getSynchronization();
     currentBookIndex = 0;
     filesMask<<"*.fb2";
+    needRefresh = true;
 }
 
 LibraryHandler::~LibraryHandler()
 {
-    saveBookList();
+    //saveBookList();
 }
 
-void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
+void LibraryHandler::setLibraryWidget(library* lbWidget)
 {
+    qDebug()<<"set lib widget";
+    LibraryWidget = lbWidget;
+    needRefresh = true;
+    if (LibraryWidget != 0)
+        refreshLibrary();
+}
+
+Book* LibraryHandler::getLastOpenedBook()
+{
+    if (UserActions->getLastOpenedBookIndex() == -1)
+        return 0;
+
+    int i = 0;
+    for (; i < bookList.size(); i++)
+        if (bookList[i].getBookIndex() == UserActions->getLastOpenedBookIndex())
+            break;
+
+    if (i == bookList.size())
+        return 0;
+
+    return &bookList[i];
+}
+
+
+void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
+{
+    qDebug()<<"deleting books";
     for (int i = 0; i < deletedItemsIndexes.size(); i++)
     {
         for (int j = 0; j < bookList.size(); j++)
@@ -35,12 +69,13 @@ void LibraryHandler::deleteBooks(QVector<int> deletedItemsIndexes)
     {
         saveBookList();
         UserActions->saveLog();
-        RefreshLibrary();
+        refreshLibrary();
     }
 }
 
 void LibraryHandler::AddBooks(const QStringList fileList)
 {
+    qDebug()<<"adding books";
     if (!fileList.size())
         return;
 
@@ -79,17 +114,15 @@ void LibraryHandler::AddFolder(QString path)
 }
 
 
-void LibraryHandler::loadBookList()
+bool LibraryHandler::loadBookList()
 {
     QFile bookFileList(resoursesFolderPath + "/BookList.lb");
 
-    if(bookFileList.open(QIODevice::ReadOnly | QIODevice::Text ))
-        qDebug() << "File Has Been Opened" << endl;
-    else
+    if(!bookFileList.open(QIODevice::ReadOnly | QIODevice::Text ))
     {
         qDebug() << "Failed to Create File" << endl;
         ///оповещение - невозможно открыть или создать файл библиотеки
-        return;
+        return 1;
     }
 
     QDataStream in(&bookFileList);
@@ -97,35 +130,39 @@ void LibraryHandler::loadBookList()
     while (!in.atEnd())
     {
         in>>temp;
-        temp.setBookIndex(currentBookIndex++);
+        if (currentBookIndex < temp.getBookIndex())
+            currentBookIndex = temp.getBookIndex();
+
         bookList.push_back(temp);
-        LibraryWidget->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
+        if (LibraryWidget != 0)
+            LibraryWidget->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
     }
     bookFileList.close();
+    qDebug()<<bookList.size()<<"books loaded";
+
+    return 1;
 }
 
 
-void LibraryHandler::saveBookList()
+bool LibraryHandler::saveBookList()
 {
     QFile bookFileList(resoursesFolderPath + "/BookList.lb");
 
-    if(bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
+    if(!bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
     {
-        qDebug() << "Book File Has Been Opened" << endl;
-    }
-    else
-    {
-        qDebug() << "Failed to Create Book File" << endl;
+        qDebug() << "Failed to Create Book File";
         ///оповещение - невозможно открыть или создать файл библиотеки
-        return;
+        return 1;
     }
 
     QDataStream out(&bookFileList);
     for (int i = 0; i < bookList.size(); i++)
         out<<bookList[i];
 
-    qDebug()<<"books saved";
     bookFileList.close();
+    qDebug()<<bookList.size()<<"books saved";
+    return 1;
+
 }
 
 
@@ -168,11 +205,12 @@ void LibraryHandler::openNewBook(const QString file, GenresMap *Gmap)
             return;
         }
 
-        boo.setBookIndex(currentBookIndex++);
+        boo.setBookIndex(++currentBookIndex);
         bookList.push_back(boo);
 
         UserActions->addAction(UActions::AddBook, file);
-        LibraryWidget->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
+        if (LibraryWidget != 0)
+            LibraryWidget->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
     }
     if (tipe == "zip")
     {
@@ -180,9 +218,10 @@ void LibraryHandler::openNewBook(const QString file, GenresMap *Gmap)
     }
 }
 
-void LibraryHandler::deleteBook(const int index)
+void LibraryHandler::deleteBook(const unsigned int index)
 {
-    LibraryWidget->deleteBook(index);
+    if (LibraryWidget != 0)
+        LibraryWidget->deleteBook(index);
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getBookIndex() == index)
         {
@@ -210,6 +249,9 @@ bool TitleComparator(Book &boo1, Book & boo2)
 
 void LibraryHandler::sortBooks(const QString mode)
 {
+    if (LibraryWidget == 0)
+        return;
+
     if (mode == QObject::tr("Date"))
     {
         LibraryWidget->clear();
@@ -242,6 +284,9 @@ void LibraryHandler::sortBooks(const QString mode)
 
 void LibraryHandler::findBooks(QString token, QString mode)
 {
+    if (LibraryWidget == 0)
+        return;
+
     if (token != "")
     {
         needRefresh = true;
@@ -270,7 +315,7 @@ void LibraryHandler::findBooks(QString token, QString mode)
     }
 }
 
-Book* LibraryHandler::getBookByIndex(int index)
+Book* LibraryHandler::getBookByIndex(unsigned int index)
 {
     int i;
     for (i = 0; i < bookList.size(); i++)
@@ -279,9 +324,10 @@ Book* LibraryHandler::getBookByIndex(int index)
     return &bookList[i];
 }
 
-void LibraryHandler::RefreshLibrary()
+void LibraryHandler::refreshLibrary()
 {
-    if (needRefresh == true)
+    qDebug()<<"refreshing";
+    if (needRefresh == true && LibraryWidget != 0)
     {
         LibraryWidget->clear();
         needRefresh = false;

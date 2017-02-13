@@ -1,7 +1,5 @@
-#ifndef READING_WINDOW_H
-#define READING_WINDOW_H
-
-#include <QWidget>
+#ifndef READINGWINDOW_H
+#define READINGWINDOW_H
 
 #include <QMainWindow>
 #include "books.h"
@@ -22,20 +20,19 @@ namespace Ui {
 class ReadingWindow;
 }
 
-class ReadingWindow : public QWidget
+class ReadingWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit ReadingWindow(QWidget* parent, Book *book);
+    explicit ReadingWindow(Book *book);
     ~ReadingWindow();
 
-    void startReading();
-
 private slots:
+    void on_min_button_clicked();
+    void on_full_size_button_clicked();
     void on_exit_button_clicked();
     void on_MenuButton_clicked();
-
     void ContentsButton_clicked();
     void FindButton_Clicked();
     void SettingsButton_Clicked();
@@ -57,27 +54,26 @@ private slots:
     void goToSection(int sectionIndex);
 
 signals:
-    void showMainWindow();
+    void showMainWindow(bool closeType);
     void windowWasResized();
 
-    void showWindowMinimazed();
-    void showWindowMaximazed();
-    void closeWindow();
-
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-    void changeEvent(QEvent *event);
+   bool eventFilter(QObject *obj, QEvent *event);
+   void changeEvent(QEvent *event);
 
 private:
-    Book* CurBook;
-
+    QRect prev_geometry;
+    bool moving = false;
     bool TopBarNeedHide;
     short HidenTimer;
+    QPoint lastPoint;
+    int resizingFrame = 5;
 
     bool ActiveWindow;   // 0 - главное, 1 - не главное
 
+    Ui::ReadingWindow* ui;
     QThread* HandlerThread;
-    Settings* ProgramSettings;
+    settings* ProgramSettings;
 
     QWidget* MenuWidget;
     QVBoxLayout* MenuLayout;
@@ -99,8 +95,7 @@ private:
     QString styles[5];
 
     FB2TextPaginator* BookPaginator;
-
-    Ui::ReadingWindow* ui;
 };
 
-#endif // READING_WINDOW_H
+#endif // READINGWINDOW_H
+

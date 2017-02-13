@@ -58,7 +58,7 @@ private:
     Ui::Settings_ReaderLayout *ui;
     AnswerDialog * StyleDeleteConfirm;
 
-    settings * ProgramSettings;
+    Settings * ProgramSettings;
     QString currentTextStyle;
     QString currentBackgroundImage;
     QString savebuttonStyle[2];

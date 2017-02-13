@@ -12,12 +12,12 @@ public:
     explicit synchronizationlayout(QWidget *Parent=0);
     ~synchronizationlayout();
 
-    void setSettingsData(settings *PSettings);
+    void setSettingsData(Settings *PSettings);
 
 private:
     QGridLayout *synchronizationGridLayout;
 
-    settings *ProgramSettings;
+    Settings *ProgramSettings;
 };
 
 #endif // SYNCHRONIZATIONLAYOUT_H

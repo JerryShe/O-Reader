@@ -89,7 +89,7 @@ private:
     QString word, tag;
 
     Book *book;
-    settings *ProgramSettings;
+    Settings *ProgramSettings;
     ReadingStyle CurStyle;
 
     QString PageHTMLHeader;

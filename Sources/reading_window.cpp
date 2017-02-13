@@ -1,5 +1,5 @@
 #include "reading_window.h"
-#include "ui_readingwindow.h"
+#include "ui_reading_window.h"
 #include "books.h"
 #include "answer_dialog.h"
 #include "settings_layout.h"
@@ -19,13 +19,6 @@
 
 #include <QDebug>
 
-#if defined(Q_OS_LINUX)
-    #define CurrentOS 0
-#elif defined(Q_OS_WIN)
-    #define CurrentOS 1
-#endif
-
-
 void ReadingWindow::setStyle(QString currentStyle)
 {
     QString styleSheets[6];
@@ -41,7 +34,7 @@ void ReadingWindow::setStyle(QString currentStyle)
     ui->exit_button->setStyleSheet(styleSheets[0]);
 
     setBackgroundWindowColor(styleSheets, currentStyle);
-    ui->MainWidget->setStyleSheet(styleSheets[0]);
+    this->setStyleSheet(styleSheets[0]);
 
     setReaderWindowStyle(styleSheets, currentStyle);
     ui->Clock->setStyleSheet(styleSheets[1]);
@@ -57,28 +50,28 @@ void ReadingWindow::setStyle(QString currentStyle)
     MenuSettingsButton->setStyleSheet(styleSheets[2]);
 }
 
-ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
+ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow), CurBook(book)
 {
     ActiveWindow = false;
-    setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
-    show();
+    ui->BookName->setText(CurBook->getAuthorName() + ": " + CurBook->getTitle());
+
+
     BookPaginator = new FB2TextPaginator();
     parserThread = new QThread(this);
     BookPaginator->moveToThread(parserThread);
+    parserThread->start();
 
     connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
-    parserThread->start();
-    connect(this, SIGNAL(destroyed(QObject*)), parserThread, SLOT(quit()));
-    ui->TextPage->setHtml(BookPaginator->startParser(book,ui->TextPage->width(), ui->TextPage->height()));
-    updateProgress();
-    ui->BookName->setText(book->getAuthorName() + ": " + book->getTitle());
+
     ui->TextPage->setMouseTracking(true);
-    ui->MainWidget->setMouseTracking(true);
     setMouseTracking(true);
-    prev_geometry = geometry();
+
+
     TopBarNeedHide = true;
     HidenTimer = 0;
+
+
     MenuWidget = new QWidget(this);
 
     MenuWidget->hide();
@@ -94,28 +87,31 @@ ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
     MenuLayout->addWidget(MenuContentsButton);
     connect(MenuContentsButton, SIGNAL(clicked(bool)), this, SLOT(ContentsButton_clicked()));
 
-    /*
+/*
     MenuFindButton = new QPushButton(this);
     MenuFindButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuFindButton);
     connect(MenuFindButton, SIGNAL(clicked(bool)), this, SLOT(FindButton_Clicked()));
 */
+
     MenuSettingsButton = new QPushButton(this);
     MenuSettingsButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuSettingsButton);
     connect(MenuSettingsButton, SIGNAL(clicked(bool)), this, SLOT(SettingsButton_Clicked()));
+
 /*
     MenuSynchronizationButton = new QPushButton(this);
     MenuSynchronizationButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuSynchronizationButton);
     connect(MenuSynchronizationButton, SIGNAL(clicked(bool)), this, SLOT(SynchronizationButton_Clicked()));
 */
+
     MenuBackToMainWindowButton = new QPushButton(this);
     MenuBackToMainWindowButton->setFixedSize(QSize(ui->MenuButton->width(),ui->MenuButton->width()));
     MenuLayout->addWidget(MenuBackToMainWindowButton);
     connect(MenuBackToMainWindowButton, SIGNAL(clicked(bool)), this, SLOT(BackToMainWindowButton_Clicked()));
 
-    ProgramSettings = settings::getSettings();
+    ProgramSettings = Settings::getSettings();
     setStyle(ProgramSettings->getInterfaceStyle());
     ui->Clock->setText(QTime::currentTime().toString("hh:mm"));
 
@@ -124,6 +120,15 @@ ReadingWindow::ReadingWindow(Book *book) : ui(new Ui::ReadingWindow)
     clockTimer->start(1000);
     ui->TextPage->installEventFilter(this);
     ui->TopBarWidget->installEventFilter(this);
+
+    connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
+    connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
+}
+
+void ReadingWindow::startReading()
+{
+    ui->TextPage->setHtml(BookPaginator->startParser(CurBook,ui->TextPage->width(), ui->TextPage->height()));
+    updateProgress();
 }
 
 void ReadingWindow::changeEvent(QEvent *event)
@@ -135,8 +140,9 @@ void ReadingWindow::changeEvent(QEvent *event)
 
 ReadingWindow::~ReadingWindow()
 {
-    delete ui;
+    parserThread->quit();
     delete BookPaginator;
+    delete ui;
 }
 
 
@@ -159,40 +165,6 @@ void ReadingWindow::clockStep()
         }
 }
 
-void ReadingWindow::on_min_button_clicked()
-{
-    if (ActiveWindow)
-        return;
-
-    if(isMinimized())
-    {
-        normalGeometry() = prev_geometry;
-        showNormal();
-    }
-    else
-    {
-        prev_geometry = geometry();
-        showMinimized();
-    }
-}
-
-void ReadingWindow::on_full_size_button_clicked()
-{
-    if (ActiveWindow)
-        return;
-
-    if(isMaximized())
-    {
-        normalGeometry() = prev_geometry;
-        showNormal();
-    }
-    else
-    {
-        prev_geometry = geometry();
-        showMaximized();
-    }
-}
-
 void ReadingWindow::on_exit_button_clicked()
 {
     if (ActiveWindow)
@@ -206,8 +178,8 @@ void ReadingWindow::on_exit_button_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        delete answer_window;        
-        emit showMainWindow(true);
+        delete answer_window;
+        emit closeWindow();
     }
     else
         delete answer_window;
@@ -248,21 +220,6 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 }
                 if (MouseMoveEvent->pos().y() > 50 && !ui->TopBarWidget->isHidden())
                     TopBarNeedHide = true;
-            }
-            if (moving)
-            {
-                if (!isMaximized())
-                {
-                    move(MouseMoveEvent->globalX() - lastPoint.x() - 7, MouseMoveEvent->globalY() - lastPoint.y() - 7);
-                    if (!MenuWidget->isHidden())
-                        MenuWidget->move(ui->MenuButton->x(), ui->MenuButton->y() + ui->MenuButton->height());
-                }
-                else
-                {
-                    prev_geometry.setY(MouseMoveEvent->globalY());
-                    normalGeometry() = prev_geometry;
-                    showNormal();
-                }
             }
             break;
         }
@@ -328,11 +285,6 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                         }
                     }
                 }
-                else
-                {
-                    moving = true;
-                    lastPoint = MousePressEvent->pos();
-                }
             }
             break;
         }
@@ -364,18 +316,6 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 }
             }
         }
-
-        case QEvent::MouseButtonRelease:
-        {
-            QMouseEvent* MouseReleaseEvent = static_cast<QMouseEvent*>(event);
-            if (MouseReleaseEvent->button() == Qt::LeftButton)
-            {
-                if (moving)
-                    moving = false;
-            }
-            break;
-        }
-
         case QEvent::Resize:
         {
             emit windowWasResized();
@@ -474,13 +414,17 @@ void ReadingWindow::SettingsButton_Clicked()
 
     MiniWindow->setGeometry(frame, frame, w, h);
     MiniWindow->setContentsMargins(0,0,0,0);
+
+
     MiniWindowLayout = new QVBoxLayout(MiniWindow);
     MiniWindow->setLayout(MiniWindowLayout);
     MiniWindowLayout->setContentsMargins(0,0,0,0);
 
     SettingsPage = new settingslayout(MiniWindow);
     SettingsPage->setSettingsData();
+
     MiniWindowLayout->addWidget(SettingsPage);
+
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(close()));
     connect(SettingsPage, SIGNAL(settingsChanged()), this, SLOT(reprintNewSettText()));
@@ -523,7 +467,5 @@ void ReadingWindow::SynchronizationButton_Clicked()
 
 void ReadingWindow::BackToMainWindowButton_Clicked()
 {
-    emit showMainWindow(false);
+    emit showMainWindow();
 }
-
-

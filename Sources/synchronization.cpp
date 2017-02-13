@@ -10,12 +10,13 @@
 Synchronization::Synchronization()
 {
     SettingsChanged = false;
-    loadLog();
+    LastOpenedWindow = 0;
+    LastOpenedBookIndex = -1;
 }
 
 Synchronization::~Synchronization()
 {
-    saveLog();
+    //saveLog();
 }
 
 Synchronization* Synchronization::getSynchronization()
@@ -24,7 +25,7 @@ Synchronization* Synchronization::getSynchronization()
     return &UserActions;
 }
 
-action::action(int index, QString itemSpec, QString data)
+action::action(unsigned int index, QString itemSpec, QString data)
 {
     actionTime = QDateTime::currentMSecsSinceEpoch();
     actionIndex = index;
@@ -32,7 +33,7 @@ action::action(int index, QString itemSpec, QString data)
     dataChanges = data;
 }
 
-action::action(int index, quint64 time, QString itemSpec, QString data)
+action::action(unsigned int index, quint64 time, QString itemSpec, QString data)
 {
     actionTime = time;
     actionIndex = index;
@@ -40,7 +41,7 @@ action::action(int index, quint64 time, QString itemSpec, QString data)
     dataChanges = data;
 }
 
-void Synchronization::loadLog()
+bool Synchronization::loadLog()
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -49,15 +50,13 @@ void Synchronization::loadLog()
     }
     QFile LogList(resoursesFolderPath + "/ChangesLogs.log");
 
-    if(LogList.open(QIODevice::ReadOnly | QIODevice::Text ))
-        qDebug() << "Log File Has Been Opened" << endl;
-    else
+    if(!LogList.open(QIODevice::ReadOnly | QIODevice::Text ))
     {
-        qDebug() << "Log Failed to Create File" << endl;
-        qDebug() << "error = " << LogList.error ();
+        qDebug() << "Log Failed to Create File";
+        qDebug() << "error = " << LogList.error()<< endl;
 
         ///оповещение - невозможно открыть или создать файл логов
-        return;
+        return 1;
     }
 
     QDataStream in(&LogList);
@@ -65,45 +64,42 @@ void Synchronization::loadLog()
     in>>SettingsChanged;
     if (SettingsChanged)
         in>>SettingsChangedTime;
+    in>>LastOpenedWindow;
+    in>>LastOpenedBookIndex;
 
     in>>BookQueue;
     in>>FileQueue;
 
+    qDebug()<<"logs loaded";
     LogList.close();
+    return 1;
 }
 
-void Synchronization::saveLog()
+bool Synchronization::saveLog()
 {
-    if (BookQueue.isEmpty())
-        return;
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
     {
         QDir().mkdir(resoursesFolderPath);
     }
+
     QFile LogList(resoursesFolderPath + "/ChangesLogs.log");
 
-    if(LogList.open(QIODevice::WriteOnly | QIODevice::Text ))
-        qDebug() << "Log File Has Been Opened" << endl;
-    else
-    {
-        qDebug() << "Log Failed to Create File" << endl;
-        qDebug() << "error = " << LogList.error ();
-
-        ///оповещение - невозможно открыть или создать файл логов
-        return;
-    }
+    LogList.open(QIODevice::WriteOnly);
 
     QDataStream out(&LogList);
     out<<SettingsChanged;
     if (SettingsChanged)
         out<<SettingsChangedTime;
+    out<<LastOpenedWindow;
+    out<<LastOpenedBookIndex;
 
     out<<BookQueue;
     out<<FileQueue;
 
     qDebug()<<"log saved";
     LogList.close();
+    return 1;
 }
 
 int Synchronization::synchronizeToServer()
@@ -133,6 +129,26 @@ QString Synchronization::getNumber(QString item)
 QString Synchronization::getNumber(int item)
 {
     return QString::number(item);
+}
+
+int Synchronization::getLastOpenedWindow()
+{
+    return LastOpenedWindow;
+}
+
+void Synchronization::setLastOpenedWindow(unsigned int index)
+{
+    LastOpenedWindow = index;
+}
+
+unsigned int Synchronization::getLastOpenedBookIndex()
+{
+    return LastOpenedBookIndex;
+}
+
+void Synchronization::setLastOpenedBookIndex(unsigned int index)
+{
+    LastOpenedBookIndex = index;
 }
 
 QDataStream &operator>>(QDataStream &in, action &actionElem)

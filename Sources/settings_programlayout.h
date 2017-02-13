@@ -49,7 +49,7 @@ protected:
 
 private:
     Ui::Settings_ProgramLayout *ui;
-    settings* ProgramSettings;
+    Settings* ProgramSettings;
     QString savebuttonStyle[2];
 
     int FTurnForwardKey = -1;

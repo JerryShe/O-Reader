@@ -43,16 +43,10 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     ui->_SortBox->setView(new QListView());
     ui->_GroupBox->setView(new QListView());
 
-    HandlerThread = new QThread(this);
-    connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
+    Library = new library(this);
+    LibHandler = LibraryHandler::getLibraryHandler();
+    ProgramSettings = Settings::getSettings();
 
-    Library = new library();
-    LibHandler = new LibraryHandler(Library);
-    LibHandler->moveToThread(HandlerThread);
-
-    HandlerThread->start();
-
-    ProgramSettings = settings::getSettings();
     setStyle();
 
     ui->VLayout->addWidget(Library, 1);
@@ -63,18 +57,15 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
         ui->_ChangeViewMode->setChecked(true);
     }
 
-    LibHandler->loadBookList();
     Library->setSettingsData();
 
-    connect(Library, SIGNAL(showBookPage(int)), this, SIGNAL(showBookPage(int)));
+    connect(Library, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
 }
 
 LibraryLayout::~LibraryLayout()
 {
     delete ui;
-    delete LibHandler;
     delete Library;
-    delete HandlerThread;
 }
 
 void LibraryLayout::changeEvent(QEvent *event)
@@ -106,6 +97,13 @@ void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
         e->acceptProposedAction();
     }
 }
+
+
+library* LibraryLayout::getLibraryWidget()
+{
+    return Library;
+}
+
 
 
 void LibraryLayout::on__AddBooks_clicked()
@@ -186,8 +184,9 @@ void LibraryLayout::on__Find_toggled(bool checked)
     }
     else
     {
+        qDebug()<<"find close";
         searchWindow->close();
-        LibHandler->RefreshLibrary();
+        LibHandler->refreshLibrary();
     }
 }
 
@@ -196,18 +195,12 @@ void LibraryLayout::deactiveFindButton()
     ui->_Find->setChecked(false);
 }
 
-
-void LibraryLayout::saveBookList()
-{
-    LibHandler->saveBookList();
-}
-
-Book* LibraryLayout::getBookByIndex(int index)
+Book* LibraryLayout::getBookByIndex(unsigned int index)
 {
     return LibHandler->getBookByIndex(index);
 }
 
-void LibraryLayout::deleteBook(int index)
+void LibraryLayout::deleteBook(unsigned int index)
 {
     LibHandler->deleteBook(index);
 }

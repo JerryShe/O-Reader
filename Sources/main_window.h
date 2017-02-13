@@ -1,68 +1,55 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
-#include <QMainWindow>
+#include <QWidget>
 #include <QEvent>
 #include <QFile>
 #include <QTranslator>
 
 #include "synchronization.h"
 #include "settings.h"
+
 #include "reading_window.h"
 #include "book_page.h"
 #include "QTabSwitcher.h"
+#include "library.h"
 
-
-namespace Ui
-{
-    class MainWindow;
+namespace Ui {
+class MainWindow;
 }
 
-
-class MainWindow : public QMainWindow
+class MainWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QTranslator *translator, QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-    void showWindow(bool closeType);
+    library* getLibraryWidget();
 
+private slots:
     void setStyle();
 
     void on_exit_button_clicked();
-    void on_full_size_button_clicked();
-    void on_min_button_clicked();
-
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
 
     void on_Logout_clicked();
 
-    void startReading(const int index);
-    void showBookPage(const int index);
+    void startReading(const unsigned int index);
+    void showBookPage(const unsigned int index);
 
 protected:
     void changeEvent(QEvent *event);
 
+signals:
+    void showLoginWindow();
+    void showReadingWindow();
+
+    void showWindowMinimazed();
+    void showWindowMaximazed();
+    void closeWindow();
+
 private:
-    QString styleSheets [9];
-    QString tabsStyleSheets [5];
-
-    QRect prev_geometry;
-    QPoint lastPoint;
-    QPoint lastMouseGlobalPos;
-
-    bool moving = false;
-    int resizingMethod;
-    bool resizing = false;
-
-    int lastWindowHeight;
-    int lastWindowWidth;
-    int resizingFrame = 5;
 
     Ui::MainWindow* ui;
 
@@ -71,12 +58,8 @@ private:
 
     QTabSwitcher* tabSwitcher;
 
-    QString resoursesFolderPath;
-
-    QThread * HandlerThread;
-
     Synchronization* UserActions;
-    settings* ProgramSettings;
+    Settings* ProgramSettings;
 };
 
-#endif // MAINWINDOW_H
+#endif // MAIN_WINDOW_H

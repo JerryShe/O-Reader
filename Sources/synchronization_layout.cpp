@@ -23,7 +23,7 @@ synchronizationlayout::~synchronizationlayout()
     delete synchronizationGridLayout;
 }
 
-void synchronizationlayout::setSettingsData(settings *PSettings)
+void synchronizationlayout::setSettingsData(Settings *PSettings)
 {
     ProgramSettings = PSettings;
 }

@@ -30,10 +30,9 @@ void BookPage::setStyle(QString Style)
 }
 
 BookPage::BookPage(Book* book, QString Style, QWidget *parent) :
-    QMainWindow(parent),
+    //QMainWindow(parent),
     ui(new Ui::BookPage)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
 
     BookIndex = book->getBookIndex();
     ui->setupUi(this);
@@ -43,7 +42,7 @@ BookPage::BookPage(Book* book, QString Style, QWidget *parent) :
     setWindowFlags(Qt::FramelessWindowHint);
     setWindowFlags(Qt::Popup);
 
-    this->setGeometry(parent->x() + 180, parent->y() + 100, parent->width() - 270, parent->height() - 200);
+    this->setGeometry(parent->mapToGlobal(QPoint(180, 0)).x(), parent->mapToGlobal(QPoint(0, 100)).y(), parent->width() - 270, parent->height() - 200);
 
     QStringList list = book->getAnnotation();
     QString temp = "     ";
@@ -101,12 +100,11 @@ void BookPage::on_startReading_clicked()
 {
     this->hide();
     emit startReading(BookIndex);
-    this->close();
 }
 
 void BookPage::on_deleteBook_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(- 300, ui->exit_button->height())),
+    AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(ui->deleteBook->x() - 300, ui->deleteBook->height() - 70)),
                                                    QObject::tr("Delete book?"),
                                                    style,
                                                    this);

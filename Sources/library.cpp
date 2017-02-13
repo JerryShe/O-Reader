@@ -41,7 +41,7 @@ void library::showSelectedItem(QModelIndex mIndex)
 }
 
 
-void library::addItem(int BookIndex, QString name, QString title, QImage cover)
+void library::addItem(unsigned int BookIndex, QString name, QString title, QImage cover)
 {
     BookModel->setRowCount(itemCount+1);
 
@@ -75,9 +75,9 @@ void library::changeViewMod()
     }
 }
 
-QVector <int> library::deleteItems()
+QVector<unsigned int> library::deleteItems()
 {
-    QVector <int> deletedItems;
+    QVector <unsigned int> deletedItems;
 
     QModelIndexList SelectedItems = selectionModel()->selectedIndexes();
     for (int i = 0; i < SelectedItems.size(); i++)
@@ -95,7 +95,7 @@ QVector <int> library::deleteItems()
     return deletedItems;
 }
 
-void library::deleteBook(int index)
+void library::deleteBook(unsigned int index)
 {
     int i;
     for (i = 0; i < BookModel->rowCount(); i++)
@@ -176,7 +176,7 @@ void library::iconDownscale()
 
 void library::setSettingsData()
 {
-    ProgramSettings = settings::getSettings();
+    ProgramSettings = Settings::getSettings();
     QString ListViewStyle[1];
     setLibraryStyle (ListViewStyle, ProgramSettings->getInterfaceStyle());
     setStyleSheet(ListViewStyle[0]);

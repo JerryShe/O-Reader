@@ -23,7 +23,7 @@ public:
     QString getTitle();
     QImage getCover();
     void setBookIndex(const int index);
-    int getBookIndex();
+    unsigned int getBookIndex();
 
     QStringList getAnnotation();
     QStringList getGenres();
@@ -40,7 +40,7 @@ public:
 
 private:
 
-    int BookIndex;
+    unsigned int BookIndex;
     QString BookCodec;
 
     QString Title;

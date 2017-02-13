@@ -17,9 +17,9 @@ public:
     library(QWidget *widget = 0);
     ~library();
 
-    void addItem(int BookIndex, QString name, QString title, QImage cover);
-    QVector <int> deleteItems();
-    void deleteBook(int index);
+    void addItem(unsigned int BookIndex, QString name, QString title, QImage cover);
+    QVector <unsigned int> deleteItems();
+    void deleteBook(unsigned int index);
     void setSettingsData();
 
     void setStyle(QString libraryStyle[]);
@@ -33,7 +33,7 @@ public:
     void groupBy(QString mode);
 
 signals:
-    void showBookPage(int index);
+    void showBookPage(unsigned int index);
 
 private slots:
     void showSelectedItem(QModelIndex mIndex);
@@ -41,7 +41,7 @@ private slots:
 private:
      QStandardItemModel* BookModel;
 
-    settings* ProgramSettings;
+    Settings* ProgramSettings;
 
     unsigned short IconBarSize;
     unsigned short IconListSize;

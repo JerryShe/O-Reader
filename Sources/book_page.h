@@ -22,13 +22,13 @@ private slots:
     void on_deleteBook_clicked();
 
 signals:
-    void startReading(int index);
-    void deleteBook(int index);
+    void startReading(unsigned int index);
+    void deleteBook(unsigned int index);
 
 private:
     void setStyle(QString Style);
     Ui::BookPage *ui;
-    int BookIndex;
+    unsigned int BookIndex;
     QString style;
 };
 

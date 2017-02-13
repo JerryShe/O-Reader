@@ -1,6 +1,7 @@
+
 #include "styles.h"
 #include "login_window.h"
-#include "ui_loginwindow.h"
+#include "ui_login_window.h"
 #include "answer_dialog.h"
 #include "settings.h"
 
@@ -8,67 +9,46 @@
 #include <QString>
 #include <QDebug>
 
-#if defined(Q_OS_LINUX)
-    #define CurrentOS 0
-#elif defined(Q_OS_WIN)
-    #define CurrentOS 1
-#endif
-
-
 void LoginWindow::setStyle()
 {
-    setWindowTopButtonsStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
+    QString styleSheets [8];
+    QString currentStyle = Settings::getSettings()->getInterfaceStyle();
 
-    ui->min_button->setStyleSheet(LoginWindow::styleSheets[0]);
-    ui->full_size_button->setStyleSheet(LoginWindow::styleSheets[1]);
+    setWindowTopButtonsStyle(styleSheets, currentStyle);
 
-    setExitButtonStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
-    ui->exit_button->setStyleSheet(LoginWindow::styleSheets[0]);
+    ui->min_button->setStyleSheet(styleSheets[0]);
+    ui->full_size_button->setStyleSheet(styleSheets[1]);
 
-    setBackgroundWindowColor(LoginWindow::styleSheets, LoginWindow::currentStyle);
-    ui->MainWidget->setStyleSheet(LoginWindow::styleSheets[0]);
+    setExitButtonStyle(styleSheets, currentStyle);
+    ui->exit_button->setStyleSheet(styleSheets[0]);
 
-    setLoginWindowStyle(LoginWindow::styleSheets, LoginWindow::currentStyle);
-    ui->login->setStyleSheet(LoginWindow::styleSheets[0]);
-    ui->Pass->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->Name->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->repeatPassword->setStyleSheet(LoginWindow::styleSheets[1]);
-    ui->Recovery->setStyleSheet(LoginWindow::styleSheets[2]);
-    ui->Registration->setStyleSheet(LoginWindow::styleSheets[3]);
-    ui->Remember->setStyleSheet(LoginWindow::styleSheets[4]);
+    setBackgroundWindowColor(styleSheets, currentStyle);
+    ui->MainWidget->setStyleSheet(styleSheets[0]);
+
+    setLoginWindowStyle(styleSheets, currentStyle);
+    ui->login->setStyleSheet(styleSheets[0]);
+    ui->Pass->setStyleSheet(styleSheets[1]);
+    ui->Name->setStyleSheet(styleSheets[1]);
+    ui->repeatPassword->setStyleSheet(styleSheets[1]);
+    ui->Recovery->setStyleSheet(styleSheets[2]);
+    ui->Registration->setStyleSheet(styleSheets[3]);
+    ui->Remember->setStyleSheet(styleSheets[4]);
 }
 
-LoginWindow::LoginWindow(QTranslator *translator, QWidget *parent) : QMainWindow(parent), ui(new Ui::LoginWindow), LanguageTranslator(translator)
+LoginWindow::LoginWindow(QWidget *parent) : QWidget(parent), ui(new Ui::LoginWindow)
 {
-    QFile SettingsFile("LibraryResources/Settings.conf");
-
-    if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QDataStream in(&SettingsFile);
-        in>>currentStyle; //for token
-        in>>currentStyle;
-    }
-    else
-    {
-        currentStyle = "Red";
-    }
-    SettingsFile.close();
-    LanguageTranslator = translator;
-
     ui->setupUi(this);
-    LoginWindow::setStyle();
-    LoginWindow::prev_geometry = LoginWindow::geometry();
+    setStyle();
     ui->repeatPassword->hide();
     ui->Error->hide();
 
-    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
-    LoginWindow::setMouseTracking(true);
+    connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
+    connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 }
 
 LoginWindow::~LoginWindow()
 {
     delete ui;
-    delete main_window;
 }
 
 void LoginWindow::backToMainPage()
@@ -88,61 +68,39 @@ void LoginWindow::backToMainPage()
     ui->login->setText(QObject::tr("Log in"));
 }
 
+void LoginWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::LanguageChange) {
+        ui->retranslateUi(this);
+    }
+}
+
 void LoginWindow::on_exit_button_clicked()
 {
     AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(ui->exit_button->width() - 300, ui->exit_button->height())),
                                                    QObject::tr("Exit?"),
-                                                   currentStyle,
+                                                   Settings::getSettings()->getInterfaceStyle(),
                                                    this);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
         delete answer_window;
-        exit(0);
+        emit closeWindow();
     }
     else
         delete answer_window;
 }
 
-
-void LoginWindow::on_full_size_button_clicked()
-{
-    if( LoginWindow::isMaximized())
-    {
-        LoginWindow::normalGeometry() = LoginWindow::prev_geometry;
-        LoginWindow::showNormal();
-    }
-    else
-    {
-        LoginWindow::prev_geometry = LoginWindow::geometry();
-        LoginWindow::showMaximized();
-    }
-}
-
-void LoginWindow::on_min_button_clicked()
-{
-    if( LoginWindow::isMinimized())
-    {
-        LoginWindow::normalGeometry() = LoginWindow::prev_geometry;
-        LoginWindow::showNormal();
-    }
-    else
-    {
-        LoginWindow::prev_geometry = LoginWindow::geometry();
-        LoginWindow::showMinimized();
-    }
-}
-
 void LoginWindow::on_Registration_clicked()
 {
-    if (LoginWindow::activePage != 0)
+    if (activePage != 0)
     {
         backToMainPage();
     }
     else
     {
-        LoginWindow::activePage = 1;
+        activePage = 1;
         ui->login->setText(QObject::tr("Sign up"));
         ui->repeatPassword->show();
         ui->Remember->hide();
@@ -155,20 +113,14 @@ void LoginWindow::on_Registration_clicked()
 void LoginWindow::on_login_clicked()
 {
 
-    switch (LoginWindow::activePage)
+    switch (activePage)
     {
     case 0:
         // здесь надо вставить проверку пароля на серве
         // если соединения с сервером нет, то сказать, что программа будет работать в автономном режиме и проверить пароль локально
-        main_window = new MainWindow(LanguageTranslator);
 
-        if (CurrentOS)
-            main_window->setWindowFlags(Qt::CustomizeWindowHint);
-        else
-            main_window->setWindowFlags(Qt::Dialog);
-
-        main_window->show();
-        LoginWindow::close();
+        emit showMainWindow();
+        return;
 
     case 1:
         //здесь надо пингануть серву, чтобы зарегал пользователя и выслал код подтверждения
@@ -233,45 +185,4 @@ void LoginWindow::on_Recovery_clicked()
     ui->Registration->setText(QObject::tr("Back"));
     ui->Recovery->hide();
     ui->login->setText(QObject::tr("Change password"));
-}
-
-
-
-
-void LoginWindow::mouseMoveEvent(QMouseEvent *e)
-{
-    if (LoginWindow::moving)
-    {
-        if (!LoginWindow::isMaximized())
-        {
-            move(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7);
-        }
-        else
-        {
-            LoginWindow::prev_geometry.setY(e->globalY());
-            LoginWindow::normalGeometry() = LoginWindow::prev_geometry;
-            LoginWindow::showNormal();
-        }
-    }
-}
-
-void LoginWindow::mousePressEvent(QMouseEvent *e)
-{
-    if(e->button() == Qt::LeftButton)
-    {
-        if (e->pos().y() <= 50 && e->pos().y() > LoginWindow::resizingFrame)
-        {
-            LoginWindow::moving = true;
-            LoginWindow::lastPoint = e->pos();
-        }
-    }
-}
-
-void LoginWindow::mouseReleaseEvent(QMouseEvent *e)
-{
-    if (e->button() == Qt::LeftButton)
-    {
-        if (LoginWindow::moving)
-            LoginWindow::moving = false;
-    }
 }

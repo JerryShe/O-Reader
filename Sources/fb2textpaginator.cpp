@@ -84,6 +84,7 @@ QStringList FB2TextPaginator::splitTextToWords(QString temp)
     return tempList;
 }
 
+
 void FB2TextPaginator::parseBookText()
 {
     QFile bookFile(book->File);
@@ -162,7 +163,7 @@ FB2TextPaginator::FB2TextPaginator()
 QString FB2TextPaginator::startParser(Book *OpeningBook, int Pwidth, int Pheight)
 {
     book = OpeningBook;
-    ProgramSettings = settings::getSettings();
+    ProgramSettings = Settings::getSettings();
     currentEStrNum = currentBStrNum = book->getBookProgress();
     currentTextPos = 0;
 

@@ -32,7 +32,7 @@ signals:
 
 private:
     Ui::Settings_ProfileLayout *ui;
-    settings *ProgramSettings;
+    Settings *ProgramSettings;
     QString savebuttonStyle[2];
 };
 

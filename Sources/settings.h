@@ -45,14 +45,14 @@ struct ReadingStyle
     friend QDataStream &operator>>(QDataStream &in, ReadingStyle &ReadingStyleElem);
 };
 
-class settings : public QObject
+class Settings : public QObject
 {
 public:
-    static settings* getSettings();
+    static Settings* getSettings();
     void setTranslator(QTranslator* translator);
 
-    void saveSettings();
-    void loadSettings();
+    bool saveSettings();
+    bool loadSettings();
 
     QString getInterfaceStyle();
     void setInterfaceStyle(const QString style);
@@ -103,15 +103,15 @@ public:
 
     QString getTextAlignName(unsigned short key);
 
-    friend QDataStream &operator<<(QDataStream &out, const settings &SettingsElem);
-    friend QDataStream &operator>>(QDataStream &out, settings &SettingsElem);
+    friend QDataStream &operator<<(QDataStream &out, const Settings &SettingsElem);
+    friend QDataStream &operator>>(QDataStream &out, Settings &SettingsElem);
 
 signals:
     void loadDone(){}
 
 private:
-    settings();
-    ~settings();
+    Settings();
+    ~Settings();
 
     QString LoginToken;
     QString UserEmail;

@@ -1,28 +1,23 @@
-#ifndef LOGINWINDOW_H
-#define LOGINWINDOW_H
+#ifndef LOGIN_WINDOW_H
+#define LOGIN_WINDOW_H
 
-#include <QMainWindow>
-#include "main_window.h"
-#include <QTranslator>
+#include <QWidget>
 
-
-namespace Ui
-{
-    class LoginWindow;
+namespace Ui {
+class LoginWindow;
 }
 
-class LoginWindow : public QMainWindow
+class LoginWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit LoginWindow(QTranslator* translator, QWidget *parent = 0);
+    explicit LoginWindow(QWidget *parent = 0);
     ~LoginWindow();
 
 private slots:
     void on_exit_button_clicked();
-    void on_full_size_button_clicked();
-    void on_min_button_clicked();
+
     void on_login_clicked();
     void on_Recovery_clicked();
     void on_Registration_clicked();
@@ -30,16 +25,17 @@ private slots:
 
     void setStyle();
 
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+signals:
+    void showMainWindow();
+
+    void showWindowMinimazed();
+    void showWindowMaximazed();
+    void closeWindow();
+
+protected:
+    void changeEvent(QEvent *event);
 
 private:
-    QString styleSheets [8];
-    QString currentStyle;
-    QTranslator* LanguageTranslator;
-
-    QRect prev_geometry;
 
     /// 0 - Main
     /// 1 - Registration - email
@@ -48,19 +44,8 @@ private:
     /// 4 - Recovery - confirm
     int activePage = 0;
 
-
-    bool moving = false;
-    int resizingMethod;
-    bool resizing = false;
-    QPoint lastPoint;
-    QPoint lastMouseGlobalPos;
-    int lastWindowHeight;
-    int lastWindowWidth;
-    int resizingFrame = 5;
-
     Ui::LoginWindow *ui;
 
-    MainWindow *main_window;
 };
 
-#endif // LOGINWINDOW_H
+#endif // LOGIN_WINDOW_H

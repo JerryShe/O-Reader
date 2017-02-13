@@ -66,7 +66,7 @@ void Settings_ProgramLayout::settChanged()
 
 void Settings_ProgramLayout::setSettingsData()
 {
-    ProgramSettings = settings::getSettings();
+    ProgramSettings = Settings::getSettings();
     setLayoutStyle();
     setProgramData();
 }

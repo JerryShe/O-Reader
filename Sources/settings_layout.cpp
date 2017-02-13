@@ -67,7 +67,7 @@ settingslayout::settingslayout(QWidget *Parent)
 
 void settingslayout::setSettingsData()
 {
-    ProgramSettings = settings::getSettings();
+    ProgramSettings = Settings::getSettings();
     UserActions = Synchronization::getSynchronization();
     setSettWindowStyle();
     tabSwitcher->start(1);
@@ -80,11 +80,6 @@ void settingslayout::setSettingsData()
 settingslayout::~settingslayout()
 {
     delete TabsLayout;
-    delete ProfileWidget;
-    delete ProgramWidget;
-    delete ReaderWidget;
-    delete exit_button;
-    delete tabSwitcher;
 }
 
 void settingslayout::addExitButton()

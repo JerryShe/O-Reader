@@ -14,37 +14,49 @@ class LibraryHandler: public QObject
     Q_OBJECT
 
 public:
-    LibraryHandler(library* LWidget);
-    ~LibraryHandler();
+    static LibraryHandler* getLibraryHandler();
+
 
 public slots:
+    void setLibraryWidget(library *lbWidget);
+
     void AddBooks(const QStringList fileList);
     void AddFolder(const QString path);
-    void deleteBook(const int index);
-    void deleteBooks(QVector <int> deletedItemsIndexes);
+    void deleteBook(const unsigned int index);
+    void deleteBooks(QVector <unsigned int> deletedItemsIndexes);
 
     void openNewBook(const QString fileList, GenresMap *Gmap);
     QString getFileTipe(const QString fileName);
 
     void findBooks(QString key, QString mode);
 
-    Book* getBookByIndex(int index);
+    Book* getBookByIndex(unsigned int index);
 
-    void RefreshLibrary();
+    void refreshLibrary();
 
-    void loadBookList();
-    void saveBookList();
+    bool loadBookList();
+    bool saveBookList();
+
+    Book* getLastOpenedBook();
 
     void sortBooks(const QString mode);
 
 private:
+    LibraryHandler();
+    ~LibraryHandler();
+
     library* LibraryWidget;
+
     Synchronization* UserActions;
+
     QString resoursesFolderPath;
+
     bool needRefresh = false;
+
     QStringList filesMask;
+
     QVector <Book> bookList;
-    int currentBookIndex;
+    unsigned int currentBookIndex;
 };
 
 #endif // LIBRARYHANDLER_H

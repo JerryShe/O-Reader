@@ -19,6 +19,8 @@ class LibraryLayout : public QWidget
 public:
     explicit LibraryLayout(QWidget *parent = 0);
     ~LibraryLayout();
+    library* getLibraryWidget();
+
 
 private slots:
     void on__AddBooks_clicked();
@@ -32,15 +34,13 @@ private slots:
     void addBooksFromFiles();
     void addBooksFromFolder();
 
+    void deactiveFindButton();
+
 public slots:
     void setStyle();
 
-    void saveBookList();
-    Book* getBookByIndex(int index);
-    void deleteBook(int index);
-
-private slots:
-    void deactiveFindButton();
+    Book* getBookByIndex(unsigned int index);
+    void deleteBook(unsigned int index);
 
 protected:
     void changeEvent(QEvent *event);
@@ -48,14 +48,14 @@ protected:
     void dragEnterEvent(QDragEnterEvent *e);
 
 signals:
-    void showBookPage(int index);
+    void showBookPage(unsigned int index);
 
 private:
     Ui::LibraryLayout *ui;
 
     QThread * HandlerThread;
 
-    settings* ProgramSettings;
+    Settings* ProgramSettings;
     LibraryHandler * LibHandler;
     library* Library;
 

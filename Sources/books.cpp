@@ -203,6 +203,7 @@ void Book::writeToConsole()
 QDataStream &operator <<(QDataStream &out, const Book &BookElem)
 {
     out<<BookElem.File;
+    out<<BookElem.BookIndex;
     out<<BookElem.BookCodec;
     out<<BookElem.Title;
     out<<BookElem.AuthorFirstName;
@@ -227,6 +228,7 @@ QDataStream &operator <<(QDataStream &out, const Book &BookElem)
 QDataStream &operator >> (QDataStream &in, Book &BookElem)
 {
     in>>BookElem.File;
+    in>>BookElem.BookIndex;
     in>>BookElem.BookCodec;
     in>>BookElem.Title;
     in>>BookElem.AuthorFirstName;
@@ -286,7 +288,7 @@ void Book::setBookIndex(int index)
     BookIndex = index;
 }
 
-int Book::getBookIndex()
+unsigned int Book::getBookIndex()
 {
     return BookIndex;
 }

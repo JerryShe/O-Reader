@@ -1,5 +1,5 @@
 #include "main_window.h"
-#include "ui_mainwindow.h"
+#include "ui_main_window.h"
 #include "answer_dialog.h"
 #include "styles.h"
 #include "genresmap.h"
@@ -12,17 +12,13 @@
 #include <QDir>
 #include <QProcess>
 
-#if defined(Q_OS_LINUX)
-    #define CurrentOS 0
-#elif defined(Q_OS_WIN)
-    #define CurrentOS 1
-#endif
-
 #include <QDebug>
 
 void MainWindow::setStyle()
 {
     QString currentStyle = ProgramSettings->getInterfaceStyle();
+
+    QString styleSheets [10];
 
     setTopBarBackgroundColor(styleSheets, currentStyle);
     ui->TopBarWidget->setStyleSheet(styleSheets[0]);
@@ -48,40 +44,25 @@ void MainWindow::setStyle()
     ui->LeftExpandingWidget->setStyleSheet(styleSheets[8]);
 }
 
-MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
-{
-    resoursesFolderPath = "LibraryResources";
-    if ( ! QDir(resoursesFolderPath).exists()==true)
-        QDir().mkdir(resoursesFolderPath);
-    if ( ! QDir("Downloaded books").exists()==true)
-        QDir().mkdir("Downloaded books");
 
-    HandlerThread = new QThread(this);
-    connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
+
+
+MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow)
+{
 
     UserActions = Synchronization::getSynchronization();
-    ProgramSettings = settings::getSettings();
-    ProgramSettings->setTranslator(translator);
-
-    ProgramSettings->moveToThread(HandlerThread);
-    UserActions->moveToThread(HandlerThread);
-    HandlerThread->start();
-
-    ProgramSettings->loadSettings();
+    ProgramSettings = Settings::getSettings();
 
     ui->setupUi(this);
 
-    ui->SettingsWidget->hide();
-    prev_geometry = geometry();
+    connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
+    connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
-    ui->MainWidget->setAttribute(Qt::WA_MouseTracking);
-    setMouseTracking(true);
-
-    connect(ui->LibraryWidget, SIGNAL(showBookPage(int)), this, SLOT(showBookPage(int)));
+    connect(ui->LibraryWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(showBookPage(unsigned int)));
 
     ui->SettingsWidget->setSettingsData();
 
-    tabSwitcher = new QTabSwitcher;
+    tabSwitcher = new QTabSwitcher(this);
 
     tabSwitcher->addTab(ui->LibraryWidget, ui->Library);
     tabSwitcher->addTab(ui->SettingsWidget, ui->Settings);
@@ -90,6 +71,7 @@ MainWindow::MainWindow(QTranslator *translator, QWidget *parent) : QMainWindow(p
     setStyle();
 
     tabSwitcher->start(0);
+    this->show();
 }
 
 void MainWindow::changeEvent(QEvent *event)
@@ -102,40 +84,26 @@ void MainWindow::changeEvent(QEvent *event)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete readingWindow;
-    delete HandlerThread;
 }
 
-void MainWindow::showBookPage(const int index)
+library* MainWindow::getLibraryWidget()
+{
+    return ui->LibraryWidget->getLibraryWidget();
+}
+
+
+void MainWindow::showBookPage(const unsigned int index)
 {
     page = new BookPage(ui->LibraryWidget->getBookByIndex(index), ProgramSettings->getInterfaceStyle(), this);
-    connect(page, SIGNAL(startReading(int)), this, SLOT(startReading(int)));
-    connect(page, SIGNAL(deleteBook(int)), ui->LibraryWidget, SLOT(deleteBook(int)));
+    connect(page, SIGNAL(startReading(unsigned int)), this, SLOT(startReading(unsigned int)));
+    connect(page, SIGNAL(deleteBook(unsigned int)), ui->LibraryWidget, SLOT(deleteBook(unsigned int)));
 }
 
-void MainWindow::startReading(const int index)
+
+void MainWindow::startReading(const unsigned int index)
 {
-    readingWindow = new ReadingWindow(ui->LibraryWidget->getBookByIndex(index));
-
-    if (CurrentOS)
-        readingWindow->setWindowFlags(Qt::CustomizeWindowHint);
-    else
-        readingWindow->setWindowFlags(Qt::Dialog);
-
-    connect(readingWindow, SIGNAL(showMainWindow(bool)), this, SLOT(showWindow(bool)));
-
-    readingWindow->show();
-    this->hide();
-}
-
-void MainWindow::showWindow(bool closeType)
-{
-    ui->LibraryWidget->saveBookList();
-    readingWindow->close();
-    if (closeType)
-        exit(0);
-    else
-        this->show();
+    UserActions->setLastOpenedBookIndex(index);
+    emit showReadingWindow();
 }
 
 void MainWindow::on_exit_button_clicked()
@@ -149,81 +117,16 @@ void MainWindow::on_exit_button_clicked()
     if (answer_window->exec() == QDialog::Accepted)
     {
         delete answer_window;
-        exit(0);
+        emit closeWindow();
     }
     else
         delete answer_window;
 }
 
-void MainWindow::on_full_size_button_clicked()
-{
-    if( isMaximized())
-    {
-        normalGeometry() = prev_geometry;
-        showNormal();
-    }
-    else
-    {
-        prev_geometry = geometry();
-        showMaximized();
-    }
-}
 
-void MainWindow::on_min_button_clicked()
-{
-    if( isMinimized())
-    {
-        normalGeometry() = prev_geometry;
-        showNormal();
-    }
-    else
-    {
-        prev_geometry = geometry();
-        showMinimized();
-    }
-}
-
-void MainWindow::mouseMoveEvent(QMouseEvent *e)
-{
-    if (moving)
-    {
-        if (!isMaximized())
-        {
-            move(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7);
-        }
-        else
-        {
-            prev_geometry.setY(e->globalY());
-            normalGeometry() = prev_geometry;
-            showNormal();
-        }
-    }
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *e)
-{
-    if(e->button() == Qt::LeftButton)
-    {
-        if (e->pos().y() <= 30 && e->pos().y() > resizingFrame)
-        {
-            moving = true;
-            lastPoint = e->pos();
-        }
-    }
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *e)
-{
-    if (e->button() == Qt::LeftButton)
-    {
-        if (moving)
-            moving = false;
-    }
-}
 
 void MainWindow::on_Logout_clicked()
 {
-    ui->Logout->setStyleSheet(styleSheets[7]);
 
     AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(ui->Logout->width(),0)),
                                                    QObject::tr("Logout?"),
@@ -233,12 +136,10 @@ void MainWindow::on_Logout_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        ui->Logout->setStyleSheet(styleSheets[3]);
-        QProcess::startDetached(QApplication::applicationFilePath(), QStringList(), QApplication::applicationDirPath());
         delete answer_window;
-        MainWindow::close();
+        emit showLoginWindow();
+        return;
     }
     else
         delete answer_window;
-    ui->Logout->setStyleSheet(styleSheets[3]);
 }
