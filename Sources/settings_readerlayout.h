@@ -45,7 +45,7 @@ private slots:
     void on_BackgroundImageBox_clicked();
     void on_BackgroundTypeBox_currentIndexChanged(int index);
 
-    void setLayoutStyle();
+    void setStyle();
 
 signals:
     void settingsChanged(int type);

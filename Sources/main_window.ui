@@ -957,7 +957,7 @@
            </widget>
           </item>
           <item>
-           <widget class="settingslayout" name="SettingsWidget" native="true">
+           <widget class="SettingsLayout" name="SettingsWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -973,7 +973,7 @@
            </widget>
           </item>
           <item>
-           <widget class="synchronizationlayout" name="SynchronizationWidget" native="true">
+           <widget class="SynchronizationLayout" name="SynchronizationWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -999,21 +999,21 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>settingslayout</class>
+   <class>LibraryLayout</class>
    <extends>QWidget</extends>
-   <header>settings_layout.h</header>
+   <header>library_layout.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>synchronizationlayout</class>
+   <class>SynchronizationLayout</class>
    <extends>QWidget</extends>
    <header>synchronization_layout.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LibraryLayout</class>
+   <class>SettingsLayout</class>
    <extends>QWidget</extends>
-   <header location="global">library_layout.h</header>
+   <header>settings_layout.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

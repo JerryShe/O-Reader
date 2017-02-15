@@ -50,11 +50,16 @@ void ReadingWindow::setStyle(QString currentStyle)
     MenuSettingsButton->setStyleSheet(styleSheets[2]);
 }
 
-ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow), CurBook(book)
+ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow)
 {
+    CurBook = book;
     ActiveWindow = false;
     ui->setupUi(this);
     ui->BookName->setText(CurBook->getAuthorName() + ": " + CurBook->getTitle());
+
+    ui->TextPage->setFocus();
+    ui->TopBarWidget->setFocusPolicy(Qt::NoFocus);
+    ui->TextPage->setFocusPolicy(Qt::StrongFocus);
 
 
     BookPaginator = new FB2TextPaginator();
@@ -269,17 +274,14 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 {
                     if (ProgramSettings->getTurnByTap())
                     {
-                        qDebug()<<MousePressEvent->pos().x()<<MousePressEvent->pos().y();
                         if (MousePressEvent->pos().x() > this->size().width() - 100)
                         {
-                            qDebug()<<"1";
                             ui->TextPage->setHtml(BookPaginator->getPageForward());
                             updateProgress();
                         }
                         else
                         if (MousePressEvent->pos().x() < 100)
                         {
-                            qDebug()<<"2";
                             ui->TextPage->setHtml(BookPaginator->getPageBackward());
                             updateProgress();
                         }
@@ -298,17 +300,14 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 {
                     if (ProgramSettings->getTurnByTap())
                     {
-                        qDebug()<<MousePressEvent->pos().x()<<MousePressEvent->pos().y();
                         if (MousePressEvent->pos().x() > this->size().width() - 100)
                         {
-                            qDebug()<<"1";
                             ui->TextPage->setHtml(BookPaginator->getPageForward());
                             updateProgress();
                         }
                         else
                         if (MousePressEvent->pos().x() < 100)
                         {
-                            qDebug()<<"2";
                             ui->TextPage->setHtml(BookPaginator->getPageBackward());
                             updateProgress();
                         }
@@ -420,7 +419,7 @@ void ReadingWindow::SettingsButton_Clicked()
     MiniWindow->setLayout(MiniWindowLayout);
     MiniWindowLayout->setContentsMargins(0,0,0,0);
 
-    SettingsPage = new settingslayout(MiniWindow);
+    SettingsPage = new SettingsLayout(MiniWindow);
     SettingsPage->setSettingsData();
 
     MiniWindowLayout->addWidget(SettingsPage);

@@ -11,7 +11,6 @@
 #include <QVBoxLayout>
 #include "settings_layout.h"
 #include "search_window.h"
-#include "synchronization_layout.h"
 #include "fb2textpaginator.h"
 
 #include <QThread>
@@ -91,8 +90,7 @@ private:
 
     QDialog* MiniWindow;
     QVBoxLayout* MiniWindowLayout;
-    settingslayout* SettingsPage;
-    synchronizationlayout* SynchronizationPage;
+    SettingsLayout* SettingsPage;
 
     SearchWindow* Search;
 

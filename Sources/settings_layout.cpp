@@ -8,7 +8,7 @@
 #include "styles.h"
 
 
-void settingslayout::setSettWindowStyle()
+void SettingsLayout::setSettWindowStyle()
 {
     QString tabsStyleSheets[5];
 
@@ -20,7 +20,7 @@ void settingslayout::setSettWindowStyle()
     this->setStyleSheet("QLabel{color:white;}");
 }
 
-settingslayout::settingslayout(QWidget *Parent)
+SettingsLayout::SettingsLayout(QWidget *Parent)
 {
     this->setParent(Parent);
     ProgramWidget = new Settings_ProgramLayout(this);
@@ -32,7 +32,7 @@ settingslayout::settingslayout(QWidget *Parent)
     connect(ProfileWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSavebuttons(int)));
 
     MainLayout = new QVBoxLayout(this);
-    settingslayout::setLayout(MainLayout);
+    SettingsLayout::setLayout(MainLayout);
     MainLayout->setContentsMargins(0,0,0,0);
     MainLayout->setSpacing(0);
 
@@ -65,7 +65,7 @@ settingslayout::settingslayout(QWidget *Parent)
 
 }
 
-void settingslayout::setSettingsData()
+void SettingsLayout::setSettingsData()
 {
     ProgramSettings = Settings::getSettings();
     UserActions = Synchronization::getSynchronization();
@@ -77,12 +77,12 @@ void settingslayout::setSettingsData()
     ProfileWidget->setSettingsData();
 }
 
-settingslayout::~settingslayout()
+SettingsLayout::~SettingsLayout()
 {
     delete TabsLayout;
 }
 
-void settingslayout::addExitButton()
+void SettingsLayout::addExitButton()
 {
     exit_button = new QPushButton(this);
     exit_button->setFixedSize(30,30);
@@ -93,20 +93,20 @@ void settingslayout::addExitButton()
     connect(this->exit_button, SIGNAL(clicked(bool)), this, SLOT(exit_button_clicked()));
 }
 
-void settingslayout::exit_button_clicked()
+void SettingsLayout::exit_button_clicked()
 {
     hideWithoutSaving();
     emit settingsClosed();
     close();
 }
 
-void settingslayout::hideWithoutSaving()
+void SettingsLayout::hideWithoutSaving()
 {
     hide();
     ProgramSettings->loadSettings();
 }
 
-void settingslayout::updateSavebuttons(int type)
+void SettingsLayout::updateSavebuttons(int type)
 {
     ProfileWidget->setSavebuttonView(type);
     ProgramWidget->setSavebuttonView(type);
@@ -118,7 +118,7 @@ void settingslayout::updateSavebuttons(int type)
         UserActions->addAction(UActions::UpdateSettings, "kostil");
 }
 
-void settingslayout::changeEvent(QEvent *event)
+void SettingsLayout::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange) {
         ProfileButton->setText(QObject::tr("Profile"));

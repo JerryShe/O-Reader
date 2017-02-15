@@ -38,22 +38,15 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     ProgramSettings->moveToThread(HandlerThread);
     UserSynchro->moveToThread(HandlerThread);
-    //LibHandler->moveToThread(HandlerThread);
+    LibHandler->moveToThread(HandlerThread);
 
     HandlerThread->start();
 
-    if(ProgramSettings->loadSettings())
-    {
+    ProgramSettings->loadSettings();
 
-    }
-    if(UserSynchro->loadLog())
-    {
+    UserSynchro->loadLog();
 
-    }
-    if(LibHandler->loadBookList())
-    {
-
-    }
+    LibHandler->loadBookList();
 
     LanguageTranslator = new QTranslator(this);
 
@@ -205,14 +198,12 @@ void WindowManager::closeWindow()
     }
     if(!UserSynchro->saveLog())
     {
-        // exs
+
     }
 
 
     delete LastWindow;
     HandlerThread->quit();
-
-
     exit(0);
 }
 

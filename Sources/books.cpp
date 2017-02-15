@@ -6,6 +6,10 @@
 #include <QIcon>
 #include <QUrl>
 #include <QBuffer>
+
+#include <QJsonArray>
+#include <QJsonValue>
+
 #include "genresmap.h"
 #include "synchronization.h"
 
@@ -44,11 +48,11 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
                     {
                         j = data.indexOf("'", j);
                         for (j += 1; j < data.size() && j < data.indexOf("'", j); j++)
-                            BookCodec += data[j];
+                            Codec += data[j];
                     }
                     break;
                 }
-            if (BookCodec == "")
+            if (Codec == "")
             {
                 result = false;
                 return;
@@ -183,11 +187,55 @@ Book::Book(bool &result, QString fileName, GenresMap *Gmap)
         result = false;
 }
 
+
+Book::Book(QJsonObject &BookJson)
+{
+    QJsonArray tempArr;
+    Genres.clear();
+    Annotation.clear();
+    ProgressTagStack.clear();
+
+    File = BookJson["File"].toString();
+    Index = (unsigned int)BookJson["Index"].toInt();
+    Codec = BookJson["Codec"].toString();
+    Title = BookJson["Title"].toString();
+    AuthorFirstName = BookJson["AuthorFirstName"].toString();
+    AuthorMiddleName = BookJson["AuthorMiddleName"].toString();
+    AuthorLastName = BookJson["AuthorLastName"].toString();
+    Series.first = BookJson["SeriesFirst"].toString();
+    Series.second = BookJson["SeriesSecond"].toInt();
+
+    tempArr = BookJson["Genres"].toArray();
+    foreach (auto i, tempArr) {
+       Genres.append(i.toString());
+    }
+
+    tempArr = BookJson["Annotation"].toArray();
+    foreach (auto i, tempArr) {
+       Annotation.append(i.toString());
+    }
+
+    Language = BookJson["Language"].toString();
+    SourceLanguage = BookJson["SourceLanguage"].toString();
+    AddittionTime = QDateTime::fromString(BookJson["AddittionTime"].toString());
+    Progress = BookJson["Progress"].toString().toLongLong();
+
+    tempArr = BookJson["ProgressTagStack"].toArray();
+    foreach (auto i, tempArr) {
+       ProgressTagStack.append(i.toString());
+    }
+
+    ProgressProcent = BookJson["ProgressProcent"].toDouble();
+    CoverType = BookJson["CoverType"].toString();
+    Cover = BookJson["Cover"].toString();
+}
+
+
 void Book::writeToConsole()
 {
     qDebug()<<File;
-    qDebug()<<BookCodec;
-    qDebug()<<BookIndex;
+    qDebug()<<Codec;
+    qDebug()<<Index;
     qDebug()<<Title;
     qDebug()<<AuthorFirstName;
     qDebug()<<AuthorMiddleName;
@@ -200,55 +248,38 @@ void Book::writeToConsole()
     qDebug()<<AddittionTime;
 }
 
-QDataStream &operator <<(QDataStream &out, const Book &BookElem)
+QJsonObject Book::getJson()
 {
-    out<<BookElem.File;
-    out<<BookElem.BookIndex;
-    out<<BookElem.BookCodec;
-    out<<BookElem.Title;
-    out<<BookElem.AuthorFirstName;
-    out<<BookElem.AuthorMiddleName;
-    out<<BookElem.AuthorLastName;
-    out<<BookElem.Series.first;
-    out<<BookElem.Series.second;
-    out<<BookElem.Genres;
-    out<<BookElem.Annotation;
-    out<<BookElem.Language;
-    out<<BookElem.SourceLanguage;
-    out<<BookElem.AddittionTime;
-    out<<BookElem.Progress;
-    out<<BookElem.ProgressTagStack;
-    out<<BookElem.ProgressProcent;
-    out<<BookElem.CoverType;
-    out<<BookElem.Cover;
+    QJsonObject json;
 
-    return out;
+    json["File"] = File;
+    json["Index"] = (int)Index;
+    json["Codec"] = Codec;
+    json["Title"] = Title;
+    json["AuthorFirstName"] = AuthorFirstName;
+    json["AuthorMiddleName"] = AuthorMiddleName;
+    json["AuthorLastName"] = AuthorLastName;
+    json["SeriesFirst"] = Series.first;
+    json["SeriesSecond"] = QString::number(Series.second);
+
+    json["Genres"] = QJsonArray::fromStringList(Genres);
+
+    json["Annotation"] = QJsonArray::fromStringList(Annotation);
+
+    json["Language"] = Language;
+    json["SourceLanguage"] = SourceLanguage;
+    json["AddittionTime"] = AddittionTime.toString();
+    json["Progress"] = QString::number(Progress);
+
+    json["ProgressTagStack"] = QJsonArray::fromStringList(ProgressTagStack);
+
+    json["ProgressProcent"] = ProgressProcent;
+    json["CoverType"] = CoverType;
+    json["Cover"] = Cover;
+
+    return json;
 }
 
-QDataStream &operator >> (QDataStream &in, Book &BookElem)
-{
-    in>>BookElem.File;
-    in>>BookElem.BookIndex;
-    in>>BookElem.BookCodec;
-    in>>BookElem.Title;
-    in>>BookElem.AuthorFirstName;
-    in>>BookElem.AuthorMiddleName;
-    in>>BookElem.AuthorLastName;
-    in>>BookElem.Series.first;
-    in>>BookElem.Series.second;
-    in>>BookElem.Genres;
-    in>>BookElem.Annotation;
-    in>>BookElem.Language;
-    in>>BookElem.SourceLanguage;
-    in>>BookElem.AddittionTime;
-    in>>BookElem.Progress;
-    in>>BookElem.ProgressTagStack;
-    in>>BookElem.ProgressProcent;
-    in>>BookElem.CoverType;
-    in>>BookElem.Cover;
-
-    return in;
-}
 
 QString Book::getAuthorName()
 {
@@ -285,12 +316,12 @@ QImage Book::getCover()
 
 void Book::setBookIndex(int index)
 {
-    BookIndex = index;
+    Index = index;
 }
 
 unsigned int Book::getBookIndex()
 {
-    return BookIndex;
+    return Index;
 }
 
 QStringList Book::getAnnotation()
@@ -318,12 +349,12 @@ QStringList Book::getBookProgressTagStack()
     return ProgressTagStack;
 }
 
-float Book::getBookProgressPocent()
+double Book::getBookProgressPocent()
 {
     return ProgressProcent;
 }
 
-void Book::setBookProgress(const long long progress, double procent, QStringList tagStack)
+void Book::setBookProgress(const long long progress, const double procent, QStringList tagStack)
 {
     Progress = progress;
     ProgressProcent = procent;
@@ -341,9 +372,9 @@ QString Book::getSeries()
 
 QString Book::getBookCodec()
 {
-    return BookCodec;
+    return Codec;
 }
 void Book::setBookCodec(QString codec)
 {
-    BookCodec = codec;
+    Codec = codec;
 }

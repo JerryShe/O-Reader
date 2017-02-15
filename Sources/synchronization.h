@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QDataStream>
 #include <QObject>
+#include <QJsonObject>
 
 #include <QDebug>
 
@@ -22,20 +23,21 @@ enum UActions
 
 struct action
 {
-    unsigned int actionIndex;
-    quint64 actionTime;
-    QString spec;
-    QString dataChanges;
+    unsigned int Index;
+    quint64 Time;
+    QString Spec;
+    QString Changes;
 
     action(){}
+    action(QJsonObject &json);
     action(unsigned int index, QString itemSpec, QString data);
     action(unsigned int index, quint64 time, QString itemSpec, QString data);
 
-    friend QDataStream &operator>>(QDataStream &in, action &actionElem);
-    friend QDataStream &operator<<(QDataStream &out, const action &actionElem);
+    QJsonObject toJson();
+    void fromJson(QJsonObject &json);
+
+
 };
-
-
 
 
 
@@ -101,7 +103,7 @@ public:
 
         case UActions::DeleteBook:
             for (int i = 0; i < FileQueue.size(); i++)
-                if (UActions::AddBook == FileQueue.at(i).actionIndex && qualifier == FileQueue.at(i).spec)
+                if (UActions::AddBook == FileQueue.at(i).Index && qualifier == FileQueue.at(i).Spec)
                 {
                     FileQueue.removeAt(i);
                     return;
@@ -111,10 +113,10 @@ public:
 
         case UActions::UpdateProgress:
             for (int i = 0; i < BookQueue.size(); i++)
-                if (BookQueue.at(i).actionIndex == UActions::UpdateProgress && qualifier == BookQueue.at(i).spec)
+                if (BookQueue.at(i).Index == UActions::UpdateProgress && qualifier == BookQueue.at(i).Spec)
                 {
-                    BookQueue[i].actionTime = QDateTime::currentMSecsSinceEpoch();
-                    BookQueue[i].dataChanges = getNumber(data);
+                    BookQueue[i].Time = QDateTime::currentMSecsSinceEpoch();
+                    BookQueue[i].Changes = getNumber(data);
                     return;
                 }
             Squalifier = getNumber(qualifier);
@@ -124,10 +126,10 @@ public:
 
         case UActions::UpdateBookInf:
             for (int i = 0; i < BookQueue.size(); i++)
-                if (BookQueue.at(i).actionIndex == UActions::UpdateProgress && qualifier == BookQueue.at(i).spec)
+                if (BookQueue.at(i).Index == UActions::UpdateProgress && qualifier == BookQueue.at(i).Spec)
                 {
-                    BookQueue[i].actionTime = QDateTime::currentMSecsSinceEpoch();
-                    BookQueue[i].dataChanges = getNumber(data);
+                    BookQueue[i].Time = QDateTime::currentMSecsSinceEpoch();
+                    BookQueue[i].Changes = getNumber(data);
                     return;
                 }
             Squalifier = getNumber(qualifier);

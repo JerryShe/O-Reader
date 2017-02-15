@@ -6,6 +6,10 @@
 
 #include <QDebug>
 
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+
 Settings::Settings()
 {
     textAlignMap.insert(0, "justify");
@@ -44,14 +48,20 @@ bool Settings::saveSettings()
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
 
-    QFile SettingsFile(resoursesFolderPath + "/Settings.conf");
+    QFile SettFile(resoursesFolderPath + "/Settings.json");
 
-    if(SettingsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    if(SettFile.open(QIODevice::WriteOnly))
     {
-        QDataStream out(&SettingsFile);
-        out<<*this;
+        QJsonObject SettObj;
+        SettObj["Settings"] = this->toJson();
+
+        QJsonDocument SettJson(SettObj);
+        SettFile.write(SettJson.toJson());
+
+        SettFile.close();
+
         qDebug()<<"settings saved";
-        SettingsFile.close();
+
     }
     else
     {
@@ -67,19 +77,22 @@ bool Settings::loadSettings()
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
 
-    QFile SettingsFile(resoursesFolderPath + "/Settings.conf");
+    QFile SettingsFile(resoursesFolderPath + "/Settings.json");
 
-    if(SettingsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    if(SettingsFile.open(QIODevice::ReadOnly))
     {
         qDebug()<<"settings loaded";
-        QDataStream in(&SettingsFile);
-        in>>*this;
+        QByteArray in = SettingsFile.readAll();
+
+        QJsonDocument SetJson(QJsonDocument::fromJson(in));
+
+        QJsonObject SetObj = SetJson.object();
+        SetObj = SetObj["Settings"].toObject();
+
+        this->fromJson(SetObj);
     }
     else
-    {
-        qDebug()<<"settings created";
-        SettingsFile.open((QIODevice::WriteOnly | QIODevice::Text));
-        QDataStream out(&SettingsFile);
+    {        
         InterfaceStyle = "Red";
         Language = "English";
         FKeyForwardPage = Qt::Key_Right;
@@ -96,58 +109,80 @@ bool Settings::loadSettings()
         LibraryIconListSize = 50;
 
         TextStylesNames.push_back("Standart");
-        StylesMap.push_back(ReadingStyle());
+        TextStyles.push_back(ReadingStyle());
         currentStyle = "Standart";
-        out<<*this;
+
+        saveSettings();
+
         return 1;
     }
     SettingsFile.close();
     return 1;
 }
 
-QDataStream &operator<<(QDataStream &out, const Settings &SettingsElem)
-{
-    out<<SettingsElem.LoginToken;
-    out<<SettingsElem.InterfaceStyle;
-    out<<SettingsElem.Language;
-    out<<SettingsElem.FKeyForwardPage;
-    out<<SettingsElem.SKeyForwardPage;
-    out<<SettingsElem.FKeyBackwardPage;
-    out<<SettingsElem.SKeyBackwardPage;
-    out<<SettingsElem.PageTurnByWheel;
-    out<<SettingsElem.PageTurnByTap;
-    out<<SettingsElem.LibraryReprezentation;
-    out<<SettingsElem.LibraryIconBarSize;
-    out<<SettingsElem.LibraryIconListSize;
-    out<<SettingsElem.HideTopBar;
-    out<<SettingsElem.currentStyle;
-    out<<SettingsElem.TextStylesNames;
-    out<<SettingsElem.StylesMap;
 
-    return out;
+QJsonObject Settings::toJson()
+{
+    QJsonObject json;
+
+    json["LoginToken"] = LoginToken;
+    json["InterfaceStyle"] = InterfaceStyle;
+    json["Language"] = Language;
+    json["FKeyForwardPage"] = FKeyForwardPage;
+    json["SKeyForwardPage"] = SKeyForwardPage;
+    json["FKeyBackwardPage"] =  FKeyBackwardPage;
+    json["SKeyBackwardPage"] = SKeyBackwardPage;
+    json["PageTurnByWheel"] = PageTurnByWheel;
+    json["PageTurnByTap"] = PageTurnByTap;
+    json["LibraryReprezentation"] = LibraryReprezentation;
+    json["LibraryIconBarSize"] = (int)LibraryIconBarSize;
+    json["LibraryIconListSize"] = (int)LibraryIconListSize;
+    json["HideTopBar"] = HideTopBar;
+    json["currentStyle"] = currentStyle;
+
+    json["TextStylesNames"] = QJsonArray::fromStringList(TextStylesNames);
+
+    QJsonObject Obj;
+    for (int i = 0; i < TextStyles.size(); i++)
+        Obj[TextStylesNames[i]] = TextStyles[i].toJson();
+
+    json["TextStyles"] = Obj;
+
+    return json;
 }
 
-
-QDataStream &operator>>(QDataStream &in, Settings &SettingsElem)
+void Settings::fromJson(const QJsonObject &json)
 {
-    in>>SettingsElem.LoginToken;
-    in>>SettingsElem.InterfaceStyle;
-    in>>SettingsElem.Language;
-    in>>SettingsElem.FKeyForwardPage;
-    in>>SettingsElem.SKeyForwardPage;
-    in>>SettingsElem.FKeyBackwardPage;
-    in>>SettingsElem.SKeyBackwardPage;
-    in>>SettingsElem.PageTurnByWheel;
-    in>>SettingsElem.PageTurnByTap;
-    in>>SettingsElem.LibraryReprezentation;
-    in>>SettingsElem.LibraryIconBarSize;
-    in>>SettingsElem.LibraryIconListSize;
-    in>>SettingsElem.HideTopBar;
-    in>>SettingsElem.currentStyle;
-    in>>SettingsElem.TextStylesNames;
-    in>>SettingsElem.StylesMap;
+    LoginToken = json["LoginToken"].toString();
+    InterfaceStyle = json["InterfaceStyle"].toString();
+    Language = json["Language"].toString();
+    FKeyForwardPage = json["FKeyForwardPage"].toInt();
+    SKeyForwardPage = json["SKeyForwardPage"].toInt();
+    FKeyBackwardPage = json["FKeyBackwardPage"].toInt();
+    SKeyBackwardPage = json["SKeyBackwardPage"].toInt();
+    PageTurnByWheel = json["PageTurnByWheel"].toBool();
+    PageTurnByTap = json["PageTurnByTap"].toBool();
+    LibraryReprezentation = json["LibraryReprezentation"].toBool();
+    LibraryIconBarSize = (unsigned short)json["LibraryIconBarSize"].toInt();
+    LibraryIconListSize = (unsigned short)json["LibraryIconListSize"].toInt();
+    HideTopBar = json["HideTopBar"].toBool();
+    currentStyle = json["currentStyle"].toString();
 
-    return in;
+    TextStylesNames.clear();
+    QJsonArray arr = json["TextStylesNames"].toArray();
+    foreach (auto i, arr) {
+        TextStylesNames.append(i.toString());
+    }
+
+    TextStyles.clear();
+    QJsonObject Obj = json["TextStyles"].toObject();
+    QJsonObject temp;
+    for (int i = 0; i < TextStylesNames.size(); i++)
+    {
+        temp = Obj[TextStylesNames[i]].toObject();
+        TextStyles.append(ReadingStyle(temp));
+    }
+
 }
 
 
@@ -167,77 +202,87 @@ ReadingStyle::ReadingStyle()
     NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, 1, "#000000");
 }
 
-QDataStream &operator<<(QDataStream &out, const ReadingStyle &ReadingStyleElem)
+ReadingStyle::ReadingStyle(QJsonObject &json)
 {
-    out<<ReadingStyleElem.ColumnCount;
-    out<<ReadingStyleElem.BackgroundType;
-    out<<ReadingStyleElem.BackgroundImage;
-    out<<ReadingStyleElem.TextAntiAliasing;
-    out<<ReadingStyleElem.ParLeftTopIdent;
-    out<<ReadingStyleElem.TextLeftRightIdent;
-    out<<ReadingStyleElem.TextTopBottomIdent;
-    out<<ReadingStyleElem.RegularTextStyle;
-    out<<ReadingStyleElem.EmphasizedTextStyle;
-    out<<ReadingStyleElem.TitleStyle;
-    out<<ReadingStyleElem.SubtitleStyle;
-    out<<ReadingStyleElem.NoteStyle;
-
-    return out;
+    this->fromJson(json);
 }
 
-QDataStream &operator>>(QDataStream &in, ReadingStyle &ReadingStyleElem)
-{
-    in>>ReadingStyleElem.ColumnCount;
-    in>>ReadingStyleElem.BackgroundType;
-    in>>ReadingStyleElem.BackgroundImage;
-    in>>ReadingStyleElem.TextAntiAliasing;
-    in>>ReadingStyleElem.ParLeftTopIdent;
-    in>>ReadingStyleElem.TextLeftRightIdent;    
-    in>>ReadingStyleElem.TextTopBottomIdent;
-    in>>ReadingStyleElem.RegularTextStyle;
-    in>>ReadingStyleElem.EmphasizedTextStyle;
-    in>>ReadingStyleElem.TitleStyle;
-    in>>ReadingStyleElem.SubtitleStyle;
-    in>>ReadingStyleElem.NoteStyle;
 
-    return in;
+QJsonObject ReadingStyle::toJson()
+{
+    QJsonObject json;
+
+    json["ColumnCount"] = (int)ColumnCount;
+    json["BackgroundType"] = BackgroundType;
+    json["BackgroundImage"] = BackgroundImage;
+    json["TextAntiAliasing"] = TextAntiAliasing;
+    json["ParLeftTopIdent"] = (int)ParLeftTopIdent;
+    json["TextLeftRightIdent"] = (int)TextLeftRightIdent;
+    json["TextTopBottomIdent"] = (int)TextTopBottomIdent;
+
+    json["RegularTextStyle"] = RegularTextStyle.toJson();
+    json["EmphasizedTextStyle"] = EmphasizedTextStyle.toJson();
+    json["TitleStyle"] = TitleStyle.toJson();
+    json["SubtitleStyle"] = SubtitleStyle.toJson();
+    json["NoteStyle"] = NoteStyle.toJson();
+
+    return json;
 }
+
+void ReadingStyle::fromJson(QJsonObject &json)
+{
+    ColumnCount = (unsigned short)json["ColumnCount"].toInt();
+    BackgroundType = json["BackgroundType"].toBool();
+    BackgroundImage = json["BackgroundImage"].toString();
+    TextAntiAliasing = json["TextAntiAliasing"].toBool();
+    ParLeftTopIdent = (unsigned short) json["ParLeftTopIdent"].toInt();
+    TextLeftRightIdent = (unsigned short)json["TextLeftRightIdent"].toInt();
+    TextTopBottomIdent = (unsigned short)json["TextTopBottomIdent"].toInt();
+
+    RegularTextStyle.fromJson(json["RegularTextStyle"].toObject());
+    EmphasizedTextStyle.fromJson(json["EmphasizedTextStyle"].toObject());
+    TitleStyle.fromJson(json["TitleStyle"].toObject());
+    SubtitleStyle.fromJson(json["SubtitleStyle"].toObject());
+    NoteStyle.fromJson(json["NoteStyle"].toObject());
+}
+
 
 TextStyleSheet::TextStyleSheet()
 {
-    FontFamily = "MS Shell Dlg 2";
-    FontSize = 8;
-    FontStyle = 0;
+    Family = "MS Shell Dlg 2";
+    Size = 8;
+    Style = 0;
     LineSpacing = 1.5;
-    TextAlign = 0;
-    TextColor = "#000000";
+    Align = 0;
+    Color = "#000000";
 }
 
 TextStyleSheet::TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, unsigned short Align, QString color)
-    : FontFamily(Font), FontSize(Size), FontStyle(Style), LineSpacing(Spacing), TextAlign(Align), TextColor(color){}
+    : Family(Font), Size(Size), Style(Style), LineSpacing(Spacing), Align(Align), Color(color){}
 
-QDataStream &operator <<(QDataStream &out, const TextStyleSheet &TextStyleSheetElem)
+
+QJsonObject TextStyleSheet::toJson()
 {
-    out<<TextStyleSheetElem.FontFamily;
-    out<<TextStyleSheetElem.FontSize;
-    out<<TextStyleSheetElem.FontStyle;
-    out<<TextStyleSheetElem.LineSpacing;
-    out<<TextStyleSheetElem.TextAlign;
-    out<<TextStyleSheetElem.TextColor;
+    QJsonObject json;
 
-    return out;
+    json["Family"] = Family;
+    json["Size"] = (int)Size;
+    json["Style"] = (int)Style;
+    json["LineSpacing"] = LineSpacing;
+    json["Align"] = (int)Align;
+    json["Color"] = Color;
+
+    return json;
 }
 
-QDataStream &operator >>(QDataStream &in, TextStyleSheet &TextStyleSheetElem)
+void TextStyleSheet::fromJson(const QJsonObject &json)
 {
-    in>>TextStyleSheetElem.FontFamily;
-    in>>TextStyleSheetElem.FontSize;
-    in>>TextStyleSheetElem.FontStyle;
-    in>>TextStyleSheetElem.LineSpacing;
-    in>>TextStyleSheetElem.TextAlign;
-    in>>TextStyleSheetElem.TextColor;
-
-    return in;
+    Family = json["Family"].toString();
+    Size = (unsigned short)json["Size"].toInt();
+    Style = (unsigned short)json["Style"].toInt();
+    LineSpacing = json["LineSpacing"].toDouble();
+    Align = (unsigned short)json["Align"].toInt();
+    Color = json["Color"].toString();
 }
 
 
@@ -400,20 +445,20 @@ ReadingStyle Settings::getNamedStyle(const QString name)
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)
-        return StylesMap.at(index);
+        return TextStyles.at(index);
     else
         qDebug()<<"style name wtf";
-    return StylesMap.at(0);
+    return TextStyles.at(0);
 }
 
 ReadingStyle Settings::getCurrentTextStyleElem()
 {
-    return StylesMap.at(TextStylesNames.indexOf(currentStyle));
+    return TextStyles.at(TextStylesNames.indexOf(currentStyle));
 }
 
 void Settings::saveStyle(const QString name, const ReadingStyle style)
 {
-    if (StylesMap.size() != TextStylesNames.size())
+    if (TextStyles.size() != TextStylesNames.size())
     {
         qDebug()<<"WTF -_-";
         return;
@@ -421,12 +466,12 @@ void Settings::saveStyle(const QString name, const ReadingStyle style)
     if (TextStylesNames.indexOf(name) == -1)
     {
         TextStylesNames.push_back(name);
-        StylesMap.push_back(style);
+        TextStyles.push_back(style);
     }
     else
-        StylesMap[TextStylesNames.indexOf(name)] = style;
+        TextStyles[TextStylesNames.indexOf(name)] = style;
 
-    qDebug()<<"settings saved";
+    qDebug()<<"style saved";
 }
 
 void Settings::removeNamedStyle(QString name)
@@ -435,7 +480,7 @@ void Settings::removeNamedStyle(QString name)
     if (index != -1)
     {
         this->TextStylesNames.removeAt(index);
-        this->StylesMap.removeAt(index);
+        this->TextStyles.removeAt(index);
     }
     else
     {

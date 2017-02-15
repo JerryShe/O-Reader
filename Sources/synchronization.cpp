@@ -6,6 +6,51 @@
 #include <QDebug>
 #include <QString>
 
+#include <QJsonArray>
+#include <QJsonDocument>
+
+
+action::action(unsigned int index, QString itemSpec, QString data)
+{
+    Time = QDateTime::currentMSecsSinceEpoch();
+    Index = index;
+    Spec = itemSpec;
+    Changes = data;
+}
+
+action::action(unsigned int index, quint64 time, QString itemSpec, QString data)
+{
+    Time = time;
+    Index = index;
+    Spec = itemSpec;
+    Changes = data;
+}
+
+action::action(QJsonObject &json)
+{
+    this->fromJson(json);
+}
+
+
+QJsonObject action::toJson()
+{
+    QJsonObject json;
+
+    json["Time"] = QString::number(Time);
+    json["Index"] = (int)Index;
+    json["Spec"] = Spec;
+    json["Changes"] = Changes;
+
+    return json;
+}
+
+void action::fromJson(QJsonObject &json)
+{
+    Time = json["Time"].toString().toULongLong();
+    Index = (unsigned int)json["Index"].toInt();
+    Spec = json["Spec"].toString();
+    Changes = json["Changes"].toString();
+}
 
 Synchronization::Synchronization()
 {
@@ -25,21 +70,7 @@ Synchronization* Synchronization::getSynchronization()
     return &UserActions;
 }
 
-action::action(unsigned int index, QString itemSpec, QString data)
-{
-    actionTime = QDateTime::currentMSecsSinceEpoch();
-    actionIndex = index;
-    spec = itemSpec;
-    dataChanges = data;
-}
 
-action::action(unsigned int index, quint64 time, QString itemSpec, QString data)
-{
-    actionTime = time;
-    actionIndex = index;
-    spec = itemSpec;
-    dataChanges = data;
-}
 
 bool Synchronization::loadLog()
 {
@@ -48,9 +79,9 @@ bool Synchronization::loadLog()
     {
         QDir().mkdir(resoursesFolderPath);
     }
-    QFile LogList(resoursesFolderPath + "/ChangesLogs.log");
+    QFile LogList(resoursesFolderPath + "/ChangesLogs.json");
 
-    if(!LogList.open(QIODevice::ReadOnly | QIODevice::Text ))
+    if(!LogList.open(QIODevice::ReadOnly))
     {
         qDebug() << "Log Failed to Create File";
         qDebug() << "error = " << LogList.error()<< endl;
@@ -59,16 +90,33 @@ bool Synchronization::loadLog()
         return 1;
     }
 
-    QDataStream in(&LogList);
+    QByteArray in = LogList.readAll();
 
-    in>>SettingsChanged;
-    if (SettingsChanged)
-        in>>SettingsChangedTime;
-    in>>LastOpenedWindow;
-    in>>LastOpenedBookIndex;
+    QJsonDocument SynJson(QJsonDocument::fromJson(in));
 
-    in>>BookQueue;
-    in>>FileQueue;
+    QJsonObject SynObj = SynJson.object();
+
+    SettingsChanged = SynObj["SettingsChanged"].toBool();
+    SettingsChangedTime = SynObj["SettingsChangedTime"].toString().toULongLong();
+    LastOpenedWindow = SynObj["LastOpenedWindow"].toInt();
+    LastOpenedBookIndex = (unsigned int)SynObj["LastOpenedBookIndex"].toInt();
+
+    BookQueue.clear();
+    QJsonArray BookArray = SynObj["Books"].toArray();
+    QJsonObject temp;
+    for (int i = 0; i < BookArray.size(); i++)
+    {
+        temp = BookArray[i].toObject();
+        BookQueue.append(action(temp));
+    }
+
+    FileQueue.clear();
+    QJsonArray FileArray = SynObj["Files"].toArray();
+    for (int i = 0; i < FileArray.size(); i++)
+    {
+        temp = FileArray[i].toObject();
+        FileQueue.append(action(temp));
+    }
 
     qDebug()<<"logs loaded";
     LogList.close();
@@ -83,19 +131,30 @@ bool Synchronization::saveLog()
         QDir().mkdir(resoursesFolderPath);
     }
 
-    QFile LogList(resoursesFolderPath + "/ChangesLogs.log");
+    QFile LogList(resoursesFolderPath + "/ChangesLogs.json");
 
     LogList.open(QIODevice::WriteOnly);
+    ///проверка
 
-    QDataStream out(&LogList);
-    out<<SettingsChanged;
-    if (SettingsChanged)
-        out<<SettingsChangedTime;
-    out<<LastOpenedWindow;
-    out<<LastOpenedBookIndex;
+    QJsonObject SynObj;
+    SynObj["SettingsChanged"] = SettingsChanged;
+    SynObj["SettingsChangedTime"] = QString::number(SettingsChangedTime);
+    SynObj["LastOpenedWindow"] = LastOpenedWindow;
+    SynObj["LastOpenedBookIndex"] = (int)LastOpenedBookIndex;
 
-    out<<BookQueue;
-    out<<FileQueue;
+    QJsonArray BookArray;
+    for (int i = 0; i < BookQueue.size(); i++)
+        BookArray.append(BookQueue[i].toJson());
+
+    QJsonArray FileArray;
+    for (int i = 0; i < FileQueue.size(); i++)
+        FileArray.append(FileQueue[i].toJson());
+
+    SynObj["Books"] = BookArray;
+    SynObj["Files"] = FileArray;
+
+    QJsonDocument SynJson(SynObj);
+    LogList.write(SynJson.toJson());
 
     qDebug()<<"log saved";
     LogList.close();
@@ -153,19 +212,19 @@ void Synchronization::setLastOpenedBookIndex(unsigned int index)
 
 QDataStream &operator>>(QDataStream &in, action &actionElem)
 {
-    in>>actionElem.actionIndex;
-    in>>actionElem.actionTime;
-    in>>actionElem.spec;
-    in>>actionElem.dataChanges;
+    in>>actionElem.Index;
+    in>>actionElem.Time;
+    in>>actionElem.Spec;
+    in>>actionElem.Changes;
     return in;
 }
 
 QDataStream &operator<<(QDataStream &out, const action &actionElem)
 {
-    out<<actionElem.actionIndex;
-    out<<actionElem.actionTime;
-    out<<actionElem.spec;
-    out<<actionElem.dataChanges;
+    out<<actionElem.Index;
+    out<<actionElem.Time;
+    out<<actionElem.Spec;
+    out<<actionElem.Changes;
     return out;
 }
 

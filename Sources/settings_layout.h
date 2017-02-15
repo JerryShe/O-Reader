@@ -13,12 +13,12 @@
 #include "QTabSwitcher.h"
 
 
-class settingslayout : public QWidget
+class SettingsLayout : public QWidget
 {
     Q_OBJECT
 public:
-    explicit settingslayout(QWidget *Parent=0);
-    ~settingslayout();
+    explicit SettingsLayout(QWidget *Parent=0);
+    ~SettingsLayout();
 
     void setSettingsData();
     void hideWithoutSaving();

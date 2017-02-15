@@ -1,29 +1,14 @@
 #include "synchronization_layout.h"
-#include <QGridLayout>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
+#include "ui_synchronization_layout.h"
 
-synchronizationlayout::synchronizationlayout(QWidget *Parent)
+SynchronizationLayout::SynchronizationLayout(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::SynchronizationLayout)
 {
-    this->setParent(Parent);
-    synchronizationGridLayout = new QGridLayout();
-
-    QPushButton *synch = new QPushButton(QObject::tr("synchronization"));
-    synch->setFixedSize(200,30);
-    synchronizationGridLayout->addWidget(synch, 0, 0);
-
-    setLayout(synchronizationGridLayout);
-    hide();
-
+    ui->setupUi(this);
 }
 
-synchronizationlayout::~synchronizationlayout()
+SynchronizationLayout::~SynchronizationLayout()
 {
-    delete synchronizationGridLayout;
-}
-
-void synchronizationlayout::setSettingsData(Settings *PSettings)
-{
-    ProgramSettings = PSettings;
+    delete ui;
 }

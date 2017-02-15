@@ -1,6 +1,10 @@
 #include "library_handler.h"
+
 #include <QDirIterator>
 #include <QDebug>
+
+#include <QJsonDocument>
+#include <QJsonArray>
 
 
 LibraryHandler* LibraryHandler::getLibraryHandler()
@@ -35,7 +39,7 @@ void LibraryHandler::setLibraryWidget(library* lbWidget)
 
 Book* LibraryHandler::getLastOpenedBook()
 {
-    if (UserActions->getLastOpenedBookIndex() == -1)
+    if (UserActions->getLastOpenedBookIndex() == 0)
         return 0;
 
     int i = 0;
@@ -116,28 +120,38 @@ void LibraryHandler::AddFolder(QString path)
 
 bool LibraryHandler::loadBookList()
 {
-    QFile bookFileList(resoursesFolderPath + "/BookList.lb");
+    QFile LibFile(resoursesFolderPath + "/BookList.json");
 
-    if(!bookFileList.open(QIODevice::ReadOnly | QIODevice::Text ))
+    if(!LibFile.open(QIODevice::ReadOnly))
     {
         qDebug() << "Failed to Create File" << endl;
         ///оповещение - невозможно открыть или создать файл библиотеки
-        return 1;
+        return 0;
     }
 
-    QDataStream in(&bookFileList);
-    Book temp;
-    while (!in.atEnd())
+    QByteArray in = LibFile.readAll();
+
+    QJsonDocument LibJson(QJsonDocument::fromJson(in));
+
+    QJsonObject LibObj = LibJson.object();
+    QJsonArray LibArray = LibObj["Library"].toArray();
+    QJsonObject temp;
+
+    for (int i = 0; i < LibArray.size(); i++)
     {
-        in>>temp;
-        if (currentBookIndex < temp.getBookIndex())
-            currentBookIndex = temp.getBookIndex();
+        temp = LibArray[i].toObject();
+        bookList.append(Book(temp));
 
-        bookList.push_back(temp);
         if (LibraryWidget != 0)
-            LibraryWidget->addItem(temp.getBookIndex(), temp.getAuthorName(), temp.getTitle(), temp.getCover());
+            LibraryWidget->addItem(bookList.back().getBookIndex(),
+                                             bookList.back().getAuthorName(),
+                                             bookList.back().getTitle(),
+                                             bookList.back().getCover());
     }
-    bookFileList.close();
+
+    needRefresh = true;
+
+    LibFile.close();
     qDebug()<<bookList.size()<<"books loaded";
 
     return 1;
@@ -145,21 +159,30 @@ bool LibraryHandler::loadBookList()
 
 
 bool LibraryHandler::saveBookList()
-{
-    QFile bookFileList(resoursesFolderPath + "/BookList.lb");
+{    
+    QFile LibFile(resoursesFolderPath + "/BookList.json");
 
-    if(!bookFileList.open(QIODevice::WriteOnly | QIODevice::Text ))
+    if(!LibFile.open(QIODevice::WriteOnly))
     {
         qDebug() << "Failed to Create Book File";
         ///оповещение - невозможно открыть или создать файл библиотеки
         return 1;
     }
 
-    QDataStream out(&bookFileList);
-    for (int i = 0; i < bookList.size(); i++)
-        out<<bookList[i];
+    QJsonObject LibObj;
+    QJsonArray LibArray;
 
-    bookFileList.close();
+    for (int i = 0; i < bookList.size(); i++)
+        LibArray.append(bookList[i].getJson());
+
+    LibObj["Library"] = LibArray;
+
+    QJsonDocument LibJson(LibObj);
+    LibFile.write(LibJson.toJson());
+
+
+    LibFile.close();
+
     qDebug()<<bookList.size()<<"books saved";
     return 1;
 

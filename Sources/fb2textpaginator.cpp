@@ -192,22 +192,22 @@ FB2TextPaginator::~FB2TextPaginator()
 void FB2TextPaginator::setFontMap()
 {
 
-    QFont textFont(CurStyle.RegularTextStyle.FontFamily, CurStyle.RegularTextStyle.FontSize, 49*(CurStyle.RegularTextStyle.FontStyle%2) + 50, CurStyle.RegularTextStyle.FontStyle/10);
+    QFont textFont(CurStyle.RegularTextStyle.Family, CurStyle.RegularTextStyle.Size, 49*(CurStyle.RegularTextStyle.Style%2) + 50, CurStyle.RegularTextStyle.Style/10);
     fontMap.insert("Text", new QFontMetrics(textFont));
 
     textFont.setWeight(75);
     fontMap.insert("strong", new QFontMetrics(textFont));
 
-    QFont titleFont(CurStyle.TitleStyle.FontFamily, CurStyle.TitleStyle.FontSize, 49*(CurStyle.TitleStyle.FontStyle%2) + 50, CurStyle.TitleStyle.FontStyle/10);
+    QFont titleFont(CurStyle.TitleStyle.Family, CurStyle.TitleStyle.Size, 49*(CurStyle.TitleStyle.Style%2) + 50, CurStyle.TitleStyle.Style/10);
     fontMap.insert("TitleText", new QFontMetrics(titleFont));
 
-    QFont subtitleFont(CurStyle.SubtitleStyle.FontFamily, CurStyle.SubtitleStyle.FontSize, 49*(CurStyle.SubtitleStyle.FontStyle%2) + 50, CurStyle.SubtitleStyle.FontStyle/10);
+    QFont subtitleFont(CurStyle.SubtitleStyle.Family, CurStyle.SubtitleStyle.Size, 49*(CurStyle.SubtitleStyle.Style%2) + 50, CurStyle.SubtitleStyle.Style/10);
     fontMap.insert("epigraph", new QFontMetrics(subtitleFont));
 
-    QFont empFont(CurStyle.EmphasizedTextStyle.FontFamily, CurStyle.EmphasizedTextStyle.FontSize, 49*(CurStyle.EmphasizedTextStyle.FontStyle%2) + 50, CurStyle.EmphasizedTextStyle.FontStyle/10);
+    QFont empFont(CurStyle.EmphasizedTextStyle.Family, CurStyle.EmphasizedTextStyle.Size, 49*(CurStyle.EmphasizedTextStyle.Style%2) + 50, CurStyle.EmphasizedTextStyle.Style/10);
     fontMap.insert("emphasis", new QFontMetrics(empFont));
 
-    QFont noteFont(CurStyle.NoteStyle.FontFamily, CurStyle.NoteStyle.FontSize, 49*(CurStyle.NoteStyle.FontStyle%2) + 50, CurStyle.NoteStyle.FontStyle/10);
+    QFont noteFont(CurStyle.NoteStyle.Family, CurStyle.NoteStyle.Size, 49*(CurStyle.NoteStyle.Style%2) + 50, CurStyle.NoteStyle.Style/10);
     fontMap.insert("Note", new QFontMetrics(noteFont));
 }
 
@@ -242,53 +242,53 @@ void FB2TextPaginator::setHTMLinf()
                           "margin-bottom:0px;}"
 
                      "TitleText{"
-                          "font-family:'" + CurStyle.TitleStyle.FontFamily + "';"
-                          "font-size:" + QString::number(CurStyle.TitleStyle.FontSize) + "pt;"
-                          "font-weight:" + ((CurStyle.TitleStyle.FontStyle%2)? QString("bold"):QString("normal")) + ";"
+                          "font-family:'" + CurStyle.TitleStyle.Family + "';"
+                          "font-size:" + QString::number(CurStyle.TitleStyle.Size) + "pt;"
+                          "font-weight:" + ((CurStyle.TitleStyle.Style%2)? QString("bold"):QString("normal")) + ";"
                           "line-height:" + QString::number(CurStyle.TitleStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.TitleStyle.FontStyle/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.TitleStyle.TextAlign) + ";"
-                          "color:" + CurStyle.TitleStyle.TextColor + ";"
+                          "font-style:" + ((CurStyle.TitleStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
+                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.TitleStyle.Align) + ";"
+                          "color:" + CurStyle.TitleStyle.Color + ";"
                           "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
 
                      "epigraph{"
-                          "font-family:'" + CurStyle.SubtitleStyle.FontFamily + "';"
-                          "font-size:" + QString::number(CurStyle.SubtitleStyle.FontSize) + "pt;"
-                          "font-weight:" + ((CurStyle.SubtitleStyle.FontStyle%2)? QString("bold"):QString("normal")) + ";"
+                          "font-family:'" + CurStyle.SubtitleStyle.Family + "';"
+                          "font-size:" + QString::number(CurStyle.SubtitleStyle.Size) + "pt;"
+                          "font-weight:" + ((CurStyle.SubtitleStyle.Style%2)? QString("bold"):QString("normal")) + ";"
                           "line-height:" + QString::number(CurStyle.SubtitleStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.SubtitleStyle.FontStyle/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.SubtitleStyle.TextAlign) + ";"
-                          "color:" + CurStyle.SubtitleStyle.TextColor + ";"
+                          "font-style:" + ((CurStyle.SubtitleStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
+                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.SubtitleStyle.Align) + ";"
+                          "color:" + CurStyle.SubtitleStyle.Color + ";"
                           "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
 
                      "Text{"
-                          "font-family:'" + CurStyle.RegularTextStyle.FontFamily + "';"
-                          "font-size:" + QString::number(CurStyle.RegularTextStyle.FontSize) + "pt;"
-                          "font-weight:" + ((CurStyle.RegularTextStyle.FontStyle%2)? QString("bold"):QString("normal")) + ";"
+                          "font-family:'" + CurStyle.RegularTextStyle.Family + "';"
+                          "font-size:" + QString::number(CurStyle.RegularTextStyle.Size) + "pt;"
+                          "font-weight:" + ((CurStyle.RegularTextStyle.Style%2)? QString("bold"):QString("normal")) + ";"
                           "line-height:" + QString::number(CurStyle.RegularTextStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.RegularTextStyle.FontStyle/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.RegularTextStyle.TextAlign) + ";"
-                          "color:" + CurStyle.RegularTextStyle.TextColor + ";"
+                          "font-style:" + ((CurStyle.RegularTextStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
+                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.RegularTextStyle.Align) + ";"
+                          "color:" + CurStyle.RegularTextStyle.Color + ";"
                           "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
 
                      "emphasis{"
-                          "font-family:'" + CurStyle.EmphasizedTextStyle.FontFamily + "';"
-                          "font-size:" + QString::number(CurStyle.EmphasizedTextStyle.FontSize) + "pt;"
-                          "font-weight:" + ((CurStyle.EmphasizedTextStyle.FontStyle%2)? QString("bold"):QString("normal")) + ";"
+                          "font-family:'" + CurStyle.EmphasizedTextStyle.Family + "';"
+                          "font-size:" + QString::number(CurStyle.EmphasizedTextStyle.Size) + "pt;"
+                          "font-weight:" + ((CurStyle.EmphasizedTextStyle.Style%2)? QString("bold"):QString("normal")) + ";"
                           "line-height:" + QString::number(CurStyle.EmphasizedTextStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.EmphasizedTextStyle.FontStyle/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.EmphasizedTextStyle.TextAlign) + ";"
-                          "color:" + CurStyle.EmphasizedTextStyle.TextColor + ";"
+                          "font-style:" + ((CurStyle.EmphasizedTextStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
+                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.EmphasizedTextStyle.Align) + ";"
+                          "color:" + CurStyle.EmphasizedTextStyle.Color + ";"
                           "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
 
                      "Note{"
-                          "font-family:'" + CurStyle.NoteStyle.FontFamily + "';"
-                          "font-size:" + QString::number(CurStyle.NoteStyle.FontSize) + "pt;"
-                          "font-weight:" + ((CurStyle.NoteStyle.FontStyle%2)? QString("bold"):QString("normal")) + ";"
+                          "font-family:'" + CurStyle.NoteStyle.Family + "';"
+                          "font-size:" + QString::number(CurStyle.NoteStyle.Size) + "pt;"
+                          "font-weight:" + ((CurStyle.NoteStyle.Style%2)? QString("bold"):QString("normal")) + ";"
                           "line-height:" + QString::number(CurStyle.NoteStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.NoteStyle.FontStyle/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.NoteStyle.TextAlign) + ";"
-                          "color:" + CurStyle.NoteStyle.TextColor + ";"
+                          "font-style:" + ((CurStyle.NoteStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
+                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.NoteStyle.Align) + ";"
+                          "color:" + CurStyle.NoteStyle.Color + ";"
                           "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
 
                      "strong > p{"

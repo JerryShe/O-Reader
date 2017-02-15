@@ -15,7 +15,6 @@ SOURCES += main.cpp\
     answer_dialog.cpp \
     styles.cpp \
     settings_layout.cpp \
-    synchronization_layout.cpp \
     books.cpp \
     settings.cpp \
     book_or_folder.cpp \
@@ -35,13 +34,13 @@ SOURCES += main.cpp\
     main_window.cpp \
     login_window.cpp \
     reading_window.cpp \
-    window_manager.cpp
+    window_manager.cpp \
+    synchronization_layout.cpp
 
 HEADERS  += \
     answer_dialog.h \
     styles.h \
     settings_layout.h \
-    synchronization_layout.h \
     books.h \
     settings.h \
     book_or_folder.h \
@@ -62,7 +61,8 @@ HEADERS  += \
     main_window.h \
     login_window.h \
     reading_window.h \
-    window_manager.h
+    window_manager.h \
+    synchronization_layout.h
 
 FORMS    += \
     settings_programlayout.ui \
@@ -73,7 +73,8 @@ FORMS    += \
     library_layout.ui \
     main_window.ui \
     login_window.ui \
-    reading_window.ui
+    reading_window.ui \
+    synchronization_layout.ui
 
 RESOURCES += \
     images.qrc

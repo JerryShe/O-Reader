@@ -1,23 +1,22 @@
-#ifndef SYNCHRONIZATIONLAYOUT_H
-#define SYNCHRONIZATIONLAYOUT_H
+#ifndef SYNCHRONIZATION_LAYOUT_H
+#define SYNCHRONIZATION_LAYOUT_H
 
 #include <QWidget>
-#include <QGridLayout>
-#include "settings.h"
 
-class synchronizationlayout : public QWidget
+namespace Ui {
+class SynchronizationLayout;
+}
+
+class SynchronizationLayout : public QWidget
 {
     Q_OBJECT
-public:
-    explicit synchronizationlayout(QWidget *Parent=0);
-    ~synchronizationlayout();
 
-    void setSettingsData(Settings *PSettings);
+public:
+    explicit SynchronizationLayout(QWidget *parent = 0);
+    ~SynchronizationLayout();
 
 private:
-    QGridLayout *synchronizationGridLayout;
-
-    Settings *ProgramSettings;
+    Ui::SynchronizationLayout *ui;
 };
 
-#endif // SYNCHRONIZATIONLAYOUT_H
+#endif // SYNCHRONIZATION_LAYOUT_H

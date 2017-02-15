@@ -7,25 +7,28 @@
 #include <QMap>
 #include <QTranslator>
 
+#include <QJsonObject>
+
 struct TextStyleSheet
 {
     TextStyleSheet();
     TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, unsigned short Align, QString color);
 
-    QString FontFamily;
-    unsigned short FontSize;          // from 6 to 76
-    unsigned short FontStyle;         // 00 - нормальный 01 - болд 10 - курсив 11 - болд+курсив
+    QString Family;
+    unsigned short Size;          // from 6 to 76
+    unsigned short Style;         // 00 - нормальный 01 - болд 10 - курсив 11 - болд+курсив
     double LineSpacing;       // from 0,5 to 2
-    unsigned short TextAlign;         // 0 - justify, 1 - left, 2 - right, 3 - center
-    QString TextColor;
+    unsigned short Align;         // 0 - justify, 1 - left, 2 - right, 3 - center
+    QString Color;
 
-    friend QDataStream &operator<<(QDataStream &out, const TextStyleSheet &TextStyleSheetElem);
-    friend QDataStream &operator>>(QDataStream &in, TextStyleSheet &TextStyleSheetElem);
+    QJsonObject toJson();
+    void fromJson(const QJsonObject &json);
 };
 
 struct ReadingStyle
 {
     ReadingStyle();
+    ReadingStyle(QJsonObject &json);
 
     unsigned short ColumnCount;
     bool BackgroundType;     //1 - color, 0 - image
@@ -41,8 +44,8 @@ struct ReadingStyle
     TextStyleSheet SubtitleStyle;
     TextStyleSheet NoteStyle;
 
-    friend QDataStream &operator<<(QDataStream &out, const ReadingStyle &ReadingStyleElem);
-    friend QDataStream &operator>>(QDataStream &in, ReadingStyle &ReadingStyleElem);
+    QJsonObject toJson();
+    void fromJson(QJsonObject &json);
 };
 
 class Settings : public QObject
@@ -103,8 +106,8 @@ public:
 
     QString getTextAlignName(unsigned short key);
 
-    friend QDataStream &operator<<(QDataStream &out, const Settings &SettingsElem);
-    friend QDataStream &operator>>(QDataStream &out, Settings &SettingsElem);
+    QJsonObject toJson();
+    void fromJson(const QJsonObject &json);
 
 signals:
     void loadDone(){}
@@ -134,7 +137,7 @@ private:
     bool HideTopBar;                 // 1 - показывать всегда, 0 - показывать при наведении
 
     QStringList TextStylesNames;
-    QVector <ReadingStyle> StylesMap;
+    QVector <ReadingStyle> TextStyles;
     QString currentStyle;
 
     QMap <unsigned short, QString> textAlignMap;

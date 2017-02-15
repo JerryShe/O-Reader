@@ -9,14 +9,15 @@
 #include <QIcon>
 
 #include "genresmap.h"
+#include <QJsonObject>
 
 class Book
 {
 public:
     Book(bool &result, QString FileName, GenresMap *Gmap);
+    Book(QJsonObject &BookJson);
     Book(){}
-    friend QDataStream &operator<<(QDataStream &out, const Book &BookElem);
-    friend QDataStream &operator>>(QDataStream &out, Book &BookElem);
+
     void writeToConsole();
 
     QString getAuthorName();
@@ -30,18 +31,20 @@ public:
     QString getSeries();
     QString getLanguage();
     long long getBookProgress();
-    float getBookProgressPocent();
+    double getBookProgressPocent();
     QStringList getBookProgressTagStack();
-    void setBookProgress(const long long progress,double procent, QStringList tagStack);
+    void setBookProgress(const long long progress, const double procent, QStringList tagStack);
 
     QString getBookCodec();
-    void setBookCodec(QString BookCodec);
+    void setBookCodec(QString Codec);
     QString File;
+
+    QJsonObject getJson();
 
 private:
 
-    unsigned int BookIndex;
-    QString BookCodec;
+    unsigned int Index;
+    QString Codec;
 
     QString Title;
     QString AuthorFirstName;
@@ -54,7 +57,7 @@ private:
     QString SourceLanguage;
     QDateTime AddittionTime;
     long long Progress = 0;
-    float ProgressProcent = 0;
+    double ProgressProcent = 0;
     QStringList ProgressTagStack;
     QString CoverType;
     QString Cover;
