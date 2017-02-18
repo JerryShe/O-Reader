@@ -16,11 +16,11 @@ class FB2TextPaginator : public QObject
 
 public:
     FB2TextPaginator();
-    QString startParser(Book *OpeningBook, int Pwidth, int Pheight);
+    QString startParser(Book *OpeningBook, const int &Pwidth, const int &Pheight);
     ~FB2TextPaginator();
 
 public:
-    void setPageGeometry(const int width, const int height);
+    void setPageGeometry(const int &width, const int &height);
     void parseBookText();
     float getProgress();
 
@@ -31,9 +31,9 @@ public:
     long long getCurrentSectionIndex();
 
 public slots:
-    QString updatePage(const int width, const int height);
-    QString updateSettings(const int width, const int height);
-    QString goToSection(int sectionIndex);
+    QString updatePage(const int &width, const int &height);
+    QString updateSettings(const int &width, const int &height);
+    QString goToSection(const int &sectionIndex);
 
 private:
     QStringList splitTextToWords(QString temp);
@@ -45,7 +45,7 @@ private:
     void setFontMap();
     void setLinespaceMap();
 
-    int getWordWidth(QString word);
+    int getWordWidth(const QString &word);
     int getWordHeight();
 
     int getSpaceWidth();
@@ -56,7 +56,9 @@ private:
     int parseTag();
     void findTagsTale();
 
-    void debugSave(QString HTMLPage);
+    void debugSave(const QString &HTMLPage);
+
+
 
     QStringList bookText;
     unsigned int columnWidth;

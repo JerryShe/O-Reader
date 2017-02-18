@@ -30,13 +30,11 @@ struct action
 
     action(){}
     action(QJsonObject &json);
-    action(unsigned int index, QString itemSpec, QString data);
-    action(unsigned int index, quint64 time, QString itemSpec, QString data);
+    action(const unsigned int &index, const QString &itemSpec, const QString &data);
+    action(const unsigned int &index, const quint64 &time, const QString &itemSpec, const QString &data);
 
     QJsonObject toJson();
-    void fromJson(QJsonObject &json);
-
-
+    void fromJson(const QJsonObject &json);
 };
 
 
@@ -49,9 +47,8 @@ private:
     Synchronization();
     ~Synchronization();
 
-    QString getNumber(QString item);
-    QString getNumber(int item);
-
+    QString getNumber(const QString &item);
+    QString getNumber(const int &item);
 
 
     QQueue <action> BookQueue;
@@ -67,17 +64,14 @@ private:
 public:
     static Synchronization* getSynchronization();
 
-    int getLastOpenedWindow();
-    void setLastOpenedWindow(unsigned int index);
-
-    unsigned int getLastOpenedBookIndex();
-    void setLastOpenedBookIndex(unsigned int index);
-
-    int synchronizeToServer();
-    int synchronizeFromServer();
-
     bool saveLog();
     bool loadLog();
+
+    int getLastOpenedWindow();
+    void setLastOpenedWindow(const unsigned int &index);
+
+    unsigned int getLastOpenedBookIndex();
+    void setLastOpenedBookIndex(const unsigned int &index);
 
 
 
@@ -88,7 +82,7 @@ public:
     /// Изменение настроек - 5
     /// Добавление фона - 6: файл
 
-    template <typename T1> void addAction(UActions actionIndex, T1 qualifier, long long data = 0)
+    template <typename T1> void addAction(const UActions &actionIndex, const T1 qualifier, long long data = 0)
     {
         //qDebug()<<static_cast<int>(actionIndex)<<qualifier<<data;
 

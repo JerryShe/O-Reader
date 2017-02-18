@@ -115,7 +115,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-649</y>
+        <y>0</y>
         <width>468</width>
         <height>2157</height>
        </rect>
@@ -5283,8 +5283,7 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">
-</string>
+             <string notr="true"/>
             </property>
             <property name="frame">
              <bool>false</bool>

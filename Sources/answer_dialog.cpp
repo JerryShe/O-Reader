@@ -3,7 +3,7 @@
 #include "styles.h"
 
 
-AnswerDialog::AnswerDialog(QPoint position, QString text, QString Style, QWidget *parent)
+AnswerDialog::AnswerDialog(const QPoint &position, const QString &text, const QString &Style, QWidget *parent)
 {
     setParent(parent);
     resize(300,70);

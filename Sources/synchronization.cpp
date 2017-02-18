@@ -10,7 +10,7 @@
 #include <QJsonDocument>
 
 
-action::action(unsigned int index, QString itemSpec, QString data)
+action::action(const unsigned int &index, const QString &itemSpec, const QString &data)
 {
     Time = QDateTime::currentMSecsSinceEpoch();
     Index = index;
@@ -18,7 +18,7 @@ action::action(unsigned int index, QString itemSpec, QString data)
     Changes = data;
 }
 
-action::action(unsigned int index, quint64 time, QString itemSpec, QString data)
+action::action(const unsigned int &index, const quint64 &time, const QString &itemSpec, const QString &data)
 {
     Time = time;
     Index = index;
@@ -44,7 +44,7 @@ QJsonObject action::toJson()
     return json;
 }
 
-void action::fromJson(QJsonObject &json)
+void action::fromJson(const QJsonObject &json)
 {
     Time = json["Time"].toString().toULongLong();
     Index = (unsigned int)json["Index"].toInt();
@@ -56,7 +56,7 @@ Synchronization::Synchronization()
 {
     SettingsChanged = false;
     LastOpenedWindow = 0;
-    LastOpenedBookIndex = -1;
+    LastOpenedBookIndex = 0;
 }
 
 Synchronization::~Synchronization()
@@ -161,31 +161,13 @@ bool Synchronization::saveLog()
     return 1;
 }
 
-int Synchronization::synchronizeToServer()
-{
-    //пингуем
-    //сохраняем лог
-    //грузим файл лога на сервер
-    //чистим очередь и локальный лог
-    saveLog();
-    return 0;
-}
 
-int Synchronization::synchronizeFromServer()
-{
-    //пингуем
-    //грузим файл лога с сервера
-    //применяем изменения
-    loadLog();
-    return 0;
-}
-
-QString Synchronization::getNumber(QString item)
+QString Synchronization::getNumber(const QString &item)
 {
     return item;
 }
 
-QString Synchronization::getNumber(int item)
+QString Synchronization::getNumber(const int &item)
 {
     return QString::number(item);
 }
@@ -195,7 +177,7 @@ int Synchronization::getLastOpenedWindow()
     return LastOpenedWindow;
 }
 
-void Synchronization::setLastOpenedWindow(unsigned int index)
+void Synchronization::setLastOpenedWindow(const unsigned int &index)
 {
     LastOpenedWindow = index;
 }
@@ -205,7 +187,7 @@ unsigned int Synchronization::getLastOpenedBookIndex()
     return LastOpenedBookIndex;
 }
 
-void Synchronization::setLastOpenedBookIndex(unsigned int index)
+void Synchronization::setLastOpenedBookIndex(const unsigned int &index)
 {
     LastOpenedBookIndex = index;
 }

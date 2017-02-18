@@ -3,8 +3,12 @@
 
 #include <QPushButton>
 
-BookOrFolder::BookOrFolder(QPoint position, int hSize, QString Style, QWidget *parent)
+#include <QDebug>
+
+BookOrFolder::BookOrFolder(const QPoint &position, const int &hSize, const QString &Style, QWidget *parent)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+
     setParent(parent);
     resize(hSize, 40);
     move(position);

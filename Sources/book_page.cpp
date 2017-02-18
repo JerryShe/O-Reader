@@ -29,10 +29,11 @@ void BookPage::setStyle(QString Style)
     ui->exit_button->setStyleSheet(PageStyles[0]);
 }
 
-BookPage::BookPage(Book* book, QString Style, QWidget *parent) :
+BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
     //QMainWindow(parent),
     ui(new Ui::BookPage)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
 
     BookIndex = book->getBookIndex();
     ui->setupUi(this);
@@ -86,6 +87,8 @@ BookPage::BookPage(Book* book, QString Style, QWidget *parent) :
 
     metrics = QFontMetrics(ui->genres->font());
     ui->genres->setText(metrics.elidedText(temp, Qt::ElideRight, textWidth));
+
+
     connect(ui->exit_button, SIGNAL(clicked(bool)), this, SLOT(close()));
 
     show();
@@ -100,6 +103,7 @@ void BookPage::on_startReading_clicked()
 {
     this->hide();
     emit startReading(BookIndex);
+    this->close();
 }
 
 void BookPage::on_deleteBook_clicked()

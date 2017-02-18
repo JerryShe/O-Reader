@@ -10,6 +10,7 @@ QStringList FB2TextPaginator::splitTextToWords(QString temp)
 {
     QStringList tempList;
     tempList.append(temp);
+
     for (int i = 0; i < tempList.size(); i++)
     {
         int pos = tempList[i].indexOf("<");
@@ -27,7 +28,7 @@ QStringList FB2TextPaginator::splitTextToWords(QString temp)
             {
                 do
                 {
-                    doc->operator >>(temp);
+                    doc->operator>>(temp);
                     tempList[i].append(" " + temp);
                 }
                 while (temp.indexOf(">") == -1);
@@ -160,7 +161,7 @@ FB2TextPaginator::FB2TextPaginator()
 
 
 
-QString FB2TextPaginator::startParser(Book *OpeningBook, int Pwidth, int Pheight)
+QString FB2TextPaginator::startParser(Book *OpeningBook, const int &Pwidth, const int &Pheight)
 {
     book = OpeningBook;
     ProgramSettings = Settings::getSettings();
@@ -221,7 +222,7 @@ void FB2TextPaginator::setLinespaceMap()
     linespaceMap.insert("Note", CurStyle.NoteStyle.LineSpacing * fontMap["Note"]->lineSpacing());
 }
 
-void FB2TextPaginator::setPageGeometry(int width, int height)
+void FB2TextPaginator::setPageGeometry(const int &width, const int &height)
 {
     columnWidth = (width - 10 - 30*(CurStyle.ColumnCount-1) - CurStyle.TextLeftRightIdent/100 - CurStyle.TextLeftRightIdent%100)/CurStyle.ColumnCount;
     tableWidth = columnWidth*CurStyle.ColumnCount + 10 + 30*(CurStyle.ColumnCount-1) + CurStyle.TextLeftRightIdent/100 + CurStyle.TextLeftRightIdent%100;
@@ -349,7 +350,7 @@ long long FB2TextPaginator::getCurrentSectionIndex()
     return pos;
 }
 
-QString FB2TextPaginator::goToSection(int sectionIndex)
+QString FB2TextPaginator::goToSection(const int &sectionIndex)
 {
     currentTextPos = currentEStrNum = TableOfContentsIndexes[sectionIndex];
     tagStack.clear();
@@ -367,7 +368,7 @@ int FB2TextPaginator::getWordHeight()
     return linespaceMap[tagStack[0]];
 }
 
-int FB2TextPaginator::getWordWidth(QString word)
+int FB2TextPaginator::getWordWidth(const QString &word)
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontMap.contains(tagStack[i]))
@@ -710,7 +711,7 @@ QString FB2TextPaginator::getPageBackward()
 }
 
 
-QString FB2TextPaginator::updatePage(const int width, const int height)
+QString FB2TextPaginator::updatePage(const int &width, const int &height)
 {
     setPageGeometry(width, height);
     currentEStrNum = currentBStrNum;
@@ -718,7 +719,7 @@ QString FB2TextPaginator::updatePage(const int width, const int height)
     return getPageForward();
 }
 
-QString FB2TextPaginator::updateSettings(const int width, const int height)
+QString FB2TextPaginator::updateSettings(const int &width, const int &height)
 {
     setPageGeometry(width, height);
     setHTMLinf();
@@ -737,7 +738,7 @@ float FB2TextPaginator::getProgress()
         return 0;
 }
 
-void FB2TextPaginator::debugSave(QString HTMLPage)
+void FB2TextPaginator::debugSave(const QString &HTMLPage)
 {
     QFile asd("F:/asd.html");
     asd.open(QIODevice::WriteOnly);

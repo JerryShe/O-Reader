@@ -8,6 +8,7 @@
 #include "genresmap.h"
 #include "books.h"
 
+#include <QJsonObject>
 
 class LibraryHandler: public QObject
 {
@@ -18,40 +19,43 @@ public:
 
 
 public slots:
-    void setLibraryWidget(library *lbWidget);
+    void setLibraryWidget(Library *lbWidget);
 
-    void AddBooks(const QStringList fileList);
-    void AddFolder(const QString path);
-    void deleteBook(const unsigned int index);
+    void AddBooks(const QStringList &fileList);
+    void AddFolder(const QString &path);
+    void deleteBook(const unsigned int &index);
     void deleteBooks(QVector <unsigned int> deletedItemsIndexes);
 
-    void openNewBook(const QString fileList, GenresMap *Gmap);
-    QString getFileTipe(const QString fileName);
+    void openNewBook(const QString &fileList, GenresMap *Gmap);
+    QString getFileTipe(const QString &fileName);
 
-    void findBooks(QString key, QString mode);
+    void findBooks(const QString &key, const QString &mode);
 
-    Book* getBookByIndex(unsigned int index);
+    Book* getBookByIndex(const unsigned int &index);
 
     void refreshLibrary();
 
     bool loadBookList();
     bool saveBookList();
 
+    QJsonObject toJson();
+    void fromJson(const QJsonObject &json);
+
     Book* getLastOpenedBook();
 
-    void sortBooks(const QString mode);
+    void sortBooks(const QString &mode);
 
 private:
     LibraryHandler();
     ~LibraryHandler();
 
-    library* LibraryWidget;
+    Library* LibraryView;
 
     Synchronization* UserActions;
 
     QString resoursesFolderPath;
 
-    bool needRefresh = false;
+    bool needRefresh;
 
     QStringList filesMask;
 

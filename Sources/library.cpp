@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-library::library(QWidget *widget)
+Library::Library(QWidget *widget)
 {
     setParent(widget);
 
@@ -17,6 +17,7 @@ library::library(QWidget *widget)
 
     ListSize = 2;
     itemCount = 0;
+
     BookModel = new QStandardItemModel(ListSize,ListSize);
     setModel(BookModel);
 
@@ -27,12 +28,14 @@ library::library(QWidget *widget)
     connect(this, SIGNAL(activated(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
 }
 
-library::~library()
+
+Library::~Library()
 {
     delete BookModel;
 }
 
-void library::showSelectedItem(QModelIndex mIndex)
+
+void Library::showSelectedItem(const QModelIndex &mIndex)
 {
    if (!mIndex.isValid())
       return;
@@ -41,7 +44,7 @@ void library::showSelectedItem(QModelIndex mIndex)
 }
 
 
-void library::addItem(unsigned int BookIndex, QString name, QString title, QImage cover)
+void Library::addItem(const unsigned int &BookIndex, const QString &name, const QString &title, const QImage &cover)
 {
     BookModel->setRowCount(itemCount+1);
 
@@ -57,7 +60,7 @@ void library::addItem(unsigned int BookIndex, QString name, QString title, QImag
 }
 
 
-void library::changeViewMod()
+void Library::changeViewMod()
 {
     if (viewMode() == QListView::IconMode)
     {
@@ -75,7 +78,7 @@ void library::changeViewMod()
     }
 }
 
-QVector<unsigned int> library::deleteItems()
+QVector<unsigned int> Library::deleteItems()
 {
     QVector <unsigned int> deletedItems;
 
@@ -95,7 +98,8 @@ QVector<unsigned int> library::deleteItems()
     return deletedItems;
 }
 
-void library::deleteBook(unsigned int index)
+
+void Library::deleteBook(const unsigned int &index)
 {
     int i;
     for (i = 0; i < BookModel->rowCount(); i++)
@@ -105,12 +109,14 @@ void library::deleteBook(unsigned int index)
     BookModel->removeRow(i);
 }
 
-int library::getSelectedItemsCount()
+
+int Library::getSelectedItemsCount()
 {
     return selectionModel()->selectedIndexes().size();
 }
 
-void library::clear()
+
+void Library::clear()
 {
     QStandardItemModel* temp = BookModel;
     BookModel = new QStandardItemModel(ListSize,ListSize);
@@ -121,12 +127,14 @@ void library::clear()
     delete temp;
 }
 
-void library::groupBy(QString mode)
+
+void Library::groupBy(const QString &mode)
 {
 
 }
 
-void library::iconUpscale()
+
+void Library::iconUpscale()
 {
     if (viewMode() == QListView::IconMode)
     {
@@ -150,7 +158,8 @@ void library::iconUpscale()
     }
 }
 
-void library::iconDownscale()
+
+void Library::iconDownscale()
 {
     if (viewMode() == QListView::IconMode)
     {
@@ -174,9 +183,11 @@ void library::iconDownscale()
     }
 }
 
-void library::setSettingsData()
+
+void Library::setSettingsData()
 {
     ProgramSettings = Settings::getSettings();
+
     QString ListViewStyle[1];
     setLibraryStyle (ListViewStyle, ProgramSettings->getInterfaceStyle());
     setStyleSheet(ListViewStyle[0]);

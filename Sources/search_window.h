@@ -11,7 +11,7 @@ class SearchWindow : public QDialog
 {
     Q_OBJECT
 public:
-    SearchWindow(QPoint position, QString style, bool mode, QWidget * parent = 0);
+    SearchWindow(const QPoint &position, const QString &style, const bool &mode, QWidget * parent = 0);
     ~SearchWindow();
 
 private slots:
@@ -20,7 +20,7 @@ private slots:
     void exitButtonClicked();
     void TextChanged();
 
-    void setStyle(QString style);
+    void setStyle(const QString &style);
 
 signals:
     void startSearch(QString token, QString searchType);

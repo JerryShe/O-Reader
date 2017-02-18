@@ -37,6 +37,9 @@ Settings_ProgramLayout::~Settings_ProgramLayout()
 
 void Settings_ProgramLayout::setProgramData()
 {
+    ui->InterfaceLayout->hide();
+    ui->KeysLayout->hide();
+
     ui->InterfaceStyleBox->setCurrentText(ProgramSettings->getInterfaceStyle());
     ui->LanguageBox->setCurrentText(ProgramSettings->getCurrentLanguage());
     ui->TopBarShowBox->setCurrentIndex(ProgramSettings->getHideTopBar());
@@ -85,7 +88,7 @@ void Settings_ProgramLayout::on_SaveButton_clicked()
     emit settingsChanged(0);
 }
 
-void Settings_ProgramLayout::setSavebuttonView(int type)
+void Settings_ProgramLayout::setSavebuttonView(const int &type)
 {
     if (type)
         ui->SaveButton->setStyleSheet(savebuttonStyle[1]);
@@ -223,4 +226,20 @@ void Settings_ProgramLayout::on_TurnByTapBox_activated(int index)
         ProgramSettings->setTurnByTap(index);
         emit settingsChanged(1);
     }
+}
+
+void Settings_ProgramLayout::on_InterfaceButton_clicked()
+{
+    if (ui->InterfaceLayout->isHidden())
+        ui->InterfaceLayout->show();
+    else
+        ui->InterfaceLayout->hide();
+}
+
+void Settings_ProgramLayout::on_KeysButton_clicked()
+{
+    if (ui->KeysLayout->isHidden())
+        ui->KeysLayout->show();
+    else
+        ui->KeysLayout->hide();
 }

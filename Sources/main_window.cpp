@@ -86,13 +86,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-library* MainWindow::getLibraryWidget()
+Library* MainWindow::getLibraryWidget()
 {
     return ui->LibraryWidget->getLibraryWidget();
 }
 
 
-void MainWindow::showBookPage(const unsigned int index)
+void MainWindow::showBookPage(const unsigned int &index)
 {
     page = new BookPage(ui->LibraryWidget->getBookByIndex(index), ProgramSettings->getInterfaceStyle(), this);
     connect(page, SIGNAL(startReading(unsigned int)), this, SLOT(startReading(unsigned int)));
@@ -100,7 +100,7 @@ void MainWindow::showBookPage(const unsigned int index)
 }
 
 
-void MainWindow::startReading(const unsigned int index)
+void MainWindow::startReading(const unsigned int &index)
 {
     UserActions->setLastOpenedBookIndex(index);
     emit showReadingWindow();

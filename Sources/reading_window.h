@@ -3,15 +3,17 @@
 
 #include <QWidget>
 
-#include <QMainWindow>
 #include "books.h"
 #include "answer_dialog.h"
-#include <QThread>
 #include "settings.h"
-#include <QVBoxLayout>
 #include "settings_layout.h"
 #include "search_window.h"
 #include "fb2textpaginator.h"
+#include "reading_menu.h"
+
+#include <QVBoxLayout>
+#include <QThread>
+
 
 #include <QThread>
 #include <QDomDocument>
@@ -31,19 +33,20 @@ public:
 
     void startReading();
 
+    void setFullSize(bool fullSize);
+
 private slots:
     void on_exit_button_clicked();
-    void on_MenuButton_clicked();
 
-    void ContentsButton_clicked();
+    void showContentsTable();
     void FindButton_Clicked();
-    void SettingsButton_Clicked();
+    void showSettingsWindow();
     void SynchronizationButton_Clicked();
     void BackToMainWindowButton_Clicked();
 
-    void setStyle(QString currentStyle);
+    void setStyle(const QString &currentStyle);
 
-    void StartSearch(QString key, QString type);
+    void StartSearch(const QString &key, const QString &type);
     void NextSearchStep();
     void PrevSearchStep();
 
@@ -53,7 +56,7 @@ private slots:
     void reprintResizedText();
     void reprintNewSettText();
 
-    void goToSection(int sectionIndex);
+    void goToSection(const int &sectionIndex);
 
 signals:
     void showMainWindow();
@@ -78,13 +81,7 @@ private:
     QThread* HandlerThread;
     Settings* ProgramSettings;
 
-    QWidget* MenuWidget;
-    QVBoxLayout* MenuLayout;
-    QPushButton* MenuBackToMainWindowButton;
-    QPushButton* MenuContentsButton;
-    QPushButton* MenuSynchronizationButton;
-    QPushButton* MenuFindButton;
-    QPushButton* MenuSettingsButton;
+    ReadingMenu* MenuWidget;
 
     QThread* parserThread;
 

@@ -20,7 +20,7 @@ public:
     void setSettingsData();
     void setLayoutStyle();
 
-    void setSavebuttonView(int type);
+    void setSavebuttonView(const int &type);
 
 private slots:
     void setProgramData();
@@ -38,6 +38,10 @@ private slots:
     void on_TurnByTapBox_activated(int index);
 
     void changeEvent(QEvent *event);
+
+    void on_InterfaceButton_clicked();
+
+    void on_KeysButton_clicked();
 
 signals:
     void InterfaceStyleChanged();

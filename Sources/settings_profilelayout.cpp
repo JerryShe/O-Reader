@@ -39,7 +39,7 @@ void Settings_ProfileLayout::on_SaveButton_clicked()
     emit settingsChanged(0);
 }
 
-void Settings_ProfileLayout::setSavebuttonView(int type)
+void Settings_ProfileLayout::setSavebuttonView(const int &type)
 {
     if (type)
         ui->SaveButton->setStyleSheet(savebuttonStyle[1]);

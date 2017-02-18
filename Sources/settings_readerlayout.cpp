@@ -12,10 +12,12 @@ void Settings_ReaderLayout::setStyle()
     QString a[5];
     setReaderLayoutStyle(a, ProgramSettings->getInterfaceStyle());
     this->setStyleSheet(a[0]);
+
     ui->YepButton->setStyleSheet(a[2]);
     ui->NopeButton->setStyleSheet(a[3]);
     nopeButtonStyle[0] = a[3];
     nopeButtonStyle[1] = a[4];
+
     ui->ReaderSettingsContent->setStyleSheet(a[0]);
 
 
@@ -229,7 +231,7 @@ void Settings_ReaderLayout::updateTextBox()
     emit settingsChanged(changedSignal);
 }
 
-void Settings_ReaderLayout::setStyleData(const ReadingStyle style)
+void Settings_ReaderLayout::setStyleData(const ReadingStyle &style)
 {
     ui->BackgroundTypeBox->setCurrentIndex(style.BackgroundType);
     if (ui->BackgroundTypeBox->currentIndex() == true)
@@ -572,7 +574,7 @@ void Settings_ReaderLayout::on_BackgroundImageBox_clicked()
     updateTextBox();
 }
 
-void Settings_ReaderLayout::setSavebuttonView(int type)
+void Settings_ReaderLayout::setSavebuttonView(const int &type)
 {
     if (type)
         ui->SaveButton->setStyleSheet(savebuttonStyle[1]);

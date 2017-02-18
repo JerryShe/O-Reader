@@ -22,25 +22,33 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         QDir().mkdir("Downloaded books");
 
 
-    setMouseTracking(true);
-    setWindowFlags(Qt::CustomizeWindowHint);
-
-    this->setGeometry(qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
-    prev_geometry = geometry();
-
     HandlerThread = new QThread(this);
     connect(this, SIGNAL(destroyed(QObject*)), HandlerThread, SLOT(quit()));
 
     ProgramSettings = Settings::getSettings();
     UserSynchro = Synchronization::getSynchronization();
     LibHandler = LibraryHandler::getLibraryHandler();
+    clientHandler = ClientHandler::getClientHandler();
 
 
     ProgramSettings->moveToThread(HandlerThread);
     UserSynchro->moveToThread(HandlerThread);
     LibHandler->moveToThread(HandlerThread);
+    clientHandler->moveToThread(HandlerThread);
 
     HandlerThread->start();
+
+
+    setMouseTracking(true);
+    setWindowFlags(Qt::CustomizeWindowHint);
+    //setWindowFlags(Qt::FramelessWindowHint);
+
+    this->setGeometry(qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
+    prev_geometry = geometry();
+
+
+    //this->setContentsMargins(3,3,3,3);
+
 
     ProgramSettings->loadSettings();
 
@@ -82,19 +90,24 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     connect(readingState, SIGNAL(entered()), this, SLOT(showReading()));
 
 
-    switch (UserSynchro->getLastOpenedWindow()) {
+    switch (UserSynchro->getLastOpenedWindow())
+    {
     case 0:
         windowMachine->setInitialState(loginState);
         break;
 
     case 1:
-/// добавить залогинивание
-        windowMachine->setInitialState(mainState);
+        if (clientHandler->autoLoginOnServer())
+            windowMachine->setInitialState(mainState);
+        else
+            windowMachine->setInitialState(loginState);
         break;
 
     case 2:
-/// добавить залогинивание
-        windowMachine->setInitialState(readingState);
+        if (clientHandler->autoLoginOnServer())
+            windowMachine->setInitialState(readingState);
+        else
+            windowMachine->setInitialState(loginState);
         break;
 
     default:
@@ -164,14 +177,16 @@ void WindowManager::showReading()
         return;
 
     readingWindow = new ReadingWindow(this, LibHandler->getLastOpenedBook());
+    this->setCentralWidget(readingWindow);
+
+    this->show();
+    readingWindow->show();
+
+    readingWindow->startReading();
 
     if (LastWindow != 0)
         delete LastWindow;
     LastWindow = readingWindow;
-
-    this->setCentralWidget(readingWindow);
-    this->show();
-    readingWindow->show();
 
     connect(readingWindow, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
 
@@ -179,10 +194,7 @@ void WindowManager::showReading()
     connect(readingWindow, SIGNAL(showWindowMinimazed()), this, SLOT(showWindowMinimazed()));
     connect(readingWindow, SIGNAL(showWindowMaximazed()), this, SLOT(showWindowMaximazed()));
 
-    readingWindow->startReading();
-
     UserSynchro->setLastOpenedWindow(2);
-
 }
 
 
@@ -248,7 +260,7 @@ void WindowManager::mouseReleaseEvent(QMouseEvent *e)
 
 void WindowManager::showWindowMinimazed()
 {
-    if( isMinimized())
+    if(isMinimized())
     {
         normalGeometry() = prev_geometry;
         showNormal();

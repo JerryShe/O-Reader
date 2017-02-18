@@ -12,7 +12,7 @@ class BookTableOfContents : public QDialog
     Q_OBJECT
 
 public:
-    explicit BookTableOfContents(QString style, QStringList contentList, int currentPos, QWidget *parent = 0);
+    explicit BookTableOfContents(const QString &style, const QStringList &contentList, const int &currentPos, QWidget *parent = 0);
     ~BookTableOfContents();
 
 signals:
@@ -20,7 +20,7 @@ signals:
 
 private slots:
     void on_GoTo_clicked();
-    void setWindowStyle(QString style);
+    void setStyle(const QString &style);
 
 private:
     Ui::BookTableOfContents *ui;

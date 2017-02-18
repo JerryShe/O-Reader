@@ -26,7 +26,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    library* getLibraryWidget();
+    Library* getLibraryWidget();
 
 private slots:
     void setStyle();
@@ -35,8 +35,9 @@ private slots:
 
     void on_Logout_clicked();
 
-    void startReading(const unsigned int index);
-    void showBookPage(const unsigned int index);
+    void startReading(const unsigned int &index);
+
+    void showBookPage(const unsigned int &index);
 
 protected:
     void changeEvent(QEvent *event);
@@ -60,6 +61,7 @@ private:
 
     Synchronization* UserActions;
     Settings* ProgramSettings;
+
 };
 
 #endif // MAIN_WINDOW_H

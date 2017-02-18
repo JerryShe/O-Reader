@@ -12,6 +12,7 @@
 #include "settings.h"
 #include "synchronization.h"
 #include "library_handler.h"
+#include "client_handler.h"
 
 #include "books.h"
 
@@ -70,6 +71,7 @@ private:
     Synchronization* UserSynchro;
     Settings* ProgramSettings;
     LibraryHandler* LibHandler;
+    ClientHandler* clientHandler;
 
 
     QWidget* LastWindow;

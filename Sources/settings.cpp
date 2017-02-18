@@ -29,7 +29,7 @@ void Settings::setTranslator(QTranslator* translator)
     LanguageTranslator = translator;
 }
 
-QString Settings::getTextAlignName(unsigned short key)
+QString Settings::getTextAlignName(const unsigned short &key)
 {
     if (textAlignMap.contains(key))
         return textAlignMap[key];
@@ -125,7 +125,6 @@ QJsonObject Settings::toJson()
 {
     QJsonObject json;
 
-    json["LoginToken"] = LoginToken;
     json["InterfaceStyle"] = InterfaceStyle;
     json["Language"] = Language;
     json["FKeyForwardPage"] = FKeyForwardPage;
@@ -153,7 +152,6 @@ QJsonObject Settings::toJson()
 
 void Settings::fromJson(const QJsonObject &json)
 {
-    LoginToken = json["LoginToken"].toString();
     InterfaceStyle = json["InterfaceStyle"].toString();
     Language = json["Language"].toString();
     FKeyForwardPage = json["FKeyForwardPage"].toInt();
@@ -229,7 +227,7 @@ QJsonObject ReadingStyle::toJson()
     return json;
 }
 
-void ReadingStyle::fromJson(QJsonObject &json)
+void ReadingStyle::fromJson(const QJsonObject &json)
 {
     ColumnCount = (unsigned short)json["ColumnCount"].toInt();
     BackgroundType = json["BackgroundType"].toBool();
@@ -257,8 +255,19 @@ TextStyleSheet::TextStyleSheet()
     Color = "#000000";
 }
 
-TextStyleSheet::TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, unsigned short Align, QString color)
-    : Family(Font), Size(Size), Style(Style), LineSpacing(Spacing), Align(Align), Color(color){}
+TextStyleSheet::TextStyleSheet(const QString &Font,
+                               const unsigned short &Size,
+                               const unsigned short &Style,
+                               const unsigned short &Spacing,
+                               const unsigned short &Align,
+                               const QString &color)
+
+                               : Family(Font),
+                                 Size(Size),
+                                 Style(Style),
+                                 LineSpacing(Spacing),
+                                 Align(Align),
+                                 Color(color){}
 
 
 QJsonObject TextStyleSheet::toJson()
@@ -291,7 +300,7 @@ QString Settings::getInterfaceStyle()
     return InterfaceStyle;
 }
 
-void Settings::setInterfaceStyle(const QString style)
+void Settings::setInterfaceStyle(const QString &style)
 {
     InterfaceStyle = style;
 }
@@ -301,7 +310,7 @@ bool Settings::getLibraryReprezentation()
     return LibraryReprezentation;
 }
 
-void Settings::setLibraryReprezentation(const bool val)
+void Settings::setLibraryReprezentation(const bool &val)
 {
     LibraryReprezentation = val;
 }
@@ -316,12 +325,12 @@ unsigned short Settings::getLibraryListIconSize()
     return LibraryIconBarSize;
 }
 
-void Settings::setLibraryListIconSize(const unsigned short size)
+void Settings::setLibraryListIconSize(const unsigned short &size)
 {
     LibraryIconListSize = size;
 }
 
-void Settings::setLibraryBarIconSize(const unsigned short size)
+void Settings::setLibraryBarIconSize(const unsigned short &size)
 {
     LibraryIconBarSize = size;
 }
@@ -331,10 +340,10 @@ QString Settings::getCurrentLanguage()
     return Language;
 }
 
-void Settings::setLanguage(const QString lang)
+void Settings::setLanguage(const QString &lang)
 {
     Language = lang;
-    bool done;
+    bool done = false;
     if (lang == "Русский")
         done = LanguageTranslator->load("ru.qm", "LibraryResources/Languages");
     if (lang == "English")
@@ -351,7 +360,7 @@ bool Settings::getHideTopBar()
     return HideTopBar;
 }
 
-void Settings::setHideTopBar(bool n)
+void Settings::setHideTopBar(const bool &n)
 {
     HideTopBar = n;
 }
@@ -361,7 +370,7 @@ QString Settings::getCurrentTextStyle()
     return currentStyle;
 }
 
-void Settings::setCurrentTextStyle(const QString style)
+void Settings::setCurrentTextStyle(const QString &style)
 {
     currentStyle = style;
 }
@@ -371,22 +380,12 @@ QStringList Settings::getTextStylesList()
     return TextStylesNames;
 }
 
-void Settings::setToken(QString token)
-{
-    LoginToken = token;
-}
-
-QString Settings::getToken()
-{
-    return LoginToken;
-}
-
 int Settings::getFForwardKey()
 {
     return FKeyForwardPage;
 }
 
-void Settings::setFForwardKey(int key)
+void Settings::setFForwardKey(const int &key)
 {
     FKeyForwardPage = key;
 }
@@ -396,7 +395,7 @@ int Settings::getSForwardKey()
     return SKeyForwardPage;
 }
 
-void Settings::setSForwardKey(int key)
+void Settings::setSForwardKey(const int &key)
 {
     SKeyForwardPage = key;
 }
@@ -406,7 +405,7 @@ int Settings::getFBackwardKey()
     return FKeyBackwardPage;
 }
 
-void Settings::setFBackwardKey(int key)
+void Settings::setFBackwardKey(const int &key)
 {
     FKeyBackwardPage = key;
 }
@@ -416,7 +415,7 @@ int Settings::getSBackwardKey()
     return SKeyBackwardPage;
 }
 
-void Settings::setSBackwardKey(int key)
+void Settings::setSBackwardKey(const int &key)
 {
     SKeyBackwardPage = key;
 }
@@ -426,7 +425,7 @@ bool Settings::getTurnByWheel()
     return PageTurnByWheel;
 }
 
-void Settings::setTurnByWheel(bool turn)
+void Settings::setTurnByWheel(const bool &turn)
 {
     PageTurnByWheel = turn;
 }
@@ -436,7 +435,7 @@ bool Settings::getTurnByTap()
     return PageTurnByTap;
 }
 
-void Settings::setTurnByTap(bool turn)
+void Settings::setTurnByTap(const bool &turn)
 {
     PageTurnByTap = turn;
 }
@@ -456,7 +455,7 @@ ReadingStyle Settings::getCurrentTextStyleElem()
     return TextStyles.at(TextStylesNames.indexOf(currentStyle));
 }
 
-void Settings::saveStyle(const QString name, const ReadingStyle style)
+void Settings::saveStyle(const QString &name, const ReadingStyle &style)
 {
     if (TextStyles.size() != TextStylesNames.size())
     {
@@ -474,7 +473,7 @@ void Settings::saveStyle(const QString name, const ReadingStyle style)
     qDebug()<<"style saved";
 }
 
-void Settings::removeNamedStyle(QString name)
+void Settings::removeNamedStyle(const QString &name)
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)

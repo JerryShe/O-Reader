@@ -2,6 +2,7 @@
 #define LOGIN_WINDOW_H
 
 #include <QWidget>
+#include "client_handler.h"
 
 namespace Ui {
 class LoginWindow;
@@ -21,9 +22,16 @@ private slots:
     void on_login_clicked();
     void on_Recovery_clicked();
     void on_Registration_clicked();
-    void backToMainPage();
 
     void setStyle();
+
+    void toMainPage();
+    void toSignupPage();
+    void toSignupConfPage();
+    void toRecoveryPage();
+    void toRecoveryConfirmPage();
+
+    bool checkEmail(const QString &email);
 
 signals:
     void showMainWindow();
@@ -37,12 +45,16 @@ protected:
 
 private:
 
-    /// 0 - Main
+    /// 0 - Login
     /// 1 - Registration - email
     /// 2 - Registration - confirm
     /// 3 - Recovery - email
     /// 4 - Recovery - confirm
+    ///
+
     int activePage = 0;
+
+    ClientHandler* clientHandler;
 
     Ui::LoginWindow *ui;
 

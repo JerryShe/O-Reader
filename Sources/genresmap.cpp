@@ -128,7 +128,7 @@ GenresMap::GenresMap()
 }
 
 
-QString GenresMap::getGenreFromMap(QString key)
+QString GenresMap::getGenreFromMap(const QString &key)
 {
     return FB2GMap[key];
 }

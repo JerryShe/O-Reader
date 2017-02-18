@@ -19,10 +19,10 @@ public:
 
     void setSettingsData();
 
-    void setStyleData(const ReadingStyle style);
+    void setStyleData(const ReadingStyle &style);
     ReadingStyle getStyleData();
 
-    void setSavebuttonView(int type);
+    void setSavebuttonView(const int &type);
 
 private slots:
     void on_OverallSettings_clicked();

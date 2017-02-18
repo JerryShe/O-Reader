@@ -12,7 +12,12 @@
 struct TextStyleSheet
 {
     TextStyleSheet();
-    TextStyleSheet(QString Font, unsigned short Size, unsigned short Style, unsigned short Spacing, unsigned short Align, QString color);
+    TextStyleSheet(const QString &Font,
+                   const unsigned short &Size,
+                   const unsigned short &Style,
+                   const unsigned short &Spacing,
+                   const unsigned short &Align,
+                   const QString &color);
 
     QString Family;
     unsigned short Size;          // from 6 to 76
@@ -45,7 +50,7 @@ struct ReadingStyle
     TextStyleSheet NoteStyle;
 
     QJsonObject toJson();
-    void fromJson(QJsonObject &json);
+    void fromJson(const QJsonObject &json);
 };
 
 class Settings : public QObject
@@ -58,53 +63,53 @@ public:
     bool loadSettings();
 
     QString getInterfaceStyle();
-    void setInterfaceStyle(const QString style);
+    void setInterfaceStyle(const QString &style);
 
     QString getCurrentLanguage();
-    void setLanguage(const QString lang);
+    void setLanguage(const QString &lang);
 
     bool getHideTopBar();
-    void setHideTopBar(bool n);
+    void setHideTopBar(const bool &n);
 
     int getFForwardKey();
-    void setFForwardKey(int key);
+    void setFForwardKey(const int &key);
     int getSForwardKey();
-    void setSForwardKey(int key);
+    void setSForwardKey(const int &key);
     int getFBackwardKey();
-    void setFBackwardKey(int key);
+    void setFBackwardKey(const int &key);
     int getSBackwardKey();
-    void setSBackwardKey(int key);
+    void setSBackwardKey(const int &key);
 
     bool getTurnByWheel();
-    void setTurnByWheel(bool turn);
+    void setTurnByWheel(const bool &turn);
 
     bool getTurnByTap();
-    void setTurnByTap(bool turn);
+    void setTurnByTap(const bool &turn);
 
     bool getLibraryReprezentation();
-    void setLibraryReprezentation(const bool val);
+    void setLibraryReprezentation(const bool &val);
 
     unsigned short getLibraryBarIconSize();
-    void setLibraryBarIconSize(const unsigned short size);
+    void setLibraryBarIconSize(const unsigned short &size);
 
     unsigned short getLibraryListIconSize();
-    void setLibraryListIconSize(const unsigned short size);
+    void setLibraryListIconSize(const unsigned short &size);
 
     QString getCurrentTextStyle();
-    void setCurrentTextStyle(const QString style);
+    void setCurrentTextStyle(const QString &style);
 
     QStringList getTextStylesList();
-    void saveStyle(const QString name, const ReadingStyle style);
+    void saveStyle(const QString &name, const ReadingStyle &style);
 
-    void setToken(QString token);
+    void setToken(const QString &token);
     QString getToken();
 
-    void removeNamedStyle(QString name);
+    void removeNamedStyle(const QString &name);
 
     ReadingStyle getNamedStyle(const QString name);
     ReadingStyle getCurrentTextStyleElem();
 
-    QString getTextAlignName(unsigned short key);
+    QString getTextAlignName(const unsigned short &key);
 
     QJsonObject toJson();
     void fromJson(const QJsonObject &json);
@@ -115,10 +120,6 @@ signals:
 private:
     Settings();
     ~Settings();
-
-    QString LoginToken;
-    QString UserEmail;
-    QString UserPassword;
 
     QString InterfaceStyle;
     QString Language;
@@ -131,10 +132,10 @@ private:
     bool PageTurnByWheel;
     bool PageTurnByTap;
 
-    bool LibraryReprezentation;      // 0 - плитка, 1 - список
+    bool LibraryReprezentation;                 // 0 - плитка, 1 - список
     unsigned short LibraryIconBarSize;
     unsigned short LibraryIconListSize;
-    bool HideTopBar;                 // 1 - показывать всегда, 0 - показывать при наведении
+    bool HideTopBar;                               // 1 - показывать всегда, 0 - показывать при наведении
 
     QStringList TextStylesNames;
     QVector <ReadingStyle> TextStyles;

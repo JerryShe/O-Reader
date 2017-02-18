@@ -18,7 +18,7 @@ public:
 
     void setSettingsData();
     void setLayoutStyle();
-    void setSavebuttonView(int type);
+    void setSavebuttonView(const int &type);
 
 private slots:
     void on_ChangePasswordButton_clicked();

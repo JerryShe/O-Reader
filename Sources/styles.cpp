@@ -39,7 +39,8 @@ void setBackgroundWindowColor(QString windowButtonsStyle [], const QString style
 {
     if (style == "Red")
     {
-        windowButtonsStyle[0] = "#MainWidget {background-color:rgb(150, 0, 60);}"
+        windowButtonsStyle[0] = "#MainWidget "
+                                "{background-color:rgb(150, 0, 60);}"
 
                                 "QScrollBar:vertical {"
                                 "border: none;"
@@ -51,7 +52,8 @@ void setBackgroundWindowColor(QString windowButtonsStyle [], const QString style
                                 "background: white;"
                                 "min-height: 20px;}"
                                 "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
-                                "height: 0px;}"
+                                "height: 0px;"
+                                "background: none;}"
                                 "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {"
                                 "background: none;}";
 
@@ -233,6 +235,49 @@ void setTabButtonsStyle (QString tabButtonsStyle [], const QString style)
     }
 }
 
+
+void setLastBookWidgetStyle(QString styles [], const QString style)
+{
+    if (style == "Red")
+    {
+        styles[0] = "#LastBookLayout"
+                        "{background-color: rgb(140, 0, 50);"
+                        "border-right: 1px solid rgb(130, 0, 45);}"
+
+                        "QLabel"
+                        "{color:white;}";
+
+        styles[1] = "#ReadButton"
+                        "{background-color:rgb(151, 151, 227);"
+                        "border: none;"
+                        "color:white;}"
+                        "#ReadButton:hover"
+                        "{background-color:rgb(130, 130, 195);}";
+
+        styles[2] = "#PageButton"
+                        "{background-color:rgb(152, 0, 60);"
+                        "border: none;"
+                        "color:white;}"
+                        "#PageButton:hover"
+                        "{background-color:rgb(147, 0, 60);}";
+
+        styles[3] = "#ShowButton"
+                        "{background-color:rgb(130, 0, 45);"
+                        "background-repeat: no-repeat;"
+                        "background-position: center center;"
+                        "background-image: url(:/Images/LightArrowVertClose.png);"
+                        "border: none;}"
+
+                        "#ShowButton:checked"
+                        "{background-image: url(:/Images/LightArrowVertOpen.png);"
+                        "}"
+
+                        "#ShowButton:hover, #ShowButton:checked:hover"
+                        "{background-color:rgb(120, 0, 45);}";
+    }
+}
+
+
 void setLibraryLayoutButtons (QString buttonsStyle [], const QString style)
 {
     if (style == "Red")
@@ -400,26 +445,38 @@ void setProgramLayoutStyle(QString LayoutStyle[], const QString style)
 {
     if (style == "Red")
     {
-        LayoutStyle[0] =    "QWidget"
-                            "{background-color:rgb(150, 0, 60);"
-                            "color:white;}"
+        LayoutStyle[0] =   "QWidget"
+                                 "{background-color:rgb(150, 0, 60);"
+                                 "color:white;}"
 
-                            "QComboBox:editable, QComboBox:!editable, QComboBox::drop-down:editable{"
-                            "border:none;"
-                            "background-color: rgb(130, 0, 55);"
-                            "color:white;}"
-                            "QComboBox::drop-down{"
-                            "border:none;}"
-                            "QComboBox::down-arrow, QComboBox::up-arrow{"
-                            "image: url(:/Images/LightArrow.png);}"
-                            "QComboBox:editable:hover, QComboBox:!editable:hover, QComboBox QAbstractItemView::item:selected{"
-                            "background-color: rgb(120, 0, 45);}"
-                            "QComboBox QAbstractItemView, QComboBox QAbstractItemView::item{"
-                            "background-color: rgb(130, 0, 55);"
-                            "outline: 0px;"
-                            "border:none;"
-                            "color:white;"
-                            "min-height: 35px;}";
+                                 "QLineEdit{"
+                                 "border:none;"
+                                 "background-color: rgb(130, 0, 55);}"
+
+
+                                 "QComboBox:editable, QComboBox:!editable, QComboBox::drop-down:editable{"
+                                 "border:none;"
+                                 "background-color: rgb(130, 0, 55);"
+                                 "color:white;}"
+                                 "QComboBox::drop-down{"
+                                 "border:none;}"
+                                 "QComboBox::down-arrow, QComboBox::up-arrow{"
+                                 "image: url(:/Images/LightArrow.png);}"
+                                 "QComboBox:editable:hover, QComboBox:!editable:hover, QComboBox QAbstractItemView::item:selected{"
+                                 "background-color: rgb(120, 0, 45);}"
+                                 "QComboBox QAbstractItemView, QComboBox QAbstractItemView::item{"
+                                 "background-color: rgb(130, 0, 55);"
+                                 "outline: 0px;"
+                                 "border:none;"
+                                 "color:white;"
+                                 "min-height: 35px;}"
+
+                                 "QPushButton"
+                                 "{border:none;"
+                                 "color:white;"
+                                 "background-color: rgb(162, 0, 70);}"
+                                 "QPushButton:hover"
+                                 "{background-color:rgb(147, 0, 60);}";
 
         LayoutStyle[1] =    "QPushButton"
                             "{background-color: rgb(162, 0, 70);"

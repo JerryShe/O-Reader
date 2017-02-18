@@ -18,6 +18,8 @@ void setWindowButtonsStyle (QString windowButtonsStyle [], const QString style);
 
 void setTabButtonsStyle (QString tabButtonsStyle [], const QString style);
 
+void setLastBookWidgetStyle(QString styles [], const QString style);
+
 void setLibraryLayoutButtons (QString buttonsStyle [], const QString style);
 
 void setAnswerDialogStyle (QString windowStyle [], const QString style);

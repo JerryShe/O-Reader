@@ -106,7 +106,7 @@ void SettingsLayout::hideWithoutSaving()
     ProgramSettings->loadSettings();
 }
 
-void SettingsLayout::updateSavebuttons(int type)
+void SettingsLayout::updateSavebuttons(const int &type)
 {
     ProfileWidget->setSavebuttonView(type);
     ProgramWidget->setSavebuttonView(type);

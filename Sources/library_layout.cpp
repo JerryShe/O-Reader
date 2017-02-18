@@ -13,6 +13,7 @@
 
 #include <QThread>
 
+#include "book_widget.h"
 
 void LibraryLayout::setStyle()
 {
@@ -43,29 +44,35 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     ui->_SortBox->setView(new QListView());
     ui->_GroupBox->setView(new QListView());
 
-    Library = new library(this);
     LibHandler = LibraryHandler::getLibraryHandler();
     ProgramSettings = Settings::getSettings();
 
     setStyle();
 
-    ui->VLayout->addWidget(Library, 1);
-
     if (ProgramSettings->getLibraryReprezentation())
     {
-        Library->changeViewMod();
+        ui->LibraryView->changeViewMod();
         ui->_ChangeViewMode->setChecked(true);
     }
 
-    Library->setSettingsData();
+    ui->LibraryView->setSettingsData();
 
-    connect(Library, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
+
+    connect(ui->LibraryView, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
+
+
+    if (LibHandler->getLastOpenedBook() == 0)
+        return;
+
+    BookWidget *bookWidget = new BookWidget(this);
+    bookWidget->move(ui->_Find->x(), ui->_Find->y() + ui->_Find->height());
+
+    connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
 }
 
 LibraryLayout::~LibraryLayout()
 {
     delete ui;
-    delete Library;
 }
 
 void LibraryLayout::changeEvent(QEvent *event)
@@ -99,9 +106,9 @@ void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
 }
 
 
-library* LibraryLayout::getLibraryWidget()
+Library* LibraryLayout::getLibraryWidget()
 {
-    return Library;
+    return ui->LibraryView;
 }
 
 
@@ -131,7 +138,7 @@ void LibraryLayout::addBooksFromFiles()
 void LibraryLayout::on__Delete_clicked()
 {
     ui->_Find->setChecked(false);
-    if (Library->getSelectedItemsCount() != 0)
+    if (ui->LibraryView->getSelectedItemsCount() != 0)
     {
         AnswerDialog *answer_window = new AnswerDialog(ui->_Delete->mapToGlobal(QPoint(ui->_Delete->width() - 300, ui->_Delete->height())),
                                                        QObject::tr("Delete books?"),
@@ -140,7 +147,7 @@ void LibraryLayout::on__Delete_clicked()
         answer_window->show();
 
         if (answer_window->exec() == QDialog::Accepted)
-            LibHandler->deleteBooks(Library->deleteItems());
+            LibHandler->deleteBooks(ui->LibraryView->deleteItems());
         else
             delete answer_window;
     }
@@ -148,18 +155,18 @@ void LibraryLayout::on__Delete_clicked()
 
 void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
 {
-    Library->changeViewMod();
+    ui->LibraryView->changeViewMod();
     ProgramSettings->setLibraryReprezentation(checked);
 }
 
 void LibraryLayout::on__Upscale_clicked()
 {
-    Library->iconUpscale();
+    ui->LibraryView->iconUpscale();
 }
 
 void LibraryLayout::on__Downscale_clicked()
 {
-    Library->iconDownscale();
+    ui->LibraryView->iconDownscale();
 }
 
 void LibraryLayout::on__SortBox_activated(const QString &arg1)
@@ -195,12 +202,12 @@ void LibraryLayout::deactiveFindButton()
     ui->_Find->setChecked(false);
 }
 
-Book* LibraryLayout::getBookByIndex(unsigned int index)
+Book* LibraryLayout::getBookByIndex(const unsigned int &index)
 {
     return LibHandler->getBookByIndex(index);
 }
 
-void LibraryLayout::deleteBook(unsigned int index)
+void LibraryLayout::deleteBook(const unsigned int &index)
 {
     LibHandler->deleteBook(index);
 }

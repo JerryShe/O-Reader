@@ -9,20 +9,19 @@
 
 
 
-class library : public QListView
+class Library : public QListView
 {
     Q_OBJECT
 
 public:
-    library(QWidget *widget = 0);
-    ~library();
+    Library(QWidget *widget = 0);
+    ~Library();
 
-    void addItem(unsigned int BookIndex, QString name, QString title, QImage cover);
+    void addItem(const unsigned int &BookIndex, const QString &name, const QString &title, const QImage &cover);
     QVector <unsigned int> deleteItems();
-    void deleteBook(unsigned int index);
+    void deleteBook(const unsigned int &index);
     void setSettingsData();
 
-    void setStyle(QString libraryStyle[]);
     void changeViewMod();
     void iconUpscale();
     void iconDownscale();
@@ -30,13 +29,13 @@ public:
     int getSelectedItemsCount();
 
     void clear();
-    void groupBy(QString mode);
+    void groupBy(const QString &mode);
 
 signals:
     void showBookPage(unsigned int index);
 
 private slots:
-    void showSelectedItem(QModelIndex mIndex);
+    void showSelectedItem(const QModelIndex &mIndex);
 
 private:
      QStandardItemModel* BookModel;

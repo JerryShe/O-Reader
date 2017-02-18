@@ -23,5 +23,7 @@
         <file>Images/LightUpscale.png</file>
         <file>Images/LightYepButton.png</file>
         <file>Images/noImage.png</file>
+        <file>Images/LightArrowVertClose.png</file>
+        <file>Images/LightArrowVertOpen.png</file>
     </qresource>
 </RCC>

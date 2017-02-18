@@ -4,7 +4,7 @@
 #include <QListView>
 
 
-void SearchWindow::setStyle(QString style)
+void SearchWindow::setStyle(const QString &style)
 {
     QString styleList[3];
     setSearchWindowStyle(styleList, style);
@@ -17,7 +17,7 @@ void SearchWindow::setStyle(QString style)
     exit_button->setStyleSheet(styleList[0]);
 }
 
-SearchWindow::SearchWindow(QPoint position, QString style, bool mode, QWidget * parent): QDialog(parent)
+SearchWindow::SearchWindow(const QPoint &position, const QString &style, const bool &mode, QWidget * parent): QDialog(parent)
 {
     workMode = mode;
     hide();

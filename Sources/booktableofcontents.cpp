@@ -3,7 +3,7 @@
 #include "styles.h"
 
 
-void BookTableOfContents::setWindowStyle(QString style)
+void BookTableOfContents::setStyle(const QString &style)
 {
     QString windowStyle[2];
     setReaderTableOfContents(windowStyle, style);
@@ -12,13 +12,13 @@ void BookTableOfContents::setWindowStyle(QString style)
     ui->GoTo->setStyleSheet(windowStyle[1]);
 }
 
-BookTableOfContents::BookTableOfContents(QString style, QStringList contentList, int currentPos, QWidget *parent) :
+BookTableOfContents::BookTableOfContents(const QString &style, const QStringList &contentList, const int &currentPos, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::BookTableOfContents)
 {
     setWindowFlags(Qt::FramelessWindowHint);
     ui->setupUi(this);
-    setWindowStyle(style);
+    setStyle(style);
     ui->TableOfContents->addItems(contentList);
     ui->TableOfContents->setCurrentRow(currentPos);
     connect(ui->Close, SIGNAL(clicked()), this, SLOT(reject()));

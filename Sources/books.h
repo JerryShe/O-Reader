@@ -14,8 +14,8 @@
 class Book
 {
 public:
-    Book(bool &result, QString FileName, GenresMap *Gmap);
-    Book(QJsonObject &BookJson);
+    Book(bool &result, const QString &FileName, GenresMap *Gmap);
+    Book(const QJsonObject &BookJson);
     Book(){}
 
     void writeToConsole();
@@ -23,7 +23,7 @@ public:
     QString getAuthorName();
     QString getTitle();
     QImage getCover();
-    void setBookIndex(const int index);
+    void setBookIndex(const int &index);
     unsigned int getBookIndex();
 
     QStringList getAnnotation();
@@ -33,13 +33,14 @@ public:
     long long getBookProgress();
     double getBookProgressPocent();
     QStringList getBookProgressTagStack();
-    void setBookProgress(const long long progress, const double procent, QStringList tagStack);
+    void setBookProgress(const long long &progress, const double &procent, const QStringList &tagStack);
 
     QString getBookCodec();
     void setBookCodec(QString Codec);
     QString File;
 
-    QJsonObject getJson();
+    QJsonObject toJson();
+    void fromJson(const QJsonObject &json);
 
 private:
 
