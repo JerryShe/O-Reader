@@ -6,6 +6,7 @@
 #include <QString>
 #include <QFontMetrics>
 
+
 QStringList FB2TextPaginator::splitTextToWords(QString temp)
 {
     QStringList tempList;
@@ -193,128 +194,94 @@ FB2TextPaginator::~FB2TextPaginator()
 void FB2TextPaginator::setFontMap()
 {
 
-    QFont textFont(CurStyle.RegularTextStyle.Family, CurStyle.RegularTextStyle.Size, 49*(CurStyle.RegularTextStyle.Style%2) + 50, CurStyle.RegularTextStyle.Style/10);
+    QFont textFont(CurProfile.RegularStyle.Family, CurProfile.RegularStyle.Size, 49*(CurProfile.RegularStyle.Style%2) + 50, CurProfile.RegularStyle.Style/10);
     fontMap.insert("Text", new QFontMetrics(textFont));
 
     textFont.setWeight(75);
     fontMap.insert("strong", new QFontMetrics(textFont));
 
-    QFont titleFont(CurStyle.TitleStyle.Family, CurStyle.TitleStyle.Size, 49*(CurStyle.TitleStyle.Style%2) + 50, CurStyle.TitleStyle.Style/10);
+    QFont titleFont(CurProfile.TitleStyle.Family, CurProfile.TitleStyle.Size, 49*(CurProfile.TitleStyle.Style%2) + 50, CurProfile.TitleStyle.Style/10);
     fontMap.insert("TitleText", new QFontMetrics(titleFont));
 
-    QFont subtitleFont(CurStyle.SubtitleStyle.Family, CurStyle.SubtitleStyle.Size, 49*(CurStyle.SubtitleStyle.Style%2) + 50, CurStyle.SubtitleStyle.Style/10);
+    QFont subtitleFont(CurProfile.SubtitleStyle.Family, CurProfile.SubtitleStyle.Size, 49*(CurProfile.SubtitleStyle.Style%2) + 50, CurProfile.SubtitleStyle.Style/10);
     fontMap.insert("epigraph", new QFontMetrics(subtitleFont));
 
-    QFont empFont(CurStyle.EmphasizedTextStyle.Family, CurStyle.EmphasizedTextStyle.Size, 49*(CurStyle.EmphasizedTextStyle.Style%2) + 50, CurStyle.EmphasizedTextStyle.Style/10);
+    QFont empFont(CurProfile.EmphasizedStyle.Family, CurProfile.EmphasizedStyle.Size, 49*(CurProfile.EmphasizedStyle.Style%2) + 50, CurProfile.EmphasizedStyle.Style/10);
     fontMap.insert("emphasis", new QFontMetrics(empFont));
 
-    QFont noteFont(CurStyle.NoteStyle.Family, CurStyle.NoteStyle.Size, 49*(CurStyle.NoteStyle.Style%2) + 50, CurStyle.NoteStyle.Style/10);
+    QFont noteFont(CurProfile.NoteStyle.Family, CurProfile.NoteStyle.Size, 49*(CurProfile.NoteStyle.Style%2) + 50, CurProfile.NoteStyle.Style/10);
     fontMap.insert("Note", new QFontMetrics(noteFont));
 }
 
 void FB2TextPaginator::setLinespaceMap()
 {
-    linespaceMap.insert("Text", CurStyle.RegularTextStyle.LineSpacing * fontMap["Text"]->lineSpacing());
-    linespaceMap.insert("strong", CurStyle.RegularTextStyle.LineSpacing * fontMap["strong"]->lineSpacing());
-    linespaceMap.insert("TitleText", CurStyle.TitleStyle.LineSpacing * fontMap["TitleText"]->lineSpacing());
-    linespaceMap.insert("epigraph", CurStyle.SubtitleStyle.LineSpacing * fontMap["epigraph"]->lineSpacing());
-    linespaceMap.insert("emphasis", CurStyle.EmphasizedTextStyle.LineSpacing * fontMap["emphasis"]->lineSpacing());
-    linespaceMap.insert("Note", CurStyle.NoteStyle.LineSpacing * fontMap["Note"]->lineSpacing());
+    linespaceMap.insert("Text", CurProfile.RegularStyle.LineSpacing * fontMap["Text"]->lineSpacing());
+    linespaceMap.insert("strong", CurProfile.RegularStyle.LineSpacing * fontMap["strong"]->lineSpacing());
+    linespaceMap.insert("TitleText", CurProfile.TitleStyle.LineSpacing * fontMap["TitleText"]->lineSpacing());
+    linespaceMap.insert("epigraph", CurProfile.SubtitleStyle.LineSpacing * fontMap["epigraph"]->lineSpacing());
+    linespaceMap.insert("emphasis", CurProfile.EmphasizedStyle.LineSpacing * fontMap["emphasis"]->lineSpacing());
+    linespaceMap.insert("Note", CurProfile.NoteStyle.LineSpacing * fontMap["Note"]->lineSpacing());
 }
 
 void FB2TextPaginator::setPageGeometry(const int &width, const int &height)
 {
-    columnWidth = (width - 10 - 30*(CurStyle.ColumnCount-1) - CurStyle.TextLeftRightIdent/100 - CurStyle.TextLeftRightIdent%100)/CurStyle.ColumnCount;
-    tableWidth = columnWidth*CurStyle.ColumnCount + 10 + 30*(CurStyle.ColumnCount-1) + CurStyle.TextLeftRightIdent/100 + CurStyle.TextLeftRightIdent%100;
-    columnHeight = height - 20 - CurStyle.TextTopBottomIdent/100 - CurStyle.TextTopBottomIdent%100;
+    columnWidth = (width - 10 - 30*(CurProfile.ColumnCount-1) - CurProfile.TextLeftRightIdent/100 - CurProfile.TextLeftRightIdent%100)/CurProfile.ColumnCount;
+    tableWidth = columnWidth*CurProfile.ColumnCount + 10 + 30*(CurProfile.ColumnCount-1) + CurProfile.TextLeftRightIdent/100 + CurProfile.TextLeftRightIdent%100;
+    columnHeight = height - 20 - CurProfile.TextTopBottomIdent/100 - CurProfile.TextTopBottomIdent%100;
 }
 
 void FB2TextPaginator::setHTMLinf()
 {
-    CurStyle = ProgramSettings->getCurrentTextStyleElem();
+    CurProfile = ProgramSettings->getCurrentReadProfileElem();
 
-    QString fileName;
-    if (CurStyle.BackgroundType == false)
-        fileName = QUrl::fromLocalFile(CurStyle.BackgroundImage).toString();
 
     PageHTMLHeader = "<style type='text/css'>"
                      "p{"
-                          "margin-top:" + QString::number(CurStyle.ParLeftTopIdent%100) + "px;"
-                          "margin-bottom:0px;}"
+                          "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;"
+                          "margin-bottom:0px;"
+                          "text-indent:" + QString::number(CurProfile.ParLeftTopIdent/100) + "px;"
+                          "text-align-last: justify;}"
+
+                     "p.begin{text-indent: 0px;}"
 
                      "TitleText{"
-                          "font-family:'" + CurStyle.TitleStyle.Family + "';"
-                          "font-size:" + QString::number(CurStyle.TitleStyle.Size) + "pt;"
-                          "font-weight:" + ((CurStyle.TitleStyle.Style%2)? QString("bold"):QString("normal")) + ";"
-                          "line-height:" + QString::number(CurStyle.TitleStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.TitleStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.TitleStyle.Align) + ";"
-                          "color:" + CurStyle.TitleStyle.Color + ";"
-                          "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
+                           + CurProfile.TitleStyle.getHTMLStyle() + ";}"
 
                      "epigraph{"
-                          "font-family:'" + CurStyle.SubtitleStyle.Family + "';"
-                          "font-size:" + QString::number(CurStyle.SubtitleStyle.Size) + "pt;"
-                          "font-weight:" + ((CurStyle.SubtitleStyle.Style%2)? QString("bold"):QString("normal")) + ";"
-                          "line-height:" + QString::number(CurStyle.SubtitleStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.SubtitleStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.SubtitleStyle.Align) + ";"
-                          "color:" + CurStyle.SubtitleStyle.Color + ";"
-                          "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
+                           + CurProfile.SubtitleStyle.getHTMLStyle() + ";}"
 
                      "Text{"
-                          "font-family:'" + CurStyle.RegularTextStyle.Family + "';"
-                          "font-size:" + QString::number(CurStyle.RegularTextStyle.Size) + "pt;"
-                          "font-weight:" + ((CurStyle.RegularTextStyle.Style%2)? QString("bold"):QString("normal")) + ";"
-                          "line-height:" + QString::number(CurStyle.RegularTextStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.RegularTextStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.RegularTextStyle.Align) + ";"
-                          "color:" + CurStyle.RegularTextStyle.Color + ";"
-                          "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
+                           + CurProfile.RegularStyle.getHTMLStyle() + ";}"
 
                      "emphasis{"
-                          "font-family:'" + CurStyle.EmphasizedTextStyle.Family + "';"
-                          "font-size:" + QString::number(CurStyle.EmphasizedTextStyle.Size) + "pt;"
-                          "font-weight:" + ((CurStyle.EmphasizedTextStyle.Style%2)? QString("bold"):QString("normal")) + ";"
-                          "line-height:" + QString::number(CurStyle.EmphasizedTextStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.EmphasizedTextStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.EmphasizedTextStyle.Align) + ";"
-                          "color:" + CurStyle.EmphasizedTextStyle.Color + ";"
-                          "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
+                           + CurProfile.EmphasizedStyle.getHTMLStyle() + ";}"
 
                      "Note{"
-                          "font-family:'" + CurStyle.NoteStyle.Family + "';"
-                          "font-size:" + QString::number(CurStyle.NoteStyle.Size) + "pt;"
-                          "font-weight:" + ((CurStyle.NoteStyle.Style%2)? QString("bold"):QString("normal")) + ";"
-                          "line-height:" + QString::number(CurStyle.NoteStyle.LineSpacing*100) + "%;"
-                          "font-style:" + ((CurStyle.NoteStyle.Style/2 == 1)?QString("italic"):QString("normal")) + ";"
-                          "text-align:" + ProgramSettings->getTextAlignName(CurStyle.NoteStyle.Align) + ";"
-                          "color:" + CurStyle.NoteStyle.Color + ";"
-                          "text-indent:" + QString::number(CurStyle.ParLeftTopIdent/100) + "px;}"
+                           + CurProfile.NoteStyle.getHTMLStyle() + ";}"
 
-                     "strong > p{"
+                     "strong{"
                           "font-weight:" + QString::number(99) + ";}"
 
-                     "body{"
-                          "background" + ((CurStyle.BackgroundType == true) ? ("-color:" + CurStyle.BackgroundImage) : ("-image:url(" + fileName + ")")) + ";}"
+                      + ((CurProfile.BackgroundType == true) ? ("body{background-color:" + CurProfile.BackgroundImage + ";}") : ("")) +
                   "</style>"
                   "<body>"
                   "<table border='0' style='"
                     "table-layout: fixed;"
                     "empty-cells: show;"
-                    "margin-top: " + QString::number(CurStyle.TextTopBottomIdent/100) + "px;"
-                    "margin-bottom: " + QString::number(CurStyle.TextTopBottomIdent%100) + "px;"
-                    "margin-left:" + QString::number(CurStyle.TextLeftRightIdent/100) + "px;"
-                    "margin-right:" + QString::number(CurStyle.TextLeftRightIdent%100) + "px;' "
+                    "margin-top: " + QString::number(CurProfile.TextTopBottomIdent/100) + "px;"
+                    "margin-bottom: " + QString::number(CurProfile.TextTopBottomIdent%100) + "px;"
+                    "margin-left:" + QString::number(CurProfile.TextLeftRightIdent/100) + "px;"
+                    "margin-right:" + QString::number(CurProfile.TextLeftRightIdent%100) + "px;' "
                     "width='100%'"
                     " cellspacing='-30' cellpadding='30'>"
                   "<tr>"
-                  "<td align = 'justify' width = '" + QString::number(100/CurStyle.ColumnCount) + "%'>"
+                  "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
                   "<Text>";
 
-    PageHTMLSep = "</Text></td><td align = 'justify' width = '" + QString::number(100/CurStyle.ColumnCount) + "%'><Text>";
+    PageHTMLSep = "</Text></td><td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'><Text>";
     PageHTMLBottom = "</Text></td></tr></table></body>";
 }
+
 
 void FB2TextPaginator::createTableOfContents()
 {
@@ -336,10 +303,12 @@ void FB2TextPaginator::createTableOfContents()
         }
 }
 
+
 QStringList FB2TextPaginator::getBookContentTable()
 {
     return TableOfContentsText;
 }
+
 
 long long FB2TextPaginator::getCurrentSectionIndex()
 {
@@ -349,6 +318,7 @@ long long FB2TextPaginator::getCurrentSectionIndex()
         return TableOfContentsIndexes.size() - 1;
     return pos;
 }
+
 
 QString FB2TextPaginator::goToSection(const int &sectionIndex)
 {
@@ -368,6 +338,7 @@ int FB2TextPaginator::getWordHeight()
     return linespaceMap[tagStack[0]];
 }
 
+
 int FB2TextPaginator::getWordWidth(const QString &word)
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
@@ -375,6 +346,7 @@ int FB2TextPaginator::getWordWidth(const QString &word)
             return fontMap[tagStack[i]]->width(word);
     return fontMap[tagStack[0]]->width(word);
 }
+
 
 int FB2TextPaginator::getSpaceWidth()
 {
@@ -385,7 +357,7 @@ int FB2TextPaginator::getSpaceWidth()
 }
 
 
-void FB2TextPaginator::findTagsTale()
+void FB2TextPaginator::findTagsTail()
 {
     bool realParseDirection = parseDirection;
     int parseResalt = 1;
@@ -434,20 +406,20 @@ int FB2TextPaginator::parseTag()
     {
         if (tagType == parseDirection)
         {
-            if (currentHeight + stringHeight + (CurStyle.ParLeftTopIdent%100)*((int)!parseDirection) > columnHeight)
+            if (currentHeight + stringHeight + (CurProfile.ParLeftTopIdent%100)*((int)!parseDirection) > columnHeight)
             {
-                findTagsTale();
+                findTagsTail();
                 return 3;
             }
         }
         else
         {
             if (!parseDirection)
-                currentWidth = CurStyle.ParLeftTopIdent/100;
+                currentWidth = CurProfile.ParLeftTopIdent/100;
             else
                 currentWidth = 0;
 
-            currentHeight += stringHeight + CurStyle.ParLeftTopIdent%100;
+            currentHeight += stringHeight + CurProfile.ParLeftTopIdent%100;
             stringHeight = 0;
         }
         return 1;
@@ -475,10 +447,10 @@ int FB2TextPaginator::parseTag()
         if (currentHeight == 0)
             return 2;
 
-        if (currentHeight + getWordHeight() + CurStyle.ParLeftTopIdent%100 > columnHeight)
+        if (currentHeight + getWordHeight() + CurProfile.ParLeftTopIdent%100 > columnHeight)
             return 2;
 
-        currentHeight += getWordHeight() + CurStyle.ParLeftTopIdent%100;
+        currentHeight += getWordHeight() + CurProfile.ParLeftTopIdent%100;
 
         if (parseDirection)
             Columns[currentColumn].prepend("<p>&nbsp;</p>");
@@ -494,6 +466,7 @@ int FB2TextPaginator::parseTag()
 
     return 2;
 }
+
 
 void FB2TextPaginator::applyTag()
 {
@@ -513,6 +486,7 @@ void FB2TextPaginator::applyTag()
         }
     }
 }
+
 
 bool FB2TextPaginator::applyWord()
 {
@@ -543,6 +517,7 @@ bool FB2TextPaginator::applyWord()
                 if (currentHeight + stringHeight + wordHeight  > columnHeight)
                 {
                     //переносим колонку
+                    //for (int i = 0; i < )
                     return false;
                 }
                 else
@@ -582,12 +557,12 @@ QString FB2TextPaginator::getPageForward()
         wordWidth = wordHeight = 0;
         tagType = 0;
 
-        for (currentColumn = 0; currentColumn < CurStyle.ColumnCount; currentColumn++)
+        for (currentColumn = 0; currentColumn < CurProfile.ColumnCount; currentColumn++)
         {
-            columnTale = "";
+            columnTail = "";
             for (int p = 1; p < tagStack.size(); p++)
-                columnTale += "<" + tagStack[p] + ">";
-            Columns.append(columnTale);
+                columnTail += "<" + tagStack[p] + ">";
+            Columns.append(columnTail);
 
             currentHeight = currentWidth = 0;
             stringHeight = 0;
@@ -604,9 +579,6 @@ QString FB2TextPaginator::getPageForward()
                         else
                             if (parseResalt == 2)
                                 continue;
-
-                        /// отработать переход секции
-
                         else
                             if (parseResalt == 3)
                                 break;
@@ -628,9 +600,10 @@ QString FB2TextPaginator::getPageForward()
             currentEStrNum = currentTextPos;
         }
         HTMLPage = Columns[0];
-        for (int i = 1; i < CurStyle.ColumnCount; i++)
+        for (int i = 1; i < CurProfile.ColumnCount; i++)
             HTMLPage += PageHTMLSep + Columns[i];
-        //debugSave(PageHTMLHeader + HTMLPage + PageHTMLBottom);
+
+        debugSave(PageHTMLHeader + HTMLPage + PageHTMLBottom);
     }
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
@@ -654,12 +627,12 @@ QString FB2TextPaginator::getPageBackward()
         wordWidth = wordHeight = 0;
         tagType = 0;
 
-        for (currentColumn = 0; currentColumn < CurStyle.ColumnCount; currentColumn++)
+        for (currentColumn = 0; currentColumn < CurProfile.ColumnCount; currentColumn++)
         {
-            columnTale = "";
+            columnTail = "";
             for (int p = tagStack.size() - 1; p > 0 ; p--)
-                columnTale += "</" + tagStack[p] + ">";
-            Columns.append(columnTale);
+                columnTail += "</" + tagStack[p] + ">";
+            Columns.append(columnTail);
 
             currentHeight = 0;
             currentWidth = 0;
@@ -701,8 +674,8 @@ QString FB2TextPaginator::getPageBackward()
 
         book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
 
-        HTMLPage = Columns[CurStyle.ColumnCount - 1];
-        for (int i = CurStyle.ColumnCount - 2; i >= 0; i--)
+        HTMLPage = Columns[CurProfile.ColumnCount - 1];
+        for (int i = CurProfile.ColumnCount - 2; i >= 0; i--)
             HTMLPage += PageHTMLSep + Columns[i];
 
     }
@@ -719,6 +692,7 @@ QString FB2TextPaginator::updatePage(const int &width, const int &height)
     return getPageForward();
 }
 
+
 QString FB2TextPaginator::updateSettings(const int &width, const int &height)
 {
     setPageGeometry(width, height);
@@ -730,6 +704,7 @@ QString FB2TextPaginator::updateSettings(const int &width, const int &height)
     return getPageForward();
 }
 
+
 float FB2TextPaginator::getProgress()
 {
     if (currentBStrNum > 0 && strCount)
@@ -737,6 +712,7 @@ float FB2TextPaginator::getProgress()
     else
         return 0;
 }
+
 
 void FB2TextPaginator::debugSave(const QString &HTMLPage)
 {

@@ -25,5 +25,7 @@
         <file>Images/noImage.png</file>
         <file>Images/LightArrowVertClose.png</file>
         <file>Images/LightArrowVertOpen.png</file>
+        <file>Images/LightNewReadProfile.png</file>
+        <file>Images/LightReadProfileSwap.png</file>
     </qresource>
 </RCC>

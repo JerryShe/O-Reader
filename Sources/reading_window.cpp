@@ -10,14 +10,15 @@
 #include "booktableofcontents.h"
 #include "styles.h"
 
-
 #include <QTimer>
 #include <QMouseEvent>
 #include <QKeyEvent>
-#include <QWindow>
 #include <QThread>
+#include <QDialog>
+#include <QListWidget>
 
 #include <QDebug>
+
 
 void ReadingWindow::setStyle(const QString &currentStyle)
 {
@@ -41,7 +42,12 @@ void ReadingWindow::setStyle(const QString &currentStyle)
     ui->Progress->setStyleSheet(styleSheets[1]);
     ui->BookName->setStyleSheet(styleSheets[1]);
     ui->MenuButton->setStyleSheet(styleSheets[0]);
+
+    ui->ReadProfilesButton->setStyleSheet(styleSheets[2]);
+    ProfilesView->setStyleSheet(styleSheets[3]);
+
 }
+
 
 ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow)
 {
@@ -54,8 +60,16 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->setupUi(this);
     ui->BookName->setText(CurBook->getAuthorName() + ": " + CurBook->getTitle());
 
+    ui->TextPage->viewport()->setAutoFillBackground(false);
+    ui->TextPage->setAttribute( Qt::WA_TranslucentBackground, true );
+
     ui->TextPage->setFocus();
     ui->TopBarWidget->setFocusPolicy(Qt::NoFocus);
+    ui->MenuButton->setFocusPolicy(Qt::NoFocus);
+    ui->min_button->setFocusPolicy(Qt::NoFocus);
+    ui->exit_button->setFocusPolicy(Qt::NoFocus);
+    ui->full_size_button->setFocusPolicy(Qt::NoFocus);
+
     ui->TextPage->setFocusPolicy(Qt::StrongFocus);
 
 
@@ -72,12 +86,33 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 
     MenuWidget = new ReadingMenu(this);
     connect(ui->MenuButton, SIGNAL(clicked(bool)), MenuWidget, SIGNAL(MenuButtonClicked()));
+
     connect(MenuWidget, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
     connect(MenuWidget, SIGNAL(showContentsTable()), this, SLOT(showContentsTable()));
     connect(MenuWidget, SIGNAL(showSettingsWindow()), this, SLOT(showSettingsWindow()));
 
+    connect(MenuWidget, &ReadingMenu::hideMenuWidget, [this](){ui->TextPage->setFocus();});
+
+
+    ProfilesWidget = new QWidget(this);
+    QVBoxLayout* ProfilesLayout = new QVBoxLayout(ProfilesWidget);
+    ProfilesWidget->setLayout(ProfilesLayout);
+    ProfilesWidget->setContentsMargins(0,0,0,0);
+    ProfilesLayout->setContentsMargins(0,0,0,0);
+
+    ProfilesView = new QListWidget(ProfilesWidget);
+    ProfilesWidget->setFixedWidth(200);
+    ProfilesLayout->addWidget(ProfilesView);
+    ProfilesWidget->hide();
+
+    connect(ui->MenuButton, &QPushButton::clicked, [this](){ProfilesWidget->hide();});
+    connect(ui->ReadProfilesButton, &QPushButton::clicked, [this](){MenuWidget->hideMenu();});
+
+
     ProgramSettings = Settings::getSettings();
     setStyle(ProgramSettings->getInterfaceStyle());
+    setBackgroundImage();
+
     ui->Clock->setText(QTime::currentTime().toString("hh:mm"));
 
     QTimer *clockTimer = new QTimer(this);
@@ -91,11 +126,28 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 }
 
+
+void ReadingWindow::setBackgroundImage()
+{
+    if (ProgramSettings->getCurrentReadProfileElem().BackgroundType == false)
+    {
+        ui->TextBackground->setStyleSheet("#TextBackground{background-image:url(" +
+                                          ProgramSettings->getCurrentReadProfileElem().BackgroundImage +
+                                          + ");}");
+    }
+    else
+    {
+        ui->TextBackground->setStyleSheet("");
+    }
+}
+
+
 void ReadingWindow::startReading()
 {
     ui->TextPage->setHtml(BookPaginator->startParser(CurBook,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
 }
+
 
 void ReadingWindow::changeEvent(QEvent *event)
 {
@@ -104,11 +156,43 @@ void ReadingWindow::changeEvent(QEvent *event)
     }
 }
 
+
 ReadingWindow::~ReadingWindow()
 {
     parserThread->quit();
     delete BookPaginator;
     delete ui;
+}
+
+
+void ReadingWindow::on_ReadProfilesButton_clicked()
+{
+    if (ProfilesWidget->isHidden())
+    {
+        QStringList ProfilesList;
+        ProfilesList = ProgramSettings->getReadProfilesList();
+
+        ProfilesView->clear();
+        ProfilesView->addItems(ProfilesList);
+        ProfilesView->setCurrentRow(ProfilesList.indexOf(ProgramSettings->getCurrentReadProfileName()));
+
+        ProfilesWidget->show();
+        ProfilesWidget->move(ui->ReadProfilesButton->x(), ui->ReadProfilesButton->height());
+        ProfilesWidget->setFixedHeight(ProfilesList.size() * 30);
+
+        connect(ProfilesView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(changeReadProfile(QModelIndex)));
+    }
+    else
+    {
+        ProfilesWidget->hide();
+    }
+}
+
+void ReadingWindow::changeReadProfile(const QModelIndex &index)
+{
+    ProgramSettings->setCurrentReadProfile(ProgramSettings->getReadProfilesList().at(index.row()));
+    reprintNewSettText();
+    setBackgroundImage();
 }
 
 
@@ -132,6 +216,7 @@ void ReadingWindow::clockStep()
         }
 }
 
+
 void ReadingWindow::on_exit_button_clicked()
 {
     if (ActiveWindow)
@@ -151,6 +236,7 @@ void ReadingWindow::on_exit_button_clicked()
     else
         delete answer_window;
 }
+
 
 bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 {
@@ -285,15 +371,18 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
     return true;
 }
 
+
 void ReadingWindow::reprintResizedText()
 {
     ui->TextPage->setHtml(BookPaginator->updatePage(ui->TextPage->width(), ui->TextPage->height()));
 }
 
+
 void ReadingWindow::updateProgress()
 {
     ui->Progress->setText(QString::number(floor(BookPaginator->getProgress()*10)/10) + "%");
 }
+
 
 void ReadingWindow::showContentsTable()
 {
@@ -308,40 +397,49 @@ void ReadingWindow::showContentsTable()
     }
 }
 
+
 void ReadingWindow::goToSection(const int &sectionIndex)
 {
     ui->TextPage->setHtml(BookPaginator->goToSection(sectionIndex));
     updateProgress();
 }
 
-void ReadingWindow::FindButton_Clicked()
+
+void ReadingWindow::showSearchWindow()
 {
     Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
 
     connect(Search, SIGNAL(startSearch(QString,QString)), this, SLOT(StartSearch(QString,QString)));
     connect(Search, SIGNAL(nextResult()), this, SLOT(NextSearchStep()));
     connect(Search, SIGNAL(previousResult()), this, SLOT(PrevSearchStep()));
+    connect(Search, &QDialog::finished, [this](){ui->TextPage->setFocus();});
 }
+
 
 void ReadingWindow::StartSearch(const QString &key, const QString &type)
 {
 
 }
 
+
 void ReadingWindow::NextSearchStep()
 {
 
 }
+
 
 void ReadingWindow::PrevSearchStep()
 {
 
 }
 
+
 void ReadingWindow::reprintNewSettText()
 {
+    setBackgroundImage();
     ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
 }
+
 
 void ReadingWindow::showSettingsWindow()
 {
@@ -352,7 +450,7 @@ void ReadingWindow::showSettingsWindow()
     setBackgroundWindowColor(style, ProgramSettings->getInterfaceStyle());
     setStyleSheet(style[1]);
 
-    MiniWindow->setWindowFlags(Qt::FramelessWindowHint);
+    MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
     int frame, w, h;
     if (this->width() - 100 < 1066)
@@ -381,22 +479,24 @@ void ReadingWindow::showSettingsWindow()
 
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(reject()));
-    connect(SettingsPage, SIGNAL(settingsChanged()), this, SLOT(reprintNewSettText()));
 
     MiniWindow->show();
 
     if (MiniWindow->exec() == QDialog::Rejected)
     {
+        reprintNewSettText();
+        ui->TextPage->setFocus();
         delete MiniWindow;
         ActiveWindow = false;
     }
 }
 
-void ReadingWindow::SynchronizationButton_Clicked()
+
+void ReadingWindow::showSynchronizationWindow()
 {
     MiniWindow = new QDialog(this);
 
-    MiniWindow->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint);
+    MiniWindow->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
     int frame, w, h;
     if (this->width() - 100 < 1066)
@@ -413,11 +513,9 @@ void ReadingWindow::SynchronizationButton_Clicked()
 
     MiniWindow->show();
 
-    if (MiniWindow->exec())
+    if (MiniWindow->exec() == QDialog::Rejected)
+    {
         delete MiniWindow;
-}
-
-void ReadingWindow::BackToMainWindowButton_Clicked()
-{
-    emit showMainWindow();
+        ui->TextPage->setFocus();
+    }
 }

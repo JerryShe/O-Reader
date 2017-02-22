@@ -40,7 +40,7 @@ BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
     setStyle(Style);
     style = Style;
 
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setWindowFlags(Qt::Popup);
 
     this->setGeometry(parent->mapToGlobal(QPoint(180, 0)).x(), parent->mapToGlobal(QPoint(0, 100)).y(), parent->width() - 270, parent->height() - 200);

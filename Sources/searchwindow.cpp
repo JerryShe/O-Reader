@@ -22,7 +22,8 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
     workMode = mode;
     hide();
     move(position);
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     VLayout = new QVBoxLayout(this);
     VLayout->setContentsMargins(0,0,0,0);
@@ -101,19 +102,14 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
     this->show();
 }
 
+
 SearchWindow::~SearchWindow()
 {
-    delete VLayout;
     delete TopLayout;
     delete TextLayout;
     delete ButtonLayout;
-    delete exit_button;
-    delete topSpacer;
-    delete YepButton;
-    delete NopeButton;
-    delete TextBox;
-    delete SearchTypeBox;
 }
+
 
 void SearchWindow::YepButtonClicked()
 {
@@ -132,6 +128,7 @@ void SearchWindow::YepButtonClicked()
     }
 }
 
+
 void SearchWindow::NopeButtonClicked()
 {
     if (workMode)
@@ -146,11 +143,13 @@ void SearchWindow::NopeButtonClicked()
         this->close();
 }
 
+
 void SearchWindow::exitButtonClicked()
 {
     emit windowClosed();
     this->close();
 }
+
 
 void SearchWindow::TextChanged()
 {

@@ -232,6 +232,20 @@ void setTabButtonsStyle (QString tabButtonsStyle [], const QString style)
                              "{background-color:rgb(151, 151, 227);}"
                              "QPushButton:checked:hover"
                              "{background-color:rgb(130, 130, 195);}";
+
+        tabButtonsStyle[5] = "#ShowButton"
+                             "{background-color:rgb(130, 0, 45);"
+                             "background-repeat: no-repeat;"
+                             "background-position: center center;"
+                             "background-image: url(:/Images/LightArrowVertClose.png);"
+                             "border: none;}"
+
+                             "#ShowButton:checked"
+                             "{background-image: url(:/Images/LightArrowVertOpen.png);"
+                             "}"
+
+                             "#ShowButton:hover, #ShowButton:checked:hover"
+                             "{background-color:rgb(120, 0, 45);}";
     }
 }
 
@@ -260,20 +274,6 @@ void setLastBookWidgetStyle(QString styles [], const QString style)
                         "color:white;}"
                         "#PageButton:hover"
                         "{background-color:rgb(147, 0, 60);}";
-
-        styles[3] = "#ShowButton"
-                        "{background-color:rgb(130, 0, 45);"
-                        "background-repeat: no-repeat;"
-                        "background-position: center center;"
-                        "background-image: url(:/Images/LightArrowVertClose.png);"
-                        "border: none;}"
-
-                        "#ShowButton:checked"
-                        "{background-image: url(:/Images/LightArrowVertOpen.png);"
-                        "}"
-
-                        "#ShowButton:hover, #ShowButton:checked:hover"
-                        "{background-color:rgb(120, 0, 45);}";
     }
 }
 
@@ -528,13 +528,21 @@ void setReaderLayoutStyle(QString LayoutStyle[], const QString style)
                             "QPushButton:hover"
                             "{background-color:rgb(147, 0, 60);}";
 
-        LayoutStyle[2] =    "#YepButton"
+        LayoutStyle[1] =    "#YepButton"
                             "{border:none;"
                             "color:white;"
-                            "background-image: url(:Images/LightYepButton.png);"
+                            "background-image: url(:Images/LightNewReadProfile.png);"
                             "background-color: rgb(150, 0, 60);}"
                             "#YepButton:hover"
                             "{background-color:rgb(137, 0, 60);}";
+
+        LayoutStyle[2] = "#YepButton"
+                           "{border:none;"
+                           "color:white;"
+                           "background-image: url(:Images/LightYepButton.png);"
+                           "background-color: rgb(150, 0, 60);}"
+                           "#YepButton:hover"
+                           "{background-color:rgb(137, 0, 60);}";
 
         LayoutStyle[3] =    "#NopeButton"
                             "{border:none;"
@@ -614,6 +622,26 @@ void setReaderWindowStyle(QString WindowStyle[], const QString style)
 
         WindowStyle[1] = "QLabel"
                          "{color:white;}";
+
+        WindowStyle[2] = "QPushButton{"
+                         "background-color: rgb(170, 0, 80);"
+                         "border:none;"
+                         "background-image: url(:/Images/LightReadProfileSwap.png);}"
+                         "QPushButton:hover{"
+                         "background-color:rgb(147, 0, 60);}";
+
+        WindowStyle[3] = "QListView{"
+                         "border:none;"
+                         "outline: 0px;"
+                         "background-color: rgb(162, 0, 70);"
+                         "color:white;}"
+                         "QListView::item{"
+                         "min-height:30px;}"
+                         "QListView::item:hover{"
+                         "background-color: rgb(120, 0, 45);}"
+                         "QListView::item:selected{"
+                         "background-color:rgb(151, 151, 227);"
+                         "border:none;}";
     }
 }
 
@@ -655,6 +683,8 @@ void setReaderWindowMenuButtons(QString ButtonsStyle[], const QString style)
                             "background-image: url(:/Images/LightMenuLibrary.png);}"
                             "QPushButton:hover"
                             "{background-color:rgb(147, 0, 60);}";
+
+        ButtonsStyle[5] = "#MainWidget {background-color: rgb(162, 0, 70);}";
     }
 }
 
@@ -667,9 +697,13 @@ void setReaderTableOfContents(QString WindowStyle[], const QString style)
                             "outline: 0px;"
                             "background-color: rgb(162, 0, 70);"
                             "color:white;}"
+                            "QListView::item{"
+                            "min-height:30px;}"
+                            "QListView::item:hover{"
+                            "background-color: rgb(120, 0, 45);}"
                             "QListView::item:selected{"
                             "background-color:rgb(151, 151, 227);"
-                            "border:none;}"
+                            "border:none;}";
 
                             "QScrollBar:vertical {"
                             "border: none;"

@@ -12,10 +12,12 @@ void Settings_ProfileLayout::setLayoutStyle()
     ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
 }
 
+
 Settings_ProfileLayout::Settings_ProfileLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ProfileLayout)
 {
     ui->setupUi(this);
 }
+
 
 Settings_ProfileLayout::~Settings_ProfileLayout()
 {
@@ -29,15 +31,18 @@ void Settings_ProfileLayout::setSettingsData()
     setLayoutStyle();
 }
 
+
 void Settings_ProfileLayout::on_ChangePasswordButton_clicked()
 {
 
 }
 
+
 void Settings_ProfileLayout::on_SaveButton_clicked()
 {
     emit settingsChanged(0);
 }
+
 
 void Settings_ProfileLayout::setSavebuttonView(const int &type)
 {
@@ -47,10 +52,10 @@ void Settings_ProfileLayout::setSavebuttonView(const int &type)
         ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
 }
 
+
 void Settings_ProfileLayout::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange) {
         ui->retranslateUi(this);
     }
 }
-

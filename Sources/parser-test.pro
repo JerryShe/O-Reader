@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     synchronization_layout.cpp \
     book_widget.cpp \
     client_handler.cpp \
-    reading_menu.cpp
+    reading_menu.cpp \
+    settings_readerlayoutstyle.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -68,7 +69,8 @@ HEADERS  += \
     synchronization_layout.h \
     book_widget.h \
     client_handler.h \
-    reading_menu.h
+    reading_menu.h \
+    settings_readerlayoutstyle.h
 
 FORMS    += \
     settings_programlayout.ui \
@@ -82,7 +84,8 @@ FORMS    += \
     reading_window.ui \
     synchronization_layout.ui \
     book_widget.ui \
-    reading_menu.ui
+    reading_menu.ui \
+    settings_readerlayoutstyle.ui
 
 RESOURCES += \
     images.qrc

@@ -41,13 +41,9 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     setMouseTracking(true);
     setWindowFlags(Qt::CustomizeWindowHint);
-    //setWindowFlags(Qt::FramelessWindowHint);
 
     this->setGeometry(qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
     prev_geometry = geometry();
-
-
-    //this->setContentsMargins(3,3,3,3);
 
 
     ProgramSettings->loadSettings();
@@ -115,10 +111,16 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         break;
     }
 
-
     windowMachine->start();
 }
 
+
+void WindowManager::saveProgramData()
+{
+    ProgramSettings->saveSettings();
+    UserSynchro->saveLog();
+    LibHandler->saveBookList();
+}
 
 
 void WindowManager::showLogin()
@@ -127,7 +129,10 @@ void WindowManager::showLogin()
     this->setCentralWidget(loginWindow);
 
     if (LastWindow != 0)
+    {
         delete LastWindow;
+        saveProgramData();
+    }
     LastWindow = loginWindow;
 
     connect(loginWindow, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
@@ -138,7 +143,6 @@ void WindowManager::showLogin()
     this->show();
 
     UserSynchro->setLastOpenedWindow(0);
-
 }
 
 void WindowManager::showMain()
@@ -150,7 +154,10 @@ void WindowManager::showMain()
 
 
     if (LastWindow != 0)
+    {
         delete LastWindow;
+        saveProgramData();
+    }
     LastWindow = mainWindow;
 
     connect(mainWindow, SIGNAL(showLoginWindow()), this, SIGNAL(showLoginWindow()));
@@ -185,7 +192,10 @@ void WindowManager::showReading()
     readingWindow->startReading();
 
     if (LastWindow != 0)
+    {
         delete LastWindow;
+        saveProgramData();
+    }
     LastWindow = readingWindow;
 
     connect(readingWindow, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
@@ -237,6 +247,7 @@ void WindowManager::mouseMoveEvent(QMouseEvent *e)
     }
 }
 
+
 void WindowManager::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)
@@ -249,6 +260,7 @@ void WindowManager::mousePressEvent(QMouseEvent *e)
     }
 }
 
+
 void WindowManager::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton)
@@ -257,6 +269,7 @@ void WindowManager::mouseReleaseEvent(QMouseEvent *e)
             moving = false;
     }
 }
+
 
 void WindowManager::showWindowMinimazed()
 {
@@ -272,6 +285,7 @@ void WindowManager::showWindowMinimazed()
     }
 }
 
+
 void WindowManager::showWindowMaximazed()
 {
     if(isMaximized())
@@ -285,6 +299,7 @@ void WindowManager::showWindowMaximazed()
         showMaximized();
     }
 }
+
 
 WindowManager::~WindowManager()
 {

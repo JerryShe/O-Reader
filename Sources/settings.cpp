@@ -18,16 +18,19 @@ Settings::Settings()
     textAlignMap.insert(3, "center");
 }
 
+
 Settings* Settings::getSettings()
 {
     static Settings ProgramSettings;
     return &ProgramSettings;
 }
 
+
 void Settings::setTranslator(QTranslator* translator)
 {
     LanguageTranslator = translator;
 }
+
 
 QString Settings::getTextAlignName(const unsigned short &key)
 {
@@ -37,10 +40,12 @@ QString Settings::getTextAlignName(const unsigned short &key)
         return "";
 }
 
+
 Settings::~Settings()
 {
     //saveSettings();
 }
+
 
 bool Settings::saveSettings()
 {
@@ -109,7 +114,7 @@ bool Settings::loadSettings()
         LibraryIconListSize = 50;
 
         TextStylesNames.push_back("Standart");
-        TextStyles.push_back(ReadingStyle());
+        TextStyles.push_back(ReadingProfile());
         currentStyle = "Standart";
 
         saveSettings();
@@ -178,13 +183,13 @@ void Settings::fromJson(const QJsonObject &json)
     for (int i = 0; i < TextStylesNames.size(); i++)
     {
         temp = Obj[TextStylesNames[i]].toObject();
-        TextStyles.append(ReadingStyle(temp));
+        TextStyles.append(ReadingProfile(temp));
     }
 
 }
 
 
-ReadingStyle::ReadingStyle()
+ReadingProfile::ReadingProfile()
 {
     ColumnCount = 2;
     BackgroundType = 1;
@@ -193,20 +198,21 @@ ReadingStyle::ReadingStyle()
     ParLeftTopIdent = 1510;
     TextLeftRightIdent = 1515;    
     TextTopBottomIdent = 1515;
-    RegularTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, 0, "#000000");
-    EmphasizedTextStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
+    RegularStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, 0, "#000000");
+    EmphasizedStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
     TitleStyle = TextStyleSheet("MS Shell Dlg 2", 12, 1, 1, 3, "#000000");
     SubtitleStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, 2, "#000000");
     NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, 1, "#000000");
 }
 
-ReadingStyle::ReadingStyle(QJsonObject &json)
+
+ReadingProfile::ReadingProfile(QJsonObject &json)
 {
     this->fromJson(json);
 }
 
 
-QJsonObject ReadingStyle::toJson()
+QJsonObject ReadingProfile::toJson()
 {
     QJsonObject json;
 
@@ -218,8 +224,8 @@ QJsonObject ReadingStyle::toJson()
     json["TextLeftRightIdent"] = (int)TextLeftRightIdent;
     json["TextTopBottomIdent"] = (int)TextTopBottomIdent;
 
-    json["RegularTextStyle"] = RegularTextStyle.toJson();
-    json["EmphasizedTextStyle"] = EmphasizedTextStyle.toJson();
+    json["RegularTextStyle"] = RegularStyle.toJson();
+    json["EmphasizedTextStyle"] = EmphasizedStyle.toJson();
     json["TitleStyle"] = TitleStyle.toJson();
     json["SubtitleStyle"] = SubtitleStyle.toJson();
     json["NoteStyle"] = NoteStyle.toJson();
@@ -227,7 +233,8 @@ QJsonObject ReadingStyle::toJson()
     return json;
 }
 
-void ReadingStyle::fromJson(const QJsonObject &json)
+
+void ReadingProfile::fromJson(const QJsonObject &json)
 {
     ColumnCount = (unsigned short)json["ColumnCount"].toInt();
     BackgroundType = json["BackgroundType"].toBool();
@@ -237,8 +244,8 @@ void ReadingStyle::fromJson(const QJsonObject &json)
     TextLeftRightIdent = (unsigned short)json["TextLeftRightIdent"].toInt();
     TextTopBottomIdent = (unsigned short)json["TextTopBottomIdent"].toInt();
 
-    RegularTextStyle.fromJson(json["RegularTextStyle"].toObject());
-    EmphasizedTextStyle.fromJson(json["EmphasizedTextStyle"].toObject());
+    RegularStyle.fromJson(json["RegularTextStyle"].toObject());
+    EmphasizedStyle.fromJson(json["EmphasizedTextStyle"].toObject());
     TitleStyle.fromJson(json["TitleStyle"].toObject());
     SubtitleStyle.fromJson(json["SubtitleStyle"].toObject());
     NoteStyle.fromJson(json["NoteStyle"].toObject());
@@ -254,6 +261,7 @@ TextStyleSheet::TextStyleSheet()
     Align = 0;
     Color = "#000000";
 }
+
 
 TextStyleSheet::TextStyleSheet(const QString &Font,
                                const unsigned short &Size,
@@ -284,6 +292,7 @@ QJsonObject TextStyleSheet::toJson()
     return json;
 }
 
+
 void TextStyleSheet::fromJson(const QJsonObject &json)
 {
     Family = json["Family"].toString();
@@ -295,50 +304,74 @@ void TextStyleSheet::fromJson(const QJsonObject &json)
 }
 
 
+QString TextStyleSheet::getHTMLStyle()
+{
+    QString tempHTML =
+                       "font-family:'" + Family + "';"
+                       "font-size:" + QString::number(Size) + "pt;"
+                       "font-weight:" + ((Style%2)? QString("bold"):QString("normal")) + ";"
+                       "line-height:" + QString::number(LineSpacing*100) + "%;"
+                       "font-style:" + ((Style/2 == 1)?QString("italic"):QString("normal")) + ";"
+                       "text-align:" + Settings::getSettings()->getTextAlignName(Align) + ";"
+                       "color:" + Color + ";";
+
+    return tempHTML;
+}
+
+
 QString Settings::getInterfaceStyle()
 {
     return InterfaceStyle;
 }
+
 
 void Settings::setInterfaceStyle(const QString &style)
 {
     InterfaceStyle = style;
 }
 
+
 bool Settings::getLibraryReprezentation()
 {
     return LibraryReprezentation;
 }
+
 
 void Settings::setLibraryReprezentation(const bool &val)
 {
     LibraryReprezentation = val;
 }
 
+
 unsigned short Settings::getLibraryBarIconSize()
 {
     return LibraryIconBarSize;
 }
+
 
 unsigned short Settings::getLibraryListIconSize()
 {
     return LibraryIconBarSize;
 }
 
+
 void Settings::setLibraryListIconSize(const unsigned short &size)
 {
     LibraryIconListSize = size;
 }
+
 
 void Settings::setLibraryBarIconSize(const unsigned short &size)
 {
     LibraryIconBarSize = size;
 }
 
+
 QString Settings::getCurrentLanguage()
 {
     return Language;
 }
+
 
 void Settings::setLanguage(const QString &lang)
 {
@@ -355,92 +388,110 @@ void Settings::setLanguage(const QString &lang)
     }
 }
 
+
 bool Settings::getHideTopBar()
 {
     return HideTopBar;
 }
+
 
 void Settings::setHideTopBar(const bool &n)
 {
     HideTopBar = n;
 }
 
-QString Settings::getCurrentTextStyle()
+
+QString Settings::getCurrentReadProfileName()
 {
     return currentStyle;
 }
 
-void Settings::setCurrentTextStyle(const QString &style)
+
+void Settings::setCurrentReadProfile(const QString &style)
 {
     currentStyle = style;
 }
 
-QStringList Settings::getTextStylesList()
+
+QStringList Settings::getReadProfilesList()
 {
     return TextStylesNames;
 }
+
 
 int Settings::getFForwardKey()
 {
     return FKeyForwardPage;
 }
 
+
 void Settings::setFForwardKey(const int &key)
 {
     FKeyForwardPage = key;
 }
+
 
 int Settings::getSForwardKey()
 {
     return SKeyForwardPage;
 }
 
+
 void Settings::setSForwardKey(const int &key)
 {
     SKeyForwardPage = key;
 }
+
 
 int Settings::getFBackwardKey()
 {
     return FKeyBackwardPage;
 }
 
+
 void Settings::setFBackwardKey(const int &key)
 {
     FKeyBackwardPage = key;
 }
+
 
 int Settings::getSBackwardKey()
 {
     return SKeyBackwardPage;
 }
 
+
 void Settings::setSBackwardKey(const int &key)
 {
     SKeyBackwardPage = key;
 }
+
 
 bool Settings::getTurnByWheel()
 {
     return PageTurnByWheel;
 }
 
+
 void Settings::setTurnByWheel(const bool &turn)
 {
     PageTurnByWheel = turn;
 }
+
 
 bool Settings::getTurnByTap()
 {
     return PageTurnByTap;
 }
 
+
 void Settings::setTurnByTap(const bool &turn)
 {
     PageTurnByTap = turn;
 }
 
-ReadingStyle Settings::getNamedStyle(const QString name)
+
+ReadingProfile Settings::getNamedReadProfile(const QString name)
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)
@@ -450,12 +501,14 @@ ReadingStyle Settings::getNamedStyle(const QString name)
     return TextStyles.at(0);
 }
 
-ReadingStyle Settings::getCurrentTextStyleElem()
+
+ReadingProfile Settings::getCurrentReadProfileElem()
 {
     return TextStyles.at(TextStylesNames.indexOf(currentStyle));
 }
 
-void Settings::saveStyle(const QString &name, const ReadingStyle &style)
+
+void Settings::saveReadProfile(const QString &name, const ReadingProfile &style)
 {
     if (TextStyles.size() != TextStylesNames.size())
     {
@@ -473,7 +526,8 @@ void Settings::saveStyle(const QString &name, const ReadingStyle &style)
     qDebug()<<"style saved";
 }
 
-void Settings::removeNamedStyle(const QString &name)
+
+void Settings::removeNamedReadProfile(const QString &name)
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)

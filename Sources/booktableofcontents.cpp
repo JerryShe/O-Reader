@@ -16,20 +16,17 @@ BookTableOfContents::BookTableOfContents(const QString &style, const QStringList
     QDialog(parent),
     ui(new Ui::BookTableOfContents)
 {
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     ui->setupUi(this);
     setStyle(style);
     ui->TableOfContents->addItems(contentList);
     ui->TableOfContents->setCurrentRow(currentPos);
+
     connect(ui->Close, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ui->GoTo, &QPushButton::clicked, [this](){emit goToSection(ui->TableOfContents->currentRow());});
 }
 
 BookTableOfContents::~BookTableOfContents()
 {
     delete ui;
-}
-
-void BookTableOfContents::on_GoTo_clicked()
-{
-    emit goToSection(ui->TableOfContents->currentRow());
 }

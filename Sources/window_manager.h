@@ -24,6 +24,8 @@ public:
     explicit WindowManager(QWidget *parent = 0);
     ~WindowManager();
 
+    void saveProgramData();
+
 private slots:
     void showLogin();
     void showMain();
@@ -35,9 +37,9 @@ private slots:
     void closeWindow();
 
 signals:
-    showMainWindow();
-    showLoginWindow();
-    showReadingWindow();
+    void showMainWindow();
+    void showLoginWindow();
+    void showReadingWindow();
 
 protected:
     void mouseMoveEvent(QMouseEvent *e);

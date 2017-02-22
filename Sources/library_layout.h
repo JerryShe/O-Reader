@@ -6,6 +6,7 @@
 #include "search_window.h"
 #include "library_handler.h"
 
+#include "book_widget.h"
 
 
 namespace Ui {
@@ -34,7 +35,10 @@ private slots:
     void addBooksFromFiles();
     void addBooksFromFolder();
 
-    void deactiveFindButton();
+    void hideFind();
+    void hideBook();
+
+    void on_ShowButton_clicked();
 
 public slots:
     void setStyle();
@@ -49,9 +53,12 @@ protected:
 
 signals:
     void showBookPage(unsigned int index);
+    void startReading(unsigned int index);
 
 private:
     Ui::LibraryLayout *ui;
+
+    BookWidget *bookWidget;
 
     QThread * HandlerThread;
 

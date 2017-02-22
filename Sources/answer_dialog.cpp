@@ -12,7 +12,7 @@ AnswerDialog::AnswerDialog(const QPoint &position, const QString &text, const QS
 
     move(position);
 
-    setWindowFlags(Qt::FramelessWindowHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setWindowFlags(Qt::Popup);
 
     yes = new QPushButton(QObject::tr("Yes"), this);
@@ -26,13 +26,12 @@ AnswerDialog::AnswerDialog(const QPoint &position, const QString &text, const QS
     message = new QLabel(text, this);
     message->setFont(QFont("MS Shell Dlg 2", 12, QFont::Normal));
 
-    //////////////////////////////////////////////////////////////
+
     QString styles[3];
     setAnswerDialogStyle (styles, Style);
     setStyleSheet(styles[0]);
     yes->setStyleSheet(styles[1]);
     no->setStyleSheet(styles[2]);
-    //////////////////////////////////////////////////////////////
 
     connect(yes, SIGNAL(clicked()), SLOT(accept()));
     connect(no, SIGNAL(clicked()), SLOT(reject()));

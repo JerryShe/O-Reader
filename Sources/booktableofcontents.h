@@ -19,7 +19,6 @@ signals:
     void goToSection(int pos);
 
 private slots:
-    void on_GoTo_clicked();
     void setStyle(const QString &style);
 
 private:

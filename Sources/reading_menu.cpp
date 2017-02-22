@@ -4,10 +4,11 @@
 #include "settings.h"
 #include "styles.h"
 
+#include <QDebug>
 
 void ReadingMenu::setStyle()
 {
-    QString styleSheets[5];
+    QString styleSheets[6];
 
     setReaderWindowMenuButtons(styleSheets, Settings::getSettings()->getInterfaceStyle());
 
@@ -15,9 +16,7 @@ void ReadingMenu::setStyle()
     ui->ContentsButton->setStyleSheet(styleSheets[0]);
     ui->SettingsButton->setStyleSheet(styleSheets[2]);
 
-    setBackgroundWindowColor(styleSheets, Settings::getSettings()->getInterfaceStyle());
-
-    ui->MainWidget->setStyleSheet(styleSheets[0]);
+    ui->MainWidget->setStyleSheet(styleSheets[5]);
 }
 
 ReadingMenu::ReadingMenu(QWidget *parent) :
@@ -43,6 +42,8 @@ ReadingMenu::ReadingMenu(QWidget *parent) :
     transition1 = s1->addTransition(this, SIGNAL(MenuButtonClicked()), s2);
     transition2 = s2->addTransition(this, SIGNAL(MenuButtonClicked()), s1);
 
+    connect(s2, SIGNAL(entered()), this, SIGNAL(hideMenuWidget()));
+
     transition1->addAnimation(animation);
     transition2->addAnimation(animation);
     machine->setInitialState(s2);
@@ -52,16 +53,21 @@ ReadingMenu::ReadingMenu(QWidget *parent) :
     this->move(-70, 25);
 }
 
+
 ReadingMenu::~ReadingMenu()
 {
     delete ui;
 }
 
+
 void ReadingMenu::hideMenu()
 {
     if (machine->configuration().contains(s1))
+    {
         emit MenuButtonClicked();
+    }
 }
+
 
 void ReadingMenu::showMenu()
 {
@@ -69,11 +75,26 @@ void ReadingMenu::showMenu()
         emit MenuButtonClicked();
 }
 
+
 void ReadingMenu::on_ContentsButton_clicked()
 {
     hideMenu();
     emit showContentsTable();
 }
+
+
+void ReadingMenu::on_SettingsButton_clicked()
+{
+    hideMenu();
+    emit showSettingsWindow();
+}
+
+
+void ReadingMenu::on_BackButton_clicked()
+{
+    emit showMainWindow();
+}
+
 
 bool ReadingMenu::menuIsHidden()
 {
@@ -82,26 +103,12 @@ bool ReadingMenu::menuIsHidden()
     return false;
 }
 
-void ReadingMenu::on_SettingsButton_clicked()
-{
-    hideMenu();
-    emit showSettingsWindow();
-}
-
-void ReadingMenu::on_BackButton_clicked()
-{
-    emit showMainWindow();
-}
-
 
 bool ReadingMenu::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::Resize)
     {
         this->resize(70, this->parentWidget()->height() - 25);
-
-        s2->assignProperty(this, "pos", QPoint(-70, 25));
-        s1->assignProperty(this, "pos", QPoint(0, 25));
     }
     return false;
 }

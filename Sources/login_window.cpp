@@ -155,16 +155,6 @@ void LoginWindow::on_exit_button_clicked()
 }
 
 
-
-void LoginWindow::on_Registration_clicked()
-{
-    if (activePage != 0)
-        toMainPage();
-    else
-        toSignupPage();
-}
-
-
 void LoginWindow::on_login_clicked()
 {
 
@@ -248,6 +238,15 @@ void LoginWindow::on_login_clicked()
     default:
         return;
     }
+}
+
+
+void LoginWindow::on_Registration_clicked()
+{
+    if (activePage != 0)
+        toMainPage();
+    else
+        toSignupPage();
 }
 
 

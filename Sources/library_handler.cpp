@@ -26,9 +26,7 @@ LibraryHandler::LibraryHandler()
 
 
 LibraryHandler::~LibraryHandler()
-{
-    //saveBookList();
-}
+{}
 
 
 void LibraryHandler::setLibraryWidget(Library* lbWidget)

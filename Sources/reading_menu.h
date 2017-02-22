@@ -7,6 +7,8 @@
 #include <QPropertyAnimation>
 #include <QSignalTransition>
 
+#include "settings.h"
+
 namespace Ui {
 class ReadingMenu;
 }
@@ -26,10 +28,13 @@ public slots:
     void showMenu();
 
 signals:
-    void showMainWindow();
     void MenuButtonClicked();
+
+    void showMainWindow();    
     void showContentsTable();
     void showSettingsWindow();
+
+    void hideMenuWidget();
 
 private slots:
     void on_ContentsButton_clicked();

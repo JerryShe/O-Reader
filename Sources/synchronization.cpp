@@ -18,6 +18,7 @@ action::action(const unsigned int &index, const QString &itemSpec, const QString
     Changes = data;
 }
 
+
 action::action(const unsigned int &index, const quint64 &time, const QString &itemSpec, const QString &data)
 {
     Time = time;
@@ -25,6 +26,7 @@ action::action(const unsigned int &index, const quint64 &time, const QString &it
     Spec = itemSpec;
     Changes = data;
 }
+
 
 action::action(QJsonObject &json)
 {
@@ -44,6 +46,7 @@ QJsonObject action::toJson()
     return json;
 }
 
+
 void action::fromJson(const QJsonObject &json)
 {
     Time = json["Time"].toString().toULongLong();
@@ -52,6 +55,10 @@ void action::fromJson(const QJsonObject &json)
     Changes = json["Changes"].toString();
 }
 
+
+
+
+
 Synchronization::Synchronization()
 {
     SettingsChanged = false;
@@ -59,17 +66,16 @@ Synchronization::Synchronization()
     LastOpenedBookIndex = 0;
 }
 
+
 Synchronization::~Synchronization()
-{
-    //saveLog();
-}
+{}
+
 
 Synchronization* Synchronization::getSynchronization()
 {
     static Synchronization UserActions;
     return &UserActions;
 }
-
 
 
 bool Synchronization::loadLog()
@@ -123,6 +129,7 @@ bool Synchronization::loadLog()
     return 1;
 }
 
+
 bool Synchronization::saveLog()
 {
     QString resoursesFolderPath = "LibraryResources";
@@ -167,20 +174,24 @@ QString Synchronization::getNumber(const QString &item)
     return item;
 }
 
+
 QString Synchronization::getNumber(const int &item)
 {
     return QString::number(item);
 }
+
 
 int Synchronization::getLastOpenedWindow()
 {
     return LastOpenedWindow;
 }
 
+
 void Synchronization::setLastOpenedWindow(const unsigned int &index)
 {
     LastOpenedWindow = index;
 }
+
 
 unsigned int Synchronization::getLastOpenedBookIndex()
 {
@@ -192,6 +203,7 @@ void Synchronization::setLastOpenedBookIndex(const unsigned int &index)
     LastOpenedBookIndex = index;
 }
 
+
 QDataStream &operator>>(QDataStream &in, action &actionElem)
 {
     in>>actionElem.Index;
@@ -201,6 +213,7 @@ QDataStream &operator>>(QDataStream &in, action &actionElem)
     return in;
 }
 
+
 QDataStream &operator<<(QDataStream &out, const action &actionElem)
 {
     out<<actionElem.Index;
@@ -209,4 +222,3 @@ QDataStream &operator<<(QDataStream &out, const action &actionElem)
     out<<actionElem.Changes;
     return out;
 }
-

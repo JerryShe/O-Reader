@@ -28,12 +28,14 @@ struct TextStyleSheet
 
     QJsonObject toJson();
     void fromJson(const QJsonObject &json);
+
+    QString getHTMLStyle();
 };
 
-struct ReadingStyle
+struct ReadingProfile
 {
-    ReadingStyle();
-    ReadingStyle(QJsonObject &json);
+    ReadingProfile();
+    ReadingProfile(QJsonObject &json);
 
     unsigned short ColumnCount;
     bool BackgroundType;     //1 - color, 0 - image
@@ -43,8 +45,8 @@ struct ReadingStyle
     unsigned short TextLeftRightIdent;//xxyy, xx - left, yy - right
     unsigned short TextTopBottomIdent;//xxyy, xx - top, yy - bottom
 
-    TextStyleSheet RegularTextStyle;
-    TextStyleSheet EmphasizedTextStyle;
+    TextStyleSheet RegularStyle;
+    TextStyleSheet EmphasizedStyle;
     TextStyleSheet TitleStyle;
     TextStyleSheet SubtitleStyle;
     TextStyleSheet NoteStyle;
@@ -95,19 +97,19 @@ public:
     unsigned short getLibraryListIconSize();
     void setLibraryListIconSize(const unsigned short &size);
 
-    QString getCurrentTextStyle();
-    void setCurrentTextStyle(const QString &style);
+    QString getCurrentReadProfileName();
+    void setCurrentReadProfile(const QString &style);
 
-    QStringList getTextStylesList();
-    void saveStyle(const QString &name, const ReadingStyle &style);
+    QStringList getReadProfilesList();
+    void saveReadProfile(const QString &name, const ReadingProfile &style);
 
     void setToken(const QString &token);
     QString getToken();
 
-    void removeNamedStyle(const QString &name);
+    void removeNamedReadProfile(const QString &name);
 
-    ReadingStyle getNamedStyle(const QString name);
-    ReadingStyle getCurrentTextStyleElem();
+    ReadingProfile getNamedReadProfile(const QString name);
+    ReadingProfile getCurrentReadProfileElem();
 
     QString getTextAlignName(const unsigned short &key);
 
@@ -138,7 +140,7 @@ private:
     bool HideTopBar;                               // 1 - показывать всегда, 0 - показывать при наведении
 
     QStringList TextStylesNames;
-    QVector <ReadingStyle> TextStyles;
+    QVector <ReadingProfile> TextStyles;
     QString currentStyle;
 
     QMap <unsigned short, QString> textAlignMap;

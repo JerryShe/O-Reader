@@ -8,6 +8,7 @@ SynchronizationLayout::SynchronizationLayout(QWidget *parent) :
     ui->setupUi(this);
 }
 
+
 SynchronizationLayout::~SynchronizationLayout()
 {
     delete ui;

@@ -19,6 +19,8 @@
 #include <QDomDocument>
 #include <QKeyEvent>
 
+#include <QListWidget>
+
 namespace Ui {
 class ReadingWindow;
 }
@@ -39,10 +41,9 @@ private slots:
     void on_exit_button_clicked();
 
     void showContentsTable();
-    void FindButton_Clicked();
+    void showSearchWindow();
     void showSettingsWindow();
-    void SynchronizationButton_Clicked();
-    void BackToMainWindowButton_Clicked();
+    void showSynchronizationWindow();
 
     void setStyle(const QString &currentStyle);
 
@@ -56,7 +57,13 @@ private slots:
     void reprintResizedText();
     void reprintNewSettText();
 
+    void changeReadProfile(const QModelIndex &index);
+
     void goToSection(const int &sectionIndex);
+
+    void setBackgroundImage();
+
+    void on_ReadProfilesButton_clicked();
 
 signals:
     void showMainWindow();
@@ -82,6 +89,9 @@ private:
     Settings* ProgramSettings;
 
     ReadingMenu* MenuWidget;
+
+    QWidget* ProfilesWidget;
+    QListWidget* ProfilesView;
 
     QThread* parserThread;
 

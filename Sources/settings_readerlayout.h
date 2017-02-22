@@ -19,33 +19,29 @@ public:
 
     void setSettingsData();
 
-    void setStyleData(const ReadingStyle &style);
-    ReadingStyle getStyleData();
+    void setStyleData(const ReadingProfile &style);
+    ReadingProfile getStyleData();
 
     void setSavebuttonView(const int &type);
 
 private slots:
+    void setStyle();
+
+
     void on_OverallSettings_clicked();
-    void on_RegularSettings_clicked();
-    void on_TitleSettings_clicked();
-    void on_SubtitleSettings_clicked();
-    void on_NoteSettings_clicked();
+
     void on_YepButton_clicked();
     void on_NopeButton_clicked();
+
     void on_SaveButton_clicked();
-    void updateTextBox();    
-    void on_StyleBox_activated(int index);
-    void on_RegularColorBox_clicked();
-    void on_TitleColorBox_clicked();
-    void on_SubtitleColorBox_clicked();
-    void on_NoteColorBox_clicked();
+    void updateTextBox();
+
     void on_BackgroundColorBox_clicked();
-    void on_EmphasizedColorBox_clicked();
-    void on_EmphasizedSettings_clicked();
     void on_BackgroundImageBox_clicked();
     void on_BackgroundTypeBox_currentIndexChanged(int index);
 
-    void setStyle();
+
+    void on_StyleBox_activated(const QString &styleName);
 
 signals:
     void settingsChanged(int type);
@@ -63,6 +59,7 @@ private:
     QString currentBackgroundImage;
     QString savebuttonStyle[2];
     QString nopeButtonStyle[2];
+    QString yepButtonStyle[2];
 
     int changedSignal = 0;
 };

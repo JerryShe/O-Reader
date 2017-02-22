@@ -49,7 +49,6 @@ void MainWindow::setStyle()
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow)
 {
-
     UserActions = Synchronization::getSynchronization();
     ProgramSettings = Settings::getSettings();
 
@@ -59,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
     connect(ui->LibraryWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(showBookPage(unsigned int)));
+    connect(ui->LibraryWidget, SIGNAL(startReading(uint)), this, SLOT(startReading(uint)));
 
     ui->SettingsWidget->setSettingsData();
 
@@ -74,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     this->show();
 }
 
+
 void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::LanguageChange) {
@@ -81,10 +82,12 @@ void MainWindow::changeEvent(QEvent *event)
     }
 }
 
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 Library* MainWindow::getLibraryWidget()
 {
@@ -105,6 +108,7 @@ void MainWindow::startReading(const unsigned int &index)
     UserActions->setLastOpenedBookIndex(index);
     emit showReadingWindow();
 }
+
 
 void MainWindow::on_exit_button_clicked()
 {

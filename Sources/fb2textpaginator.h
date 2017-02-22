@@ -54,7 +54,7 @@ private:
     void applyTag();
     bool applyWord();
     int parseTag();
-    void findTagsTale();
+    void findTagsTail();
 
     void debugSave(const QString &HTMLPage);
 
@@ -87,12 +87,12 @@ private:
     bool tagType;  // 0 - open, 1 - close
     bool parseDirection;    // 0 - forward, 1 - backward
 
-    QString columnTale;
+    QString columnTail;
     QString word, tag;
 
     Book *book;
     Settings *ProgramSettings;
-    ReadingStyle CurStyle;
+    ReadingProfile CurProfile;
 
     QString PageHTMLHeader;
     QString PageHTMLBottom;

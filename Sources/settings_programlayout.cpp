@@ -20,6 +20,7 @@ void Settings_ProgramLayout::setLayoutStyle()
     ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
 }
 
+
 Settings_ProgramLayout::Settings_ProgramLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ProgramLayout)
 {
     ui->setupUi(this);
@@ -30,10 +31,12 @@ Settings_ProgramLayout::Settings_ProgramLayout(QWidget *parent) : QFrame(parent)
     ui->TurnByWheelBox->setView(new QListView());
 }
 
+
 Settings_ProgramLayout::~Settings_ProgramLayout()
 {
     delete ui;
 }
+
 
 void Settings_ProgramLayout::setProgramData()
 {
@@ -62,10 +65,12 @@ void Settings_ProgramLayout::setProgramData()
     ui->STurnForward->installEventFilter(this);
 }
 
+
 void Settings_ProgramLayout::settChanged()
 {
     emit settingsChanged(1);
 }
+
 
 void Settings_ProgramLayout::setSettingsData()
 {
@@ -74,10 +79,12 @@ void Settings_ProgramLayout::setSettingsData()
     setProgramData();
 }
 
+
 void Settings_ProgramLayout::on_InterfaceStyleBox_currentTextChanged(const QString &arg1)
 {
     emit InterfaceStyleChanged();
 }
+
 
 void Settings_ProgramLayout::on_SaveButton_clicked()
 {
@@ -88,6 +95,7 @@ void Settings_ProgramLayout::on_SaveButton_clicked()
     emit settingsChanged(0);
 }
 
+
 void Settings_ProgramLayout::setSavebuttonView(const int &type)
 {
     if (type)
@@ -96,12 +104,14 @@ void Settings_ProgramLayout::setSavebuttonView(const int &type)
         ui->SaveButton->setStyleSheet(savebuttonStyle[0]);
 }
 
+
 void Settings_ProgramLayout::on_FTurnForward_toggled(bool checked)
 {
     ui->STurnForward->setChecked(false);
     ui->STurnBackward->setChecked(false);
     ui->FTurnBackward->setChecked(false);
 }
+
 
 void Settings_ProgramLayout::on_STurnForward_toggled(bool checked)
 {
@@ -110,6 +120,7 @@ void Settings_ProgramLayout::on_STurnForward_toggled(bool checked)
     ui->FTurnBackward->setChecked(false);
 }
 
+
 void Settings_ProgramLayout::on_FTurnBackward_toggled(bool checked)
 {
     ui->STurnForward->setChecked(false);
@@ -117,12 +128,14 @@ void Settings_ProgramLayout::on_FTurnBackward_toggled(bool checked)
     ui->STurnBackward->setChecked(false);
 }
 
+
 void Settings_ProgramLayout::on_STurnBackward_toggled(bool checked)
 {
     ui->STurnForward->setChecked(false);
     ui->FTurnForward->setChecked(false);
     ui->FTurnBackward->setChecked(false);
 }
+
 
 bool Settings_ProgramLayout::eventFilter(QObject *obj, QEvent *event)
 {
@@ -192,6 +205,7 @@ bool Settings_ProgramLayout::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
+
 void Settings_ProgramLayout::on_LanguageBox_activated(const QString &arg1)
 {
     if (arg1 != ProgramSettings->getCurrentLanguage())
@@ -200,6 +214,7 @@ void Settings_ProgramLayout::on_LanguageBox_activated(const QString &arg1)
         emit settingsChanged(1);
     }
 }
+
 
 void Settings_ProgramLayout::changeEvent(QEvent *event)
 {
@@ -228,6 +243,7 @@ void Settings_ProgramLayout::on_TurnByTapBox_activated(int index)
     }
 }
 
+
 void Settings_ProgramLayout::on_InterfaceButton_clicked()
 {
     if (ui->InterfaceLayout->isHidden())
@@ -235,6 +251,7 @@ void Settings_ProgramLayout::on_InterfaceButton_clicked()
     else
         ui->InterfaceLayout->hide();
 }
+
 
 void Settings_ProgramLayout::on_KeysButton_clicked()
 {

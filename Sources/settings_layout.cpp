@@ -10,7 +10,7 @@
 
 void SettingsLayout::setSettWindowStyle()
 {
-    QString tabsStyleSheets[5];
+    QString tabsStyleSheets[6];
 
     setTabButtonsStyle(tabsStyleSheets, ProgramSettings->getInterfaceStyle());
 
@@ -19,6 +19,7 @@ void SettingsLayout::setSettWindowStyle()
 
     this->setStyleSheet("QLabel{color:white;}");
 }
+
 
 SettingsLayout::SettingsLayout(QWidget *Parent)
 {
@@ -62,8 +63,8 @@ SettingsLayout::SettingsLayout(QWidget *Parent)
     tabSwitcher->addTab(ProfileWidget, ProfileButton);
     tabSwitcher->addTab(ProgramWidget, ProgramButton);
     tabSwitcher->addTab(ReaderWidget, ReaderButton);
-
 }
+
 
 void SettingsLayout::setSettingsData()
 {
@@ -77,10 +78,12 @@ void SettingsLayout::setSettingsData()
     ProfileWidget->setSettingsData();
 }
 
+
 SettingsLayout::~SettingsLayout()
 {
     delete TabsLayout;
 }
+
 
 void SettingsLayout::addExitButton()
 {
@@ -93,6 +96,7 @@ void SettingsLayout::addExitButton()
     connect(this->exit_button, SIGNAL(clicked(bool)), this, SLOT(exit_button_clicked()));
 }
 
+
 void SettingsLayout::exit_button_clicked()
 {
     hideWithoutSaving();
@@ -100,11 +104,13 @@ void SettingsLayout::exit_button_clicked()
     close();
 }
 
+
 void SettingsLayout::hideWithoutSaving()
 {
     hide();
     ProgramSettings->loadSettings();
 }
+
 
 void SettingsLayout::updateSavebuttons(const int &type)
 {
@@ -117,6 +123,7 @@ void SettingsLayout::updateSavebuttons(const int &type)
     else if (settingsWasChanged == true)
         UserActions->addAction(UActions::UpdateSettings, "kostil");
 }
+
 
 void SettingsLayout::changeEvent(QEvent *event)
 {
