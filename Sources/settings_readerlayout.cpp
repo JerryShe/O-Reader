@@ -155,9 +155,6 @@ void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
     ui->BackgroundTypeBox->setCurrentIndex(profile.BackgroundType);
     if (ui->BackgroundTypeBox->currentIndex() == 1)
     {
-        ui->BackgroundImage->hide();
-        ui->BackgroundImageBox->hide();
-
         ui->BackgroundColorBox->setStyleSheet("QPushButton{border:none;background-color:" + profile.BackgroundImage + "; "
                 "color:" + QColor(255 - QColor(profile.BackgroundImage).red(), 255 - QColor(profile.BackgroundImage).green(),
                                   255 - QColor(profile.BackgroundImage).blue()).name() + ";}");
@@ -168,9 +165,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
     {
         ui->BackgroundColor->hide();
         ui->BackgroundColorBox->hide();
-
         currentBackgroundImage = profile.BackgroundImage;
-
         QFontMetrics metrics(ui->BackgroundImageBox->font());
         ui->BackgroundImageBox->setText(metrics.elidedText(currentBackgroundImage, Qt::ElideLeft, ui->BackgroundImageBox->width()));
         ui->TextBackground->setStyleSheet("#TextBackground{background-image:url(" + currentBackgroundImage + ");}");

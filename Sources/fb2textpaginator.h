@@ -83,9 +83,6 @@ private:
     unsigned short stringStep;
     unsigned int stringHeight;
 
-    bool beginParagrafTail;
-    bool ParagrafTail;
-
 
     bool tagType;  // 0 - open, 1 - close
     bool parseDirection;    // 0 - forward, 1 - backward
