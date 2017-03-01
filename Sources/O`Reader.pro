@@ -1,8 +1,7 @@
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-QT       += core gui
-QT       += xml
+QT       += core gui xml
 
-TARGET = Reader
+TARGET = O`Reader
 
 TEMPLATE = app
 
