@@ -158,6 +158,9 @@ FB2TextPaginator::FB2TextPaginator()
 
     tagType = false;
     parseDirection = false;
+
+    beginParagrafTail = false;
+    ParagrafTail = false;
 }
 
 
@@ -239,13 +242,14 @@ void FB2TextPaginator::setHTMLinf()
                      "p{"
                           "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;"
                           "margin-bottom:0px;"
-                          "text-indent:" + QString::number(CurProfile.ParLeftTopIdent/100) + "px;"
-                          "text-align-last: justify;}"
+                          "text-indent:" + QString::number(CurProfile.ParLeftTopIdent/100) + "px;}"
 
                      "p.begin{text-indent: 0px;}"
 
                      "TitleText{"
                            + CurProfile.TitleStyle.getHTMLStyle() + ";}"
+
+                     "endText{text-align:right;}"
 
                      "epigraph{"
                            + CurProfile.SubtitleStyle.getHTMLStyle() + ";}"
@@ -263,19 +267,19 @@ void FB2TextPaginator::setHTMLinf()
                           "font-weight:" + QString::number(99) + ";}"
 
                       + ((CurProfile.BackgroundType == true) ? ("body{background-color:" + CurProfile.BackgroundImage + ";}") : ("")) +
+
                   "</style>"
                   "<body>"
                   "<table border='0' style='"
                     "table-layout: fixed;"
                     "empty-cells: show;"
                     "margin-top: " + QString::number(CurProfile.TextTopBottomIdent/100) + "px;"
-                    "margin-bottom: " + QString::number(CurProfile.TextTopBottomIdent%100) + "px;"
                     "margin-left:" + QString::number(CurProfile.TextLeftRightIdent/100) + "px;"
                     "margin-right:" + QString::number(CurProfile.TextLeftRightIdent%100) + "px;' "
                     "width='100%'"
                     " cellspacing='-30' cellpadding='30'>"
                   "<tr>"
-                  "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
+                  "<td align = 'justify' valign = 'top' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
                   "<Text>";
 
     PageHTMLSep = "</Text></td><td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'><Text>";
@@ -421,6 +425,13 @@ int FB2TextPaginator::parseTag()
 
             currentHeight += stringHeight + CurProfile.ParLeftTopIdent%100;
             stringHeight = 0;
+
+            if (ParagrafTail && parseDirection)
+            {
+                Columns[currentColumn].prepend("<p class='end'>");
+                ParagrafTail = false;
+                return 2;
+            }
         }
         return 1;
     }
@@ -517,7 +528,7 @@ bool FB2TextPaginator::applyWord()
                 if (currentHeight + stringHeight + wordHeight  > columnHeight)
                 {
                     //переносим колонку
-                    //for (int i = 0; i < )
+
                     return false;
                 }
                 else
@@ -545,9 +556,15 @@ QString FB2TextPaginator::getPageForward()
     if (currentTextPos < strCount)
     {
         if (!parseDirection)
+        {
             beginTagStack = tagStack;
+            beginParagrafTail = ParagrafTail;
+        }
         else
+        {
             tagStack = beginTagStack;
+            ParagrafTail = beginParagrafTail;
+        }
 
         parseDirection = false;
 
@@ -562,6 +579,17 @@ QString FB2TextPaginator::getPageForward()
             columnTail = "";
             for (int p = 1; p < tagStack.size(); p++)
                 columnTail += "<" + tagStack[p] + ">";
+
+            if (ParagrafTail)
+            {
+                //учитываем разделение параграфа
+                int pos = columnTail.lastIndexOf("<p>");
+                if (pos != -1)
+                    columnTail.insert(pos + 2, " class = 'begin'");
+
+                ParagrafTail = false;
+            }
+
             Columns.append(columnTail);
 
             currentHeight = currentWidth = 0;
@@ -587,7 +615,15 @@ QString FB2TextPaginator::getPageForward()
                     {
                         word = bookText[currentTextPos];
                         if (!applyWord())
+                        {
+                            // переносим колонку с разделением параграфа
+                            int pos = Columns[currentColumn].lastIndexOf(" ",Columns[currentColumn].size() - 2);
+                            Columns[currentColumn].insert(pos, "<endText>");
+                            Columns[currentColumn].append("</endText>");
+                            ParagrafTail = true;
+
                             break;
+                        }
                     }
                 }
                 Columns[currentColumn] += bookText[currentTextPos];
@@ -597,9 +633,12 @@ QString FB2TextPaginator::getPageForward()
 
             for (int p = tagStack.size() - 1; p > 0; p--)
                 Columns[currentColumn] += "</" + tagStack[p] + ">";
+
             currentEStrNum = currentTextPos;
         }
+
         HTMLPage = Columns[0];
+
         for (int i = 1; i < CurProfile.ColumnCount; i++)
             HTMLPage += PageHTMLSep + Columns[i];
 
@@ -614,9 +653,15 @@ QString FB2TextPaginator::getPageBackward()
     if (currentBStrNum > 0)
     {
         if (parseDirection)
+        {
             beginTagStack = tagStack;
+            beginParagrafTail = ParagrafTail;
+        }
         else
+        {
             tagStack = beginTagStack;
+            ParagrafTail = beginParagrafTail;
+        }
 
         parseDirection = true;
         Columns.clear();
@@ -659,16 +704,30 @@ QString FB2TextPaginator::getPageBackward()
                 {
                     word = bookText[currentTextPos];
                     if (!applyWord())
+                    {
+                        ParagrafTail = true;
                         break;
+                    }
                 }
 
                 if (bookText[currentTextPos].right(1) != "-")
                     Columns[currentColumn].prepend(" ");
+
                 Columns[currentColumn].prepend(bookText[currentTextPos]);
             }
 
+            columnTail = "";
             for (int p = tagStack.size() - 1; p > 0; p--)
-                Columns[currentColumn].prepend( "<" + tagStack[p] + ">");
+                columnTail.prepend( "<" + tagStack[p] + ">");
+
+            if (ParagrafTail)
+            {
+                int pos = columnTail.indexOf("<p>");
+                if (pos != -1)
+                    columnTail.insert(pos+2, " class = 'begin'");
+            }
+
+            Columns[currentColumn].prepend(columnTail);
         }
         currentBStrNum = currentTextPos + 1;
 
