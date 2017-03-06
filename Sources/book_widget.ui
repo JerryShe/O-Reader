@@ -83,7 +83,7 @@
          </size>
         </property>
         <property name="text">
-         <string/>
+         <string notr="true"/>
         </property>
         <property name="alignment">
          <set>Qt::AlignHCenter|Qt::AlignTop</set>
@@ -131,7 +131,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Author</string>
+           <string notr="true">Author</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -171,7 +171,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Title</string>
+           <string notr="true">Title</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -211,7 +211,7 @@
            </font>
           </property>
           <property name="text">
-           <string>59,2%</string>
+           <string notr="true">59,2%</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -297,7 +297,6 @@
        </layout>
       </item>
      </layout>
-     <zorder>ImageLabel</zorder>
      <zorder>ImageLabel</zorder>
      <zorder></zorder>
     </widget>

@@ -64,7 +64,6 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->setAttribute( Qt::WA_TranslucentBackground, true );
 
     ui->TextPage->setFocus();
-    ui->TopBarWidget->setFocusPolicy(Qt::NoFocus);
     ui->MenuButton->setFocusPolicy(Qt::NoFocus);
     ui->min_button->setFocusPolicy(Qt::NoFocus);
     ui->exit_button->setFocusPolicy(Qt::NoFocus);

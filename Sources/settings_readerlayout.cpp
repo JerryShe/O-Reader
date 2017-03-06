@@ -61,11 +61,11 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
     connect(ui->NoteStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
 
 
-    ui->RegularStyle->setStyleName(QObject::tr("Regular"));
-    ui->TitleStyle->setStyleName(QObject::tr("Title"));
-    ui->EmphasizedStyle->setStyleName(QObject::tr("Emphasized"));
-    ui->SubtitleStyle->setStyleName(QObject::tr("Subtitle"));
-    ui->NoteStyle->setStyleName(QObject::tr("Note"));
+    ui->RegularStyle->setStyleName(QObject::tr("Regular text"));
+    ui->TitleStyle->setStyleName(QObject::tr("Title text"));
+    ui->EmphasizedStyle->setStyleName(QObject::tr("Emphasized text"));
+    ui->SubtitleStyle->setStyleName(QObject::tr("Subtitle text"));
+    ui->NoteStyle->setStyleName(QObject::tr("Note text"));
 
     ui->StyleBox->setView(new QListView());
     connect(ui->StyleBox, SIGNAL(activated(QString)), this, SLOT(on_StyleBox_activated(QString)));

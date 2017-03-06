@@ -61,14 +61,10 @@ private:
 
 
     QStringList bookText;
-    unsigned int columnWidth;
-    unsigned int columnHeight;
-    unsigned int tableWidth;
+    unsigned int columnWidth, columnHeight;
 
     QStringList Columns;
     QString HTMLPage;
-
-    unsigned int pageBegin;
 
     long long currentBStrNum,
                  currentTextPos,
@@ -80,6 +76,7 @@ private:
 
     unsigned int wordWidth, wordHeight;
     unsigned int currentWidth, currentHeight;
+
     unsigned short stringStep;
     unsigned int stringHeight;
 
@@ -87,16 +84,18 @@ private:
     bool tagType;  // 0 - open, 1 - close
     bool parseDirection;    // 0 - forward, 1 - backward
 
+    bool beginParagrafTail, ParagrafTail;
+
     QString columnTail;
     QString word, tag;
+
+
 
     Book *book;
     Settings *ProgramSettings;
     ReadingProfile CurProfile;
 
-    QString PageHTMLHeader;
-    QString PageHTMLBottom;
-    QString PageHTMLSep;
+    QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;
 
     QStack <QString> tagStack;
     QStack <QString> beginTagStack;
