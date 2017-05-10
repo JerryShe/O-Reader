@@ -27,7 +27,6 @@ public slots:
     void deleteBooks(QVector <unsigned int> deletedItemsIndexes);
 
     void openNewBook(const QString &fileList, GenresMap *Gmap);
-    QString getFileTipe(const QString &fileName);
 
     void findBooks(const QString &key, const QString &mode);
 
@@ -46,6 +45,9 @@ public slots:
     void sortBooks(const QString &mode);
 
 private:
+    int getFileTipe(const QString &fileName);           /// 0 - unknown, 1 - FB2, 2 - EPub, 3 - zip
+
+
     LibraryHandler();
     ~LibraryHandler();
 

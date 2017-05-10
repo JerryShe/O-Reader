@@ -14,8 +14,9 @@
 #include "synchronization.h"
 
 #include <QDebug>
+#include <QFileInfo>
 
-using namespace std;
+
 
 Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 {
@@ -23,6 +24,20 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
     File = fileName;
 
     Progress = 0;
+
+    QFileInfo fileInfo(fileName);
+    QString fileFormat = fileInfo.suffix();
+
+    if (QString::compare(fileFormat, "fb2", Qt::CaseInsensitive) == 0)
+        result = loadFB2(fileName, Gmap);
+    else if (QString::compare(fileFormat, "epub", Qt::CaseInsensitive) == 0)
+        result = loadEPub(fileName);
+}
+
+
+bool Book::loadFB2(QString fileName, GenresMap *Gmap)
+{
+    Format = 1;
 
     QFile bookFile(fileName);
     if (bookFile.open(QIODevice::ReadOnly))
@@ -33,10 +48,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
             bookFile.close();
 
             if (doc.namedItem("FictionBook").nodeName().isNull())
-            {
-                result = false;
-                return;
-            }
+                return false;
 
             QDomNodeList childs = doc.childNodes();
             for (int i = 0; i < childs.size(); i++)
@@ -53,13 +65,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
                     break;
                 }
             if (Codec == "")
-            {
-                result = false;
-                return;
-            }
-
-            //файл книги
-            File = fileName;
+                return false;
 
             QDomNode titleInfo = doc.elementsByTagName("title-info").item(0);
             if (titleInfo.isNull())
@@ -83,7 +89,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
             //жанры
             QDomNodeList nodeList = doc.elementsByTagName("genre");
             for (int i = 0; i < nodeList.length(); ++i)
-                Genres << Gmap->getGenreFromMap( nodeList.item(i).toElement().text() );
+                Genres << Gmap->getFB2Genre( nodeList.item(i).toElement().text() );
 
             //языки
             if (! titleInfo.namedItem("lang").isNull())
@@ -122,7 +128,9 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
                     if (coverName.isEmpty())
                     {
                         CoverType = "noImage";
-                        return;
+                        bookFile.close();
+
+                        return true;
                     }
                 }
 
@@ -158,10 +166,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 
                 if (tempImage.height() > 1000 || tempImage.width() > 750)
                 {
-                    if (tempImage.height() > 1000)
-                        tempImage.scaledToHeight(1000);
-                    else
-                        tempImage.scaledToWidth(750);
+                    tempImage.scaled(750, 1000, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
                     QByteArray ba;
                     QBuffer bu(&ba);
@@ -179,12 +184,23 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
         }
         else
         {
-            result = false;
             bookFile.close();
+            return false;
         }
     }
     else
-        result = false;
+        return false;
+
+    bookFile.close();
+    return true;
+}
+
+
+bool Book::loadEPub(QString fileName)
+{
+    Format = 2;
+
+    return false;
 }
 
 
@@ -219,6 +235,7 @@ void Book::fromJson(const QJsonObject &json)
     Annotation.clear();
     ProgressTagStack.clear();
 
+    Format = json["Format"].toInt();
     File = json["File"].toString();
     Index = (unsigned int)json["Index"].toInt();
     Codec = json["Codec"].toString();
@@ -259,6 +276,7 @@ QJsonObject Book::toJson()
 {
     QJsonObject json;
 
+    json["Format"] = Format;
     json["File"] = File;
     json["Index"] = (int)Index;
     json["Codec"] = Codec;
@@ -293,73 +311,108 @@ QString Book::getAuthorName()
     return AuthorFirstName + ' ' + AuthorLastName;
 }
 
+
 QString Book::getTitle()
 {
     return Title;
 }
 
+
 QImage Book::getCover()
 {
     QImage tempImage;
-    if (CoverType != "noImage")
+
+    if (Format == 1)
     {
-        QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
+        if (CoverType != "noImage")
+        {
+            QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
-        if (CoverType == "image/jpeg" || CoverType == "image/jpg")
-            tempImage = QImage::fromData(BinaryCover, "JPG");
-        if (CoverType == "image/png")
-            tempImage = QImage::fromData(BinaryCover, "PNG");
+            if (CoverType == "image/jpeg" || CoverType == "image/jpg")
+                tempImage = QImage::fromData(BinaryCover, "JPG");
+            if (CoverType == "image/png")
+                tempImage = QImage::fromData(BinaryCover, "PNG");
+        }
+        else
+            tempImage = QImage(":/Images/noImage.png");
+
+        if (tempImage.size().width() > 200)
+            tempImage = tempImage.scaledToWidth(200);
+        if (tempImage.size().height() > 300)
+            tempImage = tempImage.scaledToHeight(300);
     }
-    else
-        tempImage = QImage(":/Images/noImage.png");
-
-    if (tempImage.size().width() > 200)
-        tempImage = tempImage.scaledToWidth(200);
-    if (tempImage.size().height() > 300)
-        tempImage = tempImage.scaledToHeight(300);
+    else if (Format == 2)
+    {
+        /// create epub image
+    }
 
     return tempImage;
 }
+
+
+bool Book::haveCoverImage()
+{
+    if (CoverType == "noImage")
+        return false;
+    return true;
+}
+
+
+QString Book::getHTMLCover()
+{
+    if (CoverType != "noImage")
+        return "<img src='data:" + CoverType + "charset=utf-8;base64," + Cover + "' />";
+    return "";
+}
+
 
 void Book::setBookIndex(const int &index)
 {
     Index = index;
 }
 
+
 unsigned int Book::getBookIndex()
 {
     return Index;
 }
+
 
 QStringList Book::getAnnotation()
 {
     return Annotation;
 }
 
+
 QStringList Book::getGenres()
 {
     return Genres;
 }
+
 
 QString Book::getLanguage()
 {
     return Language;
 }
 
+
 long long Book::getBookProgress()
 {
     return Progress;
 }
+
 
 QStringList Book::getBookProgressTagStack()
 {
     return ProgressTagStack;
 }
 
+
 double Book::getBookProgressPocent()
 {
     return ProgressProcent;
 }
+
 
 void Book::setBookProgress(const long long &progress, const double &procent, const QStringList &tagStack)
 {
@@ -369,6 +422,7 @@ void Book::setBookProgress(const long long &progress, const double &procent, con
     Synchronization::getSynchronization()->addAction(UActions::UpdateProgress, File, Progress);
 }
 
+
 QString Book::getSeries()
 {
     if (Series.second)
@@ -377,11 +431,38 @@ QString Book::getSeries()
         return Series.first;
 }
 
+
 QString Book::getBookCodec()
 {
     return Codec;
 }
-void Book::setBookCodec(QString codec)
+
+
+void Book::setBookCodec(const QString &codec)
 {
     Codec = codec;
+}
+
+
+QString Book::getFile()
+{
+    return File;
+}
+
+
+void Book::setFile(const QString &file)
+{
+    File = file;
+}
+
+
+int Book::getFormat()
+{
+    return Format;
+}
+
+
+void Book::setFormat(const int format)
+{
+    Format = format;
 }

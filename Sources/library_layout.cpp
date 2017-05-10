@@ -259,6 +259,8 @@ Book* LibraryLayout::getBookByIndex(const unsigned int &index)
 void LibraryLayout::deleteBook(const unsigned int &index)
 {
     LibHandler->deleteBook(index);
+    if (LibHandler->getLastOpenedBook()->getBookIndex() == bookWidget->getBookIndex())
+        ui->ShowButton->setEnabled(true);
 }
 
 

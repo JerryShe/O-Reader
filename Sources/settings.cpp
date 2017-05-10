@@ -198,10 +198,14 @@ ReadingProfile::ReadingProfile()
     ParLeftTopIdent = 1510;
     TextLeftRightIdent = 1515;    
     TextTopBottomIdent = 1515;
+
     RegularStyle = TextStyleSheet("MS Shell Dlg 2", 10, 0, 1, 0, "#000000");
     EmphasizedStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
     TitleStyle = TextStyleSheet("MS Shell Dlg 2", 12, 1, 1, 3, "#000000");
     SubtitleStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, 2, "#000000");
+    EpigraphStyle = TextStyleSheet("MS Shell Dlg 2", 10, 3, 1, 2, "#000000");
+    CiteStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
+    PoemStyle = TextStyleSheet("MS Shell Dlg 2", 10, 2, 1, 0, "#000000");
     NoteStyle = TextStyleSheet("MS Shell Dlg 2", 8, 0, 1, 1, "#000000");
 }
 
@@ -224,11 +228,14 @@ QJsonObject ReadingProfile::toJson()
     json["TextLeftRightIdent"] = (int)TextLeftRightIdent;
     json["TextTopBottomIdent"] = (int)TextTopBottomIdent;
 
-    json["RegularTextStyle"] = RegularStyle.toJson();
-    json["EmphasizedTextStyle"] = EmphasizedStyle.toJson();
-    json["TitleStyle"] = TitleStyle.toJson();
-    json["SubtitleStyle"] = SubtitleStyle.toJson();
-    json["NoteStyle"] = NoteStyle.toJson();
+    json["Regular"] = RegularStyle.toJson();
+    json["Emphasized"] = EmphasizedStyle.toJson();
+    json["Title"] = TitleStyle.toJson();
+    json["Subtitle"] = SubtitleStyle.toJson();
+    json["Epigraph"] = EpigraphStyle.toJson();
+    json["Cite"] = CiteStyle.toJson();
+    json["Poem"] = PoemStyle.toJson();
+    json["Note"] = NoteStyle.toJson();
 
     return json;
 }
@@ -244,11 +251,14 @@ void ReadingProfile::fromJson(const QJsonObject &json)
     TextLeftRightIdent = (unsigned short)json["TextLeftRightIdent"].toInt();
     TextTopBottomIdent = (unsigned short)json["TextTopBottomIdent"].toInt();
 
-    RegularStyle.fromJson(json["RegularTextStyle"].toObject());
-    EmphasizedStyle.fromJson(json["EmphasizedTextStyle"].toObject());
-    TitleStyle.fromJson(json["TitleStyle"].toObject());
-    SubtitleStyle.fromJson(json["SubtitleStyle"].toObject());
-    NoteStyle.fromJson(json["NoteStyle"].toObject());
+    RegularStyle.fromJson(json["Regular"].toObject());
+    EmphasizedStyle.fromJson(json["Emphasized"].toObject());
+    TitleStyle.fromJson(json["Title"].toObject());
+    SubtitleStyle.fromJson(json["Subtitle"].toObject());
+    EpigraphStyle.fromJson(json["Epigraph"].toObject());
+    CiteStyle.fromJson(json["Cite"].toObject());
+    PoemStyle.fromJson(json["Poem"].toObject());
+    NoteStyle.fromJson(json["Note"].toObject());
 }
 
 

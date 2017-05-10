@@ -126,3 +126,9 @@ void BookWidget::on_PageButton_clicked()
     this->hideWidget();
     emit showBookPage(BookIndex);
 }
+
+
+unsigned int BookWidget::getBookIndex()
+{
+    return BookIndex;
+}

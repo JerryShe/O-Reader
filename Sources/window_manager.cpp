@@ -9,6 +9,7 @@
 #include <QTranslator>
 #include <QDesktopWidget>
 #include <QDir>
+#include <QMessageBox>
 
 //////////////-
 #include "books.h"
@@ -101,7 +102,16 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     case 2:
         if (clientHandler->autoLoginOnServer())
-            windowMachine->setInitialState(readingState);
+        {
+            QFile bookFile(LibHandler->getLastOpenedBook()->getFile());
+             if (!bookFile.exists())
+             {
+                 QMessageBox::information(0, tr("Error!"), tr("Book file lost :( \nReturning to library..."));
+                 windowMachine->setInitialState(mainState);
+             }
+             else
+                 windowMachine->setInitialState(readingState);
+        }
         else
             windowMachine->setInitialState(loginState);
         break;
@@ -143,6 +153,8 @@ void WindowManager::showLogin()
     this->show();
 
     UserSynchro->setLastOpenedWindow(0);
+
+    qDebug()<<"showing login window";
 }
 
 void WindowManager::showMain()
@@ -158,6 +170,7 @@ void WindowManager::showMain()
         delete LastWindow;
         saveProgramData();
     }
+
     LastWindow = mainWindow;
 
     connect(mainWindow, SIGNAL(showLoginWindow()), this, SIGNAL(showLoginWindow()));
@@ -169,7 +182,7 @@ void WindowManager::showMain()
     this->show();
 
     UserSynchro->setLastOpenedWindow(1);
-
+    qDebug()<<"showing main window";
 }
 
 void WindowManager::hideMain()
@@ -184,6 +197,8 @@ void WindowManager::showReading()
         return;
 
     readingWindow = new ReadingWindow(this, LibHandler->getLastOpenedBook());
+    connect(readingWindow, SIGNAL(closeWindow()), this, SLOT(closeWindow()));
+
     this->setCentralWidget(readingWindow);
 
     this->show();
@@ -200,11 +215,12 @@ void WindowManager::showReading()
 
     connect(readingWindow, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
 
-    connect(readingWindow, SIGNAL(closeWindow()), this, SLOT(closeWindow()));
     connect(readingWindow, SIGNAL(showWindowMinimazed()), this, SLOT(showWindowMinimazed()));
     connect(readingWindow, SIGNAL(showWindowMaximazed()), this, SLOT(showWindowMaximazed()));
 
     UserSynchro->setLastOpenedWindow(2);
+
+    qDebug()<<"showing reading window";
 }
 
 

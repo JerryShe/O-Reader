@@ -3804,6 +3804,15 @@
         <widget class="Settings_ReaderLayoutStyle" name="SubtitleStyle" native="true"/>
        </item>
        <item>
+        <widget class="Settings_ReaderLayoutStyle" name="EpigraphStyle" native="true"/>
+       </item>
+       <item>
+        <widget class="Settings_ReaderLayoutStyle" name="PoemStyle" native="true"/>
+       </item>
+       <item>
+        <widget class="Settings_ReaderLayoutStyle" name="CiteStyle" native="true"/>
+       </item>
+       <item>
         <widget class="Settings_ReaderLayoutStyle" name="NoteStyle" native="true"/>
        </item>
        <item>

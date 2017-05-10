@@ -1,27 +1,28 @@
 #ifndef FB2TEXTPAGINATOR_H
 #define FB2TEXTPAGINATOR_H
 
-#include <QStringList>
+
 #include "books.h"
 #include "settings.h"
+#include "tagsresolver.h"
+#include "bookimagetable.h"
 
+#include <QStringList>
 #include <QStack>
-#include <QTextStream>
 
 
 
-class FB2TextPaginator : public QObject
+class XMLTextPaginator : public QObject
 {
     Q_OBJECT
 
 public:
-    FB2TextPaginator();
+    XMLTextPaginator();
     QString startParser(Book *OpeningBook, const int &Pwidth, const int &Pheight);
-    ~FB2TextPaginator();
+    ~XMLTextPaginator();
 
 public:
     void setPageGeometry(const int &width, const int &height);
-    void parseBookText();
     float getProgress();
 
     QString getPageForward();
@@ -35,35 +36,39 @@ public slots:
     QString updateSettings(const int &width, const int &height);
     QString goToSection(const int &sectionIndex);
 
+
 private:
-    QStringList splitTextToWords(QString temp);
-    void createTableOfContents();
-
-    QTextStream* doc;
-
     void setHTMLinf();
     void setFontMap();
     void setLinespaceMap();
 
     int getWordWidth(const QString &word);
     int getWordHeight();
+    int getWordHeightFor(QString name);
 
     int getSpaceWidth();
     int getLinespaceMap();
 
     void applyTag();
     bool applyWord();
+
+    void commitTag();
+    void commitWord();
+
     int parseTag();
     void findTagsTail();
 
+    void placeImage();
+    void preparePage(bool direction);
+    void createHTMLPage();
+
     void debugSave(const QString &HTMLPage);
-
-
 
     QStringList bookText;
     unsigned int columnWidth, columnHeight;
 
-    QStringList Columns;
+    QVector <QStringList> Columns;
+    int tagsLineCount;
     QString HTMLPage;
 
     long long currentBStrNum,
@@ -90,15 +95,17 @@ private:
     QString word, tag;
 
 
-
     Book *book;
     Settings *ProgramSettings;
     ReadingProfile CurProfile;
+
+    TagsResolver *Resolver;
 
     QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;
 
     QStack <QString> tagStack;
     QStack <QString> beginTagStack;
+
 
     QMap <QString, QFontMetrics*> fontMap;
     QMap <QString, double> linespaceMap;
@@ -106,6 +113,9 @@ private:
     QStringList TableOfContentsText;
     QVector <long long> TableOfContentsIndexes;
 
+    BookImageTable* ImageTable;
+    QString HTMLImage;
+    int HTMLImageSize;
 };
 
 #endif // FB2TEXTPAGINATOR_H

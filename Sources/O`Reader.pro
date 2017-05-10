@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     synchronization.cpp \
     genresmap.cpp \
     booktableofcontents.cpp \
-    fb2textpaginator.cpp \
     library.cpp \
     library_layout.cpp \
     library_handler.cpp \
@@ -38,7 +37,11 @@ SOURCES += main.cpp\
     book_widget.cpp \
     client_handler.cpp \
     reading_menu.cpp \
-    settings_readerlayoutstyle.cpp
+    settings_readerlayoutstyle.cpp \
+    xmltextpaginator.cpp \
+    tagsresolver.cpp \
+    xmltextparser.cpp \
+    bookimagetable.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -55,7 +58,6 @@ HEADERS  += \
     search_window.h \
     genresmap.h \
     booktableofcontents.h \
-    fb2textpaginator.h \
     library.h \
     library_layout.h \
     library_handler.h \
@@ -69,7 +71,11 @@ HEADERS  += \
     book_widget.h \
     client_handler.h \
     reading_menu.h \
-    settings_readerlayoutstyle.h
+    settings_readerlayoutstyle.h \
+    xmltextpaginator.h \
+    tagsresolver.h \
+    xmltextparser.h \
+    bookimagetable.h
 
 FORMS    += \
     settings_programlayout.ui \

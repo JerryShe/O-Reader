@@ -8,7 +8,7 @@
 #include "settings.h"
 #include "settings_layout.h"
 #include "search_window.h"
-#include "fb2textpaginator.h"
+#include "xmltextpaginator.h"
 #include "reading_menu.h"
 
 #include <QVBoxLayout>
@@ -103,7 +103,7 @@ private:
 
     QString styles[5];
 
-    FB2TextPaginator* BookPaginator;
+    XMLTextPaginator* BookPaginator;
 
     Ui::ReadingWindow* ui;
 };

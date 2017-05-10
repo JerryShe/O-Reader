@@ -22,7 +22,11 @@ public:
 
     QString getAuthorName();
     QString getTitle();
+
     QImage getCover();
+    bool haveCoverImage();
+    QString getHTMLCover();
+
     void setBookIndex(const int &index);
     unsigned int getBookIndex();
 
@@ -30,22 +34,33 @@ public:
     QStringList getGenres();
     QString getSeries();
     QString getLanguage();
+
     long long getBookProgress();
     double getBookProgressPocent();
     QStringList getBookProgressTagStack();
     void setBookProgress(const long long &progress, const double &procent, const QStringList &tagStack);
 
     QString getBookCodec();
-    void setBookCodec(QString Codec);
-    QString File;
+    void setBookCodec(const QString &Codec);
+
+    QString getFile();
+    void setFile(const QString &file);
+
+    int getFormat();
+    void setFormat(const int format);
 
     QJsonObject toJson();
     void fromJson(const QJsonObject &json);
 
 private:
+    bool loadFB2(QString fileName, GenresMap *Gmap);
+    bool loadEPub(QString fileName);
 
+
+    int Format;                            /// 1 - FB2, 2 - EPub
+    QString File;
     unsigned int Index;
-    QString Codec;
+    QString Codec;    
 
     QString Title;
     QString AuthorFirstName;

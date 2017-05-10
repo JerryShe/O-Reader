@@ -59,13 +59,19 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
     connect(ui->EmphasizedStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
     connect(ui->SubtitleStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
     connect(ui->NoteStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
+    connect(ui->EpigraphStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
+    connect(ui->PoemStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
+    connect(ui->CiteStyle, SIGNAL(settingsUpdate()), this, SLOT(updateTextBox()));
 
 
     ui->RegularStyle->setStyleName(QObject::tr("Regular text"));
     ui->TitleStyle->setStyleName(QObject::tr("Title text"));
     ui->EmphasizedStyle->setStyleName(QObject::tr("Emphasized text"));
     ui->SubtitleStyle->setStyleName(QObject::tr("Subtitle text"));
-    ui->NoteStyle->setStyleName(QObject::tr("Note text"));
+    ui->NoteStyle->setStyleName(QObject::tr("Notes"));
+    ui->EpigraphStyle->setStyleName(QObject::tr("Epigraph text"));
+    ui->PoemStyle->setStyleName(QObject::tr("Poems"));
+    ui->CiteStyle->setStyleName(QObject::tr("Citations"));
 
     ui->StyleBox->setView(new QListView());
     connect(ui->StyleBox, SIGNAL(activated(QString)), this, SLOT(on_StyleBox_activated(QString)));
@@ -107,17 +113,26 @@ void Settings_ReaderLayout::updateTextBox()
             + ui->TitleStyle->getHTMLStyle() + "}"
 
 
-       "SubtitleText{"
+       "subtitle{"
             + ui->SubtitleStyle->getHTMLStyle() + "}"
 
        "Text{"
             + ui->RegularStyle->getHTMLStyle() + "}"
 
-       "Emphasis{"
+       "emphasis{"
             + ui->EmphasizedStyle->getHTMLStyle() + "}"
 
        "Note{"
             + ui->NoteStyle->getHTMLStyle() + "}"
+
+       "epigraph{"
+            + ui->EpigraphStyle->getHTMLStyle() + "}"
+
+       "poem{"
+            + ui->PoemStyle->getHTMLStyle() + "}"
+
+       "cite{"
+            + ui->CiteStyle->getHTMLStyle() + "}"
 
        + ((!ui->BackgroundColorBox->isHidden()) ? ("body{background-color:" + ui->BackgroundColorBox->text()) : ("")) + ";}"
 
@@ -137,13 +152,13 @@ void Settings_ReaderLayout::updateTextBox()
     "<p>Гарри Гаррисон</p>"
     "<p>«Новые приключения Стальной Крысы»</p>"
     "</TitleText>"
-    "<SubtitleText>"
+    "<subtitle>"
     "<p>Мойре и Тодду, чьи любящая помощь и поддержка позволили этой книге появиться на свет.</p>"
-    "</SubtitleText>"
+    "</subtitle>"
     "<p>Стояла заветная пора дня, посягать на которую — святотатство, один из редчайших моментов в жизни, когда все идет без сучка без задоринки. Откинувшись на спинку кресла, я включил стерео размером с комнату — сабвуферы с локомотив, пищалки, от которых зубы ноют, — и воздух напоила благодать токатты и фуги И. С. Баха.</p>"
     "<p>Моя ладонь ласкала стакан только что налитого трехсотлетнего, драгоценного бурбона, охлажденного кубиками миллионолетнего льда, доставленного с одной из внешних планет. Просто идеально! Благодушно улыбнувшись, я поднес стакан к губам.</p>"
     "<p>И тут в рай вторглось нечто чуждое, будто пульсирующая зубная боль или чуть слышный комариный зуд. С могучим Бахом схлестнулось тоненькое треньканье. Чувствуя, как губы искажает оскал, я коснулся регулятора громкости, и великий орган жалобно захлебнулся молчанием. И дверной звонок прозвучал вполне отчетливо.</p>"
-    "<Emphasis><p>Динь-динь…</p></Emphasis>"
+    "<emphasis><p>Динь-динь…</p></emphasis>"
     "</Text></td></tr></body>";
 
     ui->TextExample->setHtml(htEx);
@@ -186,6 +201,9 @@ void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
     ui->SubtitleStyle->setStyleData(profile.SubtitleStyle);
     ui->EmphasizedStyle->setStyleData(profile.EmphasizedStyle);
     ui->NoteStyle->setStyleData(profile.NoteStyle);
+    ui->PoemStyle->setStyleData(profile.PoemStyle);
+    ui->CiteStyle->setStyleData(profile.CiteStyle);
+    ui->EpigraphStyle->setStyleData(profile.EpigraphStyle);
 
     updateTextBox();
 }
@@ -210,9 +228,13 @@ ReadingProfile Settings_ReaderLayout::getStyleData()
     profile.SubtitleStyle = ui->SubtitleStyle->getStyleData();
     profile.EmphasizedStyle = ui->EmphasizedStyle->getStyleData();
     profile.NoteStyle = ui->NoteStyle->getStyleData();
+    profile.CiteStyle = ui->CiteStyle->getStyleData();
+    profile.EpigraphStyle = ui->EpigraphStyle->getStyleData();
+    profile.PoemStyle = ui->PoemStyle->getStyleData();
 
     return profile;
 }
+
 
 void Settings_ReaderLayout::setSettingsData()
 {
@@ -227,6 +249,7 @@ void Settings_ReaderLayout::setSettingsData()
     setStyleData(ProgramSettings->getNamedReadProfile(currentTextStyle));
     changedSignal = 1;
 }
+
 
 Settings_ReaderLayout::~Settings_ReaderLayout()
 {
@@ -292,6 +315,7 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
         delete answer_window;
     }
 }
+
 
 void Settings_ReaderLayout::on_SaveButton_clicked()
 {

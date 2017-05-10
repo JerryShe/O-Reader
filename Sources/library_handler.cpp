@@ -20,7 +20,7 @@ LibraryHandler::LibraryHandler()
     LibraryView = 0;
     UserActions = Synchronization::getSynchronization();
     currentBookIndex = 0;
-    filesMask<<"*.fb2";
+    filesMask << "*.fb2" << "*.zip" << "*.epub";
     needRefresh = true;
 }
 
@@ -130,7 +130,7 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
         {
             if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
             {
-                UserActions->addAction(UActions::DeleteBook, bookList.at(j).File);
+                UserActions->addAction(UActions::DeleteBook, bookList[j].getFile());
                 bookList.remove(j);
                 break;
             }
@@ -186,18 +186,19 @@ void LibraryHandler::AddFolder(const QString &path)
 }
 
 
-QString LibraryHandler::getFileTipe(const QString &fileName)
+int LibraryHandler::getFileTipe(const QString &fileName)
 {
-    QString tipe;
-    for (int i = 1; i <= 4; i++)
-        tipe.push_front(fileName[fileName.length()-i]);
+    QFileInfo fileInfo(fileName);
+    QString format = fileInfo.suffix();
 
-    if (tipe == ".zip" || tipe == ".ZIP")
-        return "zip";
-    if (tipe == ".FB2" || tipe == ".fb2")
-        return "fb2";
+    if (format.compare("zip", Qt::CaseInsensitive) == 0)
+        return 3;
+    if (format.compare("fb2", Qt::CaseInsensitive) == 0)
+        return 1;
+    if (format.compare("epub", Qt::CaseInsensitive) == 0)
+        return 2;
 
-    return "unknown format!";
+    return 0;
 }
 
 
@@ -205,24 +206,23 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 {
     for (int j = 0; j < bookList.size(); j++)
     {
-        if (file == bookList.at(j).File)
+        if (file == bookList[j].getFile())
         {
             /// оповещение - такая книга уже есть
             return;
         }
     }
 
-    QString tipe = getFileTipe(file);
+    int format = getFileTipe(file);
 
-    if (tipe == "fb2")
+    if (format != 0 && format != 3)
     {
         bool result = true;
         Book boo(result, file, Gmap);
         if (!result)
         {
-            /// оповещение - невозможно открыть как fb2
-            qDebug()<<"Invalid FB2 file!";
-
+            /// оповещение - невозможно открыть как книгу
+            qDebug()<<"Invalid file!";
             return;
         }
 
@@ -233,7 +233,7 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
         if (LibraryView != 0)
             LibraryView->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
     }
-    if (tipe == "zip")
+    if (format == 3)
     {
         qDebug()<<"zip!";
     }
@@ -247,7 +247,7 @@ void LibraryHandler::deleteBook(const unsigned int &index)
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getBookIndex() == index)
         {
-            UserActions->addAction(UActions::DeleteBook, bookList.at(i).File);
+            UserActions->addAction(UActions::DeleteBook, bookList[i].getFile());
             bookList.remove(i);
             break;
         }
@@ -366,7 +366,7 @@ Book* LibraryHandler::getLastOpenedBook()
 
 void LibraryHandler::refreshLibrary()
 {
-    qDebug()<<"refreshing";
+    qDebug()<<"refreshing library representation";
     if (needRefresh == true && LibraryView != 0)
     {
         LibraryView->clear();

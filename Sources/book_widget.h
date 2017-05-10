@@ -20,6 +20,8 @@ public:
     explicit BookWidget(QWidget *parent = 0);
     ~BookWidget();
 
+    unsigned int getBookIndex();
+
 public slots:
     void hideWidget();
     void showWidget();

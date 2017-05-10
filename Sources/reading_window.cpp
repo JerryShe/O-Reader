@@ -16,6 +16,7 @@
 #include <QThread>
 #include <QDialog>
 #include <QListWidget>
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -52,6 +53,7 @@ void ReadingWindow::setStyle(const QString &currentStyle)
 ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow)
 {
     CurBook = book;
+
     ActiveWindow = false;
 
     TopBarNeedHide = true;
@@ -72,7 +74,7 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->setFocusPolicy(Qt::StrongFocus);
 
 
-    BookPaginator = new FB2TextPaginator();
+    BookPaginator = new XMLTextPaginator();
     parserThread = new QThread(this);
     BookPaginator->moveToThread(parserThread);
     parserThread->start();
@@ -161,6 +163,7 @@ ReadingWindow::~ReadingWindow()
     parserThread->quit();
     delete BookPaginator;
     delete ui;
+    qDebug()<<"delete reading window";
 }
 
 

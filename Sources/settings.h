@@ -49,6 +49,9 @@ struct ReadingProfile
     TextStyleSheet EmphasizedStyle;
     TextStyleSheet TitleStyle;
     TextStyleSheet SubtitleStyle;
+    TextStyleSheet EpigraphStyle;
+    TextStyleSheet CiteStyle;
+    TextStyleSheet PoemStyle;
     TextStyleSheet NoteStyle;
 
     QJsonObject toJson();
