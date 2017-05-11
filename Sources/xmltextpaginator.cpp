@@ -21,7 +21,7 @@ XMLTextPaginator::XMLTextPaginator()
     strCount = 0;
 
     currentColumn = 0;
-    currentWordPos = 0;
+    lastLineSize = 0;
 
     tagsLineCount = 0;
 
@@ -29,7 +29,7 @@ XMLTextPaginator::XMLTextPaginator()
 
     currentWidth = currentHeight = 0;
 
-    stringStep = stringHeight = 0;
+    stringHeight = 0;
 
     tagType = false;
     parseDirection = false;
@@ -241,6 +241,7 @@ int XMLTextPaginator::getWordHeight()
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (linespaceMap.contains(tagStack[i]))
             return linespaceMap[tagStack[i]];
+
     return linespaceMap[tagStack[0]];
 }
 
@@ -251,6 +252,7 @@ int XMLTextPaginator::getWordHeightFor(QString name)
         return linespaceMap[name];
     if (name == "p")
         return linespaceMap["Text"];
+
     return -1;
 }
 
@@ -260,6 +262,7 @@ int XMLTextPaginator::getWordWidth(const QString &word)
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontMap.contains(tagStack[i]))
             return fontMap[tagStack[i]]->width(word);
+
     return fontMap[tagStack[0]]->width(word);
 }
 
@@ -269,6 +272,7 @@ int XMLTextPaginator::getSpaceWidth()
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontMap.contains(tagStack[i]))
             return fontMap[tagStack[i]]->charWidth(" ", 0);
+
     return fontMap[tagStack[0]]->charWidth(" ", 0);
 }
 
@@ -308,7 +312,16 @@ void XMLTextPaginator::placeImage()
 }
 
 
-// 0 - тег обработан, 1 - нужный тег, 2 - лишний тег, 3 - тег перевода колонки
+void XMLTextPaginator::doStep(int direction = 1)
+{
+    if (!parseDirection)
+        currentTextPos += direction;
+    else
+        currentTextPos -= direction;
+}
+
+
+///1 - нужный тег, 2 - лишний тег, 3 - тег перевода колонки
 int XMLTextPaginator::parseTag()
 {
     tagInfo TagInf = Resolver->getTag(tag);
@@ -342,7 +355,7 @@ int XMLTextPaginator::parseTag()
 
     if (TagInf.index == 30)        ///<p>
     {
-        if (!parseDirection)
+        if (!parseDirection && !tagType)
             currentWidth = CurProfile.ParLeftTopIdent/100;
         else
             currentWidth = 0;
@@ -352,17 +365,20 @@ int XMLTextPaginator::parseTag()
 
         stringHeight = 0;
 
-        if (ParagrafTail == true && parseDirection == true)
+        if (ParagrafTail && parseDirection)
         {
             tag = "p class='end'";
             tagType = false;
 
             ParagrafTail = false;
-            return 0;
+            commitTag();
+
+            return 2;
         }
 
         return 1;
     }
+
 
     if (TagInf.index == 33)                ///<br/>
     {
@@ -378,30 +394,43 @@ int XMLTextPaginator::parseTag()
 
         tag = "br/";
         tagType = false;
+        commitTag();
 
-        return 0;
+        return 2;
     }
 
-    if (TagInf.index == 31 && tagType == parseDirection)       ///<section>
+
+    if (TagInf.index < 10)              ///<title, subtitle, epigraph, annotation>
     {
-        currentTextPos += (parseDirection)?-1:1;
-        return 3;
+        currentHeight += stringHeight;
+        currentWidth = 0;
     }
+
+
+    if ((TagInf.index == 1 || TagInf.index == 31) && tagType == false)                              ///<title><section>
+    {
+        if (currentHeight != 0)
+            return 3;
+        else
+            return 1;
+    }
+
+
+    if (TagInf.index == 31 && tagType == false)       ///
+    {
+    }
+
 
     if (TagInf.index == 41)                ///<a>
     {
         return 2;
     }
 
+
     if (TagInf.index == 40)                ///<img>
     {
-        qDebug()<<"tag "<<tag;
-
-        int namePosBegin = tag.indexOf("href");
-        namePosBegin = tag.indexOf("\"", namePosBegin);
-        int namePosEnd = tag.indexOf("\"", namePosBegin + 1);
-
-        QString imageName = tag.mid(namePosBegin + 2, namePosEnd - namePosBegin - 2);
+        QString imageName = parseTagAttribute(tag, "href");
+        imageName.remove(0,1);
 
         if (!ImageTable->contains(imageName))
             return 2;
@@ -419,36 +448,12 @@ int XMLTextPaginator::parseTag()
 
         if (HTMLImageSize > columnHeight - currentHeight)
         {
-            if (!parseDirection)
-                currentTextPos++;
-            else
-                currentTextPos--;
-
+            doStep();
             return 3;
         }
 
         placeImage();
         return 2;
-    }
-
-    if (TagInf.index < 10)
-    {
-        currentHeight += stringHeight;
-        currentWidth = 0;
-    }
-
-    if (TagInf.index == 1)                              ///<title>
-    {
-        if (TagInf.type == false)
-        {
-            applyTag();
-            commitTag();
-            if (!parseDirection)
-                currentTextPos++;
-            else
-                currentTextPos--;
-            return 3;
-        }
     }
 
     if (TagInf.index < 20)
@@ -477,7 +482,11 @@ void XMLTextPaginator::applyTag()
 
 void XMLTextPaginator::commitTag()
 {
-    tagsLineCount++;
+    if (tagType == tagsLineDirection)
+        tagsLineCount++;
+    else
+        tagsLineCount = 0;
+
     if (tagType)
         Columns[currentColumn].append("</" + tag + ">");
     else
@@ -497,10 +506,7 @@ bool XMLTextPaginator::applyWord()
             {
                 //перенос на сл колонку
                 //отрезать stringWordCount слов от колонки
-                if (parseDirection)
-                    currentTextPos++;
-                else
-                    currentTextPos--;
+                doStep(-1);
                 return false;
             }
         }
@@ -656,16 +662,10 @@ QString XMLTextPaginator::getPageForward()
                             commitTag();
                             continue;
                         }
-                        else if (parseResalt == 0)
-                        {
-                            commitTag();
-                            continue;
-                        }
                         else if (parseResalt == 2)
                                 continue;
                         else if (parseResalt == 3)
                                 break;
-
                     }
                     else
                     {
@@ -679,11 +679,10 @@ QString XMLTextPaginator::getPageForward()
                             ParagrafTail = true;
                             break;
                         }
+                        commitWord();
                     }
                 }
-                commitWord();
             }
-
             for (int p = tagStack.size() - 1; p > 0; p--)
                 Columns[currentColumn].append("</" + tagStack[p] + ">");
         }
@@ -693,7 +692,7 @@ QString XMLTextPaginator::getPageForward()
         book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
 
         createHTMLPage();
-        //debugSave(HTMLPage);
+        debugSave(HTMLPage);
     }
 
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;
@@ -718,9 +717,7 @@ QString XMLTextPaginator::getPageBackward()
             {
                 placeImage();
                 if (currentHeight >= columnHeight)
-                {
                     continue;
-                }
             }
 
             columnTail.clear();
@@ -738,7 +735,6 @@ QString XMLTextPaginator::getPageBackward()
                     {
                         applyTag();
                         commitTag();
-
                         continue;
                     }
                     else if (parseResalt == 2)
@@ -754,11 +750,11 @@ QString XMLTextPaginator::getPageBackward()
                         ParagrafTail = true;
                         break;
                     }
+                    commitWord();
                 }
-                commitWord();
             }
 
-            columnTail = "";
+            columnTail.clear();
             for (int p = tagStack.size() - 1; p > 0; p--)
                 columnTail.prepend( "<" + tagStack[p] + ">");
 
@@ -777,7 +773,7 @@ QString XMLTextPaginator::getPageBackward()
         book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
 
         createHTMLPage();
-        //debugSave(HTMLPage);
+        debugSave(HTMLPage);
     }
 
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;

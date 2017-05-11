@@ -85,4 +85,6 @@ private:
     QMap <QString, tagInfo> TagMap;
 };
 
+
+
 #endif // TEXTTAGCLASS_H

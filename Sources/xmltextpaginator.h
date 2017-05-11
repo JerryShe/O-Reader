@@ -55,10 +55,13 @@ private:
     void commitTag();
     void commitWord();
 
-    int parseTag();
+    void doStep(int direction);
+
+    int parseTag();    
     void findTagsTail();
 
     void placeImage();
+
     void preparePage(bool direction);
     void createHTMLPage();
 
@@ -68,7 +71,11 @@ private:
     unsigned int columnWidth, columnHeight;
 
     QVector <QStringList> Columns;
+
     int tagsLineCount;
+    bool tagsLineDirection;         /// 0 - open, 1 - close
+    int lastLineSize;
+
     QString HTMLPage;
 
     long long currentBStrNum,
@@ -77,17 +84,14 @@ private:
                  strCount;
 
     int currentColumn;
-    int currentWordPos;
 
     unsigned int wordWidth, wordHeight;
     unsigned int currentWidth, currentHeight;
-
-    unsigned short stringStep;
     unsigned int stringHeight;
 
 
-    bool tagType;  // 0 - open, 1 - close
-    bool parseDirection;    // 0 - forward, 1 - backward
+    bool tagType;                       /// 0 - open, 1 - close
+    bool parseDirection;               /// 0 - forward, 1 - backward
 
     bool beginParagrafTail, ParagrafTail;
 

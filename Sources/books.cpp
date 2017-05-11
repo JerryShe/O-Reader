@@ -23,7 +23,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
     CoverType = "noImage";
     File = fileName;
 
-    Progress = 0;
+    Progress = -1;
 
     QFileInfo fileInfo(fileName);
     QString fileFormat = fileInfo.suffix();

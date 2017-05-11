@@ -9,6 +9,9 @@
 #include <QImage>
 
 
+QString parseTagAttribute(QString tag, QString attr);
+
+
 class XMLTextParser
 {
 public:

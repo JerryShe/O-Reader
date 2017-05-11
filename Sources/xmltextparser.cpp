@@ -5,6 +5,25 @@
 
 
 
+QString parseTagAttribute(QString tag, QString attr)
+{
+    int namePosBegin = tag.indexOf(attr);
+    if (namePosBegin == -1)
+        return QString();
+
+    namePosBegin = tag.indexOf("\"", namePosBegin);
+    if (namePosBegin == -1)
+        return QString();
+
+    int namePosEnd = tag.indexOf("\"", namePosBegin + 1);
+    if (namePosEnd == -1)
+        return QString();
+
+    return tag.mid(namePosBegin + 1, namePosEnd - namePosBegin - 1);
+}
+
+
+
 XMLTextParser::XMLTextParser(Book *openingBook)
 {
     book = openingBook;
@@ -137,12 +156,9 @@ void XMLTextParser::parseFB2()
                     coverName += temp;
                 }
 
-                int nameBegin = coverName.indexOf("href");
-                nameBegin = coverName.indexOf("\"", nameBegin);
-                int nameEnd = coverName.indexOf("\"", nameBegin + 1);
-
                 temp = coverName.right(coverName.size() - coverName.indexOf("</coverpage>") - 12);
-                coverName = coverName.mid(nameBegin + 2, nameEnd - nameBegin - 2);
+                coverName = parseTagAttribute(coverName, "href");
+                coverName.remove(0,1);
             }
         }
         while(temp.indexOf("<body>") == -1 && !doc->atEnd());
@@ -174,8 +190,8 @@ void XMLTextParser::parseFB2()
     }
 
     qDebug()<<"cover "<<coverName;
-    //if (book->haveCoverImage() && ImageTable->contains(coverName))
-        //bookText.prepend("<section> <image l:href=\"#" + ImageTable[coverName] + "</section>");
+    if (book->haveCoverImage() && ImageTable->contains(coverName))
+        bookText.prepend("<image l:href=\"#" + coverName + "\"/>");
 
 
     delete doc;
@@ -208,12 +224,7 @@ void XMLTextParser::createFB2ImageTable(QString htmlTail)
 
             temp = temp.right(temp.size() - binPos);
 
-
-            int namePosBegin = base64.indexOf("id");
-            namePosBegin = base64.indexOf("\"", namePosBegin);
-            int namePosEnd = base64.indexOf("\"", namePosBegin + 1);
-
-            imageName = base64.mid(namePosBegin + 1, namePosEnd - namePosBegin - 1);
+            imageName = parseTagAttribute(base64, "id");
 
 
             int imageFormatBegin = base64.indexOf("image/") + 6;
