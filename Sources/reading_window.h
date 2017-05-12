@@ -93,8 +93,6 @@ private:
     QWidget* ProfilesWidget;
     QListWidget* ProfilesView;
 
-    QThread* parserThread;
-
     QDialog* MiniWindow;
     QVBoxLayout* MiniWindowLayout;
     SettingsLayout* SettingsPage;

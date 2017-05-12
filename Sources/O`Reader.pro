@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     xmltextpaginator.cpp \
     tagsresolver.cpp \
     xmltextparser.cpp \
-    bookimagetable.cpp
+    bookimagetable.cpp \
+    paginatorhelper.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -75,7 +76,8 @@ HEADERS  += \
     xmltextpaginator.h \
     tagsresolver.h \
     xmltextparser.h \
-    bookimagetable.h
+    bookimagetable.h \
+    paginatorhelper.h
 
 FORMS    += \
     settings_programlayout.ui \

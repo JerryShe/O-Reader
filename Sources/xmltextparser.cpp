@@ -121,6 +121,10 @@ QStringList XMLTextParser::splitTextToWords(QString temp)
         }
     }
 
+    for (int i = 0; i < tempList.size(); i++)
+        if (tempList[i].isEmpty())
+            tempList.removeAt(i);
+
     return tempList;
 }
 

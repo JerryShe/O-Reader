@@ -52,6 +52,7 @@ void ReadingWindow::setStyle(const QString &currentStyle)
 
 ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow)
 {
+    qDebug()<<"create readingWindow";
     CurBook = book;
 
     ActiveWindow = false;
@@ -74,12 +75,7 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->setFocusPolicy(Qt::StrongFocus);
 
 
-    BookPaginator = new XMLTextPaginator();
-    parserThread = new QThread(this);
-    BookPaginator->moveToThread(parserThread);
-    parserThread->start();
-
-    connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
+    BookPaginator = new XMLTextPaginator(this);
 
     ui->TextPage->setMouseTracking(true);
     setMouseTracking(true);
@@ -125,6 +121,8 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
+
+    qDebug()<<"readingWindow created";
 }
 
 
@@ -145,6 +143,8 @@ void ReadingWindow::setBackgroundImage()
 
 void ReadingWindow::startReading()
 {
+    connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
+
     ui->TextPage->setHtml(BookPaginator->startParser(CurBook,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
 }
@@ -160,7 +160,6 @@ void ReadingWindow::changeEvent(QEvent *event)
 
 ReadingWindow::~ReadingWindow()
 {
-    parserThread->quit();
     delete BookPaginator;
     delete ui;
     qDebug()<<"delete reading window";
@@ -208,7 +207,6 @@ void ReadingWindow::clockStep()
             if (HidenTimer == 4)
             {
                 ui->TopBarWidget->hide();
-                reprintResizedText();
                 HidenTimer = 0;
             }
             else
@@ -255,7 +253,6 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 if (MouseMoveEvent->pos().y() <= 50 && ui->TopBarWidget->isHidden())
                 {
                     ui->TopBarWidget->show();
-                    reprintResizedText();
                     TopBarNeedHide = false;
                 }
                 if (MouseMoveEvent->pos().y() > 50 && !ui->TopBarWidget->isHidden())
@@ -376,7 +373,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 
 void ReadingWindow::reprintResizedText()
 {
-    ui->TextPage->setHtml(BookPaginator->updatePage(ui->TextPage->width(), ui->TextPage->height()));
+    ui->TextPage->setHtml(BookPaginator->resizePage(ui->TextPage->width(), ui->TextPage->height()));
 }
 
 

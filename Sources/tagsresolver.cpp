@@ -18,6 +18,7 @@ tagInfo::tagInfo(bool t, char i, QString s)
 
 TagsResolver::TagsResolver(QObject * parent, int format)
 {
+    qDebug()<<"create tagsResolver";
     setParent(parent);
 
     switch (format) {
@@ -35,6 +36,7 @@ TagsResolver::TagsResolver(QObject * parent, int format)
 
 TagsResolver::~TagsResolver()
 {
+    qDebug()<<"delete tagsResolver";
 
 }
 

@@ -206,11 +206,14 @@ void WindowManager::showReading()
 
     readingWindow->startReading();
 
+
     if (LastWindow != 0)
     {
         delete LastWindow;
         saveProgramData();
     }
+
+
     LastWindow = readingWindow;
 
     connect(readingWindow, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));

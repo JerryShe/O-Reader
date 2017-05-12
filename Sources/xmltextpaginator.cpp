@@ -11,9 +11,12 @@
 #include "xmltextparser.h"
 
 
-XMLTextPaginator::XMLTextPaginator()
+XMLTextPaginator::XMLTextPaginator(QObject *parent)
 {
-    ProgramSettings = Settings::getSettings();
+    setParent(parent);
+
+    currentTextPos = 0;
+    HTMLImageSize = 0;
 
     columnWidth = columnHeight = 0;
 
@@ -44,25 +47,22 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     book = OpeningBook;
 
     currentEStrNum = currentBStrNum = book->getBookProgress();
-    currentTextPos = 0;
-    HTMLImageSize = 0;
-
-    Columns.clear();
-    for (int i = 0; i < CurProfile.ColumnCount; i++)
-        Columns.append(QStringList());
-
+    if (currentEStrNum < 5)
+        currentEStrNum = currentBStrNum = -1;
 
     tagStack.fromList(book->getBookProgressTagStack());
+
     if (tagStack.size() == 0)
         tagStack.push("Text");
 
-    setHTMLinf();
-    setFontMap();
-    setLinespaceMap();
+    Resolver = new TagsResolver(this, book->getFormat());
+    Helper = new PaginatorHelper(this);
+
+    Helper->setHTMLPageElems(PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
+    Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
+    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
 
     setPageGeometry(Pwidth, Pheight);
-
-    Resolver = new TagsResolver(this, book->getFormat());
 
     XMLTextParser parser(book);
 
@@ -73,140 +73,45 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
 
     strCount = bookText.size();
 
+
+    Columns.clear();
+    for (int i = 0; i < ColumnCount; i++)
+        Columns.append(QStringList());
+
+
+
     QFile asd("F:/all.txt");
     asd.open(QIODevice::WriteOnly);
     QTextStream out(&asd);
     for (int i = 0; i < strCount; i++)
-        out<<i<<"   "<<bookText[i]<<'\n';
+    {
+        out<<i<<"   "<<bookText[i];
+        out<<endl;
+    }
     asd.close();
 
+
+    qDebug()<<"parser started";
     return getPageForward();
 }
 
 
 XMLTextPaginator::~XMLTextPaginator()
 {
-    foreach (auto FontMetricsPointer, fontMap) {
+    foreach (auto FontMetricsPointer, fontsMetrics) {
         delete FontMetricsPointer;
     }
 
     delete ImageTable;
-}
 
-
-void XMLTextPaginator::setFontMap()
-{
-
-    QFont textFont(CurProfile.RegularStyle.Family, CurProfile.RegularStyle.Size, 49*(CurProfile.RegularStyle.Style%2) + 50, CurProfile.RegularStyle.Style/10);
-    fontMap.insert("Text", new QFontMetrics(textFont));
-
-    textFont.setWeight(75);
-    fontMap.insert("strong", new QFontMetrics(textFont));
-
-    QFont titleFont(CurProfile.TitleStyle.Family, CurProfile.TitleStyle.Size, 49*(CurProfile.TitleStyle.Style%2) + 50, CurProfile.TitleStyle.Style/10);
-    fontMap.insert("TitleText", new QFontMetrics(titleFont));
-
-    QFont epigraphFont(CurProfile.EpigraphStyle.Family, CurProfile.EpigraphStyle.Size, 49*(CurProfile.EpigraphStyle.Style%2) + 50, CurProfile.EpigraphStyle.Style/10);
-    fontMap.insert("epigraph", new QFontMetrics(epigraphFont));
-
-    QFont empFont(CurProfile.EmphasizedStyle.Family, CurProfile.EmphasizedStyle.Size, 49*(CurProfile.EmphasizedStyle.Style%2) + 50, CurProfile.EmphasizedStyle.Style/10);
-    fontMap.insert("emphasis", new QFontMetrics(empFont));
-
-    QFont noteFont(CurProfile.NoteStyle.Family, CurProfile.NoteStyle.Size, 49*(CurProfile.NoteStyle.Style%2) + 50, CurProfile.NoteStyle.Style/10);
-    fontMap.insert("Note", new QFontMetrics(noteFont));
-
-    QFont subtitleFont(CurProfile.SubtitleStyle.Family, CurProfile.SubtitleStyle.Size, 49*(CurProfile.SubtitleStyle.Style%2) + 50, CurProfile.SubtitleStyle.Style/10);
-    fontMap.insert("subtitle", new QFontMetrics(subtitleFont));
-
-    QFont poemFont(CurProfile.PoemStyle.Family, CurProfile.PoemStyle.Size, 49*(CurProfile.PoemStyle.Style%2) + 50, CurProfile.PoemStyle.Style/10);
-    fontMap.insert("poem", new QFontMetrics(poemFont));
-
-    QFont citeFont(CurProfile.CiteStyle.Family, CurProfile.CiteStyle.Size, 49*(CurProfile.CiteStyle.Style%2) + 50, CurProfile.CiteStyle.Style/10);
-    fontMap.insert("cite", new QFontMetrics(citeFont));
-}
-
-
-void XMLTextPaginator::setLinespaceMap()
-{
-    linespaceMap.insert("Text", CurProfile.RegularStyle.LineSpacing * fontMap["Text"]->lineSpacing());
-    linespaceMap.insert("strong", CurProfile.RegularStyle.LineSpacing * fontMap["strong"]->lineSpacing());
-    linespaceMap.insert("TitleText", CurProfile.TitleStyle.LineSpacing * fontMap["TitleText"]->lineSpacing());
-    linespaceMap.insert("epigraph", CurProfile.EpigraphStyle.LineSpacing * fontMap["epigraph"]->lineSpacing());
-    linespaceMap.insert("emphasis", CurProfile.EmphasizedStyle.LineSpacing * fontMap["emphasis"]->lineSpacing());
-    linespaceMap.insert("Note", CurProfile.NoteStyle.LineSpacing * fontMap["Note"]->lineSpacing());
-    linespaceMap.insert("cite", CurProfile.CiteStyle.LineSpacing * fontMap["cite"]->lineSpacing());
-    linespaceMap.insert("poem", CurProfile.PoemStyle.LineSpacing * fontMap["poem"]->lineSpacing());
-    linespaceMap.insert("subtitle", CurProfile.SubtitleStyle.LineSpacing * fontMap["subtitle"]->lineSpacing());
+    qDebug()<<"delete paginator";
 }
 
 
 void XMLTextPaginator::setPageGeometry(const int &width, const int &height)
 {
-    columnWidth = (width - 10 - 30*(CurProfile.ColumnCount-1) - CurProfile.TextLeftRightIdent/100 - CurProfile.TextLeftRightIdent%100)/CurProfile.ColumnCount;
-    columnHeight = height - 20 - CurProfile.TextTopBottomIdent/100 - CurProfile.TextTopBottomIdent%100;
-}
-
-
-void XMLTextPaginator::setHTMLinf()
-{
-    CurProfile = ProgramSettings->getCurrentReadProfileElem();
-    QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
-
-    PageHTMLHeader = "<style type='text/css'>"
-                     "p{"
-                          + topMargin +
-                          "margin-bottom:0px;"
-                          "text-indent:" + QString::number(CurProfile.ParLeftTopIdent/100) + "px;"
-                          "text-align-last: justify;}"
-
-                     "p.begin{text-indent: 0px;}"
-                     "P.image {text-align: center; text-indent:0px}"
-
-                     "TitleText{"
-                           + topMargin + CurProfile.TitleStyle.getHTMLStyle() + ";}"
-
-                     "epigraph{"
-                           + topMargin + CurProfile.EpigraphStyle.getHTMLStyle() + ";}"
-
-                     "subtitle{"
-                           + topMargin + CurProfile.SubtitleStyle.getHTMLStyle() + ";}"
-
-                     "Text{"
-                           + topMargin + CurProfile.RegularStyle.getHTMLStyle() + ";}"
-
-                     "emphasis{"
-                           + topMargin + CurProfile.EmphasizedStyle.getHTMLStyle() + ";}"
-
-                     "poem{"
-                           + topMargin + CurProfile.PoemStyle.getHTMLStyle() + ";}"
-
-                     "cite{"
-                           + topMargin + CurProfile.CiteStyle.getHTMLStyle() + ";}"
-
-                     "Note{"
-                           + topMargin + CurProfile.NoteStyle.getHTMLStyle() + ";}"
-
-                     "strong{"
-                          + topMargin + "font-weight:" + QString::number(99) + ";}"
-
-                      + ((CurProfile.BackgroundType == true) ? ("body{background-color:" + CurProfile.BackgroundImage + ";}") : ("")) +
-                  "</style>"
-                  "<body>"
-                  "<table border='0' style='"
-                    "table-layout: fixed;"
-                    "empty-cells: show;"
-                    "margin-top: " + QString::number(CurProfile.TextTopBottomIdent/100) + "px;"
-                    "margin-bottom: " + QString::number(CurProfile.TextTopBottomIdent%100) + "px;"
-                    "margin-left:" + QString::number(CurProfile.TextLeftRightIdent/100) + "px;"
-                    "margin-right:" + QString::number(CurProfile.TextLeftRightIdent%100) + "px;'"
-                    "width='100%'"
-                    "cellspacing='-30' cellpadding='30'>"
-                  "<tr>"
-                  "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
-                  "<Text>";
-
-    PageHTMLSep = "</Text></td><td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'><Text>";
-    PageHTMLBottom = "</Text></td></tr></table></body>";
+    columnWidth = (width - 10 - 30*(ColumnCount-1) - TextLeftRightIdent/100 - TextLeftRightIdent%100)/ColumnCount;
+    columnHeight = height - 20 - TextTopBottomIdent/100 - TextTopBottomIdent%100;
 }
 
 
@@ -239,41 +144,41 @@ QString XMLTextPaginator::goToSection(const int &sectionIndex)
 int XMLTextPaginator::getWordHeight()
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
-        if (linespaceMap.contains(tagStack[i]))
-            return linespaceMap[tagStack[i]];
+        if (fontsLinespaces.contains(tagStack[i]))
+            return fontsLinespaces[tagStack[i]];
 
-    return linespaceMap[tagStack[0]];
+    return fontsLinespaces[tagStack[0]];
 }
 
 
 int XMLTextPaginator::getWordHeightFor(QString name)
 {
-    if (linespaceMap.contains(name))
-        return linespaceMap[name];
+    if (fontsLinespaces.contains(name))
+        return fontsLinespaces[name];
     if (name == "p")
-        return linespaceMap["Text"];
+        return fontsLinespaces["Text"];
 
     return -1;
 }
 
 
-int XMLTextPaginator::getWordWidth(const QString &word)
+int XMLTextPaginator::getWordWidth()
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
-        if (fontMap.contains(tagStack[i]))
-            return fontMap[tagStack[i]]->width(word);
+        if (fontsMetrics.contains(tagStack[i]))
+            return fontsMetrics[tagStack[i]]->width(word);
 
-    return fontMap[tagStack[0]]->width(word);
+    return fontsMetrics[tagStack[0]]->width(word);
 }
 
 
 int XMLTextPaginator::getSpaceWidth()
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
-        if (fontMap.contains(tagStack[i]))
-            return fontMap[tagStack[i]]->charWidth(" ", 0);
+        if (fontsMetrics.contains(tagStack[i]))
+            return fontsMetrics[tagStack[i]]->charWidth(" ", 0);
 
-    return fontMap[tagStack[0]]->charWidth(" ", 0);
+    return fontsMetrics[tagStack[0]]->charWidth(" ", 0);
 }
 
 
@@ -341,7 +246,7 @@ int XMLTextPaginator::parseTag()
             {
                 int addSize = 0;
                 if (stringHeight == 0)
-                    addSize = (CurProfile.ParLeftTopIdent%100)*(parseDirection && tagType?0:1);
+                    addSize = (ParLeftTopIdent%100)*(parseDirection && tagType?0:1);
 
                 if (currentHeight + height + addSize > columnHeight)
                 {
@@ -356,12 +261,12 @@ int XMLTextPaginator::parseTag()
     if (TagInf.index == 30)        ///<p>
     {
         if (!parseDirection && !tagType)
-            currentWidth = CurProfile.ParLeftTopIdent/100;
+            currentWidth = ParLeftTopIdent/100;
         else
             currentWidth = 0;
 
         if (tagType != parseDirection)
-            currentHeight += stringHeight + CurProfile.ParLeftTopIdent%100;
+            currentHeight += stringHeight + ParLeftTopIdent%100;
 
         stringHeight = 0;
 
@@ -385,10 +290,10 @@ int XMLTextPaginator::parseTag()
         if (currentHeight == 0)
             return 2;
 
-        if (currentHeight + getWordHeight() + CurProfile.ParLeftTopIdent%100 > columnHeight)
+        if (currentHeight + getWordHeight() + ParLeftTopIdent%100 > columnHeight)
             return 2;
 
-        currentHeight += getWordHeight() + CurProfile.ParLeftTopIdent%100;
+        currentHeight += getWordHeight() + ParLeftTopIdent%100;
 
         stringHeight = 0;
 
@@ -409,15 +314,21 @@ int XMLTextPaginator::parseTag()
 
     if ((TagInf.index == 1 || TagInf.index == 31) && tagType == false)                              ///<title><section>
     {
-        if (currentHeight != 0)
-            return 3;
+        if (!parseDirection)
+        {
+            if (currentHeight != 0)
+                return 3;
+            else
+                return 1;
+        }
         else
-            return 1;
-    }
+        {
+            applyTag();
+            commitTag();
+            doStep();
+            return 3;
+        }
 
-
-    if (TagInf.index == 31 && tagType == false)       ///
-    {
     }
 
 
@@ -511,7 +422,7 @@ bool XMLTextPaginator::applyWord()
             }
         }
 
-        wordWidth = getWordWidth(word);
+        wordWidth = getWordWidth();
 
         if (currentWidth + wordWidth + getSpaceWidth() > columnWidth)
         {
@@ -572,7 +483,7 @@ void XMLTextPaginator::preparePage(bool direction)
 
     parseDirection = direction;
 
-    for (int i = 0; i < Columns.size(); i++)
+    for (int i = 0; i < ColumnCount; i++)
         Columns[i].clear();
 
     wordWidth = wordHeight = tagType = 0;
@@ -588,7 +499,7 @@ void XMLTextPaginator::createHTMLPage()
         for (int i = 0; i < Columns[0].size(); i++)
             HTMLPage += Columns[0][i];
 
-        for (int i = 1; i < CurProfile.ColumnCount; i++)
+        for (int i = 1; i < ColumnCount; i++)
         {
             HTMLPage += PageHTMLSep;
             for (int j = 0; j < Columns[i].size(); j++)
@@ -597,10 +508,10 @@ void XMLTextPaginator::createHTMLPage()
     }
     else
     {
-        for (int i = Columns[CurProfile.ColumnCount - 1].size() - 1; i >= 0; i--)
-            HTMLPage += Columns[CurProfile.ColumnCount - 1][i];
+        for (int i = Columns[ColumnCount - 1].size() - 1; i >= 0; i--)
+            HTMLPage += Columns[ColumnCount - 1][i];
 
-        for (int i = Columns.size() - 2; i >= 0; i--)
+        for (int i = ColumnCount - 2; i >= 0; i--)
         {
             HTMLPage += PageHTMLSep;
             for (int j = Columns[i].size() - 1; j >= 0; j--)
@@ -619,7 +530,11 @@ QString XMLTextPaginator::getPageForward()
 
         currentTextPos = currentBStrNum = currentEStrNum + 1;
 
-        for (currentColumn = 0; currentColumn < CurProfile.ColumnCount; currentColumn++)
+        qDebug()<<currentBStrNum<< "    "<<currentEStrNum;
+        qDebug()<<bookText[currentBStrNum];
+        qDebug()<<tagStack;
+
+        for (currentColumn = 0; currentColumn < ColumnCount; currentColumn++)
         {
             currentHeight = currentWidth = stringHeight = 0;
 
@@ -689,12 +604,11 @@ QString XMLTextPaginator::getPageForward()
 
         currentEStrNum = currentTextPos - 1;
 
-        book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
+        book->setBookProgress(currentBStrNum - 1, getProgress(), beginTagStack.toList());
 
         createHTMLPage();
         debugSave(HTMLPage);
     }
-
     return PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
@@ -707,7 +621,7 @@ QString XMLTextPaginator::getPageBackward()
 
         currentTextPos = currentEStrNum = currentBStrNum - 1;
 
-        for (currentColumn = 0; currentColumn < CurProfile.ColumnCount; currentColumn++)
+        for (currentColumn = 0; currentColumn < ColumnCount; currentColumn++)
         {
             currentHeight = currentWidth = stringHeight = 0;
             ///дописать разрыв параграфа
@@ -770,7 +684,11 @@ QString XMLTextPaginator::getPageBackward()
 
         currentBStrNum = currentTextPos + 1;
 
-        book->setBookProgress(currentBStrNum,getProgress(), tagStack.toList());
+        book->setBookProgress(currentBStrNum - 1, getProgress(), tagStack.toList());
+
+        qDebug()<<currentBStrNum<< "    "<<currentEStrNum;
+        qDebug()<<bookText[currentBStrNum - 1];
+        qDebug()<<tagStack;
 
         createHTMLPage();
         debugSave(HTMLPage);
@@ -780,7 +698,7 @@ QString XMLTextPaginator::getPageBackward()
 }
 
 
-QString XMLTextPaginator::updatePage(const int &width, const int &height)
+QString XMLTextPaginator::resizePage(const int &width, const int &height)
 {
     setPageGeometry(width, height);
     currentEStrNum = currentBStrNum;
@@ -791,13 +709,11 @@ QString XMLTextPaginator::updatePage(const int &width, const int &height)
 
 QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 {
-    setPageGeometry(width, height);
-    setHTMLinf();
-    setFontMap();
-    setLinespaceMap();
-    currentEStrNum = currentBStrNum;
-    tagStack = beginTagStack;
-    return getPageForward();
+    Helper->setHTMLPageElems(PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
+    Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
+    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
+
+    return resizePage(width, height);
 }
 
 

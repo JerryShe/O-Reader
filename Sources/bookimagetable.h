@@ -2,7 +2,7 @@
 #define BOOKIMAGETABLE_H
 
 
-#include <QMap>
+#include <QHash>
 #include <QImage>
 
 class BookImageTable
@@ -16,7 +16,7 @@ public:
     QPair<QString, unsigned int> getImage(QString name, int freeHeight, int pageWidth, int pageHeight);
 
 private:
-    QMap <QString, QImage> ImageMap;
+    QHash <QString, QImage> ImageMap;
 };
 
 #endif // BOOKIMAGETABLE_H

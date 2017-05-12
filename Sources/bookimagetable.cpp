@@ -6,13 +6,13 @@
 
 BookImageTable::BookImageTable()
 {
-
+    qDebug()<<"create BookImageTable";
 }
 
 
 BookImageTable::~BookImageTable()
 {
-
+    qDebug()<<"delete BookImageTable";
 }
 
 

@@ -3,9 +3,9 @@
 
 
 #include "books.h"
-#include "settings.h"
 #include "tagsresolver.h"
 #include "bookimagetable.h"
+#include "paginatorhelper.h"
 
 #include <QStringList>
 #include <QStack>
@@ -17,7 +17,7 @@ class XMLTextPaginator : public QObject
     Q_OBJECT
 
 public:
-    XMLTextPaginator();
+    XMLTextPaginator(QObject* parent);
     QString startParser(Book *OpeningBook, const int &Pwidth, const int &Pheight);
     ~XMLTextPaginator();
 
@@ -32,17 +32,14 @@ public:
     long long getCurrentSectionIndex();
 
 public slots:
-    QString updatePage(const int &width, const int &height);
+    QString resizePage(const int &width, const int &height);
     QString updateSettings(const int &width, const int &height);
     QString goToSection(const int &sectionIndex);
 
 
 private:
-    void setHTMLinf();
-    void setFontMap();
-    void setLinespaceMap();
 
-    int getWordWidth(const QString &word);
+    int getWordWidth();
     int getWordHeight();
     int getWordHeightFor(QString name);
 
@@ -84,6 +81,9 @@ private:
                  strCount;
 
     int currentColumn;
+    unsigned short ColumnCount;
+    unsigned short TextLeftRightIdent, TextTopBottomIdent;
+    unsigned short ParLeftTopIdent;
 
     unsigned int wordWidth, wordHeight;
     unsigned int currentWidth, currentHeight;
@@ -100,10 +100,9 @@ private:
 
 
     Book *book;
-    Settings *ProgramSettings;
-    ReadingProfile CurProfile;
 
     TagsResolver *Resolver;
+    PaginatorHelper *Helper;
 
     QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;
 
@@ -111,8 +110,8 @@ private:
     QStack <QString> beginTagStack;
 
 
-    QMap <QString, QFontMetrics*> fontMap;
-    QMap <QString, double> linespaceMap;
+    QHash <QString, QFontMetrics*> fontsMetrics;
+    QHash <QString, double> fontsLinespaces;
 
     QStringList TableOfContentsText;
     QVector <long long> TableOfContentsIndexes;

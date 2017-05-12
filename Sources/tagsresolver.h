@@ -1,7 +1,7 @@
 #ifndef TEXTTAGCLASS_H
 #define TEXTTAGCLASS_H
 
-#include <QMap>
+#include <QHash>
 #include <QObject>
 
 struct tagInfo
@@ -82,7 +82,7 @@ private:
     void createFB2map();
     void createEPUBmap();
 
-    QMap <QString, tagInfo> TagMap;
+    QHash <QString, tagInfo> TagMap;
 };
 
 
