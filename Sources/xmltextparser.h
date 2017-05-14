@@ -7,6 +7,9 @@
 #include <QObject>
 #include <QTextStream>
 #include <QImage>
+#include <QHash>
+#include <QTreeWidgetItem>
+
 
 
 QString parseTagAttribute(QString tag, QString attr);
@@ -18,19 +21,21 @@ public:
     XMLTextParser(Book *openingBook);
 
     QStringList getText();
-    QStringList getTableOfContentsText();
-    QVector <long long> getTableOfContentsIndexes();
+    QTreeWidgetItem* getTableOfContents();
 
     BookImageTable* getImageTable();
+    QHash <QString, QStringList> getNotesTable();
 
 private:
     void parseFB2();
     void createFB2TableOfContents();
     void createFB2ImageTable(QString htmlTail);
+    void createFB2NotesTable();
 
     void parseEPub();
     void createEPubTableOfContents();
     void createEPubImageTable();
+    void createEPubNotesTable();
 
 
     QTextStream* doc;
@@ -38,12 +43,13 @@ private:
 
     Book *book;
 
-    QStringList TableOfContentsText;
-    QVector <long long> TableOfContentsIndexes;
+    QTreeWidgetItem* TableOfContents;
 
     BookImageTable* ImageTable;
 
     QStringList bookText;
+
+    QHash <QString, QStringList> notesTable;
 };
 
 #endif // XMLTEXTPARSER_H

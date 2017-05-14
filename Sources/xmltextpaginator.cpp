@@ -67,9 +67,9 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     XMLTextParser parser(book);
 
     bookText = parser.getText();
-    TableOfContentsIndexes = parser.getTableOfContentsIndexes();
-    TableOfContentsText = parser.getTableOfContentsText();
+    TableOfContents = parser.getTableOfContents();
     ImageTable = parser.getImageTable();
+    notesTable = parser.getNotesTable();
 
     strCount = bookText.size();
 
@@ -103,6 +103,7 @@ XMLTextPaginator::~XMLTextPaginator()
     }
 
     delete ImageTable;
+    delete TableOfContents;
 
     qDebug()<<"delete paginator";
 }
@@ -115,25 +116,29 @@ void XMLTextPaginator::setPageGeometry(const int &width, const int &height)
 }
 
 
-QStringList XMLTextPaginator::getBookContentTable()
+QTreeWidgetItem *XMLTextPaginator::getBookContentTable()
 {
-    return TableOfContentsText;
+    return TableOfContents->clone();
 }
 
 
 long long XMLTextPaginator::getCurrentSectionIndex()
 {
+    /*
     int pos;
     for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; ++pos);
     if (currentBStrNum > TableOfContentsIndexes.back())
         return TableOfContentsIndexes.size() - 1;
     return pos;
+    */
 }
 
 
-QString XMLTextPaginator::goToSection(const int &sectionIndex)
+QString XMLTextPaginator::goToSection(const long long sectionIndex)
 {
-    currentTextPos = currentEStrNum = TableOfContentsIndexes[sectionIndex];
+
+    qDebug()<<sectionIndex;
+    currentTextPos = currentEStrNum = sectionIndex;
     tagStack.clear();
     tagStack.append("Text");
     parseDirection = false;
@@ -334,7 +339,17 @@ int XMLTextPaginator::parseTag()
 
     if (TagInf.index == 41)                ///<a>
     {
-        return 2;
+        if (!tagType)
+        {
+            if (parseTagAttribute(tag, "type") == "note")
+                tag = "note";
+
+            /// emit
+        }
+        else
+            tag ="note";
+
+        return 1;
     }
 
 
@@ -530,10 +545,6 @@ QString XMLTextPaginator::getPageForward()
 
         currentTextPos = currentBStrNum = currentEStrNum + 1;
 
-        qDebug()<<currentBStrNum<< "    "<<currentEStrNum;
-        qDebug()<<bookText[currentBStrNum];
-        qDebug()<<tagStack;
-
         for (currentColumn = 0; currentColumn < ColumnCount; currentColumn++)
         {
             currentHeight = currentWidth = stringHeight = 0;
@@ -685,10 +696,6 @@ QString XMLTextPaginator::getPageBackward()
         currentBStrNum = currentTextPos + 1;
 
         book->setBookProgress(currentBStrNum - 1, getProgress(), tagStack.toList());
-
-        qDebug()<<currentBStrNum<< "    "<<currentEStrNum;
-        qDebug()<<bookText[currentBStrNum - 1];
-        qDebug()<<tagStack;
 
         createHTMLPage();
         debugSave(HTMLPage);

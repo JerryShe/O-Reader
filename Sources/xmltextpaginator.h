@@ -9,6 +9,7 @@
 
 #include <QStringList>
 #include <QStack>
+#include<QTreeWidgetItem>
 
 
 
@@ -21,20 +22,19 @@ public:
     QString startParser(Book *OpeningBook, const int &Pwidth, const int &Pheight);
     ~XMLTextPaginator();
 
-public:
     void setPageGeometry(const int &width, const int &height);
     float getProgress();
 
     QString getPageForward();
     QString getPageBackward();
 
-    QStringList getBookContentTable();
+    QTreeWidgetItem* getBookContentTable();
     long long getCurrentSectionIndex();
 
 public slots:
     QString resizePage(const int &width, const int &height);
     QString updateSettings(const int &width, const int &height);
-    QString goToSection(const int &sectionIndex);
+    QString goToSection(const long long sectionIndex);
 
 
 private:
@@ -113,12 +113,13 @@ private:
     QHash <QString, QFontMetrics*> fontsMetrics;
     QHash <QString, double> fontsLinespaces;
 
-    QStringList TableOfContentsText;
-    QVector <long long> TableOfContentsIndexes;
+    QTreeWidgetItem* TableOfContents;
 
     BookImageTable* ImageTable;
     QString HTMLImage;
     int HTMLImageSize;
+
+    QHash <QString, QStringList> notesTable;
 };
 
 #endif // FB2TEXTPAGINATOR_H

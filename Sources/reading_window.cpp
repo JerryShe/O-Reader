@@ -240,7 +240,7 @@ void ReadingWindow::on_exit_button_clicked()
 
 bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (ActiveWindow)
+    if (ActiveWindow || obj == 0)
         return true;
 
     switch (event->type())
@@ -279,6 +279,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             if (KeyEvent->key() == Qt::Key_Escape && this->parentWidget()->isMaximized())
             {
                 emit showWindowMaximazed();
+                ui->TopBarWidget->show();
             }
             break;
         }
@@ -352,7 +353,10 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                     }
 
                     if (MousePressEvent->pos().x() > this->size().width()/2 - 100 && MousePressEvent->pos().x() < this->size().width()/2 + 100)
+                    {
                         emit showWindowMaximazed();
+                        ui->TopBarWidget->show();
+                    }
                 }
             }
             break;
@@ -386,9 +390,9 @@ void ReadingWindow::updateProgress()
 void ReadingWindow::showContentsTable()
 {
     ActiveWindow = true;
-    BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), BookPaginator->getCurrentSectionIndex(), this);
+    BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), this);
     tableWindow->move(0, ui->MenuButton->height());
-    connect(tableWindow, SIGNAL(goToSection(int)), this, SLOT(goToSection(int)));
+    connect(tableWindow, SIGNAL(goToSection(long long)), this, SLOT(goToSection(long long)));
     if (tableWindow->exec() == QDialog::Rejected)
     {
         delete tableWindow;
@@ -397,7 +401,7 @@ void ReadingWindow::showContentsTable()
 }
 
 
-void ReadingWindow::goToSection(const int &sectionIndex)
+void ReadingWindow::goToSection(const long long sectionIndex)
 {
     ui->TextPage->setHtml(BookPaginator->goToSection(sectionIndex));
     updateProgress();

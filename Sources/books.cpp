@@ -361,7 +361,7 @@ bool Book::haveCoverImage()
 QString Book::getHTMLCover()
 {
     if (CoverType != "noImage")
-        return "<img src='data:" + CoverType + "charset=utf-8;base64," + Cover + "' />";
+        return Cover;
     return "";
 }
 

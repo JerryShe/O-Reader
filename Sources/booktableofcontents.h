@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+#include <QTreeWidgetItem>
+
 namespace Ui {
 class BookTableOfContents;
 }
@@ -12,11 +14,11 @@ class BookTableOfContents : public QDialog
     Q_OBJECT
 
 public:
-    explicit BookTableOfContents(const QString &style, const QStringList &contentList, const int &currentPos, QWidget *parent = 0);
+    explicit BookTableOfContents(const QString &style, QTreeWidgetItem *contentList, QWidget *parent = 0);
     ~BookTableOfContents();
 
 signals:
-    void goToSection(int pos);
+    void goToSection(long long pos);
 
 private slots:
     void setStyle(const QString &style);

@@ -59,7 +59,7 @@ private slots:
 
     void changeReadProfile(const QModelIndex &index);
 
-    void goToSection(const int &sectionIndex);
+    void goToSection(const long long sectionIndex);
 
     void setBackgroundImage();
 

@@ -49,21 +49,21 @@ QStringList XMLTextParser::getText()
 }
 
 
-QStringList XMLTextParser::getTableOfContentsText()
+QTreeWidgetItem* XMLTextParser::getTableOfContents()
 {
-    return TableOfContentsText;
-}
-
-
-QVector <long long> XMLTextParser::getTableOfContentsIndexes()
-{
-    return TableOfContentsIndexes;
+    return TableOfContents;
 }
 
 
 BookImageTable *XMLTextParser::getImageTable()
 {
     return ImageTable;
+}
+
+
+QHash <QString, QStringList> XMLTextParser::getNotesTable()
+{
+    return notesTable;
 }
 
 
@@ -174,6 +174,7 @@ void XMLTextParser::parseFB2()
         while(!doc->atEnd())
         {
             doc->operator >>(temp);
+
             if (temp.indexOf("<binary") != -1)
             {
                 bookText.append(splitTextToWords(temp.left(temp.indexOf("<binary"))));
@@ -194,11 +195,56 @@ void XMLTextParser::parseFB2()
     }
 
     qDebug()<<"cover "<<coverName;
-    if (book->haveCoverImage() && ImageTable->contains(coverName))
+    if (book->haveCoverImage())
         bookText.prepend("<image l:href=\"#" + coverName + "\"/>");
 
 
+    createFB2NotesTable();
     delete doc;
+}
+
+
+void XMLTextParser::createFB2NotesTable()
+{
+    int notesPos;
+
+    for (notesPos = 0; notesPos < bookText.size(); notesPos++)
+    {
+        if (bookText[notesPos][0] == "<")
+            if (bookText[notesPos].indexOf("<body") != -1)
+            {
+                if (parseTagAttribute(bookText[notesPos], "name") == "notes")
+                    break;
+            }
+    }
+
+    if (notesPos != 0 && notesPos != bookText.size())
+    {
+        for (int i = notesPos; i < bookText.size(); i++)
+        {
+            if (bookText[i] == "</body>")
+                break;
+
+            if (bookText[notesPos][0] == "<")
+                if (bookText[i].indexOf("<section") != -1)
+                {
+                    QString noteID = parseTagAttribute(bookText[i], "id");
+                    if (!noteID.isEmpty())
+                    {
+                        QStringList noteText;
+                        for (i = i + 1; i < bookText.size(); i++)
+                        {
+                            if (bookText[i].indexOf("</section") == -1)
+                                noteText.append(bookText[i]);
+                            else
+                                break;
+                        }
+
+                        notesTable.insert(noteID, noteText);
+                    }
+                }
+        }
+    }
 }
 
 
@@ -253,22 +299,59 @@ void XMLTextParser::createFB2ImageTable(QString htmlTail)
 
 void XMLTextParser::createFB2TableOfContents()
 {
+    TableOfContents = new QTreeWidgetItem(0);
+    QTreeWidgetItem* curItem = TableOfContents;
+
     for (long long i = 0; i < bookText.size(); i++)
+    {
         if (bookText[i] == "<section>")
         {
-            if (bookText[++i] == "<TitleText>")
+            QTreeWidgetItem* item = new QTreeWidgetItem(curItem);
+            item->setWhatsThis(0,QString::number(i));
+
+            curItem->addChild(item);
+            curItem = item;
+            QString text;
+
+            for (; i < bookText.size(); i++)
+                if (bookText[i] == "<title>" || bookText[i] == "</section>")
+                    break;
+
+            if (bookText[i] == "<title>")
             {
-                long long pos;
-                QString text;
-                for (pos = i + 1; pos < bookText.size() && bookText[pos][0] == '<'; pos++);
-                for (; pos < bookText.size() && bookText[pos] != "</TitleText>"; pos++)
-                    if (bookText[pos][0] != '<')
-                        text += bookText[pos] + " ";
-                TableOfContentsText.append(text);
-                TableOfContentsIndexes.append(i);
-                i = pos;
+                i++;
+
+                for (i = i+1; i < bookText.size(); i++)
+                {
+                    if (bookText[i][0] != '<')
+                        text += bookText[i] + " ";
+                    else
+                    {
+                        if (bookText[i] == "</p>")
+                            text += '\n';
+                        else if (bookText[i] == "</title>" || bookText[i] == "</section>")
+                            break;
+                    }
+                }
+
+                if (text[text.size() - 1] == '\n')
+                    text.remove(text.size() - 1, 1);
+
+                curItem->setText(0, text);
             }
         }
+
+        if (bookText[i] == "</section>")
+        {
+            if (curItem->parent() != 0)
+                curItem = curItem->parent();
+        }
+
+        if (bookText[i] == "</body>")
+            break;
+    }
+
+
 }
 
 
