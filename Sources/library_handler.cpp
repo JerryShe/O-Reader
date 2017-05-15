@@ -113,10 +113,7 @@ void LibraryHandler::fromJson(const QJsonObject &json)
         bookList.append(Book(temp));
 
         if (LibraryView != 0)
-            LibraryView->addItem(bookList.back().getBookIndex(),
-                                             bookList.back().getAuthorName(),
-                                             bookList.back().getTitle(),
-                                             bookList.back().getCover());
+            LibraryView->addItem(&bookList.back());
     }
 }
 
@@ -231,7 +228,7 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
         UserActions->addAction(UActions::AddBook, file);
         if (LibraryView != 0)
-            LibraryView->addItem(boo.getBookIndex(), boo.getAuthorName(), boo.getTitle(), boo.getCover());
+            LibraryView->addItem(&boo);
     }
     if (format == 3)
     {
@@ -280,7 +277,7 @@ void LibraryHandler::sortBooks(const QString &mode)
     {
         LibraryView->clear();
         for (int i = 0; i < bookList.size(); i++)
-            LibraryView->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+            LibraryView->addItem(&bookList[i]);
         return;
     }
     if (mode == QObject::tr("Author"))
@@ -290,7 +287,7 @@ void LibraryHandler::sortBooks(const QString &mode)
         qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
         LibraryView->clear();
         for (int i = 0; i < indexVector.size(); i++)
-            LibraryView->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+            LibraryView->addItem(&indexVector[i]);
         return;
     }
     if (mode == QObject::tr("Title"))
@@ -300,7 +297,7 @@ void LibraryHandler::sortBooks(const QString &mode)
         qSort(indexVector.begin(), indexVector.end(), TitleComparator);
         LibraryView->clear();
         for (int i = 0; i < indexVector.size(); i++)
-            LibraryView->addItem(indexVector[i].getBookIndex(), indexVector[i].getAuthorName(), indexVector[i].getTitle(), indexVector[i].getCover());
+            LibraryView->addItem(&indexVector[i]);
         return;
     }
 }
@@ -319,21 +316,21 @@ void LibraryHandler::findBooks(const QString &token, const QString &mode)
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    LibraryView->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+                    LibraryView->addItem(&bookList[i]);
             return;
         }
         if (mode == QObject::tr("Author"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    LibraryView->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+                    LibraryView->addItem(&bookList[i]);
             return;
         }
         if (mode == QObject::tr("Series"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    LibraryView->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+                    LibraryView->addItem(&bookList[i]);
             return;
         }
     }
@@ -372,6 +369,6 @@ void LibraryHandler::refreshLibrary()
         LibraryView->clear();
         needRefresh = false;
         for (int i = 0; i < bookList.size(); i++)
-            LibraryView->addItem(bookList[i].getBookIndex(), bookList[i].getAuthorName(), bookList[i].getTitle(), bookList[i].getCover());
+            LibraryView->addItem(&bookList[i]);
     }
 }

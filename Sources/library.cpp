@@ -44,16 +44,16 @@ void Library::showSelectedItem(const QModelIndex &mIndex)
 }
 
 
-void Library::addItem(const unsigned int &BookIndex, const QString &name, const QString &title, const QImage &cover)
+void Library::addItem(Book *book)
 {
     BookModel->setRowCount(itemCount+1);
 
-    QIcon coverIcon = QIcon(QPixmap::fromImage(cover));
+    QIcon coverIcon = QIcon(QPixmap::fromImage(book->getCover()));
 
     QModelIndex index = BookModel->index(itemCount++,0);
-    BookModel->setData(index, name + '\n' + title, Qt::DisplayRole);
-    BookModel->setData(index, name + '\n' + title, Qt::ToolTipRole);
-    BookModel->setData(index, BookIndex, Qt::WhatsThisRole);
+    BookModel->setData(index, book->getAuthorName() + '\n' + book->getTitle(), Qt::DisplayRole);
+    BookModel->setData(index, book->getAuthorName() + '\n' + book->getTitle(), Qt::ToolTipRole);
+    BookModel->setData(index, book->getBookIndex(), Qt::WhatsThisRole);
     BookModel->setData(index, coverIcon, Qt::DecorationRole);
 
     QCoreApplication::processEvents();

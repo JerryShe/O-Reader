@@ -5,8 +5,9 @@
 #include <QGridLayout>
 #include <QListView>
 #include <QStandardItemModel>
-#include "settings.h"
 
+#include "settings.h"
+#include "books.h"
 
 
 class Library : public QListView
@@ -17,7 +18,7 @@ public:
     Library(QWidget *widget = 0);
     ~Library();
 
-    void addItem(const unsigned int &BookIndex, const QString &name, const QString &title, const QImage &cover);
+    void addItem(Book *book);
     QVector <unsigned int> deleteItems();
     void deleteBook(const unsigned int &index);
     void setSettingsData();

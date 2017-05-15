@@ -706,7 +706,7 @@ QString XMLTextPaginator::getPageBackward()
 QString XMLTextPaginator::resizePage(const int &width, const int &height)
 {
     setPageGeometry(width, height);
-    currentEStrNum = currentBStrNum;
+    currentEStrNum = currentBStrNum = currentBStrNum - 1;
     tagStack = beginTagStack;
     return getPageForward();
 }
