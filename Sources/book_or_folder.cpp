@@ -12,6 +12,7 @@ BookOrFolder::BookOrFolder(const QPoint &position, const int &hSize, const QStri
     setParent(parent);
     resize(hSize, 40);
     move(position);
+
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setWindowFlags(Qt::Popup);
 

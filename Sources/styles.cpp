@@ -692,18 +692,30 @@ void setReaderTableOfContents(QString WindowStyle[], const QString style)
 {
     if (style == "Red")
     {
-        WindowStyle[0] =    "QListView{"
+        WindowStyle[0] =    "QTreeWidget{"
                             "border:none;"
                             "outline: 0px;"
                             "background-color: rgb(162, 0, 70);"
                             "color:white;}"
-                            "QListView::item{"
+                            "QTreeWidget::item{"
                             "min-height:30px;}"
-                            "QListView::item:hover{"
+
+                            "QTreeWidget::item:hover{"
                             "background-color: rgb(120, 0, 45);}"
-                            "QListView::item:selected{"
+
+                            "QTreeWidget::item:selected{"
                             "background-color:rgb(151, 151, 227);"
-                            "border:none;}";
+                            "border:none;}"
+
+                            "QTreeWidget::branch:has-children:closed{"
+                            "background-image: url(:/Images/LightArrowVertOpen.png);"
+                            "background-repeat: no-repeat;"
+                            "background-position: center center;}"
+
+                            "QTreeWidget::branch:has-children:open{"
+                            "background-repeat: no-repeat;"
+                            "background-position: center center;"
+                            "background-image: url(:/Images/LightArrowOpen.png)}"
 
                             "QScrollBar:vertical {"
                             "border: none;"

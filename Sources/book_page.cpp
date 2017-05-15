@@ -45,6 +45,9 @@ BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
 
     this->setGeometry(parent->mapToGlobal(QPoint(180, 0)).x(), parent->mapToGlobal(QPoint(0, 100)).y(), parent->width() - 270, parent->height() - 200);
 
+    ui->author->setWordWrap(true);
+    ui->title->setWordWrap(true);
+
     QStringList list = book->getAnnotation();
     QString temp = "     ";
     for (int i = 0; i < list.size(); i++)

@@ -43,8 +43,6 @@ private:
 
     QString UserToken;
     QString UserEmail;
-
-
 };
 
 #endif // CLIENT_HANDLER_H

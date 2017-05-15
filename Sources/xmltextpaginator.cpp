@@ -136,8 +136,6 @@ long long XMLTextPaginator::getCurrentSectionIndex()
 
 QString XMLTextPaginator::goToSection(const long long sectionIndex)
 {
-
-    qDebug()<<sectionIndex;
     currentTextPos = currentEStrNum = sectionIndex;
     tagStack.clear();
     tagStack.append("Text");

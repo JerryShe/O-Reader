@@ -365,30 +365,24 @@ void Settings_ReaderLayout::setSavebuttonView(const int &type)
 
 void Settings_ReaderLayout::on_BackgroundTypeBox_currentIndexChanged(int index)
 {
-    if (index == 0)
+    if (index == 0 && ui->BackgroundImageBox->isHidden())
     {
-        if (ui->BackgroundImageBox->isHidden())
-        {
-            ui->BackgroundImageBox->setText(QObject::tr("No image"));
-            ui->TextBackground->setStyleSheet("");
-            ui->BackgroundColor->hide();
-            ui->BackgroundColorBox->hide();
-            ui->BackgroundImage->show();
-            ui->BackgroundImageBox->show();
-        }
+        ui->BackgroundImageBox->setText(QObject::tr("No image"));
+        ui->TextBackground->setStyleSheet("");
+        ui->BackgroundColor->hide();
+        ui->BackgroundColorBox->hide();
+        ui->BackgroundImage->show();
+        ui->BackgroundImageBox->show();
     }
-    if (index == 1)
+    else
     {
-        if (ui->BackgroundColor->isHidden())
-        {
-            ui->BackgroundColorBox->setStyleSheet("#BackgroundColorBox{background-color: white; color: black;}");
-            ui->BackgroundColorBox->setText("#ffffff");
-            ui->BackgroundColor->show();
-            ui->BackgroundColorBox->show();
-            ui->BackgroundImage->hide();
-            ui->BackgroundImageBox->hide();
-            updateTextBox();
-        }
+        ui->BackgroundColorBox->setStyleSheet("#BackgroundColorBox{background-color: white; color: black;}");
+        ui->BackgroundColorBox->setText("#ffffff");
+        ui->BackgroundColor->show();
+        ui->BackgroundColorBox->show();
+        ui->BackgroundImage->hide();
+        ui->BackgroundImageBox->hide();
+        updateTextBox();
     } 
 }
 

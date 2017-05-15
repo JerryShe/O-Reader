@@ -27,5 +27,6 @@
         <file>Images/LightArrowVertOpen.png</file>
         <file>Images/LightNewReadProfile.png</file>
         <file>Images/LightReadProfileSwap.png</file>
+        <file>Images/LightArrowOpen.png</file>
     </qresource>
 </RCC>

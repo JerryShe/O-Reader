@@ -7,9 +7,6 @@ AnswerDialog::AnswerDialog(const QPoint &position, const QString &text, const QS
 {
     setParent(parent);
     resize(300,70);
-
-
-
     move(position);
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);

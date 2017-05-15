@@ -51,7 +51,6 @@ signals:
     void closeWindow();
 
 private:
-
     Ui::MainWindow* ui;
 
     ReadingWindow* readingWindow;
