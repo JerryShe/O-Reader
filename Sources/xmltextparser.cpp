@@ -138,7 +138,7 @@ void XMLTextParser::parseFB2()
     if (bookFile.open(QIODevice::ReadOnly))
     {
         doc = new QTextStream(&bookFile);
-        doc->setCodec(book->getBookCodec().toStdString().c_str());
+        doc->setCodec(book->getCodec().toStdString().c_str());
 
         QString temp;
 
@@ -165,9 +165,9 @@ void XMLTextParser::parseFB2()
                 coverName.remove(0,1);
             }
         }
-        while(temp.indexOf("<body>") == -1 && !doc->atEnd());
+        while(temp.indexOf("<body") == -1 && !doc->atEnd());
 
-        temp = temp.remove(0, temp.indexOf("<body>") + 6);
+        temp = temp.remove(0, temp.indexOf("<body"));
         bookText.append(splitTextToWords(temp));
 
 

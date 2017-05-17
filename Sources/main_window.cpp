@@ -72,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
 
     tabSwitcher->start(0);
     this->show();
+    qDebug()<<"create MainWindow";
 }
 
 
@@ -89,7 +90,7 @@ MainWindow::~MainWindow()
 }
 
 
-Library* MainWindow::getLibraryWidget()
+LibraryView* MainWindow::getLibraryWidget()
 {
     return ui->LibraryWidget->getLibraryWidget();
 }

@@ -1,4 +1,4 @@
-#include "library.h"
+#include "library_view.h"
 #include "styles.h"
 
 #include <QGridLayout>
@@ -8,17 +8,21 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-Library::Library(QWidget *widget)
+
+LibraryView::LibraryView(QWidget *widget)
 {
     setParent(widget);
 
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     setResizeMode(QListView::Adjust);
 
-    ListSize = 2;
-    itemCount = 0;
+    BookModel = new LibraryModel(this);
 
-    BookModel = new QStandardItemModel(ListSize,ListSize);
+    delegate = new LibraryListDelegate();
+    setSettingsData();
+    this->setItemDelegate(delegate);
+
+
     setModel(BookModel);
 
     setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -26,115 +30,102 @@ Library::Library(QWidget *widget)
     setDragDropMode(QAbstractItemView::NoDragDrop);
 
     connect(this, SIGNAL(activated(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
+    qDebug()<<"create LibraryView";
+    this->show();
 }
 
 
-Library::~Library()
+LibraryView::~LibraryView()
 {
-    delete BookModel;
+    qDebug()<<"delete LibraryView";
+    delete delegate;
 }
 
 
-void Library::showSelectedItem(const QModelIndex &mIndex)
+void LibraryView::showSelectedItem(const QModelIndex &mIndex)
 {
    if (!mIndex.isValid())
       return;
 
-   emit(showBookPage(mIndex.data(Qt::WhatsThisRole).toInt()));
+   emit(showBookPage(mIndex.data(BookInf::Index).toInt()));
 }
 
 
-void Library::addItem(Book *book)
+void LibraryView::addItem(Book *book)
 {
-    BookModel->setRowCount(itemCount+1);
-
-    QIcon coverIcon = QIcon(QPixmap::fromImage(book->getCover()));
-
-    QModelIndex index = BookModel->index(itemCount++,0);
-    BookModel->setData(index, book->getAuthorName() + '\n' + book->getTitle(), Qt::DisplayRole);
-    BookModel->setData(index, book->getAuthorName() + '\n' + book->getTitle(), Qt::ToolTipRole);
-    BookModel->setData(index, book->getBookIndex(), Qt::WhatsThisRole);
-    BookModel->setData(index, coverIcon, Qt::DecorationRole);
-
-    QCoreApplication::processEvents();
+    BookModel->addBook(book);
+    //QCoreApplication::processEvents();
 }
 
 
-void Library::changeViewMod()
+void LibraryView::changeViewMod()
 {
     if (viewMode() == QListView::IconMode)
     {
-        setGridSize(QSize(IconListSize+5,IconListSize + 5));
+        setGridSize(QSize(IconListSize + 5, IconListSize+ 5));
         setViewMode(QListView::ListMode);
-        setIconSize(QSize(IconListSize,IconListSize));
+        delegate->setListViewMode(true);
+        setIconSize(QSize(IconListSize + 5,IconListSize + 5));
         ProgramSettings->setLibraryReprezentation(true);
     }
     else
     {
-        setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
+        setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
         setViewMode(QListView::IconMode);
-        setIconSize(QSize(IconBarSize,IconBarSize));
+        delegate->setListViewMode(false);
+        setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
         ProgramSettings->setLibraryReprezentation(false);
     }
 }
 
-QVector<unsigned int> Library::deleteItems()
+
+QVector<unsigned int> LibraryView::deleteSelectedItems()
 {
+    qDebug()<<"delete books";
+
     QVector <unsigned int> deletedItems;
 
     QModelIndexList SelectedItems = selectionModel()->selectedIndexes();
+
     for (int i = 0; i < SelectedItems.size(); i++)
-        deletedItems.push_back(SelectedItems.at(i).data(Qt::WhatsThisRole).toInt());
+        deletedItems.push_back(SelectedItems.at(i).data(BookInf::Index).toInt());
 
-    while(SelectedItems.size())
-    {
-        BookModel->removeRow(SelectedItems.first().row());
-        SelectedItems = selectionModel()->selectedIndexes();
-    }
+    for (int i = 0; i < deletedItems.size(); i++)
+        BookModel->deleteBookByIndex(deletedItems[i]);
 
-    itemCount = itemCount - deletedItems.size();
     if (!BookModel->rowCount())
         clear();
+
     return deletedItems;
 }
 
 
-void Library::deleteBook(const unsigned int &index)
+void LibraryView::deleteBook(const unsigned int &index)
 {
-    int i;
-    for (i = 0; i < BookModel->rowCount(); i++)
-        if (BookModel->item(i,0)->data(Qt::WhatsThisRole) == index)
-            break;
-
-    BookModel->removeRow(i);
+    qDebug()<<"delete "<<index;
+    BookModel->deleteBookByIndex(index);
 }
 
 
-int Library::getSelectedItemsCount()
+int LibraryView::getSelectedItemsCount()
 {
     return selectionModel()->selectedIndexes().size();
 }
 
 
-void Library::clear()
+void LibraryView::clear()
 {
-    QStandardItemModel* temp = BookModel;
-    BookModel = new QStandardItemModel(ListSize,ListSize);
-
-    setModel(BookModel);
-    itemCount = 0;
-    temp->clear();
-    delete temp;
+    BookModel->clear();
 }
 
 
-void Library::groupBy(const QString &mode)
+void LibraryView::groupBy(const QString &mode)
 {
 
 }
 
 
-void Library::iconUpscale()
+void LibraryView::iconUpscale()
 {
     if (viewMode() == QListView::IconMode)
     {
@@ -142,7 +133,7 @@ void Library::iconUpscale()
         {
             IconBarSize+=30;
             setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            setIconSize(QSize(IconBarSize,IconBarSize));
+            setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
             ProgramSettings->setLibraryBarIconSize(IconBarSize);
         }
     }
@@ -152,14 +143,14 @@ void Library::iconUpscale()
         {
             IconListSize+=10;
             setGridSize(QSize(IconListSize + 5,IconListSize + 5));
-            setIconSize(QSize(IconListSize,IconListSize));
+            setIconSize(QSize(IconListSize + 5,IconListSize + 5));
             ProgramSettings->setLibraryListIconSize(IconListSize);
         }
     }
 }
 
 
-void Library::iconDownscale()
+void LibraryView::iconDownscale()
 {
     if (viewMode() == QListView::IconMode)
     {
@@ -167,7 +158,7 @@ void Library::iconDownscale()
         {
             IconBarSize-=30;
             setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            setIconSize(QSize(IconBarSize,IconBarSize));
+            setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
             ProgramSettings->setLibraryBarIconSize(IconBarSize);
         }
     }
@@ -176,15 +167,15 @@ void Library::iconDownscale()
         if (IconListSize > 30)
         {
             IconListSize-=10;
-            setGridSize(QSize(IconListSize + 5,IconListSize + 5));
-            setIconSize(QSize(IconListSize,IconListSize));
+            setGridSize(QSize(IconListSize + 5, IconListSize + 5));
+            setIconSize(QSize(IconListSize + 5,IconListSize + 5));
             ProgramSettings->setLibraryListIconSize(IconListSize);
         }
     }
 }
 
 
-void Library::setSettingsData()
+void LibraryView::setSettingsData()
 {
     ProgramSettings = Settings::getSettings();
 
@@ -202,14 +193,25 @@ void Library::setSettingsData()
 
     if (ProgramSettings->getLibraryReprezentation())
     {
-        setGridSize(QSize(IconListSize+5,IconListSize + 5));
+        setGridSize(QSize(IconListSize + 5, IconListSize + 5));
         setViewMode(QListView::ListMode);
-        setIconSize(QSize(IconListSize,IconListSize));
+        delegate->setListViewMode(true);
+        setIconSize(QSize(IconListSize + 5, IconListSize + 5));
     }
     else
     {
-        setGridSize(QSize(IconBarSize - 10,IconBarSize + 60));
+        setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
         setViewMode(QListView::IconMode);
-        setIconSize(QSize(IconBarSize,IconBarSize));
+        delegate->setListViewMode(false);
+        setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
     }
+
+    QColor normal;
+    QColor selected;
+    QColor hover;
+    QColor hoverSelected;
+
+    getLibraryStyleColors(normal, selected, hover, hoverSelected);
+    delegate->setItemsColors(normal, selected, hover, hoverSelected);
+    qDebug()<<"wtf";
 }

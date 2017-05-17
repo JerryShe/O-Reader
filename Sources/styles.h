@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QColor>
 
 void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString style);
 
@@ -27,6 +28,8 @@ void setAnswerDialogStyle (QString windowStyle [], const QString style);
 void setBookOrFolderStyle (QString buttonStyle [], const QString style);
 
 void setLibraryStyle (QString ListViewStyle[], const QString style);
+
+void getLibraryStyleColors (QColor &back, QColor &selected, QColor &hover, QColor &hoverSelected);
 
 void setBookPageStyle(QString BookPageStyle[], const QString style);
 

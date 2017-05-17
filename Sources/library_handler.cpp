@@ -17,7 +17,7 @@ LibraryHandler* LibraryHandler::getLibraryHandler()
 LibraryHandler::LibraryHandler()
 {
     resoursesFolderPath = "LibraryResources";
-    LibraryView = 0;
+    libraryView = 0;
     UserActions = Synchronization::getSynchronization();
     currentBookIndex = 0;
     filesMask << "*.fb2" << "*.zip" << "*.epub";
@@ -29,12 +29,12 @@ LibraryHandler::~LibraryHandler()
 {}
 
 
-void LibraryHandler::setLibraryWidget(Library* lbWidget)
+void LibraryHandler::setLibraryWidget(LibraryView* lbWidget)
 {
     qDebug()<<"set lib widget";
-    LibraryView = lbWidget;
+    libraryView = lbWidget;
     needRefresh = true;
-    if (LibraryView != 0)
+    if (libraryView != 0)
         refreshLibrary();
 }
 
@@ -112,8 +112,8 @@ void LibraryHandler::fromJson(const QJsonObject &json)
         temp = LibArray[i].toObject();
         bookList.append(Book(temp));
 
-        if (LibraryView != 0)
-            LibraryView->addItem(&bookList.back());
+        if (libraryView != 0)
+            libraryView->addItem(&bookList.back());
     }
 }
 
@@ -125,7 +125,7 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
     {
         for (int j = 0; j < bookList.size(); j++)
         {
-            if (bookList[j].getBookIndex() == deletedItemsIndexes.at(i))
+            if (bookList[j].getIndex() == deletedItemsIndexes.at(i))
             {
                 UserActions->addAction(UActions::DeleteBook, bookList[j].getFile());
                 bookList.remove(j);
@@ -223,12 +223,12 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
             return;
         }
 
-        boo.setBookIndex(++currentBookIndex);
+        boo.setIndex(++currentBookIndex);
         bookList.push_back(boo);
 
         UserActions->addAction(UActions::AddBook, file);
-        if (LibraryView != 0)
-            LibraryView->addItem(&boo);
+        if (libraryView != 0)
+            libraryView->addItem(&boo);
     }
     if (format == 3)
     {
@@ -239,10 +239,10 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
 void LibraryHandler::deleteBook(const unsigned int &index)
 {
-    if (LibraryView != 0)
-        LibraryView->deleteBook(index);
+    if (libraryView != 0)
+        libraryView->deleteBook(index);
     for (int i = 0; i < bookList.size(); i++)
-        if (bookList[i].getBookIndex() == index)
+        if (bookList[i].getIndex() == index)
         {
             UserActions->addAction(UActions::DeleteBook, bookList[i].getFile());
             bookList.remove(i);
@@ -270,14 +270,14 @@ bool TitleComparator(Book &boo1, Book & boo2)
 
 void LibraryHandler::sortBooks(const QString &mode)
 {
-    if (LibraryView == 0)
+    if (libraryView == 0)
         return;
 
     if (mode == QObject::tr("Date"))
     {
-        LibraryView->clear();
+        libraryView->clear();
         for (int i = 0; i < bookList.size(); i++)
-            LibraryView->addItem(&bookList[i]);
+            libraryView->addItem(&bookList[i]);
         return;
     }
     if (mode == QObject::tr("Author"))
@@ -285,19 +285,19 @@ void LibraryHandler::sortBooks(const QString &mode)
 
         QVector <Book> indexVector = bookList;
         qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
-        LibraryView->clear();
+        libraryView->clear();
         for (int i = 0; i < indexVector.size(); i++)
-            LibraryView->addItem(&indexVector[i]);
+            libraryView->addItem(&indexVector[i]);
         return;
     }
     if (mode == QObject::tr("Title"))
     {
-        LibraryView->clear();
+        libraryView->clear();
         QVector <Book> indexVector = bookList;
         qSort(indexVector.begin(), indexVector.end(), TitleComparator);
-        LibraryView->clear();
+        libraryView->clear();
         for (int i = 0; i < indexVector.size(); i++)
-            LibraryView->addItem(&indexVector[i]);
+            libraryView->addItem(&indexVector[i]);
         return;
     }
 }
@@ -305,32 +305,32 @@ void LibraryHandler::sortBooks(const QString &mode)
 
 void LibraryHandler::findBooks(const QString &token, const QString &mode)
 {
-    if (LibraryView == 0)
+    if (libraryView == 0)
         return;
 
     if (token != "")
     {
         needRefresh = true;
-        LibraryView->clear();
+        libraryView->clear();
         if (mode == QObject::tr("Title"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    LibraryView->addItem(&bookList[i]);
+                    libraryView->addItem(&bookList[i]);
             return;
         }
         if (mode == QObject::tr("Author"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    LibraryView->addItem(&bookList[i]);
+                    libraryView->addItem(&bookList[i]);
             return;
         }
         if (mode == QObject::tr("Series"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    LibraryView->addItem(&bookList[i]);
+                    libraryView->addItem(&bookList[i]);
             return;
         }
     }
@@ -341,7 +341,7 @@ Book* LibraryHandler::getBookByIndex(const unsigned int &index)
 {
     int i;
     for (i = 0; i < bookList.size(); i++)
-        if (bookList[i].getBookIndex() == index)
+        if (bookList[i].getIndex() == index)
             break;
 
     if (i == bookList.size())
@@ -364,11 +364,11 @@ Book* LibraryHandler::getLastOpenedBook()
 void LibraryHandler::refreshLibrary()
 {
     qDebug()<<"refreshing library representation";
-    if (needRefresh == true && LibraryView != 0)
+    if (needRefresh == true && libraryView != 0)
     {
-        LibraryView->clear();
+        libraryView->clear();
         needRefresh = false;
         for (int i = 0; i < bookList.size(); i++)
-            LibraryView->addItem(&bookList[i]);
+            libraryView->addItem(&bookList[i]);
     }
 }

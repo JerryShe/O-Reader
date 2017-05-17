@@ -35,7 +35,7 @@ BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    BookIndex = book->getBookIndex();
+    BookIndex = book->getIndex();
     ui->setupUi(this);
     setStyle(Style);
     style = Style;
@@ -81,7 +81,7 @@ BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
     metrics = QFontMetrics(ui->series->font());
     ui->series->setText(metrics.elidedText(book->getSeries(), Qt::ElideRight, textWidth));
 
-    ui->BookProgress->setText(QString::number(floor(book->getBookProgressPocent()*10)/10) + "%");
+    ui->BookProgress->setText(QString::number(floor(book->getProgressProcent()*10)/10) + "%");
 
     list = book->getGenres();
     temp = list[0];

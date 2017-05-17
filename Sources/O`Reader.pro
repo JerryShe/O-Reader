@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     synchronization.cpp \
     genresmap.cpp \
     booktableofcontents.cpp \
-    library.cpp \
     library_layout.cpp \
     library_handler.cpp \
     QTabSwitcher.cpp \
@@ -42,7 +41,9 @@ SOURCES += main.cpp\
     tagsresolver.cpp \
     xmltextparser.cpp \
     bookimagetable.cpp \
-    paginatorhelper.cpp
+    paginatorhelper.cpp \
+    library_model.cpp \
+    library_view.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -59,7 +60,6 @@ HEADERS  += \
     search_window.h \
     genresmap.h \
     booktableofcontents.h \
-    library.h \
     library_layout.h \
     library_handler.h \
     QTabSwitcher.h \
@@ -77,7 +77,9 @@ HEADERS  += \
     tagsresolver.h \
     xmltextparser.h \
     bookimagetable.h \
-    paginatorhelper.h
+    paginatorhelper.h \
+    library_model.h \
+    library_view.h
 
 FORMS    += \
     settings_programlayout.ui \

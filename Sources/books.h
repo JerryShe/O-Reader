@@ -27,21 +27,21 @@ public:
     bool haveCoverImage();
     QString getHTMLCover();
 
-    void setBookIndex(const int &index);
-    unsigned int getBookIndex();
+    void setIndex(const int &index);
+    unsigned int getIndex();
 
     QStringList getAnnotation();
     QStringList getGenres();
     QString getSeries();
     QString getLanguage();
 
-    long long getBookProgress();
-    double getBookProgressPocent();
-    QStringList getBookProgressTagStack();
-    void setBookProgress(const long long &progress, const double &procent, const QStringList &tagStack);
+    long long getProgress();
+    double getProgressProcent();
+    QStringList getProgressTagStack();
+    void setProgress(const long long &progress, const double &procent, const QStringList &tagStack);
 
-    QString getBookCodec();
-    void setBookCodec(const QString &Codec);
+    QString getCodec();
+    void setCodec(const QString &Codec);
 
     QString getFile();
     void setFile(const QString &file);

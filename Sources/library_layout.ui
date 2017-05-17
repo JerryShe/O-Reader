@@ -366,7 +366,7 @@
       </widget>
      </item>
      <item>
-      <widget class="Library" name="LibraryView"/>
+      <widget class="LibraryView" name="Library_View"/>
      </item>
     </layout>
    </item>
@@ -374,9 +374,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Library</class>
+   <class>LibraryView</class>
    <extends>QListView</extends>
-   <header>library.h</header>
+   <header>library_view.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

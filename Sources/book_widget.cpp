@@ -39,11 +39,11 @@ BookWidget::BookWidget(QWidget *parent) :
     if (book == 0)
         this->close();
 
-    BookIndex = book->getBookIndex();
+    BookIndex = book->getIndex();
 
     ui->Author->setText(book->getAuthorName());
 
-    ui->BookProgress->setText(QString::number(floor(book->getBookProgressPocent()*10)/10) + "%");
+    ui->BookProgress->setText(QString::number(floor(book->getProgressProcent()*10)/10) + "%");
 
     ui->Title->setText(book->getTitle());
 

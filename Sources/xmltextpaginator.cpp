@@ -46,11 +46,11 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
 {
     book = OpeningBook;
 
-    currentEStrNum = currentBStrNum = book->getBookProgress();
+    currentEStrNum = currentBStrNum = book->getProgress();
     if (currentEStrNum < 5)
         currentEStrNum = currentBStrNum = -1;
 
-    tagStack.fromList(book->getBookProgressTagStack());
+    tagStack.fromList(book->getProgressTagStack());
 
     if (tagStack.size() == 0)
         tagStack.push("Text");
@@ -377,6 +377,9 @@ int XMLTextPaginator::parseTag()
         }
 
         placeImage();
+
+        if (columnHeight <= currentHeight)
+            return 3;
         return 2;
     }
 
@@ -613,7 +616,7 @@ QString XMLTextPaginator::getPageForward()
 
         currentEStrNum = currentTextPos - 1;
 
-        book->setBookProgress(currentBStrNum - 1, getProgress(), beginTagStack.toList());
+        book->setProgress(currentBStrNum - 1, getProgress(), beginTagStack.toList());
 
         createHTMLPage();
         debugSave(HTMLPage);
@@ -693,7 +696,7 @@ QString XMLTextPaginator::getPageBackward()
 
         currentBStrNum = currentTextPos + 1;
 
-        book->setBookProgress(currentBStrNum - 1, getProgress(), tagStack.toList());
+        book->setProgress(currentBStrNum - 1, getProgress(), tagStack.toList());
 
         createHTMLPage();
         debugSave(HTMLPage);

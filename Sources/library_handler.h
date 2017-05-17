@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QObject>
-#include "library.h"
+#include "library_view.h"
 #include "synchronization.h"
 #include "genresmap.h"
 #include "books.h"
@@ -19,7 +19,7 @@ public:
 
 
 public slots:
-    void setLibraryWidget(Library *lbWidget);
+    void setLibraryWidget(LibraryView *lbWidget);
 
     void AddBooks(const QStringList &fileList);
     void AddFolder(const QString &path);
@@ -51,7 +51,7 @@ private:
     LibraryHandler();
     ~LibraryHandler();
 
-    Library* LibraryView;
+    LibraryView* libraryView;
 
     Synchronization* UserActions;
 

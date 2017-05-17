@@ -55,14 +55,14 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
 
     if (ProgramSettings->getLibraryReprezentation())
     {
-        ui->LibraryView->changeViewMod();
+        ui->Library_View->changeViewMod();
         ui->_ChangeViewMode->setChecked(true);
     }
 
-    ui->LibraryView->setSettingsData();
+    ui->Library_View->setSettingsData();
 
 
-    connect(ui->LibraryView, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
+    connect(ui->Library_View, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
 
     if (LibHandler->getLastOpenedBook() == 0)
     {
@@ -125,9 +125,9 @@ void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
 }
 
 
-Library* LibraryLayout::getLibraryWidget()
+LibraryView* LibraryLayout::getLibraryWidget()
 {
-    return ui->LibraryView;
+    return ui->Library_View;
 }
 
 
@@ -163,7 +163,7 @@ void LibraryLayout::on__Delete_clicked()
     hideBook();
     hideFind();
 
-    if (ui->LibraryView->getSelectedItemsCount() != 0)
+    if (ui->Library_View->getSelectedItemsCount() != 0)
     {
         AnswerDialog *answer_window = new AnswerDialog(ui->_Delete->mapToGlobal(QPoint(ui->_Delete->width() - 300, ui->_Delete->height())),
                                                        QObject::tr("Delete books?"),
@@ -172,7 +172,7 @@ void LibraryLayout::on__Delete_clicked()
         answer_window->show();
 
         if (answer_window->exec() == QDialog::Accepted)
-            LibHandler->deleteBooks(ui->LibraryView->deleteItems());
+            LibHandler->deleteBooks(ui->Library_View->deleteSelectedItems());
         else
             delete answer_window;
     }
@@ -182,7 +182,7 @@ void LibraryLayout::on__Delete_clicked()
 void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
 {
     hideBook();
-    ui->LibraryView->changeViewMod();
+    ui->Library_View->changeViewMod();
     ProgramSettings->setLibraryReprezentation(checked);
 }
 
@@ -190,14 +190,14 @@ void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
 void LibraryLayout::on__Upscale_clicked()
 {
     hideBook();
-    ui->LibraryView->iconUpscale();
+    ui->Library_View->iconUpscale();
 }
 
 
 void LibraryLayout::on__Downscale_clicked()
 {
     hideBook();
-    ui->LibraryView->iconDownscale();
+    ui->Library_View->iconDownscale();
 }
 
 void LibraryLayout::on__SortBox_activated(const QString &arg1)
@@ -259,7 +259,7 @@ Book* LibraryLayout::getBookByIndex(const unsigned int &index)
 void LibraryLayout::deleteBook(const unsigned int &index)
 {
     LibHandler->deleteBook(index);
-    if (LibHandler->getLastOpenedBook()->getBookIndex() == bookWidget->getBookIndex())
+    if (LibHandler->getLastOpenedBook()->getIndex() == bookWidget->getBookIndex())
         ui->ShowButton->setEnabled(true);
 }
 

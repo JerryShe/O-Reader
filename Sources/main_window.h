@@ -12,7 +12,7 @@
 #include "reading_window.h"
 #include "book_page.h"
 #include "QTabSwitcher.h"
-#include "library.h"
+#include "library_view.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,7 +26,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    Library* getLibraryWidget();
+    LibraryView* getLibraryWidget();
 
 private slots:
     void setStyle();

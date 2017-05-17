@@ -366,13 +366,13 @@ QString Book::getHTMLCover()
 }
 
 
-void Book::setBookIndex(const int &index)
+void Book::setIndex(const int &index)
 {
     Index = index;
 }
 
 
-unsigned int Book::getBookIndex()
+unsigned int Book::getIndex()
 {
     return Index;
 }
@@ -396,25 +396,25 @@ QString Book::getLanguage()
 }
 
 
-long long Book::getBookProgress()
+long long Book::getProgress()
 {
     return Progress;
 }
 
 
-QStringList Book::getBookProgressTagStack()
+QStringList Book::getProgressTagStack()
 {
     return ProgressTagStack;
 }
 
 
-double Book::getBookProgressPocent()
+double Book::getProgressProcent()
 {
     return ProgressProcent;
 }
 
 
-void Book::setBookProgress(const long long &progress, const double &procent, const QStringList &tagStack)
+void Book::setProgress(const long long &progress, const double &procent, const QStringList &tagStack)
 {
     Progress = progress;
     ProgressProcent = procent;
@@ -432,13 +432,13 @@ QString Book::getSeries()
 }
 
 
-QString Book::getBookCodec()
+QString Book::getCodec()
 {
     return Codec;
 }
 
 
-void Book::setBookCodec(const QString &codec)
+void Book::setCodec(const QString &codec)
 {
     Codec = codec;
 }

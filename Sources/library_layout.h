@@ -20,7 +20,7 @@ class LibraryLayout : public QWidget
 public:
     explicit LibraryLayout(QWidget *parent = 0);
     ~LibraryLayout();
-    Library* getLibraryWidget();
+    LibraryView* getLibraryWidget();
 
 
 private slots:

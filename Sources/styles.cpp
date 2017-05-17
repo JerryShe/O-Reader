@@ -1,5 +1,6 @@
 #include "styles.h"
 
+
 ////////////////////////общее///////////////////////////
 
 void setWindowTopButtonsStyle (QString windowButtonsStyle [], const QString style)
@@ -328,9 +329,11 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
                            " {background-color:rgb(150, 0, 60);"
                            " border:none;"
                            " color: white;}"
+
                            " QListView::item"
                            " {outline: 0px;"
                            " border: none;}"
+
                            " QListView::item:hover, QListView::item:selected,"
                            " QListView:selected"
                            " {color:white;"
@@ -339,6 +342,16 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
                            " background-color:rgb(100, 0, 30);}";
     }
 }
+
+
+void getLibraryStyleColors (QColor &back, QColor &selected, QColor &hover, QColor &hoverSelected)
+{
+    back.setRgb(150, 0 ,60);
+    selected.setRgb(100, 0, 30);
+    hover.setRgb(160, 0 , 70);
+    hoverSelected.setRgb(125, 0, 45);
+}
+
 
 ///////////////////////////диалог подтверждения///////////////////////////
 void setAnswerDialogStyle (QString windowStyle [], const QString style)
