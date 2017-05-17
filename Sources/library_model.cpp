@@ -268,12 +268,19 @@ void LibraryListDelegate::paintIconViewItem(QPainter *painter, const QStyleOptio
 
 void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progress, QPainter *painter, const QRect &rect) const
 {
-    int green = 0;
-    if (progress >= 0.0 && progress <= 100.0)
-        green = 255*(progress/100);
+    double a = 0, b = 0;
 
-    painter->setBrush(QBrush(QColor::fromRgb(255 - green, 255, 255 - green), Qt::SolidPattern));
-    painter->drawEllipse(pos , 5, 5);
+    if (progress <= 50)
+        a = 1 - (progress/50.0);
+    else
+        b = (progress/50.0) - 1;
+
+
+    QColor color = QColor::fromRgb(200*a, 200*b, 200 - 200*(b+a));
+    painter->setBrush(QBrush(color, Qt::SolidPattern));
+    QColor penColor(0,0,0);
+    painter->setPen(penColor);
+    painter->drawEllipse(pos.x() - 5, pos.y() - 5, 10, 10);
 }
 
 

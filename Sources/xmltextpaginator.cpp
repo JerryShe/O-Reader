@@ -379,7 +379,10 @@ int XMLTextPaginator::parseTag()
         placeImage();
 
         if (columnHeight <= currentHeight)
+        {
+            doStep();
             return 3;
+        }
         return 2;
     }
 

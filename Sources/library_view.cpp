@@ -16,6 +16,8 @@ LibraryView::LibraryView(QWidget *widget)
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     setResizeMode(QListView::Adjust);
 
+    setAttribute(Qt::WA_AcceptTouchEvents);
+
     BookModel = new LibraryModel(this);
 
     delegate = new LibraryListDelegate();
