@@ -347,9 +347,9 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
 void getLibraryStyleColors (QColor &back, QColor &selected, QColor &hover, QColor &hoverSelected)
 {
     back.setRgb(150, 0 ,60);
-    selected.setRgb(100, 0, 30);
-    hover.setRgb(160, 0 , 70);
-    hoverSelected.setRgb(125, 0, 45);
+    selected.setRgb(151, 151, 227);
+    hover.setRgb(100, 0, 30);
+    hoverSelected.setRgb(130, 130, 195);
 }
 
 

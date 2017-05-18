@@ -43,7 +43,7 @@ public:
     QString getCodec();
     void setCodec(const QString &Codec);
 
-    QString getFile();
+    QString getFileName();
     void setFile(const QString &file);
 
     int getFormat();

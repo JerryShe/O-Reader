@@ -4,7 +4,7 @@
 
 #include "books.h"
 #include "tagsresolver.h"
-#include "bookimagetable.h"
+#include "book_image_table.h"
 #include "paginatorhelper.h"
 
 #include <QStringList>

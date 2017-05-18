@@ -215,5 +215,4 @@ void LibraryView::setSettingsData()
 
     getLibraryStyleColors(normal, selected, hover, hoverSelected);
     delegate->setItemsColors(normal, selected, hover, hoverSelected);
-    qDebug()<<"wtf";
 }

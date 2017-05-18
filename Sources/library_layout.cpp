@@ -76,9 +76,12 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     connect(ui->ShowButton, SIGNAL(toggled(bool)), bookWidget, SIGNAL(showButtonClicked()));
 
     connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
+    connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
     connect(bookWidget, SIGNAL(startReading(uint)), this, SIGNAL(startReading(uint)));
 
-    connect(this, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBook()));
+    connect(this, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
+    connect(ui->_Find, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
+    connect(ui->_ChangeViewMode, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
 }
 
 
@@ -110,7 +113,7 @@ void LibraryLayout::dropEvent(QDropEvent *e)
     }
     if (fileList.size() != 0)
     {
-        hideBook();
+        hideBookWidget();
         hideFind();
         LibHandler->AddBooks(fileList);
     }
@@ -133,7 +136,7 @@ LibraryView* LibraryLayout::getLibraryWidget()
 
 void LibraryLayout::on__AddBooks_clicked()
 {
-    hideBook();
+    hideBookWidget();
     hideFind();
 
     BookOrFolder *bookOrFolderAnsw = new BookOrFolder(ui->_AddBooks->mapToGlobal(QPoint(0,ui->_AddBooks->height())),
@@ -160,7 +163,7 @@ void LibraryLayout::addBooksFromFiles()
 
 void LibraryLayout::on__Delete_clicked()
 {
-    hideBook();
+    hideBookWidget();
     hideFind();
 
     if (ui->Library_View->getSelectedItemsCount() != 0)
@@ -181,7 +184,6 @@ void LibraryLayout::on__Delete_clicked()
 
 void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
 {
-    hideBook();
     ui->Library_View->changeViewMod();
     ProgramSettings->setLibraryReprezentation(checked);
 }
@@ -189,28 +191,26 @@ void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
 
 void LibraryLayout::on__Upscale_clicked()
 {
-    hideBook();
+    hideBookWidget();
     ui->Library_View->iconUpscale();
 }
 
 
 void LibraryLayout::on__Downscale_clicked()
 {
-    hideBook();
+    hideBookWidget();
     ui->Library_View->iconDownscale();
 }
 
 void LibraryLayout::on__SortBox_activated(const QString &arg1)
 {
-    hideBook();
+    hideBookWidget();
     LibHandler->sortBooks(arg1);
 }
 
 
 void LibraryLayout::on__Find_toggled(bool checked)
 {
-    hideBook();
-
     if (checked == true)
     {
         searchWindow = new SearchWindow(QPoint(ui->_Find->x(),ui->_Find->y() + ui->_Find->height()),
@@ -243,10 +243,10 @@ void LibraryLayout::hideFind()
 }
 
 
-void LibraryLayout::hideBook()
+void LibraryLayout::hideBookWidget()
 {
-    if(!ui->ShowButton->isChecked())
-        ui->ShowButton->setChecked(true);
+    ui->ShowButton->setChecked(true);
+    bookWidget->hideWidget();
 }
 
 

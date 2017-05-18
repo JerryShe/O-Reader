@@ -103,7 +103,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     case 2:
         if (clientHandler->autoLoginOnServer())
         {
-            QFile bookFile(LibHandler->getLastOpenedBook()->getFile());
+            QFile bookFile(LibHandler->getLastOpenedBook()->getFileName());
              if (!bookFile.exists())
              {
                  QMessageBox::information(0, tr("Error!"), tr("Book file lost :( \nReturning to library..."));
@@ -160,18 +160,16 @@ void WindowManager::showLogin()
 
 void WindowManager::showMain()
 {
-    this->show();
-
     mainWindow = new MainWindow(this);
+    this->show();
     this->setCentralWidget(mainWindow);
-
+    mainWindow->show();
 
     if (LastWindow != 0)
     {
         delete LastWindow;
         saveProgramData();
     }
-    mainWindow->show();
 
     LastWindow = mainWindow;
 

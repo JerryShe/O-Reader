@@ -2,6 +2,7 @@
 #define BOOK_PAGE_H
 
 #include <QMainWindow>
+
 #include "books.h"
 
 namespace Ui {
@@ -13,7 +14,7 @@ class BookPage : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit BookPage(Book *book, const QString &Style, QWidget *parent = 0);
+    explicit BookPage(Book *boo, QWidget *parent = 0);
     ~BookPage();
     void readBook();
 
@@ -21,15 +22,26 @@ private slots:
     void on_startReading_clicked();
     void on_deleteBook_clicked();
 
+    void on_ShowIllustrations_clicked();
+    void on_PrevIllustration_clicked();
+    void on_CloseIllustrations_clicked();
+    void on_NextIllustration_clicked();
+
 signals:
     void startReading(unsigned int index);
     void deleteBook(unsigned int index);
 
 private:
     void setStyle(QString Style);
+
+    void showIllustrationAt(const int i);
+
     Ui::BookPage *ui;
-    unsigned int BookIndex;
-    QString style;
+
+    Book* book;
+    QVector <QImage> images;
+
+    int curImage;
 };
 
 #endif // BOOK_PAGE_H

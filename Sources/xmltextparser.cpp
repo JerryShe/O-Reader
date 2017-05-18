@@ -27,19 +27,21 @@ QString parseTagAttribute(QString tag, QString attr)
 XMLTextParser::XMLTextParser(Book *openingBook)
 {
     book = openingBook;
-    ImageTable = new BookImageTable();
 
     if (book->getFormat() == 1)
     {
         parseFB2();
         createFB2TableOfContents();
+        createFB2NotesTable();
     }
     else if (book->getFormat() == 2)
     {
         parseEPub();
-        createEPubImageTable();
         createEPubTableOfContents();
     }
+
+    ImageTable = new BookImageTable(openingBook);
+
 }
 
 
@@ -131,7 +133,7 @@ QStringList XMLTextParser::splitTextToWords(QString temp)
 
 void XMLTextParser::parseFB2()
 {
-    QFile bookFile(book->getFile());
+    QFile bookFile(book->getFileName());
     QString coverName;
 
 
@@ -178,14 +180,10 @@ void XMLTextParser::parseFB2()
             if (temp.indexOf("<binary") != -1)
             {
                 bookText.append(splitTextToWords(temp.left(temp.indexOf("<binary"))));
-
-                createFB2ImageTable(temp);
                 break;
             }
             else
-            {
                 bookText.append(splitTextToWords(temp));
-            }
         }
         bookFile.close();
     }
@@ -198,8 +196,6 @@ void XMLTextParser::parseFB2()
     if (book->haveCoverImage())
         bookText.prepend("<image l:href=\"#" + coverName + "\"/>");
 
-
-    createFB2NotesTable();
     delete doc;
 }
 
@@ -245,55 +241,6 @@ void XMLTextParser::createFB2NotesTable()
                 }
         }
     }
-}
-
-
-void XMLTextParser::createFB2ImageTable(QString htmlTail)
-{
-    QString base64 = htmlTail.right(htmlTail.size() - htmlTail.indexOf("<binary") - 7);
-    QString temp;
-
-    do
-    {
-        doc->operator >>(temp);
-
-        if (temp.indexOf("</binary>") == -1)
-        {
-            base64 += temp;
-            continue;
-        }
-        else
-        {
-            QString image;
-            QString imageFormat;
-            QString imageName;
-
-
-            int binPos = temp.indexOf("</binary>");
-            base64 += " " + temp.left(binPos);
-
-            temp = temp.right(temp.size() - binPos);
-
-            imageName = parseTagAttribute(base64, "id");
-
-
-            int imageFormatBegin = base64.indexOf("image/") + 6;
-            int imageFormatEnd = base64.indexOf("\"", imageFormatBegin);
-
-            imageFormat = base64.mid(imageFormatBegin, imageFormatEnd - imageFormatBegin);
-
-
-            int base64Begin = base64.indexOf(">", imageFormatEnd) + 1;
-
-            image += base64.mid(base64Begin, base64.size() - base64Begin);
-
-
-            ImageTable->addImage(imageName, image, imageFormat);
-
-            base64.clear();
-        }
-    }
-    while (temp.indexOf("</FictionBook>") == -1 && !doc->atEnd());
 }
 
 
@@ -356,12 +303,6 @@ void XMLTextParser::createFB2TableOfContents()
 
 
 void XMLTextParser::parseEPub()
-{
-
-}
-
-
-void XMLTextParser::createEPubImageTable()
 {
 
 }

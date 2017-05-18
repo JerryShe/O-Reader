@@ -98,7 +98,7 @@ LibraryView* MainWindow::getLibraryWidget()
 
 void MainWindow::showBookPage(const unsigned int &index)
 {
-    page = new BookPage(ui->LibraryWidget->getBookByIndex(index), ProgramSettings->getInterfaceStyle(), this);
+    page = new BookPage(ui->LibraryWidget->getBookByIndex(index), this);
     connect(page, SIGNAL(startReading(unsigned int)), this, SLOT(startReading(unsigned int)));
     connect(page, SIGNAL(deleteBook(unsigned int)), ui->LibraryWidget, SLOT(deleteBook(unsigned int)));
 }

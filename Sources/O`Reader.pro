@@ -40,10 +40,10 @@ SOURCES += main.cpp\
     xmltextpaginator.cpp \
     tagsresolver.cpp \
     xmltextparser.cpp \
-    bookimagetable.cpp \
     paginatorhelper.cpp \
     library_model.cpp \
-    library_view.cpp
+    library_view.cpp \
+    book_image_table.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -76,10 +76,10 @@ HEADERS  += \
     xmltextpaginator.h \
     tagsresolver.h \
     xmltextparser.h \
-    bookimagetable.h \
     paginatorhelper.h \
     library_model.h \
-    library_view.h
+    library_view.h \
+    book_image_table.h
 
 FORMS    += \
     settings_programlayout.ui \

@@ -127,7 +127,7 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
         {
             if (bookList[j].getIndex() == deletedItemsIndexes.at(i))
             {
-                UserActions->addAction(UActions::DeleteBook, bookList[j].getFile());
+                UserActions->addAction(UActions::DeleteBook, bookList[j].getFileName());
                 bookList.remove(j);
                 break;
             }
@@ -203,7 +203,7 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 {
     for (int j = 0; j < bookList.size(); j++)
     {
-        if (file == bookList[j].getFile())
+        if (file == bookList[j].getFileName())
         {
             /// оповещение - такая книга уже есть
             return;
@@ -244,7 +244,7 @@ void LibraryHandler::deleteBook(const unsigned int &index)
     for (int i = 0; i < bookList.size(); i++)
         if (bookList[i].getIndex() == index)
         {
-            UserActions->addAction(UActions::DeleteBook, bookList[i].getFile());
+            UserActions->addAction(UActions::DeleteBook, bookList[i].getFileName());
             bookList.remove(i);
             break;
         }

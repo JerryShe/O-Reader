@@ -359,7 +359,7 @@ int XMLTextPaginator::parseTag()
         if (!ImageTable->contains(imageName))
             return 2;
 
-        QPair <QString, int> imgData = ImageTable->getImage(imageName, columnHeight - currentHeight, columnWidth, columnHeight);
+        QPair <QString, int> imgData = ImageTable->getHTMLImage(imageName, columnHeight - currentHeight, columnWidth, columnHeight);
 
         HTMLImage = imgData.first;
         if (HTMLImage.isEmpty())

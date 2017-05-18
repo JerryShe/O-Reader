@@ -16,6 +16,9 @@
 #include <QDebug>
 #include <QFileInfo>
 
+#include <QMimeType>
+#include <QMimeDatabase>
+
 
 
 Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
@@ -143,7 +146,6 @@ bool Book::loadFB2(QString fileName, GenresMap *Gmap)
                     if (nodeList.at(i).toElement().attribute("id") == coverName)
                     {
                         CoverType = nodeList.at(i).toElement().attribute("content-type");
-
                         Cover = nodeList.at(i).toElement().text();
 
                         for (int i = 0; i < Cover.size(); i++)
@@ -159,25 +161,26 @@ bool Book::loadFB2(QString fileName, GenresMap *Gmap)
                 QImage tempImage;
                 QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
-                if (CoverType == "image/jpeg" || CoverType == "image/jpg")
-                    tempImage = QImage::fromData(BinaryCover, "JPG");
-                if (CoverType == "image/png")
-                    tempImage = QImage::fromData(BinaryCover, "PNG");
 
-                if (tempImage.height() > 1000 || tempImage.width() > 750)
-                {
+                QMimeDatabase data;
+                CoverType = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+
+                std::string str = CoverType.toStdString();
+                const char* p = str.c_str();
+
+                tempImage = QImage::fromData(BinaryCover, p);
+
+
+                if (tempImage.height() > 750 || tempImage.width() > 1000)
                     tempImage.scaled(750, 1000, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-                    QByteArray ba;
-                    QBuffer bu(&ba);
 
-                    if (CoverType == "image/jpeg" || CoverType == "image/jpg")
-                        tempImage.save(&bu, "JPG");
-                    if (CoverType == "image/png")
-                        tempImage.save(&bu, "PNG");
+                QByteArray ba;
+                QBuffer bu(&ba);
 
-                    Cover = ba.toBase64();
-                }
+                tempImage.save(&bu, p);
+
+                Cover = ba.toBase64();
             }
             else
                 CoverType = "noImage";
@@ -328,10 +331,13 @@ QImage Book::getCover()
         {
             QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
-            if (CoverType == "image/jpeg" || CoverType == "image/jpg")
-                tempImage = QImage::fromData(BinaryCover, "JPG");
-            if (CoverType == "image/png")
-                tempImage = QImage::fromData(BinaryCover, "PNG");
+            QMimeDatabase data;
+            CoverType = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+
+            std::string str = CoverType.toStdString();
+            const char* p = str.c_str();
+
+            tempImage = QImage::fromData(BinaryCover, p);
         }
         else
             tempImage = QImage(":/Images/noImage.png");
@@ -444,7 +450,7 @@ void Book::setCodec(const QString &codec)
 }
 
 
-QString Book::getFile()
+QString Book::getFileName()
 {
     return File;
 }

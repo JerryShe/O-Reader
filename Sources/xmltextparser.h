@@ -2,7 +2,7 @@
 #define XMLTEXTPARSER_H
 
 #include "books.h"
-#include "bookimagetable.h"
+#include "book_image_table.h"
 
 #include <QObject>
 #include <QTextStream>
@@ -29,7 +29,7 @@ public:
 private:
     void parseFB2();
     void createFB2TableOfContents();
-    void createFB2ImageTable(QString htmlTail);
+    void createFB2ImageTable();
     void createFB2NotesTable();
 
     void parseEPub();

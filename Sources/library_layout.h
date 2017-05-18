@@ -36,7 +36,7 @@ private slots:
     void addBooksFromFolder();
 
     void hideFind();
-    void hideBook();
+    void hideBookWidget();
 
     void on_ShowButton_clicked();
 

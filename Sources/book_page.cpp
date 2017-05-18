@@ -3,7 +3,12 @@
 
 #include "styles.h"
 #include "books.h"
-#include "reading_window.h"
+#include "settings.h"
+#include "answer_dialog.h"
+#include "book_image_table.h"
+
+
+#include <QDebug>
 
 void BookPage::setStyle(QString Style)
 {
@@ -27,18 +32,21 @@ void BookPage::setStyle(QString Style)
 
     setExitButtonStyle(PageStyles, Style);
     ui->exit_button->setStyleSheet(PageStyles[0]);
+
+    ui->ImageCounter->setStyleSheet("color:white");
 }
 
-BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
+BookPage::BookPage(Book *boo, QWidget *parent) :
     //QMainWindow(parent),
     ui(new Ui::BookPage)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    BookIndex = book->getIndex();
+    book = boo;
     ui->setupUi(this);
-    setStyle(Style);
-    style = Style;
+    ui->stackedWidget->setCurrentWidget(ui->BookWidget);
+
+    setStyle(Settings::getSettings()->getInterfaceStyle());
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setWindowFlags(Qt::Popup);
@@ -64,8 +72,7 @@ BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
     ui->annotation->setAlignment(Qt::AlignJustify);
 
     QPixmap cover = QPixmap::fromImage(book->getCover());
-    ui->Image->setMaximumSize(cover.size());
-    ui->Image->setMinimumSize(cover.size());
+    ui->Image->setFixedSize(cover.size());
     ui->Image->setPixmap(cover);
 
     int textWidth = this->width() - ui->BookData->contentsMargins().left() - ui->BookData->contentsMargins().right()
@@ -94,35 +101,97 @@ BookPage::BookPage(Book *book, const QString &Style, QWidget *parent) :
 
     connect(ui->exit_button, SIGNAL(clicked(bool)), this, SLOT(close()));
 
+
+    //illustrations
+    BookImageTable imageTable(book);
+    images = imageTable.getBookImages();
+
+    if (images.size() == 0)
+        ui->ShowIllustrations->setEnabled(false);
+
     show();
 }
 
 BookPage::~BookPage()
 {
+    qDebug()<<"delete BookPage";
     delete ui;
 }
+
 
 void BookPage::on_startReading_clicked()
 {
     this->hide();
-    emit startReading(BookIndex);
+    emit startReading(book->getIndex());
     this->close();
 }
 
+
 void BookPage::on_deleteBook_clicked()
 {
-    AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(ui->deleteBook->x() - 300, ui->deleteBook->height() - 70)),
+    AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(ui->deleteBook->width() - 300, ui->deleteBook->height() - 70)),
                                                    QObject::tr("Delete book?"),
-                                                   style,
+                                                   Settings::getSettings()->getInterfaceStyle(),
                                                    this);
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
     {
-        emit deleteBook(BookIndex);
+        emit deleteBook(book->getIndex());
         delete answer_window;
         this->close();
     }
     else
         delete answer_window;
+}
+
+
+void BookPage::on_ShowIllustrations_clicked()
+{
+    curImage = 0;
+    showIllustrationAt(curImage);
+
+    ui->stackedWidget->setCurrentWidget(ui->IllustrationsWidget);
+}
+
+
+void BookPage::showIllustrationAt(const int i)
+{
+    if (i >= images.size() || i < 0)
+        return;
+
+    QImage img = images[i];
+    if (img.width() > this->width() || img.height() > this->height() - 70)
+        img = img.scaled(this->width(), this->height() - 70, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    ui->IllustrationLabel->setFixedSize(img.size());
+
+    QPixmap pixmap = QPixmap::fromImage(img);
+    ui->IllustrationLabel->setPixmap(pixmap);
+
+    ui->ImageCounter->setText(QString::number(i+1) + "/" + QString::number(images.size()));
+}
+
+
+void BookPage::on_PrevIllustration_clicked()
+{
+    if (curImage > 0 && curImage <= images.size())
+        showIllustrationAt(--curImage);
+    else
+        curImage = 0;
+}
+
+
+void BookPage::on_CloseIllustrations_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->BookWidget);
+}
+
+
+void BookPage::on_NextIllustration_clicked()
+{
+    if (curImage >= 0 && curImage < images.size()-1)
+        showIllustrationAt(++curImage);
+    else
+        curImage = 0;
 }
