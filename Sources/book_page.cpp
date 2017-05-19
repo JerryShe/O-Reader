@@ -12,7 +12,7 @@
 
 void BookPage::setStyle(QString Style)
 {
-    QString PageStyles[7];
+    QString PageStyles[8];
 
     setBookPageStyle(PageStyles, Style);
 
@@ -30,11 +30,16 @@ void BookPage::setStyle(QString Style)
     ui->BookProgress->setStyleSheet(PageStyles[2]);
     ui->annotation->setStyleSheet(PageStyles[3]);
 
+    ui->ImageCounter->setStyleSheet(PageStyles[2]);
+
+    ui->NextIllustration->setStyleSheet(PageStyles[6]);
+    ui->PrevIllustration->setStyleSheet(PageStyles[7]);
+
     setExitButtonStyle(PageStyles, Style);
     ui->exit_button->setStyleSheet(PageStyles[0]);
-
-    ui->ImageCounter->setStyleSheet("color:white");
+    ui->CloseIllustrations->setStyleSheet(PageStyles[0]);
 }
+
 
 BookPage::BookPage(Book *boo, QWidget *parent) :
     //QMainWindow(parent),
@@ -111,6 +116,7 @@ BookPage::BookPage(Book *boo, QWidget *parent) :
 
     show();
 }
+
 
 BookPage::~BookPage()
 {

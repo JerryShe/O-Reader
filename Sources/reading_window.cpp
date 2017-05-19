@@ -122,6 +122,8 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
+    connect(BookPaginator, SIGNAL(showNote(int,QStringList)), this, SLOT(showNote(int,QStringList)));
+
     qDebug()<<"readingWindow created";
 }
 
@@ -163,6 +165,20 @@ ReadingWindow::~ReadingWindow()
     delete BookPaginator;
     delete ui;
     qDebug()<<"delete reading window";
+}
+
+
+void ReadingWindow::showNextPage()
+{
+    ui->TextPage->setHtml(BookPaginator->getPageForward());
+    updateProgress();
+}
+
+
+void ReadingWindow::showPrevPage()
+{
+    ui->TextPage->setHtml(BookPaginator->getPageBackward());
+    updateProgress();
 }
 
 
@@ -266,14 +282,12 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
             if (KeyEvent->key() == ProgramSettings->getFForwardKey() || KeyEvent->key() == ProgramSettings->getSForwardKey())
             {
-                ui->TextPage->setHtml(BookPaginator->getPageForward());
-                updateProgress();
+                showNextPage();
             }
             else
             if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
             {
-                ui->TextPage->setHtml(BookPaginator->getPageBackward());
-                updateProgress();
+                showPrevPage();
             }
             else
             if (KeyEvent->key() == Qt::Key_Escape && this->parentWidget()->isMaximized())
@@ -291,13 +305,11 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
                 if (Wheel->delta() < 0)
                 {
-                    ui->TextPage->setHtml(BookPaginator->getPageForward());
-                    updateProgress();
+                    showNextPage();
                 }
                 else if (Wheel->delta() > 0)
                 {
-                    ui->TextPage->setHtml(BookPaginator->getPageBackward());
-                    updateProgress();
+                    showPrevPage();
                 }
             }
             break;
@@ -314,14 +326,12 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                     {
                         if (MousePressEvent->pos().x() > this->size().width() - 100)
                         {
-                            ui->TextPage->setHtml(BookPaginator->getPageForward());
-                            updateProgress();
+                            showNextPage();
                         }
                         else
                         if (MousePressEvent->pos().x() < 100)
                         {
-                            ui->TextPage->setHtml(BookPaginator->getPageBackward());
-                            updateProgress();
+                            showPrevPage();
                         }
                     }
                 }
@@ -341,14 +351,12 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                     {
                         if (MousePressEvent->pos().x() > this->size().width() - 100)
                         {
-                            ui->TextPage->setHtml(BookPaginator->getPageForward());
-                            updateProgress();
+                            showNextPage();
                         }
                         else
                         if (MousePressEvent->pos().x() < 100)
                         {
-                            ui->TextPage->setHtml(BookPaginator->getPageBackward());
-                            updateProgress();
+                            showPrevPage();
                         }
                     }
 

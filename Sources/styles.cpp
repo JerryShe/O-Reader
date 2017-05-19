@@ -413,6 +413,12 @@ void setBookPageStyle(QString BookPageStyle[], const QString style)
                             "{background-color: rgb(157, 0, 60);"
                             "color: rgb(157, 0, 60);}";
 
+        BookPageStyle[6] = "#NextIllustration{"
+                           "}";
+
+        BookPageStyle[7] = "#PrevIllustration{"
+                           "}";
+
     }
 }
 

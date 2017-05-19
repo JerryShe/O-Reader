@@ -58,7 +58,7 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     Resolver = new TagsResolver(this, book->getFormat());
     Helper = new PaginatorHelper(this);
 
-    Helper->setHTMLPageElems(PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
+    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
 
@@ -340,9 +340,41 @@ int XMLTextPaginator::parseTag()
         if (!tagType)
         {
             if (parseTagAttribute(tag, "type") == "note")
-                tag = "note";
+            {
+                QString id = parseTagAttribute(tag, "href");
+                if (notesTable.contains(id))
+                {
+                    QString noteText;
+                    for (int i = 0; i < notesTable[id].size(); i++)
+                    {
+                        if (notesTable[id][i][1] == '<')
+                        {
+                            tagInfo noteTag = Resolver->getTag(notesTable[id][i]);
+                            if (noteTag.index == -1)
+                                return 2;
 
-            /// emit
+                            bool nTagType = noteTag.type;
+                            QString nTag = noteTag.html;
+
+                            if (nTagType)
+                                nTag = "</" + nTag + ">";
+                            else
+                                nTag = "<" + nTag + ">";
+
+                            noteText.append(nTag);
+                        }
+                        else
+                        {
+                            if (notesTable[id][i].right(1) != "-" || notesTable[id][i].size() == 1)
+                                noteText.append(notesTable[id][i] + " ");
+                            else
+                                noteText.append(notesTable[id][i]);
+                        }
+                    }
+                    Notes.append(noteText);
+                }
+                tag = "note";
+            }
         }
         else
             tag ="note";
@@ -386,7 +418,7 @@ int XMLTextPaginator::parseTag()
         return 2;
     }
 
-    if (TagInf.index < 20)
+    if (TagInf.index < 30)
         return 1;
 
     return 2;
@@ -585,7 +617,6 @@ QString XMLTextPaginator::getPageForward()
                     {
                         tag = bookText[currentTextPos];
                         int parseResalt = parseTag();
-
                         if (parseResalt == 1)
                         {
                             applyTag();
@@ -624,7 +655,11 @@ QString XMLTextPaginator::getPageForward()
         createHTMLPage();
         debugSave(HTMLPage);
     }
-    return PageHTMLHeader + HTMLPage + PageHTMLBottom;
+    else
+    {
+        qDebug()<<currentTextPos<<"  "<<currentEStrNum<<"    "<<strCount;
+    }
+    return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
 
@@ -705,7 +740,7 @@ QString XMLTextPaginator::getPageBackward()
         debugSave(HTMLPage);
     }
 
-    return PageHTMLHeader + HTMLPage + PageHTMLBottom;
+    return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
 
@@ -720,7 +755,7 @@ QString XMLTextPaginator::resizePage(const int &width, const int &height)
 
 QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 {
-    Helper->setHTMLPageElems(PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
+    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
 
@@ -731,7 +766,7 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 float XMLTextPaginator::getProgress()
 {
     if (currentBStrNum > 0 && strCount)
-        return (((float)currentEStrNum/(float)strCount) * 100);
+        return (((float)(currentEStrNum+1)/(float)strCount) * 100);
     else
         return 0;
 }
@@ -742,6 +777,6 @@ void XMLTextPaginator::debugSave(const QString &HTMLPage)
     QFile asd("F:/asd.html");
     asd.open(QIODevice::WriteOnly);
     QTextStream out(&asd);
-    out<<PageHTMLHeader + HTMLPage + PageHTMLBottom;
+    out<<PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
     asd.close();
 }

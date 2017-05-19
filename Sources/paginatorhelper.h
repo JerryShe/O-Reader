@@ -13,7 +13,7 @@ public:
     PaginatorHelper(QObject* parent);
     ~PaginatorHelper();
 
-    void setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom);
+    void setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom);
     void setFontMetrics(QHash <QString, QFontMetrics *> *fontsMetrics, QHash <QString, double> *fontsLinespaces);
     void setPageSizes(unsigned short &columnCount, unsigned short &TextLeftRightIdent, unsigned short &TextTopBottomIdent, unsigned short &ParLeftTopIdent);
 

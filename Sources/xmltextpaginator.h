@@ -37,8 +37,11 @@ public slots:
     QString goToSection(const long long sectionIndex);
 
 
-private:
+signals:
+    void showNotes(QStringList);
 
+
+private:
     int getWordWidth();
     int getWordHeight();
     int getWordHeightFor(QString name);
@@ -104,6 +107,7 @@ private:
     TagsResolver *Resolver;
     PaginatorHelper *Helper;
 
+    QString PageHTMLStyles;
     QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;
 
     QStack <QString> tagStack;
@@ -120,6 +124,8 @@ private:
     int HTMLImageSize;
 
     QHash <QString, QStringList> notesTable;
+
+    QStringList Notes;
 };
 
 #endif // FB2TEXTPAGINATOR_H

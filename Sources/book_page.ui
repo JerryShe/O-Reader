@@ -36,7 +36,7 @@
        <number>0</number>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="BookWidget">
        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0,0,1,0">
@@ -700,7 +700,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string>&lt;-</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -779,7 +779,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string>-&gt;</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -817,7 +817,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string>X</string>
+             <string/>
             </property>
            </widget>
           </item>

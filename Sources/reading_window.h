@@ -57,13 +57,15 @@ private slots:
     void reprintResizedText();
     void reprintNewSettText();
 
+    void on_ReadProfilesButton_clicked();
     void changeReadProfile(const QModelIndex &index);
 
     void goToSection(const long long sectionIndex);
 
     void setBackgroundImage();
 
-    void on_ReadProfilesButton_clicked();
+    void showNextPage();
+    void showPrevPage();
 
 signals:
     void showMainWindow();

@@ -45,34 +45,34 @@ void TagsResolver::createFB2map()
 {
     TagMap.clear();
 
-    TagMap.insert("title", tagInfo(0, 1, "TitleText"));
-    TagMap.insert("epigraph", tagInfo(0, 2, "epigraph"));
-    TagMap.insert("annotation", tagInfo(0, 3, "annotation"));
-    TagMap.insert("subtitle", tagInfo(0, 4, "subtitle"));
+    TagMap.insert("title", tagInfo(1, 1, "TitleText"));
+    TagMap.insert("epigraph", tagInfo(1, 2, "epigraph"));
+    TagMap.insert("annotation", tagInfo(1, 3, "annotation"));
+    TagMap.insert("subtitle", tagInfo(1, 4, "subtitle"));
 
 
-    TagMap.insert("strong", tagInfo(0, 10, "strong"));
-    TagMap.insert("emphasis", tagInfo(0, 11, "emphasis"));
-    TagMap.insert("strikethrough", tagInfo(0, 12, "strike"));
-    TagMap.insert("text-author", tagInfo(0, 13, "cite"));
-    TagMap.insert("cite", tagInfo(0, 14, "cite"));
-    TagMap.insert("sub", tagInfo(0, 15, "sub"));
-    TagMap.insert("sup", tagInfo(0, 16, "sup"));    
+    TagMap.insert("strong", tagInfo(1, 10, "strong"));
+    TagMap.insert("emphasis", tagInfo(1, 11, "emphasis"));
+    TagMap.insert("strikethrough", tagInfo(1, 12, "strike"));
+    TagMap.insert("text-author", tagInfo(1, 13, "cite"));
+    TagMap.insert("cite", tagInfo(1, 14, "cite"));
+    TagMap.insert("sub", tagInfo(1, 15, "sub"));
+    TagMap.insert("sup", tagInfo(1, 16, "sup"));
 
 
-    TagMap.insert("poem", tagInfo(0, 20, "poem"));
-    TagMap.insert("stanza", tagInfo(0, -1, ""));
-    TagMap.insert("v", tagInfo(0, 22, "p"));
+    TagMap.insert("poem", tagInfo(1, 20, "poem"));
+    TagMap.insert("v", tagInfo(1, 30, "p"));
+    TagMap.insert("stanza", tagInfo(0, 33, "br/"));
 
 
-    TagMap.insert("p", tagInfo(0, 30, "p"));
-    TagMap.insert("body", tagInfo(0, 31, "body"));
-    TagMap.insert("section", tagInfo(0, 32, "section"));
+    TagMap.insert("p", tagInfo(1, 30, "p"));
+    TagMap.insert("body", tagInfo(1, 31, "body"));
+    TagMap.insert("section", tagInfo(1, 32, "section"));
     TagMap.insert("empty-line", tagInfo(0, 33, "br/"));
 
 
     TagMap.insert("image", tagInfo(0, 40, "img"));
-    TagMap.insert("a", tagInfo(0, 41, "a"));
+    TagMap.insert("a", tagInfo(1, 41, "a"));
 }
 
 
@@ -120,7 +120,8 @@ tagInfo TagsResolver::getTag(QString tagStr)
     if (TagMap.contains(tagStr))
     {
         tagInfo temp = TagMap[tagStr];
-        temp.type = TagType;
+        if (temp.type)
+            temp.type = TagType;
 
         if (!tagTail.isEmpty())
             temp.html += tagTail;

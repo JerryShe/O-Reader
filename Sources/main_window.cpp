@@ -14,6 +14,7 @@
 
 #include <QDebug>
 
+
 void MainWindow::setStyle()
 {
     QString currentStyle = ProgramSettings->getInterfaceStyle();

@@ -15,11 +15,11 @@ PaginatorHelper::~PaginatorHelper()
 }
 
 
-void PaginatorHelper::setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom)
+void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom)
 {
     QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
 
-    PageHTMLHeader = "<style type='text/css'>"
+    PageHTMLStyles = "<style type='text/css'>"
                      "p{"
                           + topMargin +
                           "margin-bottom:0px;"
@@ -58,20 +58,21 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTM
                           + topMargin + "font-weight:" + QString::number(99) + ";}"
 
                       + ((CurProfile.BackgroundType == true) ? ("body{background-color:" + CurProfile.BackgroundImage + ";}") : ("")) +
-                  "</style>"
-                  "<body>"
-                  "<table border='0' style='"
-                    "table-layout: fixed;"
-                    "empty-cells: show;"
-                    "margin-top: " + QString::number(CurProfile.TextTopBottomIdent/100) + "px;"
-                    "margin-bottom: " + QString::number(CurProfile.TextTopBottomIdent%100) + "px;"
-                    "margin-left:" + QString::number(CurProfile.TextLeftRightIdent/100) + "px;"
-                    "margin-right:" + QString::number(CurProfile.TextLeftRightIdent%100) + "px;'"
-                    "width='100%'"
-                    "cellspacing='-30' cellpadding='30'>"
-                  "<tr>"
-                  "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
-                  "<Text>";
+                  "</style>";
+
+    PageHTMLHeader = "<body>"
+                     "<table border='0' style='"
+                       "table-layout: fixed;"
+                       "empty-cells: show;"
+                       "margin-top: " + QString::number(CurProfile.TextTopBottomIdent/100) + "px;"
+                       "margin-bottom: " + QString::number(CurProfile.TextTopBottomIdent%100) + "px;"
+                       "margin-left:" + QString::number(CurProfile.TextLeftRightIdent/100) + "px;"
+                       "margin-right:" + QString::number(CurProfile.TextLeftRightIdent%100) + "px;'"
+                       "width='100%'"
+                       "cellspacing='-30' cellpadding='30'>"
+                     "<tr>"
+                     "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
+                     "<Text>";
 
     PageHTMLSep = "</Text></td><td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'><Text>";
     PageHTMLBottom = "</Text></td></tr></table></body>";
