@@ -27,7 +27,6 @@ LibraryView::LibraryView(QWidget *widget)
     setSettingsData();
     this->setItemDelegate(delegate);
 
-
     setModel(BookModel);
 
     setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -59,7 +58,6 @@ void LibraryView::showSelectedItem(const QModelIndex &mIndex)
 void LibraryView::addItem(Book *book)
 {
     BookModel->addBook(book);
-    this->reset();
     this->repaint();
 }
 

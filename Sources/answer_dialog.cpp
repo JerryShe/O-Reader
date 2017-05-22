@@ -1,9 +1,10 @@
 #include "answer_dialog.h"
 
 #include "styles.h"
+#include "settings.h"
 
 
-AnswerDialog::AnswerDialog(const QPoint position, const QString text, const QString Style, QWidget *parent)
+AnswerDialog::AnswerDialog(const QPoint position, const QString text, QWidget *parent)
 {
     setParent(parent);
     resize(300,70);
@@ -25,7 +26,7 @@ AnswerDialog::AnswerDialog(const QPoint position, const QString text, const QStr
 
 
     QString styles[3];
-    setAnswerDialogStyle (styles, Style);
+    setAnswerDialogStyle (styles, Settings::getSettings()->getInterfaceStyle());
     setStyleSheet(styles[0]);
     yes->setStyleSheet(styles[1]);
     no->setStyleSheet(styles[2]);

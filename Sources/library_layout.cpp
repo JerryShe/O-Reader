@@ -170,7 +170,6 @@ void LibraryLayout::on__Delete_clicked()
     {
         AnswerDialog *answer_window = new AnswerDialog(ui->_Delete->mapToGlobal(QPoint(ui->_Delete->width() - 300, ui->_Delete->height())),
                                                        QObject::tr("Delete books?"),
-                                                       ProgramSettings->getInterfaceStyle(),
                                                        this);
         answer_window->show();
 

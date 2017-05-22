@@ -238,7 +238,6 @@ void ReadingWindow::on_exit_button_clicked()
 
     AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(ui->exit_button->width() - 300, ui->exit_button->height())),
                                                    QObject::tr("Exit?"),
-                                                   ProgramSettings->getInterfaceStyle(),
                                                    this);
     answer_window->show();
 

@@ -300,7 +300,6 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
     {
         AnswerDialog *answer_window = new AnswerDialog(ui->NopeButton->mapToGlobal(QPoint(ui->NopeButton->width(), ui->NopeButton->height())),
                                                        QObject::tr("Delete style?"),
-                                                       ProgramSettings->getInterfaceStyle(),
                                                        this);
         answer_window->show();
 

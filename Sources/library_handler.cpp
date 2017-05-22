@@ -225,7 +225,10 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
         UserActions->addAction(UActions::AddBook, file);
         if (libraryView != 0)
+        {
             libraryView->addItem(&boo);
+            libraryView->reset();
+        }
     }
     if (format == 3)
     {
@@ -270,31 +273,33 @@ void LibraryHandler::sortBooks(const QString &mode)
     if (libraryView == 0)
         return;
 
+    libraryView->clear();
+
     if (mode == QObject::tr("Date"))
     {
-        libraryView->clear();
         for (int i = 0; i < bookList.size(); i++)
             libraryView->addItem(&bookList[i]);
+
         return;
     }
     if (mode == QObject::tr("Author"))
     {
-
         QVector <Book> indexVector = bookList;
         qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
-        libraryView->clear();
+
         for (int i = 0; i < indexVector.size(); i++)
             libraryView->addItem(&indexVector[i]);
+
         return;
     }
     if (mode == QObject::tr("Title"))
     {
-        libraryView->clear();
         QVector <Book> indexVector = bookList;
-        qSort(indexVector.begin(), indexVector.end(), TitleComparator);
-        libraryView->clear();
+        qSort(indexVector.begin(), indexVector.end(), &TitleComparator);
+
         for (int i = 0; i < indexVector.size(); i++)
             libraryView->addItem(&indexVector[i]);
+
         return;
     }
 }
@@ -305,29 +310,35 @@ void LibraryHandler::findBooks(const QString &token, const QString &mode)
     if (libraryView == 0)
         return;
 
-    if (token != "")
+    if (!token.isEmpty())
     {
-        needRefresh = true;
         libraryView->clear();
+        needRefresh = true;
+
         if (mode == QObject::tr("Title"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
                     libraryView->addItem(&bookList[i]);
+
             return;
         }
+
         if (mode == QObject::tr("Author"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
                     libraryView->addItem(&bookList[i]);
+
             return;
         }
+
         if (mode == QObject::tr("Series"))
         {
             for (int i = 0; i < bookList.size(); i++)
                 if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
                     libraryView->addItem(&bookList[i]);
+
             return;
         }
     }

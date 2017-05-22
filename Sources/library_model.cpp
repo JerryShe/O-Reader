@@ -268,6 +268,9 @@ void LibraryListDelegate::paintIconViewItem(QPainter *painter, const QStyleOptio
 
 void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progress, QPainter *painter, const QRect &rect) const
 {
+    if (pos.x() == 0)
+        return;
+
     double a = 0, b = 0;
 
     if (progress <= 50)

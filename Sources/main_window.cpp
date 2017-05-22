@@ -116,7 +116,6 @@ void MainWindow::on_exit_button_clicked()
 {
     AnswerDialog *answer_window = new AnswerDialog(ui->exit_button->mapToGlobal(QPoint(ui->exit_button->width() - 300, ui->exit_button->height())),
                                                    QObject::tr("Exit?"),
-                                                   ProgramSettings->getInterfaceStyle(),
                                                    this);
     answer_window->show();
 
@@ -136,7 +135,6 @@ void MainWindow::on_Logout_clicked()
 
     AnswerDialog *answer_window = new AnswerDialog(ui->Logout->mapToGlobal(QPoint(ui->Logout->width(),0)),
                                                    QObject::tr("Logout?"),
-                                                   ProgramSettings->getInterfaceStyle(),
                                                    this);
     answer_window->show();
 

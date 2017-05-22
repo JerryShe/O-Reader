@@ -137,7 +137,6 @@ void BookPage::on_deleteBook_clicked()
 {
     AnswerDialog *answer_window = new AnswerDialog(ui->deleteBook->mapToGlobal(QPoint(ui->deleteBook->width() - 300, ui->deleteBook->height() - 70)),
                                                    QObject::tr("Delete book?"),
-                                                   Settings::getSettings()->getInterfaceStyle(),
                                                    this);
     answer_window->show();
 
