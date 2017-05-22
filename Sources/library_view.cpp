@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QCoreApplication>
 
+#include <QScrollBar>
+
 
 LibraryView::LibraryView(QWidget *widget)
 {
@@ -17,6 +19,7 @@ LibraryView::LibraryView(QWidget *widget)
     setResizeMode(QListView::Adjust);
 
     setAttribute(Qt::WA_AcceptTouchEvents);
+    verticalScrollBar()->setSingleStep(30);
 
     BookModel = new LibraryModel(this);
 
@@ -79,6 +82,7 @@ void LibraryView::changeViewMod()
         setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
         ProgramSettings->setLibraryReprezentation(false);
     }
+    verticalScrollBar()->setSingleStep(30);
 }
 
 

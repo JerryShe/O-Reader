@@ -5,9 +5,6 @@
 #include <QStateMachine>
 #include <QHBoxLayout>
 
-#include <QLabel>
-#include <QMovie>
-
 #include "main_window.h"
 #include "login_window.h"
 #include "reading_window.h"
@@ -31,8 +28,8 @@ public:
 
 
 public slots:
-    void startAnimation(QString gifFile);
-    void stopAnimation();
+    void showLoadingImage(QString imageFile);
+    void hideLoadingImage();
 
 private slots:
     void showLogin();
@@ -86,9 +83,7 @@ private:
 
     QWidget* LastWindow;
 
-    QLabel* animationLabel;
-    QMovie* animationMovie;
-    QTimer* animationTimer;
+    QLabel* loadingLabel;
 };
 
 #endif // WINDOW_MANAGER_H

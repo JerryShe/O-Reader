@@ -265,12 +265,13 @@ Book* LibraryLayout::getBookByIndex(const unsigned int &index)
 
 void LibraryLayout::deleteBook(const unsigned int &index)
 {
+    if (LibHandler->getLastOpenedBook() != 0)
+        if (LibHandler->getLastOpenedBook()->getIndex() == bookWidget->getBookIndex())
+        {
+            hideBookWidget();
+            ui->ShowButton->setEnabled(true);
+        }
     LibHandler->deleteBook(index);
-    if (LibHandler->getLastOpenedBook()->getIndex() == bookWidget->getBookIndex())
-    {
-        hideBookWidget();
-        ui->ShowButton->setEnabled(true);
-    }
 }
 
 

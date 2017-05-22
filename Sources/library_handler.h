@@ -46,8 +46,8 @@ public slots:
 
 
 signals:
-    void startLoadAnimation(QString gifFile);
-    void stopLoadAnimation();
+    void showLoadImage(QString gifFile);
+    void hideLoadImage();
 
 private:
     int getFileTipe(const QString &fileName);           /// 0 - unknown, 1 - FB2, 2 - EPub, 3 - zip

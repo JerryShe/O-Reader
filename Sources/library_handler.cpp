@@ -144,7 +144,7 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
 
 void LibraryHandler::AddBooks(const QStringList &fileList)
 {
-    emit startLoadAnimation("F:/load.gif");
+    emit showLoadImage("");
 
     qDebug()<<"adding books";
     if (!fileList.size())
@@ -159,7 +159,7 @@ void LibraryHandler::AddBooks(const QStringList &fileList)
     saveBookList();
     delete Gmap;
 
-    emit stopLoadAnimation();
+    emit hideLoadImage();
 }
 
 

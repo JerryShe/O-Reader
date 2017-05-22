@@ -11,13 +11,14 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include <QTimer>
 
-//////////////-
-#include "books.h"
 
 WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 {
+    LastWindow = 0;
+    loadingLabel = 0;
+
+
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
@@ -53,8 +54,8 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     UserSynchro->loadLog();
 
-    connect(LibHandler, SIGNAL(startLoadAnimation(QString)), this, SLOT(startAnimation(QString)));
-    connect(LibHandler, SIGNAL(stopLoadAnimation()), this, SLOT(stopAnimation()));
+    connect(LibHandler, SIGNAL(showLoadImage(QString)), this, SLOT(showLoadingImage(QString)));
+    connect(LibHandler, SIGNAL(hideLoadImage()), this, SLOT(hideLoadingImage()));
     LibHandler->loadBookList();
 
     LanguageTranslator = new QTranslator(this);
@@ -69,9 +70,6 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         qApp->installTranslator(LanguageTranslator);
 
     ProgramSettings->setTranslator(LanguageTranslator);
-
-    LastWindow = 0;
-    animationLabel = 0;
 
     this->layout()->setContentsMargins(0,0,0,0);
 
@@ -328,38 +326,31 @@ void WindowManager::showWindowMaximazed()
 }
 
 
-void WindowManager::startAnimation(QString gifFile)
+void WindowManager::showLoadingImage(QString imageFile)
 {
-    animationLabel = new QLabel(this);
-    animationLabel->setFixedSize(600, 300);
+    if (!imageFile.isEmpty())
+    {
+        QImage img(imageFile);
+        if (!img.isNull())
+        {
+            loadingLabel = new QLabel(this);
 
-    animationMovie = new QMovie(gifFile);
-    animationLabel->setMovie(animationMovie);
+            loadingLabel->setFixedSize(img.size());
+            loadingLabel->move(this->width()/2 - img.width()/2, this->height()/2 - img.height()/2);
 
-    animationTimer = new QTimer();
-    QThread* thread = new QThread();
-    thread->start();
-    animationTimer->moveToThread(thread);
-    //connect(animationTimer, &QTimer::timeout, [this](){qDebug()<<"wtf"; qApp->processEvents();});
-    QTimer::singleShot(200, thread, [](){qDebug()<<"asd";qApp->processEvents();});
-
-
-    animationLabel->show();
-    animationMovie->start();
+            loadingLabel->setPixmap(QPixmap::fromImage(img));
+            loadingLabel->show();
+        }
+    }
 }
 
 
-void WindowManager::stopAnimation()
+void WindowManager::hideLoadingImage()
 {
-    if (animationLabel != 0)
+    if (loadingLabel != 0)
     {
-        animationMovie->stop();
-
-        delete animationLabel;
-        delete animationMovie;
-        delete animationTimer;
-
-        animationLabel = 0;
+        delete loadingLabel;
+        loadingLabel = 0;
     }
 }
 
