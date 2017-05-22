@@ -11,6 +11,8 @@
 #include <QDir>
 #include <QMessageBox>
 
+#include <QTimer>
+
 //////////////-
 #include "books.h"
 
@@ -51,6 +53,8 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     UserSynchro->loadLog();
 
+    connect(LibHandler, SIGNAL(startLoadAnimation(QString)), this, SLOT(startAnimation(QString)));
+    connect(LibHandler, SIGNAL(stopLoadAnimation()), this, SLOT(stopAnimation()));
     LibHandler->loadBookList();
 
     LanguageTranslator = new QTranslator(this);
@@ -67,6 +71,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     ProgramSettings->setTranslator(LanguageTranslator);
 
     LastWindow = 0;
+    animationLabel = 0;
 
     this->layout()->setContentsMargins(0,0,0,0);
 
@@ -319,6 +324,42 @@ void WindowManager::showWindowMaximazed()
     {
         prev_geometry = geometry();
         showMaximized();
+    }
+}
+
+
+void WindowManager::startAnimation(QString gifFile)
+{
+    animationLabel = new QLabel(this);
+    animationLabel->setFixedSize(600, 300);
+
+    animationMovie = new QMovie(gifFile);
+    animationLabel->setMovie(animationMovie);
+
+    animationTimer = new QTimer();
+    QThread* thread = new QThread();
+    thread->start();
+    animationTimer->moveToThread(thread);
+    //connect(animationTimer, &QTimer::timeout, [this](){qDebug()<<"wtf"; qApp->processEvents();});
+    QTimer::singleShot(200, thread, [](){qDebug()<<"asd";qApp->processEvents();});
+
+
+    animationLabel->show();
+    animationMovie->start();
+}
+
+
+void WindowManager::stopAnimation()
+{
+    if (animationLabel != 0)
+    {
+        animationMovie->stop();
+
+        delete animationLabel;
+        delete animationMovie;
+        delete animationTimer;
+
+        animationLabel = 0;
     }
 }
 

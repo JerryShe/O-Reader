@@ -131,6 +131,7 @@ long long XMLTextPaginator::getCurrentSectionIndex()
         return TableOfContentsIndexes.size() - 1;
     return pos;
     */
+    return 0;
 }
 
 
@@ -344,34 +345,8 @@ int XMLTextPaginator::parseTag()
                 QString id = parseTagAttribute(tag, "href");
                 if (notesTable.contains(id))
                 {
-                    QString noteText;
-                    for (int i = 0; i < notesTable[id].size(); i++)
-                    {
-                        if (notesTable[id][i][1] == '<')
-                        {
-                            tagInfo noteTag = Resolver->getTag(notesTable[id][i]);
-                            if (noteTag.index == -1)
-                                return 2;
-
-                            bool nTagType = noteTag.type;
-                            QString nTag = noteTag.html;
-
-                            if (nTagType)
-                                nTag = "</" + nTag + ">";
-                            else
-                                nTag = "<" + nTag + ">";
-
-                            noteText.append(nTag);
-                        }
-                        else
-                        {
-                            if (notesTable[id][i].right(1) != "-" || notesTable[id][i].size() == 1)
-                                noteText.append(notesTable[id][i] + " ");
-                            else
-                                noteText.append(notesTable[id][i]);
-                        }
-                    }
-                    Notes.append(noteText);
+                    emit notesAvailable();
+                    PageNotes.append(id);
                 }
                 tag = "note";
             }
@@ -517,6 +492,8 @@ void XMLTextPaginator::commitWord()
 
 void XMLTextPaginator::preparePage(bool direction)
 {
+    PageNotes.clear();
+
     if (direction == parseDirection)
     {
             beginTagStack = tagStack;
@@ -655,10 +632,6 @@ QString XMLTextPaginator::getPageForward()
         createHTMLPage();
         debugSave(HTMLPage);
     }
-    else
-    {
-        qDebug()<<currentTextPos<<"  "<<currentEStrNum<<"    "<<strCount;
-    }
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
@@ -744,6 +717,59 @@ QString XMLTextPaginator::getPageBackward()
 }
 
 
+QString XMLTextPaginator::getPageNotes(const int &viewWidth)
+{
+    if (PageNotes.isEmpty())
+        return QString();
+
+    QString notes;
+
+    for (int i = 0; i < PageNotes.size(); i++)
+    {
+        if (notesTable.contains(PageNotes[i]))
+        {
+            QStringList temp = notesTable[PageNotes[i]];
+
+            notes.append("<p>");
+
+            for (int j = 0; j < temp.size(); j++)
+            {
+                if (temp[i][0] == '<')
+                {
+                    tagInfo noteTag = Resolver->getTag(temp[i]);
+                    if (noteTag.index == 40)
+                    {
+                        QString imageName = parseTagAttribute(temp[i], "href");
+                        imageName.remove(0,1);
+
+                        if (ImageTable->contains(imageName))
+                            notes.append(ImageTable->getHTMLImage(imageName, 6666, viewWidth, 6666).first);
+                    }
+                    else
+                    {
+                        if (noteTag.type)
+                            notes.append("<" + noteTag.html + ">");
+                        else
+                            notes.append("</" + noteTag.html + ">");
+                    }
+                }
+                else
+                {
+                    if (temp[i].right(1) != "-" || temp[i].size() == 1)
+                        notes.append(temp[i] + " ");
+                    else
+                        notes.append(temp[i]);
+                }
+            }
+
+            notes.append("</p>");
+        }
+    }
+
+    return notes;
+}
+
+
 QString XMLTextPaginator::resizePage(const int &width, const int &height)
 {
     setPageGeometry(width, height);
@@ -755,11 +781,16 @@ QString XMLTextPaginator::resizePage(const int &width, const int &height)
 
 QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 {
+    Helper->refreshSettings();
     Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
 
-    return resizePage(width, height);
+    currentEStrNum = currentBStrNum = currentBStrNum - 1;
+    tagStack = beginTagStack;
+    setPageGeometry(width, height);
+
+    return getPageForward();
 }
 
 

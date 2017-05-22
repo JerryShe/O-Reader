@@ -36,9 +36,11 @@ public slots:
     QString updateSettings(const int &width, const int &height);
     QString goToSection(const long long sectionIndex);
 
+    QString getPageNotes(const int &viewWidth);
+
 
 signals:
-    void showNotes(QStringList);
+    void notesAvailable();
 
 
 private:
@@ -125,7 +127,7 @@ private:
 
     QHash <QString, QStringList> notesTable;
 
-    QStringList Notes;
+    QStringList PageNotes;
 };
 
 #endif // FB2TEXTPAGINATOR_H

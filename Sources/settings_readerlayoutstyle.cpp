@@ -14,13 +14,13 @@ Settings_ReaderLayoutStyle::Settings_ReaderLayoutStyle(QWidget *parent) :
 
     ui->NameBox->setView(new QListView());
     ui->SizeBox->setView(new QListView());
-    ui->StyleBox->setView(new QListView());
+    ui->TextStyleBox->setView(new QListView());
     ui->LineSpacingBox->setView(new QListView());
     ui->AlignmentBox->setView(new QListView());
 
     connect(ui->NameBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
     connect(ui->SizeBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
-    connect(ui->StyleBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
+    connect(ui->TextStyleBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
     connect(ui->LineSpacingBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
     connect(ui->AlignmentBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
 
@@ -61,9 +61,9 @@ QString Settings_ReaderLayoutStyle::getHTMLStyle()
 {
     QString tempHTML = "font-family:'" + ui->NameBox->currentText() + "';"
                                  "font-size:" + ui->SizeBox->currentText() + "pt;"
-                                 "font-weight:" + ((ui->StyleBox->currentIndex()%2)?"900":"100") + ";"
+                                 "font-weight:" + ((ui->TextStyleBox->currentIndex()%2)?"900":"100") + ";"
                                  "line-height:" + QString::number(ui->LineSpacingBox->currentText().toDouble()*100) + ";"
-                                 "font-style:" + ((ui->StyleBox->currentIndex()/2 == 1)?QString("italic"):QString("normal")) + ";"
+                                 "font-style:" + ((ui->TextStyleBox->currentIndex()/2 == 1)?QString("italic"):QString("normal")) + ";"
                                  "text-align:" + Settings::getSettings()->getTextAlignName(ui->AlignmentBox->currentIndex()) + ";"
                                  "color:" + ui->ColorBox->text() + ";";
 
@@ -81,7 +81,7 @@ void Settings_ReaderLayoutStyle::setStyleData(const TextStyleSheet &style)
 {
     ui->NameBox->setCurrentFont(style.Family);
     ui->SizeBox->setCurrentText(QString::number(style.Size));
-    ui->StyleBox->setCurrentIndex(style.Style);
+    ui->TextStyleBox->setCurrentIndex(style.Style);
     ui->LineSpacingBox->setCurrentText(QString::number(style.LineSpacing));
     ui->AlignmentBox->setCurrentIndex(style.Align);
     ui->ColorBox->setStyleSheet("QPushButton{border:none;background-color:" + style.Color + "; "
@@ -97,7 +97,7 @@ TextStyleSheet Settings_ReaderLayoutStyle::getStyleData()
 
     tempStyle.Family = ui->NameBox->currentText();
     tempStyle.Size = ui->SizeBox->currentText().toShort();
-    tempStyle.Style = ui->StyleBox->currentIndex();
+    tempStyle.Style = ui->TextStyleBox->currentIndex();
     tempStyle.LineSpacing = ui->LineSpacingBox->currentText().toDouble();
     tempStyle.Align = ui->AlignmentBox->currentIndex();
     tempStyle.Color = ui->ColorBox->text();

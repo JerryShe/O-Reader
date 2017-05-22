@@ -658,6 +658,18 @@ p, li { white-space: pre-wrap; }
           </property>
           <item>
            <spacer name="horizontalSpacer_8">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -674,6 +686,18 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <spacer name="horizontalSpacer_2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -689,14 +713,14 @@ p, li { white-space: pre-wrap; }
            <widget class="QPushButton" name="PrevIllustration">
             <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="text">
@@ -706,6 +730,18 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <spacer name="horizontalSpacer_4">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -725,13 +761,13 @@ p, li { white-space: pre-wrap; }
             <property name="minimumSize">
              <size>
               <width>50</width>
-              <height>40</height>
+              <height>30</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
               <width>50</width>
-              <height>40</height>
+              <height>30</height>
              </size>
             </property>
             <property name="sizeIncrement">
@@ -750,6 +786,18 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <spacer name="horizontalSpacer_5">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -768,14 +816,14 @@ p, li { white-space: pre-wrap; }
            <widget class="QPushButton" name="NextIllustration">
             <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="text">
@@ -785,6 +833,18 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <spacer name="horizontalSpacer_3">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -806,14 +866,14 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="text">

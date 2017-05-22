@@ -175,7 +175,11 @@ void LibraryLayout::on__Delete_clicked()
         answer_window->show();
 
         if (answer_window->exec() == QDialog::Accepted)
-            LibHandler->deleteBooks(ui->Library_View->deleteSelectedItems());
+        {
+            QVector <unsigned int> books = ui->Library_View->deleteSelectedItems();
+            for (int i = 0; i < books.size(); i++)
+                deleteBook(books[i]);
+        }
         else
             delete answer_window;
     }
@@ -245,8 +249,11 @@ void LibraryLayout::hideFind()
 
 void LibraryLayout::hideBookWidget()
 {
-    ui->ShowButton->setChecked(true);
-    bookWidget->hideWidget();
+    if (bookWidget != 0)
+    {
+        ui->ShowButton->setChecked(true);
+        bookWidget->hideWidget();
+    }
 }
 
 
@@ -260,7 +267,10 @@ void LibraryLayout::deleteBook(const unsigned int &index)
 {
     LibHandler->deleteBook(index);
     if (LibHandler->getLastOpenedBook()->getIndex() == bookWidget->getBookIndex())
+    {
+        hideBookWidget();
         ui->ShowButton->setEnabled(true);
+    }
 }
 
 

@@ -5,6 +5,9 @@
 #include <QStateMachine>
 #include <QHBoxLayout>
 
+#include <QLabel>
+#include <QMovie>
+
 #include "main_window.h"
 #include "login_window.h"
 #include "reading_window.h"
@@ -25,6 +28,11 @@ public:
     ~WindowManager();
 
     void saveProgramData();
+
+
+public slots:
+    void startAnimation(QString gifFile);
+    void stopAnimation();
 
 private slots:
     void showLogin();
@@ -77,6 +85,10 @@ private:
 
 
     QWidget* LastWindow;
+
+    QLabel* animationLabel;
+    QMovie* animationMovie;
+    QTimer* animationTimer;
 };
 
 #endif // WINDOW_MANAGER_H

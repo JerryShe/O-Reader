@@ -17,6 +17,7 @@ PaginatorHelper::~PaginatorHelper()
 
 void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom)
 {
+    qDebug()<<"wtf "<<Settings::getSettings()->getCurrentReadProfileName();
     QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
 
     PageHTMLStyles = "<style type='text/css'>"
@@ -30,32 +31,32 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTM
                      "P.image {text-align: center; text-indent:0px}"
 
                      "TitleText{"
-                           + topMargin + CurProfile.TitleStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.TitleStyle.getHTMLStyle() + "}"
 
                      "epigraph{"
-                           + topMargin + CurProfile.EpigraphStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.EpigraphStyle.getHTMLStyle() + "}"
 
                      "subtitle{"
-                           + topMargin + CurProfile.SubtitleStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.SubtitleStyle.getHTMLStyle() + "}"
 
                      "Text{"
-                           + topMargin + CurProfile.RegularStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.RegularStyle.getHTMLStyle() + "}"
 
                      "emphasis{"
-                           + topMargin + CurProfile.EmphasizedStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.EmphasizedStyle.getHTMLStyle() + "}"
 
                      "poem{"
-                           + topMargin + CurProfile.PoemStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.PoemStyle.getHTMLStyle() + "}"
 
                      "cite{"
-                           + topMargin + CurProfile.CiteStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.CiteStyle.getHTMLStyle() + "}"
 
                      "note{"
                            + "vertical-align: super;"
-                           + topMargin + CurProfile.NoteStyle.getHTMLStyle() + ";}"
+                           + topMargin + CurProfile.NoteStyle.getHTMLStyle() + "}"
 
                      "strong{"
-                          + topMargin + "font-weight:" + QString::number(99) + ";}"
+                          + topMargin + "font-weight:" + QString::number(99) + "}"
 
                       + ((CurProfile.BackgroundType == true) ? ("body{background-color:" + CurProfile.BackgroundImage + ";}") : ("")) +
                   "</style>";

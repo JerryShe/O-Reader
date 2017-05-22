@@ -144,6 +144,8 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
 
 void LibraryHandler::AddBooks(const QStringList &fileList)
 {
+    emit startLoadAnimation("F:/load.gif");
+
     qDebug()<<"adding books";
     if (!fileList.size())
         return;
@@ -156,6 +158,8 @@ void LibraryHandler::AddBooks(const QStringList &fileList)
     UserActions->saveLog();
     saveBookList();
     delete Gmap;
+
+    emit stopLoadAnimation();
 }
 
 
@@ -172,14 +176,7 @@ void LibraryHandler::AddFolder(const QString &path)
     if (!fileList.size())
         return;
 
-    GenresMap *Gmap = new GenresMap();
-
-    for (int i = 0; i < fileList.size(); ++i)
-        openNewBook(fileList[i], Gmap);
-
-    saveBookList();
-    UserActions->saveLog();
-    delete Gmap;
+    AddBooks(fileList);
 }
 
 

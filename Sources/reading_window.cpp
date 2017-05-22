@@ -46,7 +46,6 @@ void ReadingWindow::setStyle(const QString &currentStyle)
 
     ui->ReadProfilesButton->setStyleSheet(styleSheets[2]);
     ProfilesView->setStyleSheet(styleSheets[3]);
-
 }
 
 
@@ -122,7 +121,6 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
-    connect(BookPaginator, SIGNAL(showNote(int,QStringList)), this, SLOT(showNote(int,QStringList)));
 
     qDebug()<<"readingWindow created";
 }
@@ -447,6 +445,7 @@ void ReadingWindow::PrevSearchStep()
 
 void ReadingWindow::reprintNewSettText()
 {
+    qDebug()<<Settings::getSettings()->getCurrentReadProfileName();
     setBackgroundImage();
     ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
 }

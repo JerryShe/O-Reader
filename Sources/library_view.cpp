@@ -56,7 +56,8 @@ void LibraryView::showSelectedItem(const QModelIndex &mIndex)
 void LibraryView::addItem(Book *book)
 {
     BookModel->addBook(book);
-    //QCoreApplication::processEvents();
+    this->reset();
+    this->repaint();
 }
 
 
