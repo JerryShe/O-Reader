@@ -17,7 +17,6 @@ PaginatorHelper::~PaginatorHelper()
 
 void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom)
 {
-    qDebug()<<"wtf "<<Settings::getSettings()->getCurrentReadProfileName();
     QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
 
     PageHTMLStyles = "<style type='text/css'>"

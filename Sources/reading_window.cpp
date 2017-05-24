@@ -21,6 +21,10 @@
 #include <QDebug>
 
 
+
+#include "battery_widget.h"
+
+
 void ReadingWindow::setStyle(const QString &currentStyle)
 {
     QString styleSheets[6];
@@ -52,6 +56,9 @@ void ReadingWindow::setStyle(const QString &currentStyle)
 ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(new Ui::ReadingWindow)
 {
     qDebug()<<"create readingWindow";
+
+    BatteryWidget* asd = new BatteryWidget(0, 1, Qt::black);
+
     CurBook = book;
 
     ActiveWindow = false;
@@ -459,7 +466,6 @@ void ReadingWindow::PrevSearchStep()
 
 void ReadingWindow::reprintNewSettText()
 {
-    qDebug()<<Settings::getSettings()->getCurrentReadProfileName();
     setBackgroundImage();
     ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
 }

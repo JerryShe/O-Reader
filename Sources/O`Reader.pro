@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     paginatorhelper.cpp \
     library_model.cpp \
     library_view.cpp \
-    book_image_table.cpp
+    book_image_table.cpp \
+    battery_widget.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -79,7 +80,8 @@ HEADERS  += \
     paginatorhelper.h \
     library_model.h \
     library_view.h \
-    book_image_table.h
+    book_image_table.h \
+    battery_widget.h
 
 FORMS    += \
     settings_programlayout.ui \
