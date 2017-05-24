@@ -101,52 +101,51 @@ void Settings_ReaderLayout::changeEvent(QEvent *event)
 
 void Settings_ReaderLayout::updateTextBox()
 {
+    QString topMargin = "margin-top:" + ui->ParagraphTopIdentBox->currentText()  + "px;";
+
     QString htEx = "<style type='text/css'>"
        "p{"
-            "margin-top:" + ui->ParagraphTopIdentBox->currentText() + "px;"
             "margin-bottom:0px;"
             "margin-left:" + ui->TextLeftIdentBox->currentText() + "px;"
             "margin-right:" + ui->TextRightIdentBox->currentText() + "px;"
             "text-indent:" + ui->ParagraphLeftIdentBox->currentText() + "px;}"
 
        "TitleText{"
-            + ui->TitleStyle->getHTMLStyle() + "}"
-
+            + topMargin +
+            ui->TitleStyle->getHTMLStyle() + "}"
 
        "subtitle{"
-            + ui->SubtitleStyle->getHTMLStyle() + "}"
+            + topMargin +
+            ui->SubtitleStyle->getHTMLStyle() + "}"
 
        "Text{"
-            + ui->RegularStyle->getHTMLStyle() + "}"
+            + topMargin +
+            ui->RegularStyle->getHTMLStyle() + "}"
 
        "emphasis{"
-            + ui->EmphasizedStyle->getHTMLStyle() + "}"
+            + topMargin +
+            ui->EmphasizedStyle->getHTMLStyle() + "}"
 
-       "Note{"
-            + ui->NoteStyle->getHTMLStyle() + "}"
+       "note{"
+            + topMargin +
+            ui->NoteStyle->getHTMLStyle() + "}"
 
        "epigraph{"
-            + ui->EpigraphStyle->getHTMLStyle() + "}"
+            + topMargin +
+            ui->EpigraphStyle->getHTMLStyle() + "}"
 
        "poem{"
-            + ui->PoemStyle->getHTMLStyle() + "}"
+            + topMargin +
+            ui->PoemStyle->getHTMLStyle() + "}"
 
        "cite{"
-            + ui->CiteStyle->getHTMLStyle() + "}"
+            + topMargin +
+            ui->CiteStyle->getHTMLStyle() + "}"
 
        + ((!ui->BackgroundColorBox->isHidden()) ? ("body{background-color:" + ui->BackgroundColorBox->text()) : ("")) + ";}"
 
     "</style> <body>"
 
-    "<table border='0' style='"
-      "table-layout: fixed;"
-      "empty-cells: show;"
-      "margin-top: " + ui->TextTopIndentBox->currentText() + "px;"
-      "margin-bottom: " + ui->TextBottomIndentBox->currentText() + "px;"
-      "margin-left:" + ui->TextLeftIdentBox->currentText() + "px;"
-      "margin-right:" + ui->TextRightIdentBox->currentText() + "px;' "
-    "width='100%' cellspacing='-30' cellpadding='30'>"
-    "<tr>"
     "<td align = 'justify'> <Text>"
     "<TitleText>"
     "<p>Гарри Гаррисон</p>"
@@ -159,7 +158,7 @@ void Settings_ReaderLayout::updateTextBox()
     "<p>Моя ладонь ласкала стакан только что налитого трехсотлетнего, драгоценного бурбона, охлажденного кубиками миллионолетнего льда, доставленного с одной из внешних планет. Просто идеально! Благодушно улыбнувшись, я поднес стакан к губам.</p>"
     "<p>И тут в рай вторглось нечто чуждое, будто пульсирующая зубная боль или чуть слышный комариный зуд. С могучим Бахом схлестнулось тоненькое треньканье. Чувствуя, как губы искажает оскал, я коснулся регулятора громкости, и великий орган жалобно захлебнулся молчанием. И дверной звонок прозвучал вполне отчетливо.</p>"
     "<emphasis><p>Динь-динь…</p></emphasis>"
-    "</Text></td></tr></body>";
+    "</Text></body>";
 
     ui->TextExample->setHtml(htEx);
     emit settingsChanged(changedSignal);

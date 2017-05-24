@@ -66,12 +66,14 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->setAttribute( Qt::WA_TranslucentBackground, true );
 
     ui->TextPage->setFocus();
+
     ui->MenuButton->setFocusPolicy(Qt::NoFocus);
     ui->min_button->setFocusPolicy(Qt::NoFocus);
     ui->exit_button->setFocusPolicy(Qt::NoFocus);
     ui->full_size_button->setFocusPolicy(Qt::NoFocus);
 
     ui->TextPage->setFocusPolicy(Qt::StrongFocus);
+
 
 
     BookPaginator = new XMLTextPaginator(this);
@@ -315,6 +317,13 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         case QEvent::MouseButtonPress:
         {
             QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+
+            if (!MenuWidget->isHidden())
+            {
+                MenuWidget->hideMenu();
+                break;
+            }
+
             if(MousePressEvent->button() == Qt::LeftButton)
             {
                 if (MousePressEvent->pos().y() > 20)
@@ -338,8 +347,14 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 
         case QEvent::MouseButtonDblClick:
         {
-            qDebug()<<"yepe";
             QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+
+            if (!MenuWidget->isHidden())
+            {
+                MenuWidget->hideMenu();
+                break;
+            }
+
             if(MousePressEvent->button() == Qt::LeftButton)
             {
                 if (MousePressEvent->pos().y() > 20)

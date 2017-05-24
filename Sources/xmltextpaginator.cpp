@@ -343,10 +343,7 @@ int XMLTextPaginator::parseTag()
             {
                 QString id = parseTagAttribute(tag, "href");
                 if (notesTable.contains(id))
-                {
-                    emit notesAvailable();
                     PageNotes.append(id);
-                }
                 tag = "note";
             }
         }
@@ -632,6 +629,10 @@ QString XMLTextPaginator::getPageForward()
         createHTMLPage();
         debugSave(HTMLPage);
     }
+
+    if (!PageNotes.isEmpty())
+        emit notesAvailable();
+
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
@@ -713,6 +714,9 @@ QString XMLTextPaginator::getPageBackward()
         debugSave(HTMLPage);
     }
 
+    if (!PageNotes.isEmpty())
+        emit notesAvailable();
+
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
@@ -724,7 +728,20 @@ QString XMLTextPaginator::getPageNotes(const int &viewWidth) const
 
     QString notes;
 
-    for (int i = 0; i < PageNotes.size(); i++)
+    int i, j;
+    if (parseDirection)
+    {
+        i = PageNotes.size();
+        j = -1;
+    }
+    else
+    {
+        i = 0;
+        j = 1;
+    }
+
+
+    for (; i < PageNotes.size() && i >= 0; i += j)
     {
         if (notesTable.contains(PageNotes[i]))
         {
@@ -766,7 +783,7 @@ QString XMLTextPaginator::getPageNotes(const int &viewWidth) const
         }
     }
 
-    return notes;
+    return PageHTMLStyles + "<body>" + notes + "</body>";
 }
 
 
