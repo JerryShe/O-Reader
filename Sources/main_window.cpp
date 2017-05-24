@@ -91,7 +91,7 @@ MainWindow::~MainWindow()
 }
 
 
-LibraryView* MainWindow::getLibraryWidget()
+LibraryView* MainWindow::getLibraryWidget() const
 {
     return ui->LibraryWidget->getLibraryWidget();
 }

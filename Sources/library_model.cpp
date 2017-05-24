@@ -229,7 +229,7 @@ void LibraryListDelegate::paintListViewItem(QPainter *painter, const QStyleOptio
     painter->drawText(titleRect, Qt::AlignLeft | Qt::AlignTop, Title);
 
     QPoint progressPos(rect.x() + 5 + (option.decorationSize.width() + BookCover.width())/2, rect.y() + (rect.height() - BookCover.height())/2);
-    drawBookStatus(progressPos, qvariant_cast<double>(index.data(BookInf::Progress)), painter, rect);
+    drawBookStatus(progressPos, qvariant_cast<double>(index.data(BookInf::Progress)), painter);
 }
 
 
@@ -262,11 +262,11 @@ void LibraryListDelegate::paintIconViewItem(QPainter *painter, const QStyleOptio
     painter->drawText(titleRect, Qt::AlignHCenter, Title);
 
     QPoint progressPos(rect.x() + (rect.width() + BookCover.width())/2, rect.y() + 5);
-    drawBookStatus(progressPos, qvariant_cast<double>(index.data(BookInf::Progress)), painter, rect);
+    drawBookStatus(progressPos, qvariant_cast<double>(index.data(BookInf::Progress)), painter);
 }
 
 
-void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progress, QPainter *painter, const QRect &rect) const
+void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progress, QPainter *painter) const
 {
     if (pos.x() == 0)
         return;

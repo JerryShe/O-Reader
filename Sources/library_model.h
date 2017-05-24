@@ -92,7 +92,7 @@ private:
     void paintListViewItem(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index, const QRect &rect) const;
     void paintIconViewItem(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index, const QRect &rect) const;
 
-    void drawBookStatus(const QPoint &pos, const double &progress, QPainter *painter, const QRect &rect) const;
+    void drawBookStatus(const QPoint &pos, const double &progress, QPainter *painter) const;
 
     void drawBackground(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect) const;
 

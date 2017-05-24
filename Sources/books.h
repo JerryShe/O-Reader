@@ -20,36 +20,36 @@ public:
 
     void writeToConsole();
 
-    QString getAuthorName();
-    QString getTitle();
+    QString getAuthorName() const;
+    QString getTitle() const;
 
-    QImage getCover();
-    bool haveCoverImage();
-    QString getHTMLCover();
+    QImage getCover() const;
+    bool haveCoverImage() const;
+    QString getHTMLCover() const;
 
     void setIndex(const int &index);
-    unsigned int getIndex();
+    unsigned int getIndex() const;
 
-    QStringList getAnnotation();
-    QStringList getGenres();
-    QString getSeries();
-    QString getLanguage();
+    QStringList getAnnotation() const;
+    QStringList getGenres() const;
+    QString getSeries() const;
+    QString getLanguage() const;
 
-    long long getProgress();
+    long long getProgress() const;
     double getProgressProcent();
-    QStringList getProgressTagStack();
+    QStringList getProgressTagStack() const;
     void setProgress(const long long &progress, const double &procent, const QStringList &tagStack);
 
-    QString getCodec();
+    QString getCodec() const;
     void setCodec(const QString &Codec);
 
-    QString getFileName();
+    QString getFileName() const;
     void setFile(const QString &file);
 
-    int getFormat();
+    int getFormat() const;
     void setFormat(const int format);
 
-    QJsonObject toJson();
+    QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
 private:

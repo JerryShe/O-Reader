@@ -26,10 +26,10 @@ struct TextStyleSheet
     unsigned short Align;         // 0 - justify, 1 - left, 2 - right, 3 - center
     QString Color;
 
-    QJsonObject toJson();
+    QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
-    QString getHTMLStyle();
+    QString getHTMLStyle() const;
 };
 
 struct ReadingProfile
@@ -54,7 +54,7 @@ struct ReadingProfile
     TextStyleSheet PoemStyle;
     TextStyleSheet NoteStyle;
 
-    QJsonObject toJson();
+    QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 };
 
@@ -64,46 +64,46 @@ public:
     static Settings* getSettings();
     void setTranslator(QTranslator* translator);
 
-    bool saveSettings();
+    bool saveSettings() const;
     bool loadSettings();
 
     QString getInterfaceStyle();
     void setInterfaceStyle(const QString &style);
 
-    QString getCurrentLanguage();
+    QString getCurrentLanguage() const;
     void setLanguage(const QString &lang);
 
-    bool getHideTopBar();
+    bool getHideTopBar() const;
     void setHideTopBar(const bool &n);
 
-    int getFForwardKey();
+    int getFForwardKey() const;
     void setFForwardKey(const int &key);
-    int getSForwardKey();
+    int getSForwardKey() const;
     void setSForwardKey(const int &key);
-    int getFBackwardKey();
+    int getFBackwardKey() const;
     void setFBackwardKey(const int &key);
-    int getSBackwardKey();
+    int getSBackwardKey() const;
     void setSBackwardKey(const int &key);
 
-    bool getTurnByWheel();
+    bool getTurnByWheel() const;
     void setTurnByWheel(const bool &turn);
 
-    bool getTurnByTap();
+    bool getTurnByTap() const;
     void setTurnByTap(const bool &turn);
 
-    bool getLibraryReprezentation();
+    bool getLibraryReprezentation() const;
     void setLibraryReprezentation(const bool &val);
 
-    unsigned short getLibraryBarIconSize();
+    unsigned short getLibraryBarIconSize() const;
     void setLibraryBarIconSize(const unsigned short &size);
 
-    unsigned short getLibraryListIconSize();
+    unsigned short getLibraryListIconSize() const;
     void setLibraryListIconSize(const unsigned short &size);
 
-    QString getCurrentReadProfileName();
+    QString getCurrentReadProfileName() const;
     void setCurrentReadProfile(const QString &style);
 
-    QStringList getReadProfilesList();
+    QStringList getReadProfilesList() const;
     void saveReadProfile(const QString &name, const ReadingProfile &style);
 
     void setToken(const QString &token);
@@ -111,12 +111,12 @@ public:
 
     void removeNamedReadProfile(const QString &name);
 
-    ReadingProfile getNamedReadProfile(const QString name);
-    ReadingProfile getCurrentReadProfileElem();
+    ReadingProfile getNamedReadProfile(const QString name) const;
+    ReadingProfile getCurrentReadProfileElem() const;
 
-    QString getTextAlignName(const unsigned short &key);
+    QString getTextAlignName(const unsigned short &key) const;
 
-    QJsonObject toJson();
+    QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
 signals:

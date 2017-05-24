@@ -45,31 +45,31 @@ XMLTextParser::XMLTextParser(Book *openingBook)
 }
 
 
-QStringList XMLTextParser::getText()
+QStringList XMLTextParser::getText() const
 {
     return bookText;
 }
 
 
-QTreeWidgetItem* XMLTextParser::getTableOfContents()
+QTreeWidgetItem* XMLTextParser::getTableOfContents() const
 {
     return TableOfContents;
 }
 
 
-BookImageTable *XMLTextParser::getImageTable()
+BookImageTable *XMLTextParser::getImageTable() const
 {
     return ImageTable;
 }
 
 
-QHash <QString, QStringList> XMLTextParser::getNotesTable()
+QHash <QString, QStringList> XMLTextParser::getNotesTable() const
 {
     return notesTable;
 }
 
 
-QStringList XMLTextParser::splitTextToWords(QString temp)
+QStringList XMLTextParser::splitTextToWords(QString temp) const
 {
     QStringList tempList;
     tempList.append(temp);

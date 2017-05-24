@@ -20,7 +20,7 @@ class LibraryLayout : public QWidget
 public:
     explicit LibraryLayout(QWidget *parent = 0);
     ~LibraryLayout();
-    LibraryView* getLibraryWidget();
+    LibraryView* getLibraryWidget() const;
 
 
 private slots:
@@ -43,7 +43,7 @@ private slots:
 public slots:
     void setStyle();
 
-    Book* getBookByIndex(const unsigned int &index);
+    Book* getBookByIndex(const unsigned int &index) const;
     void deleteBook(const unsigned int &index);
 
 protected:

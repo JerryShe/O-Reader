@@ -16,11 +16,11 @@ public:
 
     void addImage(QString name, QString img, QString format);
 
-    bool contains(QString imgName);
+    bool contains(QString imgName) const;
 
-    QPair<QString, unsigned int> getHTMLImage(QString name, int freeHeight, int pageWidth, int pageHeight);
+    QPair<QString, unsigned int> getHTMLImage(QString name, int freeHeight, int pageWidth, int pageHeight) const;
 
-    QVector<QImage> getBookImages();
+    QVector<QImage> getBookImages() const;
 
 private:
     void createFromFB2(Book* book);

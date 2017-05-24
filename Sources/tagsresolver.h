@@ -60,7 +60,7 @@ public:
     TagsResolver(QObject * parent, int format);
     ~TagsResolver();
 
-    tagInfo getTag(QString tagStr);          // return tag type and correct html tag
+    tagInfo getTag(QString tagStr) const;          // return tag type and correct html tag
 
 private:
     void createFB2map();

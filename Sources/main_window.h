@@ -26,7 +26,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    LibraryView* getLibraryWidget();
+    LibraryView* getLibraryWidget() const;
 
 private slots:
     void setStyle();

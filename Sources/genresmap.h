@@ -7,7 +7,7 @@ class GenresMap
 {
 public:
     GenresMap();
-    QString getFB2Genre(const QString &key);
+    QString getFB2Genre(const QString &key) const;
 
 private:
     void createFB2Map();

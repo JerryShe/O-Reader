@@ -275,7 +275,7 @@ void Book::fromJson(const QJsonObject &json)
 }
 
 
-QJsonObject Book::toJson()
+QJsonObject Book::toJson() const
 {
     QJsonObject json;
 
@@ -309,19 +309,19 @@ QJsonObject Book::toJson()
 }
 
 
-QString Book::getAuthorName()
+QString Book::getAuthorName() const
 {
     return AuthorFirstName + ' ' + AuthorLastName;
 }
 
 
-QString Book::getTitle()
+QString Book::getTitle() const
 {
     return Title;
 }
 
 
-QImage Book::getCover()
+QImage Book::getCover() const
 {
     QImage tempImage;
 
@@ -332,9 +332,9 @@ QImage Book::getCover()
             QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
             QMimeDatabase data;
-            CoverType = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+            QString type = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
 
-            std::string str = CoverType.toStdString();
+            std::string str = type.toStdString();
             const char* p = str.c_str();
 
             tempImage = QImage::fromData(BinaryCover, p);
@@ -356,7 +356,7 @@ QImage Book::getCover()
 }
 
 
-bool Book::haveCoverImage()
+bool Book::haveCoverImage() const
 {
     if (CoverType == "noImage")
         return false;
@@ -364,7 +364,7 @@ bool Book::haveCoverImage()
 }
 
 
-QString Book::getHTMLCover()
+QString Book::getHTMLCover() const
 {
     if (CoverType != "noImage")
         return Cover;
@@ -378,37 +378,37 @@ void Book::setIndex(const int &index)
 }
 
 
-unsigned int Book::getIndex()
+unsigned int Book::getIndex() const
 {
     return Index;
 }
 
 
-QStringList Book::getAnnotation()
+QStringList Book::getAnnotation() const
 {
     return Annotation;
 }
 
 
-QStringList Book::getGenres()
+QStringList Book::getGenres() const
 {
     return Genres;
 }
 
 
-QString Book::getLanguage()
+QString Book::getLanguage() const
 {
     return Language;
 }
 
 
-long long Book::getProgress()
+long long Book::getProgress() const
 {
     return Progress;
 }
 
 
-QStringList Book::getProgressTagStack()
+QStringList Book::getProgressTagStack() const
 {
     return ProgressTagStack;
 }
@@ -429,7 +429,7 @@ void Book::setProgress(const long long &progress, const double &procent, const Q
 }
 
 
-QString Book::getSeries()
+QString Book::getSeries() const
 {
     if (Series.second)
         return Series.first + ' ' + QString::number(Series.second);
@@ -438,7 +438,7 @@ QString Book::getSeries()
 }
 
 
-QString Book::getCodec()
+QString Book::getCodec() const
 {
     return Codec;
 }
@@ -450,7 +450,7 @@ void Book::setCodec(const QString &codec)
 }
 
 
-QString Book::getFileName()
+QString Book::getFileName() const
 {
     return File;
 }
@@ -462,7 +462,7 @@ void Book::setFile(const QString &file)
 }
 
 
-int Book::getFormat()
+int Book::getFormat()  const
 {
     return Format;
 }

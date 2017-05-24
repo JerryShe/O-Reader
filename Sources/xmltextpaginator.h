@@ -23,20 +23,20 @@ public:
     ~XMLTextPaginator();
 
     void setPageGeometry(const int &width, const int &height);
-    float getProgress();
+    float getProgress() const;
 
     QString getPageForward();
     QString getPageBackward();
 
-    QTreeWidgetItem* getBookContentTable();
-    long long getCurrentSectionIndex();
+    QTreeWidgetItem* getBookContentTable() const;
+    long long getCurrentSectionIndex() const;
 
 public slots:
     QString resizePage(const int &width, const int &height);
     QString updateSettings(const int &width, const int &height);
     QString goToSection(const long long sectionIndex);
 
-    QString getPageNotes(const int &viewWidth);
+    QString getPageNotes(const int &viewWidth) const;
 
 
 signals:
@@ -44,11 +44,11 @@ signals:
 
 
 private:
-    int getWordWidth();
-    int getWordHeight();
-    int getWordHeightFor(QString name);
+    int getWordWidth() const;
+    int getWordHeight() const;
+    int getWordHeightFor(QString name) const;
 
-    int getSpaceWidth();
+    int getSpaceWidth() const;
     int getLinespaceMap();
 
     void applyTag();
@@ -67,7 +67,7 @@ private:
     void preparePage(bool direction);
     void createHTMLPage();
 
-    void debugSave(const QString &HTMLPage);
+    void debugSave(const QString &HTMLPage) const;
 
     QStringList bookText;
     unsigned int columnWidth, columnHeight;

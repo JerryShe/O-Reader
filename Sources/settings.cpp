@@ -32,7 +32,7 @@ void Settings::setTranslator(QTranslator* translator)
 }
 
 
-QString Settings::getTextAlignName(const unsigned short &key)
+QString Settings::getTextAlignName(const unsigned short &key) const
 {
     if (textAlignMap.contains(key))
         return textAlignMap[key];
@@ -47,7 +47,7 @@ Settings::~Settings()
 }
 
 
-bool Settings::saveSettings()
+bool Settings::saveSettings() const
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -126,7 +126,7 @@ bool Settings::loadSettings()
 }
 
 
-QJsonObject Settings::toJson()
+QJsonObject Settings::toJson() const
 {
     QJsonObject json;
 
@@ -216,7 +216,7 @@ ReadingProfile::ReadingProfile(QJsonObject &json)
 }
 
 
-QJsonObject ReadingProfile::toJson()
+QJsonObject ReadingProfile::toJson()  const
 {
     QJsonObject json;
 
@@ -288,7 +288,7 @@ TextStyleSheet::TextStyleSheet(const QString &Font,
                                  Color(color){}
 
 
-QJsonObject TextStyleSheet::toJson()
+QJsonObject TextStyleSheet::toJson() const
 {
     QJsonObject json;
 
@@ -314,7 +314,7 @@ void TextStyleSheet::fromJson(const QJsonObject &json)
 }
 
 
-QString TextStyleSheet::getHTMLStyle()
+QString TextStyleSheet::getHTMLStyle() const
 {
     QString tempHTML =
                        "font-family:'" + Family + "';"
@@ -341,7 +341,7 @@ void Settings::setInterfaceStyle(const QString &style)
 }
 
 
-bool Settings::getLibraryReprezentation()
+bool Settings::getLibraryReprezentation() const
 {
     return LibraryReprezentation;
 }
@@ -353,13 +353,13 @@ void Settings::setLibraryReprezentation(const bool &val)
 }
 
 
-unsigned short Settings::getLibraryBarIconSize()
+unsigned short Settings::getLibraryBarIconSize() const
 {
     return LibraryIconBarSize;
 }
 
 
-unsigned short Settings::getLibraryListIconSize()
+unsigned short Settings::getLibraryListIconSize() const
 {
     return LibraryIconBarSize;
 }
@@ -377,7 +377,7 @@ void Settings::setLibraryBarIconSize(const unsigned short &size)
 }
 
 
-QString Settings::getCurrentLanguage()
+QString Settings::getCurrentLanguage() const
 {
     return Language;
 }
@@ -399,7 +399,7 @@ void Settings::setLanguage(const QString &lang)
 }
 
 
-bool Settings::getHideTopBar()
+bool Settings::getHideTopBar() const
 {
     return HideTopBar;
 }
@@ -411,7 +411,7 @@ void Settings::setHideTopBar(const bool &n)
 }
 
 
-QString Settings::getCurrentReadProfileName()
+QString Settings::getCurrentReadProfileName() const
 {
     return currentStyle;
 }
@@ -423,13 +423,13 @@ void Settings::setCurrentReadProfile(const QString &style)
 }
 
 
-QStringList Settings::getReadProfilesList()
+QStringList Settings::getReadProfilesList() const
 {
     return TextStylesNames;
 }
 
 
-int Settings::getFForwardKey()
+int Settings::getFForwardKey() const
 {
     return FKeyForwardPage;
 }
@@ -441,7 +441,7 @@ void Settings::setFForwardKey(const int &key)
 }
 
 
-int Settings::getSForwardKey()
+int Settings::getSForwardKey() const
 {
     return SKeyForwardPage;
 }
@@ -453,7 +453,7 @@ void Settings::setSForwardKey(const int &key)
 }
 
 
-int Settings::getFBackwardKey()
+int Settings::getFBackwardKey() const
 {
     return FKeyBackwardPage;
 }
@@ -465,7 +465,7 @@ void Settings::setFBackwardKey(const int &key)
 }
 
 
-int Settings::getSBackwardKey()
+int Settings::getSBackwardKey() const
 {
     return SKeyBackwardPage;
 }
@@ -477,7 +477,7 @@ void Settings::setSBackwardKey(const int &key)
 }
 
 
-bool Settings::getTurnByWheel()
+bool Settings::getTurnByWheel() const
 {
     return PageTurnByWheel;
 }
@@ -489,7 +489,7 @@ void Settings::setTurnByWheel(const bool &turn)
 }
 
 
-bool Settings::getTurnByTap()
+bool Settings::getTurnByTap() const
 {
     return PageTurnByTap;
 }
@@ -501,7 +501,7 @@ void Settings::setTurnByTap(const bool &turn)
 }
 
 
-ReadingProfile Settings::getNamedReadProfile(const QString name)
+ReadingProfile Settings::getNamedReadProfile(const QString name) const
 {
     int index = TextStylesNames.indexOf(name);
     if (index != -1)
@@ -512,7 +512,7 @@ ReadingProfile Settings::getNamedReadProfile(const QString name)
 }
 
 
-ReadingProfile Settings::getCurrentReadProfileElem()
+ReadingProfile Settings::getCurrentReadProfileElem() const
 {
     return TextStyles.at(TextStylesNames.indexOf(currentStyle));
 }

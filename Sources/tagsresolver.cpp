@@ -84,7 +84,7 @@ void TagsResolver::createEPUBmap()
 
 
 
-tagInfo TagsResolver::getTag(QString tagStr)
+tagInfo TagsResolver::getTag(QString tagStr) const
 {
     int lpos = tagStr.indexOf("<");
     int rpos = tagStr.indexOf(">", lpos);

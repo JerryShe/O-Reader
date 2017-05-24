@@ -33,7 +33,7 @@ struct action
     action(const unsigned int &index, const QString &itemSpec, const QString &data);
     action(const unsigned int &index, const quint64 &time, const QString &itemSpec, const QString &data);
 
-    QJsonObject toJson();
+    QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 };
 
@@ -47,8 +47,8 @@ private:
     Synchronization();
     ~Synchronization();
 
-    QString getNumber(const QString &item);
-    QString getNumber(const int &item);
+    QString getNumber(const QString &item) const;
+    QString getNumber(const int &item) const;
 
 
     QQueue <action> BookQueue;
@@ -64,13 +64,13 @@ private:
 public:
     static Synchronization* getSynchronization();
 
-    bool saveLog();
+    bool saveLog() const;
     bool loadLog();
 
-    int getLastOpenedWindow();
+    int getLastOpenedWindow() const;
     void setLastOpenedWindow(const unsigned int &index);
 
-    unsigned int getLastOpenedBookIndex();
+    unsigned int getLastOpenedBookIndex() const;
     void setLastOpenedBookIndex(const unsigned int &index);
 
 

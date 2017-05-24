@@ -83,13 +83,13 @@ void BookImageTable::addImage(QString name, QString img, QString format)
 }
 
 
-bool BookImageTable::contains(QString imgName)
+bool BookImageTable::contains(QString imgName) const
 {
     return ImageMap.contains(imgName);
 }
 
 
-QPair <QString, unsigned int> BookImageTable::getHTMLImage(QString name, int freeHeight, int pageWidth, int pageHeight)
+QPair <QString, unsigned int> BookImageTable::getHTMLImage(QString name, int freeHeight, int pageWidth, int pageHeight) const
 {
     if (!ImageMap.contains(name))
         return QPair<QString, int> ("", 0);
@@ -125,7 +125,7 @@ QPair <QString, unsigned int> BookImageTable::getHTMLImage(QString name, int fre
 }
 
 
-QVector <QImage> BookImageTable::getBookImages()
+QVector <QImage> BookImageTable::getBookImages() const
 {
     QVector <QImage> ImageList;
     foreach (QImage img, ImageMap) {

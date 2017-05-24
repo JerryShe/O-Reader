@@ -67,7 +67,7 @@ bool LibraryHandler::loadBookList()
 }
 
 
-bool LibraryHandler::saveBookList()
+bool LibraryHandler::saveBookList() const
 {
     QFile LibFile(resoursesFolderPath + "/BookList.json");
 
@@ -88,7 +88,7 @@ bool LibraryHandler::saveBookList()
 }
 
 
-QJsonObject LibraryHandler::toJson()
+QJsonObject LibraryHandler::toJson() const
 {
     QJsonObject json;
     QJsonArray LibArray;
@@ -180,7 +180,7 @@ void LibraryHandler::AddFolder(const QString &path)
 }
 
 
-int LibraryHandler::getFileTipe(const QString &fileName)
+int LibraryHandler::getFileTipe(const QString &fileName) const
 {
     QFileInfo fileInfo(fileName);
     QString format = fileInfo.suffix();

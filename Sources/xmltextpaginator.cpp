@@ -116,13 +116,13 @@ void XMLTextPaginator::setPageGeometry(const int &width, const int &height)
 }
 
 
-QTreeWidgetItem *XMLTextPaginator::getBookContentTable()
+QTreeWidgetItem *XMLTextPaginator::getBookContentTable() const
 {
     return TableOfContents->clone();
 }
 
 
-long long XMLTextPaginator::getCurrentSectionIndex()
+long long XMLTextPaginator::getCurrentSectionIndex() const
 {
     /*
     int pos;
@@ -145,7 +145,7 @@ QString XMLTextPaginator::goToSection(const long long sectionIndex)
 }
 
 
-int XMLTextPaginator::getWordHeight()
+int XMLTextPaginator::getWordHeight() const
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontsLinespaces.contains(tagStack[i]))
@@ -155,7 +155,7 @@ int XMLTextPaginator::getWordHeight()
 }
 
 
-int XMLTextPaginator::getWordHeightFor(QString name)
+int XMLTextPaginator::getWordHeightFor(QString name) const
 {
     if (fontsLinespaces.contains(name))
         return fontsLinespaces[name];
@@ -166,7 +166,7 @@ int XMLTextPaginator::getWordHeightFor(QString name)
 }
 
 
-int XMLTextPaginator::getWordWidth()
+int XMLTextPaginator::getWordWidth() const
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontsMetrics.contains(tagStack[i]))
@@ -176,7 +176,7 @@ int XMLTextPaginator::getWordWidth()
 }
 
 
-int XMLTextPaginator::getSpaceWidth()
+int XMLTextPaginator::getSpaceWidth() const
 {
     for (int i = tagStack.size() - 1; i > 0; i--)
         if (fontsMetrics.contains(tagStack[i]))
@@ -284,7 +284,6 @@ int XMLTextPaginator::parseTag()
 
             return 2;
         }
-
         return 1;
     }
 
@@ -611,9 +610,10 @@ QString XMLTextPaginator::getPageForward()
                         if (!applyWord())
                         {
                             // переносим колонку с разделением параграфа
-                            int pos = Columns[currentColumn].lastIndexOf("<p>");
-                            if (pos != -1)
-                                Columns[currentColumn][pos].insert(2, " class = 'end'");
+                            // костыть костылей
+                            for (unsigned int i = currentWidth; i <= columnWidth + 10; i += 1)
+                                Columns[currentColumn].append("&nbsp;");
+
                             ParagrafTail = true;
                             break;
                         }
@@ -717,7 +717,7 @@ QString XMLTextPaginator::getPageBackward()
 }
 
 
-QString XMLTextPaginator::getPageNotes(const int &viewWidth)
+QString XMLTextPaginator::getPageNotes(const int &viewWidth) const
 {
     if (PageNotes.isEmpty())
         return QString();
@@ -794,7 +794,7 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 }
 
 
-float XMLTextPaginator::getProgress()
+float XMLTextPaginator::getProgress() const
 {
     if (currentBStrNum > 0 && strCount)
         return (((float)(currentEStrNum+1)/(float)strCount) * 100);
@@ -803,7 +803,7 @@ float XMLTextPaginator::getProgress()
 }
 
 
-void XMLTextPaginator::debugSave(const QString &HTMLPage)
+void XMLTextPaginator::debugSave(const QString &HTMLPage) const
 {
     QFile asd("F:/asd.html");
     asd.open(QIODevice::WriteOnly);

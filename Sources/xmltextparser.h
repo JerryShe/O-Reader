@@ -20,11 +20,11 @@ class XMLTextParser
 public:
     XMLTextParser(Book *openingBook);
 
-    QStringList getText();
-    QTreeWidgetItem* getTableOfContents();
+    QStringList getText() const;
+    QTreeWidgetItem* getTableOfContents() const;
 
-    BookImageTable* getImageTable();
-    QHash <QString, QStringList> getNotesTable();
+    BookImageTable* getImageTable() const;
+    QHash <QString, QStringList> getNotesTable() const;
 
 private:
     void parseFB2();
@@ -39,7 +39,7 @@ private:
 
 
     QTextStream* doc;
-    QStringList splitTextToWords(QString temp);
+    QStringList splitTextToWords(QString temp) const;
 
     Book *book;
 

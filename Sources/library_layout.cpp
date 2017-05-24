@@ -54,10 +54,7 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     setStyle();
 
     if (ProgramSettings->getLibraryReprezentation())
-    {
-        ui->Library_View->changeViewMod();
         ui->_ChangeViewMode->setChecked(true);
-    }
 
     ui->Library_View->setSettingsData();
 
@@ -67,6 +64,7 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     if (LibHandler->getLastOpenedBook() == 0)
     {
         bookWidget = 0;
+        ui->ShowButton->setEnabled(false);
         return;
     }
 
@@ -128,7 +126,7 @@ void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
 }
 
 
-LibraryView* LibraryLayout::getLibraryWidget()
+LibraryView* LibraryLayout::getLibraryWidget() const
 {
     return ui->Library_View;
 }
@@ -256,7 +254,7 @@ void LibraryLayout::hideBookWidget()
 }
 
 
-Book* LibraryLayout::getBookByIndex(const unsigned int &index)
+Book* LibraryLayout::getBookByIndex(const unsigned int &index) const
 {
     return LibHandler->getBookByIndex(index);
 }
@@ -268,7 +266,9 @@ void LibraryLayout::deleteBook(const unsigned int &index)
         if (LibHandler->getLastOpenedBook()->getIndex() == bookWidget->getBookIndex())
         {
             hideBookWidget();
-            ui->ShowButton->setEnabled(true);
+            delete bookWidget;
+            bookWidget = 0;
+            ui->ShowButton->setEnabled(false);
         }
     LibHandler->deleteBook(index);
 }

@@ -35,9 +35,9 @@ public slots:
     void refreshLibrary();
 
     bool loadBookList();
-    bool saveBookList();
+    bool saveBookList() const;
 
-    QJsonObject toJson();
+    QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
     Book* getLastOpenedBook();
@@ -50,7 +50,7 @@ signals:
     void hideLoadImage();
 
 private:
-    int getFileTipe(const QString &fileName);           /// 0 - unknown, 1 - FB2, 2 - EPub, 3 - zip
+    int getFileTipe(const QString &fileName) const;           /// 0 - unknown, 1 - FB2, 2 - EPub, 3 - zip
 
 
     LibraryHandler();

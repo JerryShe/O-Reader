@@ -34,7 +34,7 @@ action::action(QJsonObject &json)
 }
 
 
-QJsonObject action::toJson()
+QJsonObject action::toJson() const
 {
     QJsonObject json;
 
@@ -130,7 +130,7 @@ bool Synchronization::loadLog()
 }
 
 
-bool Synchronization::saveLog()
+bool Synchronization::saveLog() const
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -169,19 +169,19 @@ bool Synchronization::saveLog()
 }
 
 
-QString Synchronization::getNumber(const QString &item)
+QString Synchronization::getNumber(const QString &item) const
 {
     return item;
 }
 
 
-QString Synchronization::getNumber(const int &item)
+QString Synchronization::getNumber(const int &item) const
 {
     return QString::number(item);
 }
 
 
-int Synchronization::getLastOpenedWindow()
+int Synchronization::getLastOpenedWindow() const
 {
     return LastOpenedWindow;
 }
@@ -193,7 +193,7 @@ void Synchronization::setLastOpenedWindow(const unsigned int &index)
 }
 
 
-unsigned int Synchronization::getLastOpenedBookIndex()
+unsigned int Synchronization::getLastOpenedBookIndex() const
 {
     return LastOpenedBookIndex;
 }

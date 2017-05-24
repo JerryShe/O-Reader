@@ -128,7 +128,7 @@ GenresMap::GenresMap()
 }
 
 
-QString GenresMap::getFB2Genre(const QString &key)
+QString GenresMap::getFB2Genre(const QString &key) const
 {
     if (FB2Map.contains(key))
         return FB2Map[key];
