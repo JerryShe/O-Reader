@@ -30,14 +30,13 @@ BatteryWidget::BatteryWidget(QWidget* parent) : QLabel(parent)
     pen.setColor(Qt::white);
 
     mode = 0;
+    iconMode = false;
 
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateWidget()));
-    timer->start(2000);
+    start();
 }
 
 
-BatteryWidget::BatteryWidget(const int &paintMode, const int &penWidth, const QColor &WidgetColor, QWidget* parent) : QLabel(parent)
+BatteryWidget::BatteryWidget(const int &paintMode, const Qt::Orientations orientation, const int &penWidth, const QColor &WidgetColor, QWidget* parent) : QLabel(parent)
 {
     if (getBatteryStatus() > 0)
         show();
@@ -47,17 +46,14 @@ BatteryWidget::BatteryWidget(const int &paintMode, const int &penWidth, const QC
     pen.setWidth(penWidth);
     pen.setColor(WidgetColor);
 
-    mode = paintMode;
-    if (mode < 0 || mode > 2)
-        mode = 0;
+    setPaintMode(paintMode);
+    setIconOrientation(orientation);
 
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(updateWidget()));
-    timer->start(2000);
+    start();
 }
 
 
-BatteryWidget::BatteryWidget(const QPen &PaintPen, const int &paintMode, QWidget* parent) : QLabel(parent)
+BatteryWidget::BatteryWidget(const QPen &PaintPen, const Qt::Orientations orientation, const int &paintMode, QWidget* parent) : QLabel(parent)
 {
     if (getBatteryStatus() > 0)
         show();
@@ -66,10 +62,15 @@ BatteryWidget::BatteryWidget(const QPen &PaintPen, const int &paintMode, QWidget
 
     pen = PaintPen;
 
-    mode = paintMode;
-    if (mode < 0 || mode > 2)
-        mode = 0;
+    setPaintMode(paintMode);
+    setIconOrientation(orientation);
 
+    start();
+}
+
+
+void BatteryWidget::start()
+{
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateWidget()));
     timer->start(2000);
@@ -94,9 +95,39 @@ void BatteryWidget::setPenWidth(const int &width)
 }
 
 
-QPen BatteryWidget::getPen()
+void BatteryWidget::setPaintMode(const int &paintMode)
+{
+    mode = paintMode;
+    if (mode < 0 || mode > 2)
+        mode = 0;
+}
+
+
+void BatteryWidget::setIconOrientation(const Qt::Orientations orientation)
+{
+    if (orientation == Qt::Vertical)
+        iconMode = true;
+    else
+        iconMode = false;
+}
+
+
+QPen BatteryWidget::getPen() const
 {
     return pen;
+}
+
+int BatteryWidget::getPaintMode() const
+{
+    return mode;
+}
+
+
+Qt::Orientations BatteryWidget::getIconOrientation() const
+{
+    if (iconMode)
+        return Qt::Vertical;
+    return Qt::Horizontal;
 }
 
 
@@ -166,7 +197,6 @@ void BatteryWidget::updateWidget()
         batteryStatus = getBatteryStatus();
         repaint();
     }
-    repaint();
 }
 
 
@@ -174,14 +204,11 @@ void BatteryWidget::paintEvent(QPaintEvent *e)
 {
     QPainter p(this);
     p.setPen(pen);
-    //qDebug()<<asd;
-
 
     QRect textRect = this->rect();
     textRect.setTop(textRect.top() + 3);
     textRect.setBottom(textRect.bottom() - 3);
     textRect.setRight(textRect.right() - 3);
-
 
 
     if (mode == 2)
@@ -193,35 +220,87 @@ void BatteryWidget::paintEvent(QPaintEvent *e)
 
     QRect iconRect = this->rect();
     iconRect.setTop(textRect.top());
-    iconRect.setBottom(textRect.bottom());
+    iconRect.setBottom(textRect.bottom() - pen.width()/2 - pen.width()%2 - 1);
 
     if (mode == 0)
     {
-        int height = this->rect().height();
-        int width = height/2 + 6;
-
         iconRect.setLeft(iconRect.left() + 3);
-        iconRect.setRight(iconRect.x() + width);
+        iconRect.setRight(iconRect.x() + this->width()/2);
 
-        textRect.setLeft(iconRect.right() + 6);
+        textRect.setLeft(iconRect.right() + 3);
 
-        drawIcon(p, iconRect);
+        if (iconMode)
+            drawVerticalIcon(p, iconRect);
+        else
+            drawHorisontalIcon(p, iconRect);
+
         drawText(p, textRect);
     }
     else if (mode == 1)
     {
         iconRect.setLeft(iconRect.left() + 3);
         iconRect.setRight(iconRect.right() - 3);
-        drawIcon(p, iconRect);
+
+        if (iconMode)
+            drawVerticalIcon(p, iconRect);
+        else
+            drawHorisontalIcon(p, iconRect);
     }
 }
 
 
-void BatteryWidget::drawIcon(QPainter &p, QRect &rect)
+void BatteryWidget::drawHorisontalIcon(QPainter &p, QRect &rect)
 {
-    int lostPixel = 0;
-    if (pen.width()%2 == 1)
-        lostPixel = 1;
+    int lostPixel = pen.width()%2;
+
+    int width = rect.width(), height = rect.height();
+    if (height > width/2)
+        height = width/2;
+    else if (height < width/2)
+        width = height*2;
+
+    QPoint lt, rb;
+
+    lt.setX(rect.x() + (rect.width() - width)/2);
+    rb.setX(lt.x() + width - width/10);
+
+
+    rb.setY(rect.y() + (rect.height() + height)/2);
+    lt.setY(rect.y() + (rect.height() - height)/2);
+
+    int penwidth = p.pen().width();
+
+    QPoint plt, prb;
+    plt.setX(rb.x() + penwidth);
+    plt.setY(lt.y() + (rb.y() - lt.y())/4);
+    prb.setX(rb.x() + penwidth + width/10);
+    prb.setY(rb.y() - (rb.y() - lt.y())/4);
+
+    QRect pimpRect(plt, prb);
+
+    p.drawRect(QRect(lt, rb));
+
+    p.fillRect(pimpRect, p.pen().color());
+
+
+    lt.setX(lt.x() + penwidth*1.5 + lostPixel);
+    lt.setY(lt.y() + penwidth*1.5 + lostPixel);
+
+    width = rb.x() - penwidth*1.5 - lt.x();
+
+
+    rb.setX(lt.x() + width*(batteryLvl/100) + lostPixel);
+    rb.setY(rb.y() - penwidth*1.5 + lostPixel);
+
+
+    p.fillRect(QRect(lt, rb), p.pen().color());
+}
+
+
+void BatteryWidget::drawVerticalIcon(QPainter &p, QRect &rect)
+{
+    int lostPixel = pen.width()%2;
+
 
     int width = rect.width(), height = rect.height();
     if (height > width*2)
@@ -229,35 +308,25 @@ void BatteryWidget::drawIcon(QPainter &p, QRect &rect)
     else if (height < width*2)
         width = height/2;
 
-    QPoint lt, lb, rt, rb;
+    QPoint lt, rb;
 
     lt.setX(rect.x() + (rect.width() - width)/2);
-    lb.setX(lt.x());
+    rb.setX(lt.x() + width);
 
-    rt.setX(lt.x() + width);
-    rb.setX(rt.x());
-
-
-    lb.setY(rect.y() + (rect.height() + height)/2);
-    rb.setY(lb.y());
-
-    lt.setY(rect.y() + (rect.height() - height)/2 + height/6);
-    rt.setY(lt.y());
+    rb.setY(rect.y() + (rect.height() + height)/2);
+    lt.setY(rect.y() + (rect.height() - height)/2 + height/10);
 
     int penwidth = p.pen().width();
 
     QPoint plt, prb;
     plt.setX(rect.x() + (rect.width() - width/2)/2);
-    plt.setY(lt.y() - height/6);
-    prb.setX(rt.x() - (plt.x() - lt.x()));
+    plt.setY(lt.y() - height/10);
+    prb.setX(rb.x() - (plt.x() - lt.x()));
     prb.setY(lt.y());
 
     QRect pimpRect(plt, prb);
 
-    p.drawLine(lt, lb);
-    p.drawLine(lb, rb);
-    p.drawLine(rb, rt);
-    p.drawLine(rt, lt);
+    p.drawRect(QRect(lt, rb));
 
     p.fillRect(pimpRect, p.pen().color());
 
@@ -265,13 +334,11 @@ void BatteryWidget::drawIcon(QPainter &p, QRect &rect)
     rb.setX(rb.x() - penwidth*1.5);
     rb.setY(rb.y() - penwidth*1.5);
 
-
     height = rb.y() - penwidth*1.5 - lt .y() - lostPixel;
 
-    lt.setX(lt.x() + penwidth*1.5 + lostPixel);
+    lt.setX(lt.x() + penwidth*1.5 + lostPixel*2);
     lt.setY(rb.y() - (height)*(batteryLvl/100.0));
-    qDebug()<<"wtf "<<((height)*(batteryLvl/100.0));
-    //asd -= 2;
+
 
     p.fillRect(QRect(lt, rb), p.pen().color());
 }
@@ -280,5 +347,5 @@ void BatteryWidget::drawIcon(QPainter &p, QRect &rect)
 void BatteryWidget::drawText(QPainter &p, QRect &rect)
 {
     p.setFont(this->font());
-    p.drawText(rect, Qt::AlignLeft | Qt::AlignVCenter, QString::number(batteryLvl) + "%");
+    p.drawText(rect, Qt::AlignHCenter | Qt::AlignVCenter, QString::number(batteryLvl) + "%");
 }

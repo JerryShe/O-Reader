@@ -239,13 +239,13 @@
        <widget class="BatteryWidget" name="BatteryLabel">
         <property name="minimumSize">
          <size>
-          <width>80</width>
+          <width>110</width>
           <height>25</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>80</width>
+          <width>110</width>
           <height>25</height>
          </size>
         </property>

@@ -57,8 +57,6 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 {
     qDebug()<<"create readingWindow";
 
-    BatteryWidget* asd = new BatteryWidget(0, 1, Qt::black);
-
     CurBook = book;
 
     ActiveWindow = false;

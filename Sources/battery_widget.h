@@ -13,22 +13,28 @@ class BatteryWidget : public QLabel
 
 public:
     BatteryWidget(QWidget* parent = 0);
-    BatteryWidget(const int &paintMode, const int &penWidth = 2, const QColor &widgetColor = Qt::black, QWidget *parent = 0);
-    BatteryWidget(const QPen &PaintPen, const int &paintMode = 0, QWidget *parent = 0);
+    BatteryWidget(const int &paintMode, const Qt::Orientations orientation, const int &penWidth = 2, const QColor &widgetColor = Qt::black, QWidget *parent = 0);
+    BatteryWidget(const QPen &PaintPen, const Qt::Orientations orientation, const int &paintMode = 0, QWidget *parent = 0);
 
 public slots:
-    int getBatteryLevel() const;
-    int getBatteryStatus() const;
-
     void setPen(const QPen &PaintPen);
     void setColor(const QColor &color);
     void setPenWidth(const int &width);
+    void setPaintMode(const int &paintMode);
+    void setIconOrientation(const Qt::Orientations orientation);
 
-    QPen getPen();
+    QPen getPen() const;
+    int getPaintMode() const;
+    Qt::Orientations getIconOrientation() const;
+
+    int getBatteryLevel() const;
+    int getBatteryStatus() const;
 
 private slots:
+    void start();
     void updateWidget();
-    void drawIcon(QPainter &p, QRect &rect);
+    void drawHorisontalIcon(QPainter &p, QRect &rect);
+    void drawVerticalIcon(QPainter &p, QRect &rect);
     void drawText(QPainter &p, QRect &rect);
 
 protected:
@@ -36,6 +42,7 @@ protected:
 
 private:
     QTimer* timer;
+    int updateTime;
 
     QPen pen;
     int mode;                             ///mode: 0 - icon+text, 1 - icon, 2 - text
@@ -43,7 +50,7 @@ private:
     int batteryLvl;
     int batteryStatus;                  /// 1 - charging, 2 - normal, 0 - no battery, -1 - unknoun
 
-    int asd = 100;
+    bool iconMode;                      /// false - horisontal, true - vertical
 };
 
 #endif // BATTERY_WIDGET_H
