@@ -20,6 +20,12 @@ BookTableOfContents::BookTableOfContents(const QString &style, QTreeWidgetItem *
     QDialog(parent),
     ui(new Ui::BookTableOfContents)
 {
+
+    if (content->childCount() == 0)
+    {
+        qDebug()<<"yepe";
+    }
+
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     ui->setupUi(this);
     setStyle(style);

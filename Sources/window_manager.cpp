@@ -164,16 +164,18 @@ void WindowManager::showLogin()
 void WindowManager::showMain()
 {
     mainWindow = new MainWindow(this);
-    this->show();
+
     this->setCentralWidget(mainWindow);
+    LibHandler->setLibraryWidget(mainWindow->getLibraryWidget());
+
+    this->show();
     mainWindow->show();
 
     if (LastWindow != 0)
     {
-        delete LastWindow;
         saveProgramData();
+        delete LastWindow;
     }
-
     LastWindow = mainWindow;
 
     connect(mainWindow, SIGNAL(showLoginWindow()), this, SIGNAL(showLoginWindow()));
@@ -183,9 +185,8 @@ void WindowManager::showMain()
     connect(mainWindow, SIGNAL(showWindowMinimazed()), this, SLOT(showWindowMinimazed()));
     connect(mainWindow, SIGNAL(showWindowMaximazed()), this, SLOT(showWindowMaximazed()));
 
-    LibHandler->setLibraryWidget(mainWindow->getLibraryWidget());
-    UserSynchro->setLastOpenedWindow(1);
 
+    UserSynchro->setLastOpenedWindow(1);
 
     qDebug()<<"showing main window";
 }

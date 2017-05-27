@@ -72,7 +72,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     setStyle();
 
     tabSwitcher->start(0);
-    this->show();
     qDebug()<<"create MainWindow";
 }
 

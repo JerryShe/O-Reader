@@ -23,7 +23,9 @@ LibraryView::LibraryView(QWidget *widget)
     setAttribute(Qt::WA_AcceptTouchEvents);
     verticalScrollBar()->setSingleStep(30);
 
-    QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
+    ///touch support?
+    if (QTouchDevice::devices().size())
+        QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
 
     BookModel = new LibraryModel(this);
 

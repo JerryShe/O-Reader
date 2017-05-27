@@ -34,8 +34,7 @@ void LibraryHandler::setLibraryWidget(LibraryView* lbWidget)
     qDebug()<<"set lib widget";
     libraryView = lbWidget;
     needRefresh = true;
-    if (libraryView != 0)
-        refreshLibrary();
+    refreshLibrary();
 }
 
 
@@ -371,9 +370,10 @@ Book* LibraryHandler::getLastOpenedBook()
 
 void LibraryHandler::refreshLibrary()
 {
-    qDebug()<<"refreshing library representation";
     if (needRefresh == true && libraryView != 0)
     {
+        qDebug()<<"refreshing library representation";
+
         libraryView->clear();
         needRefresh = false;
         for (int i = 0; i < bookList.size(); i++)
