@@ -253,12 +253,8 @@ void XMLTextParser::createFB2TableOfContents()
     {
         if (bookText[i] == "<section>")
         {
-            QTreeWidgetItem* item = new QTreeWidgetItem(curItem);
-            item->setWhatsThis(0,QString::number(i));
-
-            curItem->addChild(item);
-            curItem = item;
             QString text;
+            int pos = i;
 
             for (; i < bookText.size(); i++)
                 if (bookText[i] == "<title>" || bookText[i] == "</section>")
@@ -281,10 +277,20 @@ void XMLTextParser::createFB2TableOfContents()
                     }
                 }
 
+
                 if (text[text.size() - 1] == '\n')
                     text.remove(text.size() - 1, 1);
 
-                curItem->setText(0, text);
+                if (!text.isEmpty())
+                {
+                    QTreeWidgetItem* item = new QTreeWidgetItem(curItem);
+                    item->setWhatsThis(0,QString::number(pos));
+
+                    curItem->addChild(item);
+                    curItem = item;
+
+                    curItem->setText(0, text);
+                }
             }
         }
 
