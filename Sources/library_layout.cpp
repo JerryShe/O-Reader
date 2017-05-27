@@ -11,8 +11,7 @@
 #include <QDropEvent>
 #include <QMimeData>
 
-#include <QThread>
-
+#include <QScroller>
 
 
 void LibraryLayout::setStyle()
@@ -80,6 +79,17 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     connect(this, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
     connect(ui->_Find, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
     connect(ui->_ChangeViewMode, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
+
+
+
+    if (QTouchDevice::devices().size())
+    {
+        QScroller::grabGesture(ui->_GroupBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->_GroupBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->_SortBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->_SortBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
 }
 
 

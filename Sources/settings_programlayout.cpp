@@ -6,6 +6,9 @@
 #include <QDebug>
 #include <QListView>
 
+#include <QScroller>
+#include <QScrollBar>
+
 void Settings_ProgramLayout::setLayoutStyle()
 {
     QString a[2];
@@ -63,6 +66,30 @@ void Settings_ProgramLayout::setProgramData()
     ui->FTurnForward->installEventFilter(this);
     ui->STurnBackward->installEventFilter(this);
     ui->STurnForward->installEventFilter(this);
+
+
+
+    if (QTouchDevice::devices().size())
+    {
+        QScroller::grabGesture(ui->scrollArea->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->scrollArea->verticalScrollBar()->setSingleStep(1);
+
+        QScroller::grabGesture(ui->InterfaceStyleBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->InterfaceStyleBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->LanguageBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->LanguageBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->TopBarShowBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->TopBarShowBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->TurnByWheelBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->TurnByWheelBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->TurnByTapBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->TurnByTapBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    }
 }
 
 

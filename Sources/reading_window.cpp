@@ -9,6 +9,8 @@
 #include "styles.h"
 #include "booktableofcontents.h"
 #include "styles.h"
+#include "battery_widget.h"
+
 
 #include <QTimer>
 #include <QMouseEvent>
@@ -18,11 +20,12 @@
 #include <QListWidget>
 #include <QMessageBox>
 
+#include <QScroller>
+
 #include <QDebug>
 
 
 
-#include "battery_widget.h"
 
 
 void ReadingWindow::setStyle(const QString &currentStyle)
@@ -107,6 +110,9 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ProfilesWidget->setFixedWidth(200);
     ProfilesLayout->addWidget(ProfilesView);
     ProfilesWidget->hide();
+
+    if (QTouchDevice::devices().size())
+        QScroller::grabGesture(ProfilesView->viewport(), QScroller::LeftMouseButtonGesture);
 
     connect(ui->MenuButton, &QPushButton::clicked, [this](){ProfilesWidget->hide();});
     connect(ui->ReadProfilesButton, &QPushButton::clicked, [this](){MenuWidget->hideMenu();});

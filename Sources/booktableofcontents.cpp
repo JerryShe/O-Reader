@@ -5,6 +5,9 @@
 #include <QDebug>
 #include <QTreeWidgetItem>
 
+#include <QScroller>
+#include <QTouchDevice>
+
 
 void BookTableOfContents::setStyle(const QString &style)
 {
@@ -38,6 +41,13 @@ BookTableOfContents::BookTableOfContents(const QString &style, QTreeWidgetItem *
     connect(ui->GoTo, &QPushButton::clicked, [this](){
         if (ui->TableOfContents->selectedItems().size())
             emit goToSection(ui->TableOfContents->selectedItems().first()->whatsThis(0).toLongLong());});
+
+
+    if (QTouchDevice::devices().size())
+    {
+        QScroller::grabGesture(ui->TableOfContents->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->TableOfContents->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
 }
 
 

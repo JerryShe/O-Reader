@@ -4,6 +4,8 @@
 #include <QListView>
 #include <QColorDialog>
 
+#include <QScroller>
+#include <QTouchDevice>
 
 Settings_ReaderLayoutStyle::Settings_ReaderLayoutStyle(QWidget *parent) :
     QWidget(parent),
@@ -23,6 +25,26 @@ Settings_ReaderLayoutStyle::Settings_ReaderLayoutStyle(QWidget *parent) :
     connect(ui->TextStyleBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
     connect(ui->LineSpacingBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
     connect(ui->AlignmentBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
+
+
+    if (QTouchDevice::devices().size())
+    {
+        QScroller::grabGesture(ui->NameBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->NameBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->SizeBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->SizeBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->TextStyleBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->TextStyleBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->LineSpacingBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->LineSpacingBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->AlignmentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->AlignmentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
+
 
     for(double i = 1; i <= 2.5; i += 0.1)
         ui->LineSpacingBox->addItem(QString::number(i));
