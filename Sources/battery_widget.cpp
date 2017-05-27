@@ -32,6 +32,8 @@ BatteryWidget::BatteryWidget(QWidget* parent) : QLabel(parent)
     mode = 0;
     iconMode = false;
 
+    batteryLvl = 100;
+
     start();
 }
 
@@ -49,6 +51,9 @@ BatteryWidget::BatteryWidget(const int &paintMode, const Qt::Orientations orient
     setPaintMode(paintMode);
     setIconOrientation(orientation);
 
+    batteryLvl = 100;
+
+
     start();
 }
 
@@ -64,6 +69,8 @@ BatteryWidget::BatteryWidget(const QPen &PaintPen, const Qt::Orientations orient
 
     setPaintMode(paintMode);
     setIconOrientation(orientation);
+
+    batteryLvl = 100;
 
     start();
 }
@@ -289,7 +296,7 @@ void BatteryWidget::drawHorisontalIcon(QPainter &p, QRect &rect)
     width = rb.x() - penwidth*1.5 - lt.x();
 
 
-    rb.setX(lt.x() + width*(batteryLvl/100) + lostPixel);
+    rb.setX(lt.x() + width*(batteryLvl/100.0) + lostPixel);
     rb.setY(rb.y() - penwidth*1.5 + lostPixel);
 
 
