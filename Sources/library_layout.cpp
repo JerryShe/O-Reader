@@ -164,7 +164,7 @@ void LibraryLayout::addBooksFromFolder()
 
 void LibraryLayout::addBooksFromFiles()
 {
-    QStringList fileList = QFileDialog::getOpenFileNames(this, QObject::tr("Open files"), "", "(*.FB2)");
+    QStringList fileList = QFileDialog::getOpenFileNames(this, QObject::tr("Open files"), "", tr("Book files (*.fb2 *.zip *.epub)"));
     LibHandler->AddBooks(fileList);
 }
 

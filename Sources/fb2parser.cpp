@@ -5,9 +5,12 @@
 
 #include <xmltextparser.h>
 
+#include <QtGui/private/qzipreader_p.h>
+
 FB2Parser::FB2Parser(Book *book, QStringList &bookText, BookImageTable*& ImageTable, QTreeWidgetItem*& tableOfContents, QHash <QString, QStringList> &notesTable)
 {
     Obook = book;
+
 
     parseText(bookText);
     createTableOfContents(bookText, tableOfContents);

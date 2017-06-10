@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
+#include <QtGui/private/qzipreader_p.h>
 
 LibraryHandler* LibraryHandler::getLibraryHandler()
 {
@@ -209,7 +210,8 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
     int format = getFileTipe(file);
 
-    if (format != 0 && format != 3)
+
+    if (format == 1 || format == 2)
     {
         bool result = true;
         Book boo(result, file, Gmap);
@@ -222,17 +224,47 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
         boo.setIndex(++currentBookIndex);
         bookList.push_back(boo);
-
-        UserActions->addAction(UActions::AddBook, file);
-        if (libraryView != 0)
+    }
+    else if (format == 3)
+    {
+        QZipReader zip(file);
+        if (zip.exists())
         {
-            libraryView->addItem(&boo);
-            libraryView->reset();
+            foreach (QZipReader::FileInfo info, zip.fileInfoList())
+            {
+                if(info.isFile)
+                {
+                    QString zippedFile = info.filePath;
+                    QFileInfo info (zippedFile);
+                    if (info.suffix().compare("fb2", Qt::CaseInsensitive) == 0)
+                    {
+                        QByteArray byteBook = zip.fileData(zippedFile);
+                        bool result = true;
+                        Book boo (result, file, zippedFile, byteBook, Gmap);
+
+                        if (!result)
+                        {
+                            /// оповещение - невозможно открыть как книгу
+                            qDebug()<<"Invalid file!";
+                            return;
+                        }
+
+                        boo.setIndex(++currentBookIndex);
+                        bookList.push_back(boo);
+                    }
+                }
+            }
         }
     }
-    if (format == 3)
+    else
+        return;
+
+
+    UserActions->addAction(UActions::AddBook, file);
+    if (libraryView != 0)
     {
-        qDebug()<<"zip!";
+        libraryView->addItem(&bookList[bookList.size() - 1]);
+        libraryView->reset();
     }
 }
 

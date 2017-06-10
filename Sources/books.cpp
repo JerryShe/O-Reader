@@ -23,178 +23,192 @@
 
 Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 {
-    CoverType = "noImage";
     File = fileName;
-
-    Progress = -1;
 
     QFileInfo fileInfo(fileName);
     QString fileFormat = fileInfo.suffix();
 
     if (QString::compare(fileFormat, "fb2", Qt::CaseInsensitive) == 0)
-        result = loadFB2(fileName, Gmap);
+    {
+        QFile bookFile(fileName);
+        if (bookFile.open(QIODevice::ReadOnly))
+        {
+            QDomDocument doc;
+            if (doc.setContent(&bookFile))
+            {
+                bookFile.close();
+                result = loadFB2(doc, Gmap);
+            }
+            else
+                result = false;
+        }
+        else
+            result = false;
+
+        bookFile.close();
+    }
     else if (QString::compare(fileFormat, "epub", Qt::CaseInsensitive) == 0)
+    {
+
         result = loadEPub(fileName);
+
+    }
+}
+
+//for zipped fb2
+Book::Book(bool &result, const QString &zipFileName, const QString &fileName, const QByteArray byArr, GenresMap *Gmap)
+{
+    File = zipFileName;
+    ZippedFile = fileName;
+
+
+    QDomDocument doc;
+    if (doc.setContent(byArr))
+        result = loadFB2(doc, Gmap);
+    else
+        result = false;
 }
 
 
-bool Book::loadFB2(QString fileName, GenresMap *Gmap)
+bool Book::loadFB2(QDomDocument &doc, GenresMap *Gmap)
 {
+    CoverType = "noImage";
     Format = 1;
+    Progress = -1;
 
-    QFile bookFile(fileName);
-    if (bookFile.open(QIODevice::ReadOnly))
-    {
-        QDomDocument doc;
-        if (doc.setContent(&bookFile))
-        {
-            bookFile.close();
-
-            if (doc.namedItem("FictionBook").nodeName().isNull())
-                return false;
-
-            QDomNodeList childs = doc.childNodes();
-            for (int i = 0; i < childs.size(); i++)
-                if (childs.at(i).isProcessingInstruction())
-                {
-                    QString data = childs.at(i).toProcessingInstruction().data();
-                    int j = data.indexOf("encoding");
-                    if (j != -1)
-                    {
-                        j = data.indexOf("'", j);
-                        for (j += 1; j < data.size() && j < data.indexOf("'", j); j++)
-                            Codec += data[j];
-                    }
-                    break;
-                }
-            if (Codec == "")
-                return false;
-
-            QDomNode titleInfo = doc.elementsByTagName("title-info").item(0);
-            if (titleInfo.isNull())
-            {
-                ///выдать сообщение - не найден title-info
-            }
-
-            //название книги
-            if (! titleInfo.namedItem("book-title").isNull())
-                Title = titleInfo.namedItem("book-title").toElement().text();
-
-            //имя автора
-            QDomNode author = titleInfo.namedItem("author");
-            if (!author.namedItem("first-name").isNull())
-                AuthorFirstName = author.namedItem("first-name").toElement().text();
-            if (!author.namedItem("middle-name").isNull())
-                AuthorMiddleName = author.namedItem("middle-name").toElement().text();
-            if (!author.namedItem("last-name").isNull())
-                AuthorLastName = author.namedItem("last-name").toElement().text();
-
-            //жанры
-            QDomNodeList nodeList = doc.elementsByTagName("genre");
-            for (int i = 0; i < nodeList.length(); ++i)
-                Genres << Gmap->getFB2Genre( nodeList.item(i).toElement().text() );
-
-            //языки
-            if (! titleInfo.namedItem("lang").isNull())
-                Language = titleInfo.namedItem("lang").toElement().text();
-
-            if (! titleInfo.namedItem("src-lang").isNull())
-                SourceLanguage = titleInfo.namedItem("src-lang").toElement().text();
-
-            //аннотация
-            if (! titleInfo.namedItem("annotation").isNull())
-            {
-                nodeList = titleInfo.namedItem("annotation").childNodes();
-                for (int i = 0; i < nodeList.size(); ++i)
-                    Annotation<<nodeList.item(i).toElement().text();
-            }
-
-            //книжная серия
-            if (! titleInfo.namedItem("sequence").isNull())
-            {
-                Series.first = titleInfo.namedItem("sequence").toElement().attribute("name", "");
-                Series.second = titleInfo.namedItem("sequence").toElement().attribute("number", "").toInt();
-            }
-
-
-            //дата добавления
-            AddittionTime = QDateTime::currentDateTime();
-
-
-            //изображения
-            if (!titleInfo.namedItem("coverpage").isNull())
-            {
-                QString coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("l:href", "");
-                if (coverName.isEmpty())
-                {
-                    coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("xlink:href", "");
-                    if (coverName.isEmpty())
-                    {
-                        CoverType = "noImage";
-                        bookFile.close();
-
-                        return true;
-                    }
-                }
-
-                if (coverName.at(0) == '#')
-                    coverName = coverName.right(coverName.size() - 1);
-
-                nodeList = doc.elementsByTagName("binary");
-                for (int i = 0; i < nodeList.size(); i++)
-                {
-                    if (nodeList.at(i).toElement().attribute("id") == coverName)
-                    {
-                        CoverType = nodeList.at(i).toElement().attribute("content-type");
-                        Cover = nodeList.at(i).toElement().text();
-
-                        for (int i = 0; i < Cover.size(); i++)
-                            if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
-                            {
-                                Cover.replace(i, 2, " ");
-                                i++;
-                            }
-                        break;
-                    }
-                }
-
-                QImage tempImage;
-                QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
-
-
-                QMimeDatabase data;
-                CoverType = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
-
-                std::string str = CoverType.toStdString();
-                const char* p = str.c_str();
-
-                tempImage = QImage::fromData(BinaryCover, p);
-
-
-                if (tempImage.height() > 750 || tempImage.width() > 1000)
-                    tempImage.scaled(750, 1000, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-
-                QByteArray ba;
-                QBuffer bu(&ba);
-
-                tempImage.save(&bu, p);
-
-                Cover = ba.toBase64();
-            }
-            else
-                CoverType = "noImage";
-        }
-        else
-        {
-            bookFile.close();
-            return false;
-        }
-    }
-    else
+    if (doc.namedItem("FictionBook").nodeName().isNull())
         return false;
 
-    bookFile.close();
+    QDomNodeList childs = doc.childNodes();
+    for (int i = 0; i < childs.size(); i++)
+        if (childs.at(i).isProcessingInstruction())
+        {
+            QString data = childs.at(i).toProcessingInstruction().data();
+            int j = data.indexOf("encoding");
+            if (j != -1)
+            {
+                j = data.indexOf("'", j);
+                for (j += 1; j < data.size() && j < data.indexOf("'", j); j++)
+                    Codec += data[j];
+            }
+            break;
+        }
+    if (Codec == "")
+        return false;
+
+    QDomNode titleInfo = doc.elementsByTagName("title-info").item(0);
+    if (titleInfo.isNull())
+    {
+        ///выдать сообщение - не найден title-info
+    }
+
+    //название книги
+    if (! titleInfo.namedItem("book-title").isNull())
+        Title = titleInfo.namedItem("book-title").toElement().text();
+
+    //имя автора
+    QDomNode author = titleInfo.namedItem("author");
+    if (!author.namedItem("first-name").isNull())
+        AuthorFirstName = author.namedItem("first-name").toElement().text();
+    if (!author.namedItem("middle-name").isNull())
+        AuthorMiddleName = author.namedItem("middle-name").toElement().text();
+    if (!author.namedItem("last-name").isNull())
+        AuthorLastName = author.namedItem("last-name").toElement().text();
+
+    //жанры
+    QDomNodeList nodeList = doc.elementsByTagName("genre");
+    for (int i = 0; i < nodeList.length(); ++i)
+        Genres << Gmap->getFB2Genre( nodeList.item(i).toElement().text() );
+
+    //языки
+    if (! titleInfo.namedItem("lang").isNull())
+        Language = titleInfo.namedItem("lang").toElement().text();
+
+    if (! titleInfo.namedItem("src-lang").isNull())
+        SourceLanguage = titleInfo.namedItem("src-lang").toElement().text();
+
+    //аннотация
+    if (! titleInfo.namedItem("annotation").isNull())
+    {
+        nodeList = titleInfo.namedItem("annotation").childNodes();
+        for (int i = 0; i < nodeList.size(); ++i)
+            Annotation<<nodeList.item(i).toElement().text();
+    }
+
+    //книжная серия
+    if (! titleInfo.namedItem("sequence").isNull())
+    {
+        Series.first = titleInfo.namedItem("sequence").toElement().attribute("name", "");
+        Series.second = titleInfo.namedItem("sequence").toElement().attribute("number", "").toInt();
+    }
+
+
+    //дата добавления
+    AddittionTime = QDateTime::currentDateTime();
+
+
+    //изображения
+    if (!titleInfo.namedItem("coverpage").isNull())
+    {
+        QString coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("l:href", "");
+        if (coverName.isEmpty())
+        {
+            coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("xlink:href", "");
+            if (coverName.isEmpty())
+            {
+                CoverType = "noImage";
+                return true;
+            }
+        }
+
+        if (coverName.at(0) == '#')
+            coverName = coverName.right(coverName.size() - 1);
+
+        nodeList = doc.elementsByTagName("binary");
+        for (int i = 0; i < nodeList.size(); i++)
+        {
+            if (nodeList.at(i).toElement().attribute("id") == coverName)
+            {
+                CoverType = nodeList.at(i).toElement().attribute("content-type");
+                Cover = nodeList.at(i).toElement().text();
+
+                for (int i = 0; i < Cover.size(); i++)
+                    if (Cover.at(i) == '\r' && Cover.at(i+1) == '\n')
+                    {
+                        Cover.replace(i, 2, " ");
+                        i++;
+                    }
+                break;
+            }
+        }
+
+        QImage tempImage;
+        QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
+
+
+        QMimeDatabase data;
+        CoverType = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+
+        std::string str = CoverType.toStdString();
+        const char* p = str.c_str();
+
+        tempImage = QImage::fromData(BinaryCover, p);
+
+
+        if (tempImage.height() > 750 || tempImage.width() > 1000)
+            tempImage.scaled(750, 1000, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+
+        QByteArray ba;
+        QBuffer bu(&ba);
+
+        tempImage.save(&bu, p);
+
+        Cover = ba.toBase64();
+    }
+    else
+        CoverType = "noImage";
+
     return true;
 }
 
@@ -240,6 +254,7 @@ void Book::fromJson(const QJsonObject &json)
 
     Format = json["Format"].toInt();
     File = json["File"].toString();
+    ZippedFile = json["ZippefFile"].toString();
     Index = (unsigned int)json["Index"].toInt();
     Codec = json["Codec"].toString();
     Title = json["Title"].toString();
@@ -281,6 +296,7 @@ QJsonObject Book::toJson() const
 
     json["Format"] = Format;
     json["File"] = File;
+    json["ZippedFile"] = ZippedFile;
     json["Index"] = (int)Index;
     json["Codec"] = Codec;
     json["Title"] = Title;
@@ -453,6 +469,12 @@ void Book::setCodec(const QString &codec)
 QString Book::getFileName() const
 {
     return File;
+}
+
+
+QString Book::getZippedFileName() const
+{
+    return ZippedFile;
 }
 
 

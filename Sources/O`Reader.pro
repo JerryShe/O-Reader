@@ -1,5 +1,5 @@
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-QT       += core gui xml
+QT       += core gui xml gui-private
 
 TARGET = O`Reader
 

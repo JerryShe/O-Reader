@@ -10,11 +10,14 @@
 
 #include "genresmap.h"
 #include <QJsonObject>
+#include <QDomDocument>
 
 class Book
 {
 public:
     Book(bool &result, const QString &FileName, GenresMap *Gmap);
+    Book(bool &result, const QString &zipFileName, const QString &fileName, const QByteArray byArr, GenresMap *Gmap);
+
     Book(const QJsonObject &BookJson);
     Book(){}
 
@@ -44,6 +47,7 @@ public:
     void setCodec(const QString &Codec);
 
     QString getFileName() const;
+    QString getZippedFileName() const;
     void setFile(const QString &file);
 
     int getFormat() const;
@@ -53,12 +57,13 @@ public:
     void fromJson(const QJsonObject &json);
 
 private:
-    bool loadFB2(QString fileName, GenresMap *Gmap);
+    bool loadFB2(QDomDocument &doc, GenresMap *Gmap);
     bool loadEPub(QString fileName);
 
 
     int Format;                            /// 1 - FB2, 2 - EPub
     QString File;
+    QString ZippedFile;
     unsigned int Index;
     QString Codec;    
 

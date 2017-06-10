@@ -5,6 +5,8 @@
 #include <QMimeType>
 #include <QMimeDatabase>
 #include <QFile>
+#include <QtGui/private/qzipreader_p.h>
+
 
 #include <QDebug>
 
@@ -39,31 +41,58 @@ void BookImageTable::createFromEPub(Book *book)
 
 void BookImageTable::createFromFB2(Book *book)
 {
-    QFile bookFile(book->getFileName());
-    if (bookFile.open(QIODevice::ReadOnly))
+    QDomDocument doc;
+
+    if (book->getZippedFileName().isEmpty())
     {
-        QDomDocument doc;
-        if (doc.setContent(&bookFile))
+        QFile bookFile(book->getFileName());
+        if (bookFile.open(QIODevice::ReadOnly))
         {
-            bookFile.close();
-
-            QDomNodeList nodeList = doc.elementsByTagName("binary");
-            for (int i = 0; i < nodeList.size(); i++)
+            if (doc.setContent(&bookFile))
+                bookFile.close();
+            else
             {
-                QString name = nodeList.at(i).toElement().attribute("id");
-                QString image = nodeList.at(i).toElement().text();
-
-                QByteArray BinaryCover = QByteArray::fromBase64(image.toUtf8());
-
-                QMimeDatabase data;
-                if (!data.mimeTypeForData(BinaryCover).name().contains("image"))
-                    continue;
-
-                QString type = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
-
-                addImage(name, image, type);
+                qDebug()<<"11";
+                bookFile.close();
+                return;
             }
         }
+        else
+        {
+            qDebug()<<"22";
+            bookFile.close();
+            return;
+        }
+    }
+    else
+    {
+        QZipReader zip(book->getFileName());
+        if (zip.exists())
+        {
+            QByteArray byArr = zip.fileData(book->getZippedFileName());
+            if (!doc.setContent(byArr))
+                return;
+        }
+    }
+
+    qDebug()<<"woopwoop";
+
+
+    QDomNodeList nodeList = doc.elementsByTagName("binary");
+    for (int i = 0; i < nodeList.size(); i++)
+    {
+        QString name = nodeList.at(i).toElement().attribute("id");
+        QString image = nodeList.at(i).toElement().text();
+
+        QByteArray BinaryCover = QByteArray::fromBase64(image.toUtf8());
+
+        QMimeDatabase data;
+        if (!data.mimeTypeForData(BinaryCover).name().contains("image"))
+            continue;
+
+        QString type = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+
+        addImage(name, image, type);
     }
 }
 
