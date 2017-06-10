@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDebug>
 
+#include <fb2parser.h>
 
 
 QString parseTagAttribute(QString tag, QString attr)
@@ -23,61 +24,16 @@ QString parseTagAttribute(QString tag, QString attr)
 }
 
 
-
-XMLTextParser::XMLTextParser(Book *openingBook)
-{
-    book = openingBook;
-
-    if (book->getFormat() == 1)
-    {
-        parseFB2();
-        createFB2TableOfContents();
-        createFB2NotesTable();
-    }
-    else if (book->getFormat() == 2)
-    {
-        parseEPub();
-        createEPubTableOfContents();
-    }
-
-    ImageTable = new BookImageTable(openingBook);
-
-}
-
-
-QStringList XMLTextParser::getText() const
-{
-    return bookText;
-}
-
-
-QTreeWidgetItem* XMLTextParser::getTableOfContents() const
-{
-    return TableOfContents;
-}
-
-
-BookImageTable *XMLTextParser::getImageTable() const
-{
-    return ImageTable;
-}
-
-
-QHash <QString, QStringList> XMLTextParser::getNotesTable() const
-{
-    return notesTable;
-}
-
-
-QStringList XMLTextParser::splitTextToWords(QString temp) const
+QStringList splitTextToWords(QString temp)
 {
     QStringList tempList;
     tempList.append(temp);
 
+
     for (int i = 0; i < tempList.size(); i++)
     {
         int pos = tempList[i].indexOf("<");
-        if (pos != -1)
+        if (pos > 0)
         {
             tempList.append(tempList[i].right(tempList[i].size() - pos));
             tempList[i] = tempList[i].left(pos);
@@ -88,14 +44,7 @@ QStringList XMLTextParser::splitTextToWords(QString temp) const
         {
             pos = tempList[i].indexOf(">");
             if (pos == -1)
-            {
-                do
-                {
-                    doc->operator>>(temp);
-                    tempList[i].append(" " + temp);
-                }
-                while (temp.indexOf(">") == -1);
-            }
+                break;
 
             if (pos != tempList[i].size() - 1)
             {
@@ -131,190 +80,40 @@ QStringList XMLTextParser::splitTextToWords(QString temp) const
 }
 
 
-void XMLTextParser::parseFB2()
+XMLTextParser::XMLTextParser(Book *openingBook)
 {
-    QFile bookFile(book->getFileName());
-    QString coverName;
+    qDebug()<<"start woopwoop";
 
-
-    if (bookFile.open(QIODevice::ReadOnly))
+    if (openingBook->getFormat() == 1)
     {
-        doc = new QTextStream(&bookFile);
-        doc->setCodec(book->getCodec().toStdString().c_str());
-
-        QString temp;
-
-        do
-        {
-            doc->operator >> (temp);
-
-            int coverPos = temp.indexOf("<coverpage>");
-            if (coverPos != -1)
-            {
-                if (temp.indexOf("</coverpage>", coverPos+12) == -1)
-                {
-                    do
-                    {
-                        coverName += temp;
-                        doc->operator >> (temp);
-                    }
-                    while ((temp.indexOf("</coverpage>") == -1 && temp.indexOf("<body>") == -1) && !doc->atEnd());
-                    coverName += temp;
-                }
-
-                temp = coverName.right(coverName.size() - coverName.indexOf("</coverpage>") - 12);
-                coverName = parseTagAttribute(coverName, "href");
-                coverName.remove(0,1);
-            }
-        }
-        while(temp.indexOf("<body") == -1 && !doc->atEnd());
-
-        temp = temp.remove(0, temp.indexOf("<body"));
-        bookText.append(splitTextToWords(temp));
-
-
-        while(!doc->atEnd())
-        {
-            doc->operator >>(temp);
-
-            if (temp.indexOf("<binary") != -1)
-            {
-                bookText.append(splitTextToWords(temp.left(temp.indexOf("<binary"))));
-                break;
-            }
-            else
-                bookText.append(splitTextToWords(temp));
-        }
-        bookFile.close();
+        FB2Parser parser(openingBook, bookText, ImageTable, TableOfContents, notesTable);
     }
-    else
+    else if (openingBook->getFormat() == 2)
     {
-        qDebug()<<"невозможно открыть файл книги";
-    }
 
-    qDebug()<<"cover "<<coverName;
-    if (book->haveCoverImage())
-        bookText.prepend("<image l:href=\"#" + coverName + "\"/>");
-
-    delete doc;
-}
-
-
-void XMLTextParser::createFB2NotesTable()
-{
-    int notesPos;
-
-    for (notesPos = 0; notesPos < bookText.size(); notesPos++)
-    {
-        if (bookText[notesPos][0] == "<")
-            if (bookText[notesPos].indexOf("<body") != -1)
-            {
-                if (parseTagAttribute(bookText[notesPos], "name") == "notes")
-                    break;
-            }
-    }
-
-    if (notesPos != 0 && notesPos != bookText.size())
-    {
-        for (int i = notesPos; i < bookText.size(); i++)
-        {
-            if (bookText[i] == "</body>")
-                break;
-
-            if (bookText[notesPos][0] == "<")
-                if (bookText[i].indexOf("<section") != -1)
-                {
-                    QString noteID = parseTagAttribute(bookText[i], "id");
-                    if (!noteID.isEmpty())
-                    {
-                        QStringList noteText;
-                        for (i = i + 1; i < bookText.size(); i++)
-                        {
-                            if (bookText[i].indexOf("</section") == -1)
-                                noteText.append(bookText[i]);
-                            else
-                                break;
-                        }
-
-                        notesTable.insert(noteID, noteText);
-                    }
-                }
-        }
     }
 }
 
 
-void XMLTextParser::createFB2TableOfContents()
+QStringList XMLTextParser::getText() const
 {
-    TableOfContents = new QTreeWidgetItem(0);
-    QTreeWidgetItem* curItem = TableOfContents;
-
-    for (long long i = 0; i < bookText.size(); i++)
-    {
-        if (bookText[i] == "<section>")
-        {
-            QString text;
-            int pos = i;
-
-            for (; i < bookText.size(); i++)
-                if (bookText[i] == "<title>" || bookText[i] == "</section>")
-                    break;
-
-            if (bookText[i] == "<title>")
-            {
-                i++;
-
-                for (i = i+1; i < bookText.size(); i++)
-                {
-                    if (bookText[i][0] != '<')
-                        text += bookText[i] + " ";
-                    else
-                    {
-                        if (bookText[i] == "</p>")
-                            text += '\n';
-                        else if (bookText[i] == "</title>" || bookText[i] == "</section>")
-                            break;
-                    }
-                }
-
-
-                if (text[text.size() - 1] == '\n')
-                    text.remove(text.size() - 1, 1);
-
-                if (!text.isEmpty())
-                {
-                    QTreeWidgetItem* item = new QTreeWidgetItem(curItem);
-                    item->setWhatsThis(0,QString::number(pos));
-
-                    curItem->addChild(item);
-                    curItem = item;
-
-                    curItem->setText(0, text);
-                }
-            }
-        }
-
-        if (bookText[i] == "</section>")
-        {
-            if (curItem->parent() != 0)
-                curItem = curItem->parent();
-        }
-
-        if (bookText[i] == "</body>")
-            break;
-    }
-
-
+    return bookText;
 }
 
 
-void XMLTextParser::parseEPub()
+QTreeWidgetItem* XMLTextParser::getTableOfContents() const
 {
-
+    return TableOfContents;
 }
 
 
-void XMLTextParser::createEPubTableOfContents()
+BookImageTable *XMLTextParser::getImageTable() const
 {
+    return ImageTable;
+}
 
+
+QHash <QString, QStringList> XMLTextParser::getNotesTable() const
+{
+    return notesTable;
 }

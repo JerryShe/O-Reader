@@ -23,7 +23,6 @@ SOURCES += main.cpp\
     book_page.cpp \
     synchronization.cpp \
     genresmap.cpp \
-    booktableofcontents.cpp \
     library_layout.cpp \
     library_handler.cpp \
     QTabSwitcher.cpp \
@@ -44,7 +43,9 @@ SOURCES += main.cpp\
     library_model.cpp \
     library_view.cpp \
     book_image_table.cpp \
-    battery_widget.cpp
+    battery_widget.cpp \
+    fb2parser.cpp \
+    book_table_of_contents.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -60,7 +61,6 @@ HEADERS  += \
     synchronization.h \
     search_window.h \
     genresmap.h \
-    booktableofcontents.h \
     library_layout.h \
     library_handler.h \
     QTabSwitcher.h \
@@ -81,7 +81,9 @@ HEADERS  += \
     library_model.h \
     library_view.h \
     book_image_table.h \
-    battery_widget.h
+    battery_widget.h \
+    fb2parser.h \
+    book_table_of_contents.h
 
 FORMS    += \
     settings_programlayout.ui \

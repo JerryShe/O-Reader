@@ -31,6 +31,9 @@ signals:
     void startReading(unsigned int index);
     void deleteBook(unsigned int index);
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private:
     void setStyle(QString Style);
 

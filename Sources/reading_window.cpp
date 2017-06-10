@@ -7,7 +7,7 @@
 #include "search_window.h"
 #include "settings.h"
 #include "styles.h"
-#include "booktableofcontents.h"
+#include "book_table_of_contents.h"
 #include "styles.h"
 #include "battery_widget.h"
 
@@ -63,7 +63,7 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     CurBook = book;
 
     ActiveWindow = false;
-
+    MiniWindow = 0;
     TopBarNeedHide = true;
     HidenTimer = 0;
 
@@ -73,16 +73,6 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->viewport()->setAutoFillBackground(false);
     ui->TextPage->setAttribute( Qt::WA_TranslucentBackground, true );
 
-    ui->TextPage->setFocus();
-
-    ui->MenuButton->setFocusPolicy(Qt::NoFocus);
-    ui->min_button->setFocusPolicy(Qt::NoFocus);
-    ui->exit_button->setFocusPolicy(Qt::NoFocus);
-    ui->full_size_button->setFocusPolicy(Qt::NoFocus);
-
-    ui->TextPage->setFocusPolicy(Qt::StrongFocus);
-
-
 
     BookPaginator = new XMLTextPaginator(this);
 
@@ -90,37 +80,14 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     setMouseTracking(true);
 
 
-    MenuWidget = new ReadingMenu(this);
-    connect(ui->MenuButton, SIGNAL(clicked(bool)), MenuWidget, SIGNAL(MenuButtonClicked()));
-
-    connect(MenuWidget, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
-    connect(MenuWidget, SIGNAL(showContentsTable()), this, SLOT(showContentsTable()));
-    connect(MenuWidget, SIGNAL(showSettingsWindow()), this, SLOT(showSettingsWindow()));
-
-    connect(MenuWidget, &ReadingMenu::hideMenuWidget, [this](){ui->TextPage->setFocus();});
-
-
-    ProfilesWidget = new QWidget(this);
-    QVBoxLayout* ProfilesLayout = new QVBoxLayout(ProfilesWidget);
-    ProfilesWidget->setLayout(ProfilesLayout);
-    ProfilesWidget->setContentsMargins(0,0,0,0);
-    ProfilesLayout->setContentsMargins(0,0,0,0);
-
-    ProfilesView = new QListWidget(ProfilesWidget);
-    ProfilesWidget->setFixedWidth(200);
-    ProfilesLayout->addWidget(ProfilesView);
-    ProfilesWidget->hide();
-
-    if (QTouchDevice::devices().size())
-        QScroller::grabGesture(ProfilesView->viewport(), QScroller::LeftMouseButtonGesture);
-
-    connect(ui->MenuButton, &QPushButton::clicked, [this](){ProfilesWidget->hide();});
-    connect(ui->ReadProfilesButton, &QPushButton::clicked, [this](){MenuWidget->hideMenu();});
+    createReadingMenuWidget();
+    createReadProfilesWidget();
 
 
     ProgramSettings = Settings::getSettings();
     setStyle(ProgramSettings->getInterfaceStyle());
     setBackgroundImage();
+
 
     ui->Clock->setText(QTime::currentTime().toString("hh:mm"));
 
@@ -131,11 +98,24 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->installEventFilter(this);
     ui->TopBarWidget->installEventFilter(this);
 
+
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
 
     qDebug()<<"readingWindow created";
+}
+
+
+void ReadingWindow::createReadingMenuWidget()
+{
+    MenuWidget = new ReadingMenu(this);
+    connect(ui->MenuButton, SIGNAL(clicked(bool)), MenuWidget, SIGNAL(MenuButtonClicked()));
+
+    connect(MenuWidget, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
+    connect(MenuWidget, SIGNAL(showContentsTable()), this, SLOT(showContentsTable()));
+    connect(MenuWidget, SIGNAL(showSettingsWindow()), this, SLOT(showSettingsWindow()));
+    connect(MenuWidget, SIGNAL(showSearchWindow()), this, SLOT(showSearchWindow()));
 }
 
 
@@ -156,7 +136,7 @@ void ReadingWindow::setBackgroundImage()
 
 void ReadingWindow::startReading()
 {
-    connect(this, SIGNAL(windowWasResized()), this, SLOT(reprintResizedText()));
+    connect(this, SIGNAL(windowWasResized()), this, SLOT(resizeWindow()));
 
     ui->TextPage->setHtml(BookPaginator->startParser(CurBook,ui->TextPage->width(), ui->TextPage->height()));
     updateProgress();
@@ -193,6 +173,27 @@ void ReadingWindow::showPrevPage()
 }
 
 
+void ReadingWindow::createReadProfilesWidget()
+{
+    ProfilesWidget = new QWidget(this);
+    QVBoxLayout* ProfilesLayout = new QVBoxLayout(ProfilesWidget);
+    ProfilesWidget->setLayout(ProfilesLayout);
+    ProfilesWidget->setContentsMargins(0,0,0,0);
+    ProfilesLayout->setContentsMargins(0,0,0,0);
+
+    ProfilesView = new QListWidget(ProfilesWidget);
+    ProfilesWidget->setFixedWidth(200);
+    ProfilesLayout->addWidget(ProfilesView);
+    ProfilesWidget->hide();
+
+    if (QTouchDevice::devices().size())
+        QScroller::grabGesture(ProfilesView->viewport(), QScroller::LeftMouseButtonGesture);
+
+    connect(ui->MenuButton, &QPushButton::clicked, [this](){ProfilesWidget->hide();});
+    connect(ui->ReadProfilesButton, &QPushButton::clicked, [this](){MenuWidget->hideMenu();});
+}
+
+
 void ReadingWindow::on_ReadProfilesButton_clicked()
 {
     if (ProfilesWidget->isHidden())
@@ -215,6 +216,7 @@ void ReadingWindow::on_ReadProfilesButton_clicked()
         ProfilesWidget->hide();
     }
 }
+
 
 void ReadingWindow::changeReadProfile(const QModelIndex &index)
 {
@@ -266,11 +268,10 @@ void ReadingWindow::on_exit_button_clicked()
 
 bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (ActiveWindow || obj == 0)
-        return true;
-
-    switch (event->type())
+    if (!ActiveWindow)
     {
+        switch (event->type())
+        {
         case QEvent::MouseMove:
         {
             QMouseEvent* MouseMoveEvent = static_cast<QMouseEvent*>(event);
@@ -295,16 +296,17 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 showNextPage();
             }
             else
-            if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
-            {
-                showPrevPage();
-            }
-            else
-            if (KeyEvent->key() == Qt::Key_Escape && this->parentWidget()->isMaximized())
-            {
-                emit showWindowMaximazed();
-                ui->TopBarWidget->show();
-            }
+                if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
+                {
+                    showPrevPage();
+                }
+                else
+                    if (KeyEvent->key() == Qt::Key_Escape && this->parentWidget()->isMaximized())
+                    {
+                        emit showWindowMaximazed();
+                        ui->TopBarWidget->show();
+                    }
+
             break;
         }
 
@@ -329,7 +331,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         {
             QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
 
-            if (!MenuWidget->isHidden())
+            if (!MenuWidget->menuIsHidden())
             {
                 MenuWidget->hideMenu();
                 break;
@@ -345,8 +347,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                         {
                             showNextPage();
                         }
-                        else
-                        if (MousePressEvent->pos().x() < 100)
+                        else if (MousePressEvent->pos().x() < 100)
                         {
                             showPrevPage();
                         }
@@ -360,7 +361,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         {
             QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
 
-            if (!MenuWidget->isHidden())
+            if (!MenuWidget->menuIsHidden())
             {
                 MenuWidget->hideMenu();
                 break;
@@ -376,8 +377,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                         {
                             showNextPage();
                         }
-                        else
-                        if (MousePressEvent->pos().x() < 100)
+                        else if (MousePressEvent->pos().x() < 100)
                         {
                             showPrevPage();
                         }
@@ -392,23 +392,24 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             }
             break;
         }
-        case QEvent::Resize:
-        {
-            emit windowWasResized();
-            break;
-        }
-
         default:
             break;
+        }
     }
+
+    if (event->type() == QEvent::Resize)
+        emit windowWasResized();
+    else if (event->type() == QEvent::LanguageChange)
+        ui->retranslateUi(this);
 
     return true;
 }
 
 
-void ReadingWindow::reprintResizedText()
+void ReadingWindow::resizeWindow()
 {
     ui->TextPage->setHtml(BookPaginator->resizePage(ui->TextPage->width(), ui->TextPage->height()));
+    resizeMiniWindow();
 }
 
 
@@ -475,6 +476,26 @@ void ReadingWindow::reprintNewSettText()
 }
 
 
+void ReadingWindow::resizeMiniWindow()
+{
+    if (MiniWindow != 0)
+    {
+        int frame, w, h;
+        if (this->width() - 100 < 1066)
+            w = 1066;
+        else
+            w = this->width() - 100;
+        if (this->height() - 100 < 536)
+            h = 536;
+        else
+            h = this->height() - 100;
+        frame = (this->height() - h)/2;
+
+        MiniWindow->setGeometry(frame, frame, w, h);
+    }
+}
+
+
 void ReadingWindow::showSettingsWindow()
 {
     ActiveWindow = true;
@@ -486,20 +507,8 @@ void ReadingWindow::showSettingsWindow()
 
     MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
-    int frame, w, h;
-    if (this->width() - 100 < 1066)
-        w = 1066;
-    else
-        w = this->width() - 100;
-    if (this->height() - 100 < 536)
-        h = 536;
-    else
-        h = this->height() - 100;
-    frame = (this->height() - h)/2;
-
-    MiniWindow->setGeometry(frame, frame, w, h);
+    resizeMiniWindow();
     MiniWindow->setContentsMargins(0,0,0,0);
-
 
     MiniWindowLayout = new QVBoxLayout(MiniWindow);
     MiniWindow->setLayout(MiniWindowLayout);
@@ -519,8 +528,8 @@ void ReadingWindow::showSettingsWindow()
     if (MiniWindow->exec() == QDialog::Rejected)
     {
         reprintNewSettText();
-        ui->TextPage->setFocus();
         delete MiniWindow;
+        MiniWindow = 0;
         ActiveWindow = false;
     }
 }
@@ -529,27 +538,20 @@ void ReadingWindow::showSettingsWindow()
 void ReadingWindow::showSynchronizationWindow()
 {
     MiniWindow = new QDialog(this);
+    ActiveWindow = true;
 
-    MiniWindow->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
-    int frame, w, h;
-    if (this->width() - 100 < 1066)
-        w = 1066;
-    else
-        w = this->width() - 100;
-    if (this->height() - 100 < 536)
-        h = 536;
-    else
-        h = this->height() - 100;
-    frame = (this->height() - h)/2;
+    resizeMiniWindow();
+    MiniWindow->setContentsMargins(0,0,0,0);
 
-    MiniWindow->setGeometry(this->x() + frame, this->y() + frame, w, h);
 
     MiniWindow->show();
 
     if (MiniWindow->exec() == QDialog::Rejected)
     {
         delete MiniWindow;
-        ui->TextPage->setFocus();
+        MiniWindow = 0;
+        ActiveWindow = false;
     }
 }

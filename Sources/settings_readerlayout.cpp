@@ -98,38 +98,27 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
     {
         QScroller::grabGesture(ui->ReaderSettingArea->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ReaderSettingArea->verticalScrollBar()->setSingleStep(1);
-
         QScroller::grabGesture(ui->TextExample->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextExample->verticalScrollBar()->setSingleStep(1);
 
         QScroller::grabGesture(ui->StyleBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->StyleBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
-
         QScroller::grabGesture(ui->BackgroundTypeBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->BackgroundTypeBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->ColumnNumberBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ColumnNumberBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->TextAntiAliasingBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextAntiAliasingBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->ParagraphLeftIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ParagraphLeftIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->ParagraphTopIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ParagraphLeftIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->TextLeftIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextLeftIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->TextRightIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextRightIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->TextTopIndentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextTopIndentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
         QScroller::grabGesture(ui->TextBottomIndentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextBottomIndentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }

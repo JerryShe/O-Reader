@@ -13,6 +13,7 @@
 
 
 QString parseTagAttribute(QString tag, QString attr);
+QStringList splitTextToWords(QString temp);
 
 
 class XMLTextParser
@@ -27,28 +28,9 @@ public:
     QHash <QString, QStringList> getNotesTable() const;
 
 private:
-    void parseFB2();
-    void createFB2TableOfContents();
-    void createFB2ImageTable();
-    void createFB2NotesTable();
-
-    void parseEPub();
-    void createEPubTableOfContents();
-    void createEPubImageTable();
-    void createEPubNotesTable();
-
-
-    QTextStream* doc;
-    QStringList splitTextToWords(QString temp) const;
-
-    Book *book;
-
     QTreeWidgetItem* TableOfContents;
-
     BookImageTable* ImageTable;
-
     QStringList bookText;
-
     QHash <QString, QStringList> notesTable;
 };
 

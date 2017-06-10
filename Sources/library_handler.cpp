@@ -132,6 +132,7 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
             }
         }
     }
+
     if (deletedItemsIndexes.size())
     {
         saveBookList();

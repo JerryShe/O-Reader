@@ -20,6 +20,7 @@ class LibraryLayout : public QWidget
 public:
     explicit LibraryLayout(QWidget *parent = 0);
     ~LibraryLayout();
+
     LibraryView* getLibraryWidget() const;
 
 

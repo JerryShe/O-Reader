@@ -7,6 +7,7 @@
 #include "answer_dialog.h"
 #include "book_image_table.h"
 
+#include <QKeyEvent>
 
 #include <QDebug>
 
@@ -114,6 +115,10 @@ BookPage::BookPage(Book *boo, QWidget *parent) :
     if (images.size() == 0)
         ui->ShowIllustrations->setEnabled(false);
 
+
+    this->installEventFilter(this);
+    ui->IllustrationsWidget->installEventFilter(this);
+
     show();
 }
 
@@ -181,9 +186,11 @@ void BookPage::showIllustrationAt(const int i)
 void BookPage::on_PrevIllustration_clicked()
 {
     if (curImage > 0 && curImage <= images.size())
-        showIllustrationAt(--curImage);
+        curImage--;
     else
-        curImage = 0;
+        curImage = images.size() - 1;
+
+    showIllustrationAt(curImage);
 }
 
 
@@ -196,7 +203,41 @@ void BookPage::on_CloseIllustrations_clicked()
 void BookPage::on_NextIllustration_clicked()
 {
     if (curImage >= 0 && curImage < images.size()-1)
-        showIllustrationAt(++curImage);
+        curImage++;
     else
         curImage = 0;
+    showIllustrationAt(curImage);
+}
+
+
+bool BookPage::eventFilter(QObject *obj, QEvent *event)
+{
+    if (ui->stackedWidget->currentWidget() == ui->IllustrationsWidget)
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+
+            if (KeyEvent->key() == Qt::Key_Left)
+                on_PrevIllustration_clicked();
+            else if (KeyEvent->key() == Qt::Key_Right)
+                on_NextIllustration_clicked();
+            else if (KeyEvent->key() == Qt::Key_Escape)
+            {
+                ui->stackedWidget->setCurrentWidget(ui->BookWidget);
+                return true;
+            }
+        }
+    }
+    else
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+            if (KeyEvent->key() == Qt::Key_Escape)
+                this->close();
+        }
+    }
+
+    return false;
 }

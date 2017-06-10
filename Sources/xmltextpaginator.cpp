@@ -90,7 +90,6 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     }
     asd.close();
 
-
     qDebug()<<"parser started";
     return getPageForward();
 }
@@ -102,8 +101,8 @@ XMLTextPaginator::~XMLTextPaginator()
         delete FontMetricsPointer;
     }
 
-    delete ImageTable;
     delete TableOfContents;
+    delete ImageTable;
 
     qDebug()<<"delete paginator";
 }
@@ -630,9 +629,6 @@ QString XMLTextPaginator::getPageForward()
         debugSave(HTMLPage);
     }
 
-    if (!PageNotes.isEmpty())
-        emit notesAvailable();
-
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }
 
@@ -713,9 +709,6 @@ QString XMLTextPaginator::getPageBackward()
         createHTMLPage();
         debugSave(HTMLPage);
     }
-
-    if (!PageNotes.isEmpty())
-        emit notesAvailable();
 
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
 }

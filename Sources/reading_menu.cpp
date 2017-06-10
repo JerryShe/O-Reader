@@ -94,6 +94,13 @@ void ReadingMenu::on_SettingsButton_clicked()
 }
 
 
+void ReadingMenu::on_SearchButton_clicked()
+{
+    hideMenu();
+    emit showSearchWindow();
+}
+
+
 void ReadingMenu::on_BackButton_clicked()
 {
     emit showMainWindow();
@@ -123,3 +130,5 @@ bool ReadingMenu::eventFilter(QObject *obj, QEvent *event)
 
     return false;
 }
+
+

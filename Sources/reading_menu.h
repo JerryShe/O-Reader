@@ -31,15 +31,19 @@ signals:
     void MenuButtonClicked();
 
     void showMainWindow();    
+
     void showContentsTable();
     void showSettingsWindow();
+    void showSearchWindow();
 
     void hideMenuWidget();
 
 private slots:
     void on_ContentsButton_clicked();
     void on_SettingsButton_clicked();
+    void on_SearchButton_clicked();
     void on_BackButton_clicked();
+
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

@@ -259,7 +259,6 @@ void LibraryLayout::hideBookWidget()
     if (bookWidget != 0)
     {
         ui->ShowButton->setChecked(true);
-        bookWidget->hideWidget();
     }
 }
 
@@ -272,14 +271,15 @@ Book* LibraryLayout::getBookByIndex(const unsigned int &index) const
 
 void LibraryLayout::deleteBook(const unsigned int &index)
 {
-    if (LibHandler->getLastOpenedBook() != 0)
-        if (LibHandler->getLastOpenedBook()->getIndex() == bookWidget->getBookIndex())
+    if (LibHandler->getLastOpenedBook() != 0 && bookWidget != 0)
+        if (index == bookWidget->getBookIndex())
         {
             hideBookWidget();
             delete bookWidget;
             bookWidget = 0;
             ui->ShowButton->setEnabled(false);
         }
+
     LibHandler->deleteBook(index);
 }
 

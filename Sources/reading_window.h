@@ -40,10 +40,16 @@ public:
 private slots:
     void on_exit_button_clicked();
 
+
+    void createReadProfilesWidget();
+    void createReadingMenuWidget();
+
     void showContentsTable();
     void showSearchWindow();
     void showSettingsWindow();
     void showSynchronizationWindow();
+
+    void resizeMiniWindow();
 
     void setStyle(const QString &currentStyle);
 
@@ -54,7 +60,7 @@ private slots:
     void clockStep();
     void updateProgress();
 
-    void reprintResizedText();
+    void resizeWindow();
     void reprintNewSettText();
 
     void on_ReadProfilesButton_clicked();

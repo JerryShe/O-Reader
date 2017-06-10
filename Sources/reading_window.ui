@@ -46,6 +46,9 @@
        <height>25</height>
       </size>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <property name="spacing">
        <number>0</number>
@@ -84,6 +87,9 @@
           <bold>false</bold>
          </font>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string>Menu</string>
         </property>
@@ -109,6 +115,9 @@
           <height>25</height>
          </size>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string notr="true"/>
         </property>
@@ -116,6 +125,9 @@
       </item>
       <item>
        <spacer name="horizontalSpacer">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -138,6 +150,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="midLineWidth">
          <number>0</number>
         </property>
@@ -148,6 +163,9 @@
       </item>
       <item>
        <spacer name="horizontalSpacer_7">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -173,6 +191,9 @@
           <stylestrategy>NoAntialias</stylestrategy>
          </font>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string notr="true">30%</string>
         </property>
@@ -180,6 +201,9 @@
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -195,7 +219,7 @@
        <widget class="QLabel" name="Clock">
         <property name="minimumSize">
          <size>
-          <width>75</width>
+          <width>50</width>
           <height>25</height>
          </size>
         </property>
@@ -214,13 +238,22 @@
           <stylestrategy>NoAntialias</stylestrategy>
          </font>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
-         <string notr="true">20:59:59</string>
+         <string notr="true">20:59</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_9">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -229,7 +262,7 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>50</width>
+          <width>30</width>
           <height>0</height>
          </size>
         </property>
@@ -255,6 +288,9 @@
           <pointsize>14</pointsize>
          </font>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -262,6 +298,9 @@
       </item>
       <item>
        <spacer name="horizontalSpacer_8">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -466,6 +505,9 @@
          <font>
           <pointsize>40</pointsize>
          </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -677,6 +719,9 @@
          <font>
           <pointsize>40</pointsize>
          </font>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -901,6 +946,9 @@
           <pointsize>12</pointsize>
          </font>
         </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="styleSheet">
          <string notr="true"/>
         </property>
@@ -926,6 +974,9 @@
    </item>
    <item>
     <widget class="QWidget" name="TextBackground" native="true">
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
        <number>0</number>
@@ -944,6 +995,9 @@
       </property>
       <item>
        <widget class="QTextBrowser" name="TextPage">
+        <property name="focusPolicy">
+         <enum>Qt::StrongFocus</enum>
+        </property>
         <property name="inputMethodHints">
          <set>Qt::ImhMultiLine</set>
         </property>

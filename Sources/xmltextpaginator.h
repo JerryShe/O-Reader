@@ -39,10 +39,6 @@ public slots:
     QString getPageNotes(const int &viewWidth) const;
 
 
-signals:
-    void notesAvailable();
-
-
 private:
     int getWordWidth() const;
     int getWordHeight() const;

@@ -414,10 +414,18 @@ void setBookPageStyle(QString BookPageStyle[], const QString style)
                             "color: rgb(157, 0, 60);}";
 
         BookPageStyle[6] = "#NextIllustration{"
-                           "}";
+                           "background-color: rgb(151, 151, 227);"
+                           "border:none;"
+                           "background-repeat: no-repeat;"
+                           "background-position: center center;"
+                           "background-image:url(:/Images/LightArrowVertOpen.png);}";
 
         BookPageStyle[7] = "#PrevIllustration{"
-                           "}";
+                           "background-color: rgb(151, 151, 227);"
+                           "border:none;"
+                           "background-repeat: no-repeat;"
+                           "background-position: center center;"
+                           "background-image:url(:/Images/LightArrowVertClose.png);}";
 
     }
 }
