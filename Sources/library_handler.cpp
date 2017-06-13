@@ -59,6 +59,9 @@ bool LibraryHandler::loadBookList()
     this->fromJson(LibObj);
 
     needRefresh = true;
+    for (int i = 0; i < bookList.size(); i++)
+        if (currentBookIndex > bookList[i].getIndex())
+            currentBookIndex = bookList[i].getIndex();
 
     LibFile.close();
     qDebug()<<bookList.size()<<"books loaded";
@@ -224,6 +227,13 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
         boo.setIndex(++currentBookIndex);
         bookList.push_back(boo);
+
+        UserActions->addAction(UActions::AddBook, file);
+        if (libraryView != 0)
+        {
+            libraryView->addItem(&boo);
+            libraryView->reset();
+        }
     }
     else if (format == 3)
     {
@@ -251,6 +261,14 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 
                         boo.setIndex(++currentBookIndex);
                         bookList.push_back(boo);
+
+                        UserActions->addAction(UActions::AddBook, file);
+
+                        if (libraryView != 0)
+                        {
+                            libraryView->addItem(&boo);
+                            libraryView->reset();
+                        }
                     }
                 }
             }
@@ -258,14 +276,6 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
     }
     else
         return;
-
-
-    UserActions->addAction(UActions::AddBook, file);
-    if (libraryView != 0)
-    {
-        libraryView->addItem(&bookList[bookList.size() - 1]);
-        libraryView->reset();
-    }
 }
 
 

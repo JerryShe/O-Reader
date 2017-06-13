@@ -56,8 +56,11 @@ public:
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
+    QDomDocument* getFB2BookDomDoc(bool &result);
+    QByteArray getFB2BookByteArray(bool &result);
+
 private:
-    bool loadFB2(QDomDocument &doc, GenresMap *Gmap);
+    bool loadFB2(QDomDocument *doc, GenresMap *Gmap);
     bool loadEPub(QString fileName);
 
 

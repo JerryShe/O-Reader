@@ -5,14 +5,24 @@
 
 #include <xmltextparser.h>
 
-#include <QtGui/private/qzipreader_p.h>
-
 FB2Parser::FB2Parser(Book *book, QStringList &bookText, BookImageTable*& ImageTable, QTreeWidgetItem*& tableOfContents, QHash <QString, QStringList> &notesTable)
 {
-    Obook = book;
+    Obook = book;    
+
+    bool result;
+    QByteArray byteArr = Obook->getFB2BookByteArray(result);
+
+    if (!result)
+        return;
+
+    doc = new QTextStream(&byteArr);
+    doc->setCodec(Obook->getCodec().toStdString().c_str());
 
 
     parseText(bookText);
+
+    delete doc;
+
     createTableOfContents(bookText, tableOfContents);
     createNotesTable(bookText, notesTable);
 
@@ -28,102 +38,88 @@ FB2Parser::~FB2Parser()
 
 void FB2Parser::parseText(QStringList &bookText)
 {
-    QFile bookFile(Obook->getFileName());
     QString coverName;
 
+    QString temp;
 
-    if (bookFile.open(QIODevice::ReadOnly))
+    do
     {
-        doc = new QTextStream(&bookFile);
-        doc->setCodec(Obook->getCodec().toStdString().c_str());
+        doc->operator >> (temp);
 
-        QString temp;
-
-        do
+        int coverPos = temp.indexOf("<coverpage>");
+        if (coverPos != -1)
         {
-            doc->operator >> (temp);
-
-            int coverPos = temp.indexOf("<coverpage>");
-            if (coverPos != -1)
+            if (temp.indexOf("</coverpage>", coverPos+12) == -1)
             {
-                if (temp.indexOf("</coverpage>", coverPos+12) == -1)
+                do
                 {
-                    do
-                    {
-                        coverName += temp;
-                        doc->operator >> (temp);
-                    }
-                    while ((temp.indexOf("</coverpage>") == -1 && temp.indexOf("<body>") == -1) && !doc->atEnd());
                     coverName += temp;
+                    doc->operator >> (temp);
                 }
-
-                temp = coverName.right(coverName.size() - coverName.indexOf("</coverpage>") - 12);
-                coverName = parseTagAttribute(coverName, "href");
-                coverName.remove(0,1);
+                while ((temp.indexOf("</coverpage>") == -1 && temp.indexOf("<body>") == -1) && !doc->atEnd());
+                coverName += temp;
             }
+
+            temp = coverName.right(coverName.size() - coverName.indexOf("</coverpage>") - 12);
+            coverName = parseTagAttribute(coverName, "href");
+            coverName.remove(0,1);
         }
-        while(temp.indexOf("<body") == -1 && !doc->atEnd());
+    }
+    while(temp.indexOf("<body") == -1 && !doc->atEnd());
 
-        int binEndPos = -1;
-        if (temp.indexOf(">", temp.indexOf("<body")) == -1)
-        {
-            while (!doc->atEnd())
-            {
-                doc->operator >>(temp);
-                binEndPos = temp.indexOf(">") + 1;
-                if (binEndPos != 0)
-                    break;
-            }
-        }
-        else
-            binEndPos = temp.indexOf("<body");
-
-        temp = temp.remove(0, binEndPos);
-        bookText.append(splitTextToWords(temp));
-
-        QString tagTail;
-        QStringList list;
-        bool flag = true;
-
-        while(!doc->atEnd() && flag)
+    int binEndPos = -1;
+    if (temp.indexOf(">", temp.indexOf("<body")) == -1)
+    {
+        while (!doc->atEnd())
         {
             doc->operator >>(temp);
-
-            if (!tagTail.isEmpty())
-            {
-                temp.prepend(tagTail);
-                tagTail.clear();
-            }
-
-            int binPos = temp.indexOf("<binary");
-            if (binPos != -1)
-            {
-                list = splitTextToWords(temp.left(binPos));
-                flag = false;
-            }
-            else
-                list = splitTextToWords(temp);
-
-
-            if (list.back()[0] == '<' && list.back().indexOf(">") == -1)
-            {
-                tagTail = list.back();
-                list.removeAt(list.size() -1);
-            }
-
-            bookText.append(list);
+            binEndPos = temp.indexOf(">") + 1;
+            if (binEndPos != 0)
+                break;
         }
-        bookFile.close();
     }
     else
+        binEndPos = temp.indexOf("<body");
+
+    temp = temp.remove(0, binEndPos);
+    bookText.append(splitTextToWords(temp));
+
+    QString tagTail;
+    QStringList list;
+    bool flag = true;
+
+    while(!doc->atEnd() && flag)
     {
-        qDebug()<<"невозможно открыть файл книги";
+        doc->operator >>(temp);
+
+        if (!tagTail.isEmpty())
+        {
+            temp.prepend(tagTail);
+            tagTail.clear();
+        }
+
+        int binPos = temp.indexOf("<binary");
+        if (binPos != -1)
+        {
+            list = splitTextToWords(temp.left(binPos));
+            flag = false;
+        }
+        else
+            list = splitTextToWords(temp);
+
+
+        if (list.back()[0] == '<' && list.back().indexOf(">") == -1)
+        {
+            tagTail = list.back();
+            list.removeAt(list.size() -1);
+        }
+
+        bookText.append(list);
     }
+
 
     if (Obook->haveCoverImage())
         bookText.prepend("<image l:href=\"#" + coverName + "\"/>");
-
-    delete doc;
 }
 
 

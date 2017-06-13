@@ -82,8 +82,6 @@ QStringList splitTextToWords(QString temp)
 
 XMLTextParser::XMLTextParser(Book *openingBook)
 {
-    qDebug()<<"start woopwoop";
-
     if (openingBook->getFormat() == 1)
     {
         FB2Parser parser(openingBook, bookText, ImageTable, TableOfContents, notesTable);

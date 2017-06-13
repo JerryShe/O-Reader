@@ -41,44 +41,14 @@ void BookImageTable::createFromEPub(Book *book)
 
 void BookImageTable::createFromFB2(Book *book)
 {
-    QDomDocument doc;
+    bool result;
+    QDomDocument* doc = book->getFB2BookDomDoc(result);
 
-    if (book->getZippedFileName().isEmpty())
-    {
-        QFile bookFile(book->getFileName());
-        if (bookFile.open(QIODevice::ReadOnly))
-        {
-            if (doc.setContent(&bookFile))
-                bookFile.close();
-            else
-            {
-                qDebug()<<"11";
-                bookFile.close();
-                return;
-            }
-        }
-        else
-        {
-            qDebug()<<"22";
-            bookFile.close();
-            return;
-        }
-    }
-    else
-    {
-        QZipReader zip(book->getFileName());
-        if (zip.exists())
-        {
-            QByteArray byArr = zip.fileData(book->getZippedFileName());
-            if (!doc.setContent(byArr))
-                return;
-        }
-    }
-
-    qDebug()<<"woopwoop";
+    if (!result)
+        return;
 
 
-    QDomNodeList nodeList = doc.elementsByTagName("binary");
+    QDomNodeList nodeList = doc->elementsByTagName("binary");
     for (int i = 0; i < nodeList.size(); i++)
     {
         QString name = nodeList.at(i).toElement().attribute("id");

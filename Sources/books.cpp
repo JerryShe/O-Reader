@@ -19,6 +19,8 @@
 #include <QMimeType>
 #include <QMimeDatabase>
 
+#include <QtGui/private/qzipreader_p.h>
+
 
 
 Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
@@ -33,14 +35,16 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
         QFile bookFile(fileName);
         if (bookFile.open(QIODevice::ReadOnly))
         {
-            QDomDocument doc;
-            if (doc.setContent(&bookFile))
+            QDomDocument* doc = new QDomDocument();
+            if (doc->setContent(&bookFile))
             {
                 bookFile.close();
                 result = loadFB2(doc, Gmap);
             }
             else
                 result = false;
+
+            delete doc;
         }
         else
             result = false;
@@ -62,24 +66,105 @@ Book::Book(bool &result, const QString &zipFileName, const QString &fileName, co
     ZippedFile = fileName;
 
 
-    QDomDocument doc;
-    if (doc.setContent(byArr))
+    QDomDocument *doc = new QDomDocument();
+    if (doc->setContent(byArr))
         result = loadFB2(doc, Gmap);
     else
         result = false;
+
+    delete doc;
 }
 
 
-bool Book::loadFB2(QDomDocument &doc, GenresMap *Gmap)
+QDomDocument* Book::getFB2BookDomDoc(bool &result)
+{
+    if (Format != 1)
+    {
+        result = false;
+        return 0;
+    }
+
+    if (ZippedFile.isEmpty())
+    {
+        QFile bookFile(File);
+        if (bookFile.open(QIODevice::ReadOnly))
+        {
+            QDomDocument* doc = new QDomDocument();
+            if (doc->setContent(&bookFile))
+            {
+                bookFile.close();
+                result = true;
+                return doc;
+            }
+            bookFile.close();
+        }
+    }
+    else
+    {
+        QZipReader zip(File);
+        if (zip.exists())
+        {
+            QByteArray byteArr = zip.fileData(ZippedFile);
+            QDomDocument* doc = new QDomDocument();
+            if (doc->setContent(byteArr))
+            {
+                result = true;
+                return doc;
+            }
+        }
+    }
+
+    result = false;
+    return 0;
+}
+
+
+QByteArray Book::getFB2BookByteArray(bool &result)
+{
+    if (Format != 1)
+    {
+        result = false;
+        return 0;
+    }
+
+
+    if (ZippedFile.isEmpty())
+    {
+        QFile* bookFile= new QFile(File);
+        if (bookFile->open(QIODevice::ReadOnly))
+        {
+            QByteArray byteArr = bookFile->readAll();
+            bookFile->close();
+            result = true;
+            return byteArr;
+        }
+    }
+    else
+    {
+        QZipReader zip(File);
+        if (zip.exists())
+        {
+            QByteArray byteArr = zip.fileData(ZippedFile);
+            result = true;
+            return byteArr;
+        }
+    }
+
+    result = false;
+    return 0;
+}
+
+
+bool Book::loadFB2(QDomDocument *doc, GenresMap *Gmap)
 {
     CoverType = "noImage";
     Format = 1;
     Progress = -1;
 
-    if (doc.namedItem("FictionBook").nodeName().isNull())
+    if (doc->namedItem("FictionBook").nodeName().isNull())
         return false;
 
-    QDomNodeList childs = doc.childNodes();
+    QDomNodeList childs = doc->childNodes();
     for (int i = 0; i < childs.size(); i++)
         if (childs.at(i).isProcessingInstruction())
         {
@@ -96,7 +181,7 @@ bool Book::loadFB2(QDomDocument &doc, GenresMap *Gmap)
     if (Codec == "")
         return false;
 
-    QDomNode titleInfo = doc.elementsByTagName("title-info").item(0);
+    QDomNode titleInfo = doc->elementsByTagName("title-info").item(0);
     if (titleInfo.isNull())
     {
         ///выдать сообщение - не найден title-info
@@ -116,7 +201,7 @@ bool Book::loadFB2(QDomDocument &doc, GenresMap *Gmap)
         AuthorLastName = author.namedItem("last-name").toElement().text();
 
     //жанры
-    QDomNodeList nodeList = doc.elementsByTagName("genre");
+    QDomNodeList nodeList = doc->elementsByTagName("genre");
     for (int i = 0; i < nodeList.length(); ++i)
         Genres << Gmap->getFB2Genre( nodeList.item(i).toElement().text() );
 
@@ -164,7 +249,7 @@ bool Book::loadFB2(QDomDocument &doc, GenresMap *Gmap)
         if (coverName.at(0) == '#')
             coverName = coverName.right(coverName.size() - 1);
 
-        nodeList = doc.elementsByTagName("binary");
+        nodeList = doc->elementsByTagName("binary");
         for (int i = 0; i < nodeList.size(); i++)
         {
             if (nodeList.at(i).toElement().attribute("id") == coverName)
@@ -254,7 +339,7 @@ void Book::fromJson(const QJsonObject &json)
 
     Format = json["Format"].toInt();
     File = json["File"].toString();
-    ZippedFile = json["ZippefFile"].toString();
+    ZippedFile = json["ZippedFile"].toString();
     Index = (unsigned int)json["Index"].toInt();
     Codec = json["Codec"].toString();
     Title = json["Title"].toString();
