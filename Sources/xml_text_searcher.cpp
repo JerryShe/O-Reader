@@ -1,4 +1,6 @@
 #include "xml_text_searcher.h"
+#include <QString>
+#include <QRegExp>
 
 #include <QDebug>
 
@@ -55,13 +57,15 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
         }
     }
 
-    qDebug()<<key;
+    qDebug()<<"new search: "<<key;
 
     int pos = 0;
 
     QStack <QString> tags;
     tags.push("Text");
     bool tail;
+
+    QRegExp regExp("[?!.;,:\\s]");
 
     for (long long i = 0; i < bookText.size(); i++)
     {
@@ -90,7 +94,16 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
         }
         else
         {
-            if (bookText[i].compare(key[pos], Qt::CaseInsensitive) == 0)
+            QString text = bookText[i];
+            QString keyText = key[pos];
+
+            text.remove(regExp);
+            keyText.remove(regExp);
+
+            if (keyText.isEmpty() || text.isEmpty())
+                continue;
+
+            if (text.compare(keyText, Qt::CaseInsensitive) == 0)
             {
                 pos++;
                 if (pos >= key.size())
@@ -104,8 +117,6 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
                 pos = 0;
         }
     }
-
-    qDebug()<<"woopwoop";
 }
 
 
