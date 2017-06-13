@@ -769,6 +769,9 @@ QString XMLTextPaginator::getPageNotes(const int &viewWidth) const
 
 QString XMLTextPaginator::searchStart(QString key, QString type)
 {
+    if (Searcher != 0)
+        return refreshPage();
+
     Searcher = new XMLTextSearcher(book->getFormat());
     Searcher->start(bookText, key);
 

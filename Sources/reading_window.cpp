@@ -442,12 +442,17 @@ void ReadingWindow::goToSection(const long long sectionIndex)
 
 void ReadingWindow::showSearchWindow()
 {
+    if (Search != 0)
+        return;
+
+    ActiveWindow = true;
+
     Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
 
     connect(Search, SIGNAL(startSearch(QString,QString)), this, SLOT(searchStart(QString,QString)));
     connect(Search, SIGNAL(nextResult()), this, SLOT(searchNextStep()));
     connect(Search, SIGNAL(previousResult()), this, SLOT(searchPrevStep()));
-    connect(Search, &QDialog::finished, [this](){ui->TextPage->setFocus(); searchStop();});
+    connect(Search, SIGNAL(finished(int)), this, SLOT(searchStop()));
 }
 
 
@@ -455,7 +460,6 @@ void ReadingWindow::searchStart(const QString &key, const QString &type)
 {
     ui->TextPage->setHtml(BookPaginator->searchStart(key, type));
     updateProgress();
-
 }
 
 
@@ -475,6 +479,11 @@ void ReadingWindow::searchPrevStep()
 
 void ReadingWindow::searchStop()
 {
+    ui->TextPage->setFocus();
+    Search = 0;
+
+    ActiveWindow = false;
+
     ui->TextPage->setHtml(BookPaginator->searchStop());
     updateProgress();
 }
