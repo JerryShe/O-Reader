@@ -1,4 +1,4 @@
-#include "tagsresolver.h"
+#include "tags_resolver.h"
 
 #include <QDebug>
 

@@ -444,28 +444,39 @@ void ReadingWindow::showSearchWindow()
 {
     Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
 
-    connect(Search, SIGNAL(startSearch(QString,QString)), this, SLOT(StartSearch(QString,QString)));
-    connect(Search, SIGNAL(nextResult()), this, SLOT(NextSearchStep()));
-    connect(Search, SIGNAL(previousResult()), this, SLOT(PrevSearchStep()));
-    connect(Search, &QDialog::finished, [this](){ui->TextPage->setFocus();});
+    connect(Search, SIGNAL(startSearch(QString,QString)), this, SLOT(searchStart(QString,QString)));
+    connect(Search, SIGNAL(nextResult()), this, SLOT(searchNextStep()));
+    connect(Search, SIGNAL(previousResult()), this, SLOT(searchPrevStep()));
+    connect(Search, &QDialog::finished, [this](){ui->TextPage->setFocus(); searchStop();});
 }
 
 
-void ReadingWindow::StartSearch(const QString &key, const QString &type)
+void ReadingWindow::searchStart(const QString &key, const QString &type)
 {
-
-}
-
-
-void ReadingWindow::NextSearchStep()
-{
+    ui->TextPage->setHtml(BookPaginator->searchStart(key, type));
+    updateProgress();
 
 }
 
 
-void ReadingWindow::PrevSearchStep()
+void ReadingWindow::searchNextStep()
 {
+    ui->TextPage->setHtml(BookPaginator->searchNextStep());
+    updateProgress();
+}
 
+
+void ReadingWindow::searchPrevStep()
+{
+    ui->TextPage->setHtml(BookPaginator->searchPrevStep());
+    updateProgress();
+}
+
+
+void ReadingWindow::searchStop()
+{
+    ui->TextPage->setHtml(BookPaginator->searchStop());
+    updateProgress();
 }
 
 

@@ -50,6 +50,8 @@ public:
     QString getZippedFileName() const;
     void setFile(const QString &file);
 
+    bool isZipped();
+
     int getFormat() const;
     void setFormat(const int format);
 

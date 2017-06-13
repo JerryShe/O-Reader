@@ -1,11 +1,12 @@
-#ifndef FB2TEXTPAGINATOR_H
-#define FB2TEXTPAGINATOR_H
+#ifndef XML_TEXT_PAGINATOR_H
+#define XML_TEXT_PAGINATOR_H
 
 
 #include "books.h"
-#include "tagsresolver.h"
+#include "tags_resolver.h"
 #include "book_image_table.h"
-#include "paginatorhelper.h"
+#include "paginator_helper.h"
+#include "xml_text_searcher.h"
 
 #include <QStringList>
 #include <QStack>
@@ -34,10 +35,16 @@ public:
 public slots:
     QString resizePage(const int &width, const int &height);
     QString updateSettings(const int &width, const int &height);
+    QString refreshPage();
+
     QString goToSection(const long long sectionIndex);
 
     QString getPageNotes(const int &viewWidth) const;
 
+    QString searchStart(QString key, QString type);
+    QString searchNextStep();
+    QString searchPrevStep();
+    QString searchStop();
 
 private:
     int getWordWidth() const;
@@ -64,6 +71,8 @@ private:
     void createHTMLPage();
 
     void debugSave(const QString &HTMLPage) const;
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
 
     QStringList bookText;
     unsigned int columnWidth, columnHeight;
@@ -100,10 +109,16 @@ private:
     QString word, tag;
 
 
+    int searchStep;
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
     Book *book;
 
     TagsResolver *Resolver;
     PaginatorHelper *Helper;
+    XMLTextSearcher* Searcher;
 
     QString PageHTMLStyles;
     QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;
@@ -126,4 +141,4 @@ private:
     QStringList PageNotes;
 };
 
-#endif // FB2TEXTPAGINATOR_H
+#endif // XML_TEXT_PAGINATOR_H

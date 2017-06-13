@@ -1,9 +1,9 @@
-#include "xmltextparser.h"
+#include "xml_text_parser.h"
 
 #include <QFile>
 #include <QDebug>
 
-#include <fb2parser.h>
+#include <fb2_parser.h>
 
 
 QString parseTagAttribute(QString tag, QString attr)
@@ -28,8 +28,6 @@ QStringList splitTextToWords(QString temp)
 {
     QStringList tempList;
     tempList.append(temp);
-
-
     for (int i = 0; i < tempList.size(); i++)
     {
         int pos = tempList[i].indexOf("<");

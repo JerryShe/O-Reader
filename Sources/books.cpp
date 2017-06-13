@@ -563,6 +563,14 @@ QString Book::getZippedFileName() const
 }
 
 
+bool Book::isZipped()
+{
+   if (ZippedFile.isEmpty())
+       return false;
+   return true;
+}
+
+
 void Book::setFile(const QString &file)
 {
     File = file;

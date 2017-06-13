@@ -41,6 +41,8 @@ private slots:
 
     void on_ShowButton_clicked();
 
+    void lostBooks(QVector <Book*> losted);
+
 public slots:
     void setStyle();
 

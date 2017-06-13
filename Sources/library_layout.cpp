@@ -81,6 +81,8 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     connect(ui->_ChangeViewMode, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
 
 
+    connect(LibHandler, SIGNAL(lostBooks(QVector<Book*>)), this, SLOT(lostBooks(QVector<Book*>)));
+
 
     if (QTouchDevice::devices().size())
     {
@@ -133,6 +135,12 @@ void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
     if (e->mimeData()->hasUrls()) {
         e->acceptProposedAction();
     }
+}
+
+
+void LibraryLayout::lostBooks(QVector <Book*> losted)
+{
+
 }
 
 

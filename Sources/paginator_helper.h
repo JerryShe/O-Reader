@@ -1,5 +1,5 @@
-#ifndef PAGINATORHELPER_H
-#define PAGINATORHELPER_H
+#ifndef PAGINATOR_HELPER_H
+#define PAGINATOR_HELPER_H
 
 #include <QObject>
 #include <QHash>
@@ -22,4 +22,4 @@ private:
     ReadingProfile CurProfile;
 };
 
-#endif // PAGINATORHELPER_H
+#endif // PAGINATOR_HELPER_H

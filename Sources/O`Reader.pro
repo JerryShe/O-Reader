@@ -26,7 +26,6 @@ SOURCES += main.cpp\
     library_layout.cpp \
     library_handler.cpp \
     QTabSwitcher.cpp \
-    searchwindow.cpp \
     main_window.cpp \
     login_window.cpp \
     reading_window.cpp \
@@ -36,16 +35,18 @@ SOURCES += main.cpp\
     client_handler.cpp \
     reading_menu.cpp \
     settings_readerlayoutstyle.cpp \
-    xmltextpaginator.cpp \
-    tagsresolver.cpp \
-    xmltextparser.cpp \
-    paginatorhelper.cpp \
     library_model.cpp \
     library_view.cpp \
     book_image_table.cpp \
     battery_widget.cpp \
-    fb2parser.cpp \
-    book_table_of_contents.cpp
+    book_table_of_contents.cpp \
+    search_window.cpp \
+    paginator_helper.cpp \
+    xml_text_paginator.cpp \
+    fb2_parser.cpp \
+    tags_resolver.cpp \
+    xml_text_parser.cpp \
+    xml_text_searcher.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -74,16 +75,17 @@ HEADERS  += \
     client_handler.h \
     reading_menu.h \
     settings_readerlayoutstyle.h \
-    xmltextpaginator.h \
-    tagsresolver.h \
-    xmltextparser.h \
-    paginatorhelper.h \
     library_model.h \
     library_view.h \
     book_image_table.h \
     battery_widget.h \
-    fb2parser.h \
-    book_table_of_contents.h
+    book_table_of_contents.h \
+    paginator_helper.h \
+    tags_resolver.h \
+    xml_text_paginator.h \
+    xml_text_parser.h \
+    fb2_parser.h \
+    xml_text_searcher.h
 
 FORMS    += \
     settings_programlayout.ui \

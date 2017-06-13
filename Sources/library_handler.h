@@ -44,10 +44,12 @@ public slots:
 
     void sortBooks(const QString &mode);
 
+    QVector <Book*> findMissingBooks();
 
 signals:
     void showLoadImage(QString gifFile);
     void hideLoadImage();
+    void lostBooks(QVector <Book*>);
 
 private:
     int getFileTipe(const QString &fileName) const;           /// 0 - unknown, 1 - FB2, 2 - EPub, 3 - zip

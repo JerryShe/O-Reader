@@ -1,5 +1,5 @@
-#ifndef XMLTEXTPARSER_H
-#define XMLTEXTPARSER_H
+#ifndef XML_TEXT_PARSER_H
+#define XML_TEXT_PARSER_H
 
 #include "books.h"
 #include "book_image_table.h"
@@ -34,4 +34,4 @@ private:
     QHash <QString, QStringList> notesTable;
 };
 
-#endif // XMLTEXTPARSER_H
+#endif // XML_TEXT_PARSER_H

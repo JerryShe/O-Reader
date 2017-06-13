@@ -1,5 +1,5 @@
-#ifndef SEARCHWINDOW_H
-#define SEARCHWINDOW_H
+#ifndef SEARCH_WINDOW_H
+#define SEARCH_WINDOW_H
 
 #include <QDialog>
 #include <QHBoxLayout>
@@ -46,4 +46,4 @@ private:
     QComboBox * SearchTypeBox;
 };
 
-#endif // SEARCHWINDOW_H
+#endif // SEARCH_WINDOW_H

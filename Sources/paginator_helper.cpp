@@ -1,4 +1,4 @@
-#include "paginatorhelper.h"
+#include "paginator_helper.h"
 
 #include <QDebug>
 

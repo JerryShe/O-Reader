@@ -1,4 +1,4 @@
-#include "xmltextpaginator.h"
+#include "xml_text_paginator.h"
 
 #include <QFont>
 #include <QFile>
@@ -8,7 +8,7 @@
 #include <QFontMetrics>
 #include <QThread>
 
-#include "xmltextparser.h"
+#include "xml_text_parser.h"
 
 
 XMLTextPaginator::XMLTextPaginator(QObject *parent)
@@ -77,18 +77,6 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     Columns.clear();
     for (int i = 0; i < ColumnCount; i++)
         Columns.append(QStringList());
-
-
-
-    QFile asd("F:/all.txt");
-    asd.open(QIODevice::WriteOnly);
-    QTextStream out(&asd);
-    for (int i = 0; i < strCount; i++)
-    {
-        out<<i<<"   "<<bookText[i];
-        out<<endl;
-    }
-    asd.close();
 
     qDebug()<<"parser started";
     return getPageForward();
@@ -343,11 +331,10 @@ int XMLTextPaginator::parseTag()
                 QString id = parseTagAttribute(tag, "href");
                 if (notesTable.contains(id))
                     PageNotes.append(id);
-                tag = "note";
+                //tag = "note";
             }
         }
-        else
-            tag ="note";
+        tag ="note";
 
         return 1;
     }
@@ -489,6 +476,7 @@ void XMLTextPaginator::preparePage(bool direction)
 {
     PageNotes.clear();
 
+
     if (direction == parseDirection)
     {
             beginTagStack = tagStack;
@@ -542,7 +530,6 @@ void XMLTextPaginator::createHTMLPage()
         }
     }
 }
-
 
 
 QString XMLTextPaginator::getPageForward()
@@ -780,12 +767,101 @@ QString XMLTextPaginator::getPageNotes(const int &viewWidth) const
 }
 
 
+QString XMLTextPaginator::searchStart(QString key, QString type)
+{
+    Searcher = new XMLTextSearcher(book->getFormat());
+    Searcher->start(bookText, key);
+
+    if (Searcher->getResultCount() == 0)
+    {
+        // сигнал - нет найденного
+
+        return searchStop();
+    }
+
+    preparePage(false);
+
+    PageNotes.clear();
+    HTMLImage.clear();
+    HTMLImageSize = 0;
+
+
+    if (type == QObject::tr("From the beginning"))
+    {
+        searchStep = -1;
+    }
+    else if (type == QObject::tr("From the end"))
+    {
+        searchStep = Searcher->getResultCount() - 2;
+    }
+    else if (type == QObject::tr("From the current position"))
+    {
+        searchStep = Searcher->getResultFrom(currentBStrNum);
+    }
+    else
+        return QString();
+
+    return searchNextStep();
+}
+
+
+QString XMLTextPaginator::searchNextStep()
+{
+    if (Searcher == 0)
+        return refreshPage();
+
+    searchStep++;
+    if (searchStep >= Searcher->getResultCount())
+        searchStep = 0;
+
+    SearchResult* res = Searcher->getResultAt(searchStep);
+    tagStack = res->tags;
+    ParagrafTail = res->paragrafTail;
+    currentEStrNum = res->pos - 1;
+
+    return getPageForward();
+}
+
+
+QString XMLTextPaginator::searchPrevStep()
+{
+    if (Searcher == 0)
+        return refreshPage();
+
+    searchStep--;
+    if (searchStep < 0)
+        searchStep = Searcher->getResultCount() - 1;
+
+    SearchResult* res = Searcher->getResultAt(searchStep);
+    tagStack = res->tags;
+    ParagrafTail = res->paragrafTail;
+    currentEStrNum = res->pos - 1;
+
+    return getPageForward();
+}
+
+
+QString XMLTextPaginator::searchStop()
+{
+    delete Searcher;
+    Searcher = 0;
+    return refreshPage();
+}
+
+
+QString XMLTextPaginator::refreshPage()
+{
+    currentEStrNum = currentBStrNum = currentBStrNum - 1;
+    tagStack = beginTagStack;
+    ParagrafTail = beginParagrafTail;
+    return getPageForward();
+}
+
+
 QString XMLTextPaginator::resizePage(const int &width, const int &height)
 {
     setPageGeometry(width, height);
-    currentEStrNum = currentBStrNum = currentBStrNum - 1;
-    tagStack = beginTagStack;
-    return getPageForward();
+    return refreshPage();
 }
 
 
@@ -796,11 +872,9 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
 
-    currentEStrNum = currentBStrNum = currentBStrNum - 1;
-    tagStack = beginTagStack;
     setPageGeometry(width, height);
 
-    return getPageForward();
+    return refreshPage();
 }
 
 

@@ -8,7 +8,7 @@
 #include "settings.h"
 #include "settings_layout.h"
 #include "search_window.h"
-#include "xmltextpaginator.h"
+#include "xml_text_paginator.h"
 #include "reading_menu.h"
 
 #include <QVBoxLayout>
@@ -53,9 +53,10 @@ private slots:
 
     void setStyle(const QString &currentStyle);
 
-    void StartSearch(const QString &key, const QString &type);
-    void NextSearchStep();
-    void PrevSearchStep();
+    void searchStart(const QString &key, const QString &type);
+    void searchNextStep();
+    void searchPrevStep();
+    void searchStop();
 
     void clockStep();
     void updateProgress();

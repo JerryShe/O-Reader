@@ -1,9 +1,9 @@
-#include "fb2parser.h"
+#include "fb2_parser.h"
 
 #include <QFile>
 #include <QDebug>
 
-#include <xmltextparser.h>
+#include <xml_text_parser.h>
 
 FB2Parser::FB2Parser(Book *book, QStringList &bookText, BookImageTable*& ImageTable, QTreeWidgetItem*& tableOfContents, QHash <QString, QStringList> &notesTable)
 {
@@ -94,7 +94,7 @@ void FB2Parser::parseText(QStringList &bookText)
 
         if (!tagTail.isEmpty())
         {
-            temp.prepend(tagTail);
+            temp.prepend(tagTail + " ");
             tagTail.clear();
         }
 

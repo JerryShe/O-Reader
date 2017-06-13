@@ -1,5 +1,5 @@
-#ifndef TEXTTAGCLASS_H
-#define TEXTTAGCLASS_H
+#ifndef TAGS_RESOLVER_H
+#define TAGS_RESOLVER_H
 
 #include <QHash>
 #include <QObject>
@@ -71,4 +71,4 @@ private:
 
 
 
-#endif // TEXTTAGCLASS_H
+#endif // TAGS_RESOLVER_H

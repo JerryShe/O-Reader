@@ -66,6 +66,10 @@ bool LibraryHandler::loadBookList()
     LibFile.close();
     qDebug()<<bookList.size()<<"books loaded";
 
+    QVector <Book*> losted = findMissingBooks();
+    if (losted.size())
+        emit lostBooks(losted);
+
     return 1;
 }
 
@@ -118,6 +122,43 @@ void LibraryHandler::fromJson(const QJsonObject &json)
         if (libraryView != 0)
             libraryView->addItem(&bookList.back());
     }
+}
+
+
+QVector <Book*> LibraryHandler::findMissingBooks()
+{
+    QVector <Book*> missBooks;
+    for (int i = 0; i < bookList.size(); i++)
+    {
+        QFileInfo file(bookList[i].getFileName());
+
+        if (!file.isFile())
+            missBooks.append(&bookList[i]);
+        else
+            if (bookList[i].isZipped())
+            {
+                QZipReader zip(bookList[i].getFileName());
+                if (zip.exists())
+                {
+                    bool res = false;
+                    foreach (QZipReader::FileInfo info, zip.fileInfoList())
+                    {
+                        if(info.filePath == bookList[i].getZippedFileName())
+                        {
+                            res = true;
+                            break;
+                        }
+                    }
+
+                    if (!res)
+                        missBooks.append(&bookList[i]);
+                }
+                else
+                    missBooks.append(&bookList[i]);
+            }
+    }
+
+    return missBooks;
 }
 
 

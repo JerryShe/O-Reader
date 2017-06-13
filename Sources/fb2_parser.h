@@ -1,5 +1,5 @@
-#ifndef FB2PARSER_H
-#define FB2PARSER_H
+#ifndef FB2_PARSER_H
+#define FB2_PARSER_H
 
 #include <books.h>
 #include <book_image_table.h>
@@ -23,4 +23,4 @@ private:
     QTextStream* doc;
 };
 
-#endif // FB2PARSER_H
+#endif // FB2_PARSER_H
