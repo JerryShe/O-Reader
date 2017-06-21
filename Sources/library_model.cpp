@@ -19,9 +19,7 @@ BookData::BookData(Book* book)
 
 
 BookData::BookData()
-{
-
-}
+{}
 
 
 LibraryModel::LibraryModel(QObject* parent = 0) : QAbstractListModel(parent)
@@ -273,13 +271,7 @@ void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progre
 
     double a = 0, b = 0;
 
-    if (progress <= 50)  
-          
-         
-         
-         
-          
-             ddd
+    if (progress <= 50)
         a = 1 - (progress/50.0);
     else
         b = (progress/50.0) - 1;
