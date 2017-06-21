@@ -72,6 +72,8 @@ private:
 
     void debugSave(const QString &HTMLPage) const;
 
+    QString doSearchStep();
+
     /////////////////////////////////////////////////////////////////////////////////////////////
 
     QStringList bookText;
@@ -87,8 +89,7 @@ private:
 
     long long currentBStrNum,
                  currentTextPos,
-                 currentEStrNum,
-                 strCount;
+                 currentEStrNum;
 
     int currentColumn;
     unsigned short ColumnCount;

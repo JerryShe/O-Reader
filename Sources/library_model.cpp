@@ -273,7 +273,13 @@ void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progre
 
     double a = 0, b = 0;
 
-    if (progress <= 50)
+    if (progress <= 50)  
+          
+         
+         
+         
+          
+             ddd
         a = 1 - (progress/50.0);
     else
         b = (progress/50.0) - 1;

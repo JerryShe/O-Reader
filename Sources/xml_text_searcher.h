@@ -7,6 +7,7 @@
 
 #include <tags_resolver.h>
 
+
 struct SearchResult
 {
     SearchResult(const long long &position, const QStack<QString> &tagsStack, const bool &tail);
@@ -31,7 +32,6 @@ public slots:
 
     SearchResult* getResultAt(const int &index) const;
     int getResultFrom(const long long &position) const;
-    int getResultBefore(const long long &position) const;
 
 private:
     QVector <SearchResult*> results;

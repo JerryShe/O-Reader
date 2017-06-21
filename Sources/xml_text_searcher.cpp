@@ -24,8 +24,6 @@ XMLTextSearcher::XMLTextSearcher(const int &bookFormat)
 XMLTextSearcher::~XMLTextSearcher()
 {
     qDebug()<<"delete text searcher";
-
-
     for (int i = 0; i < results.size(); i++)
         delete results[i];
 }
@@ -65,7 +63,7 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
     tags.push("Text");
     bool tail;
 
-    QRegExp regExp("[?!.;,:\\s]");
+    QRegExp regExp("[?!.;,:-    \n*&%#@'\"+-()^/\\s]");
 
     for (long long i = 0; i < bookText.size(); i++)
     {
@@ -136,21 +134,6 @@ int XMLTextSearcher::getResultFrom(const long long &position) const
         return results.size() - 1;
     else
         return -1;
-}
-
-
-int XMLTextSearcher::getResultBefore(const long long &position) const
-{
-    for (int i = 0; i < results.size(); i++)
-        if (position > results[i]->pos)
-        {
-            if (i > 0)
-                return i-1;
-            else
-                return 0;
-        }
-
-    return -1;
 }
 
 

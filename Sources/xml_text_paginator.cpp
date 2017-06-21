@@ -21,7 +21,6 @@ XMLTextPaginator::XMLTextPaginator(QObject *parent)
     columnWidth = columnHeight = 0;
 
     currentBStrNum = currentTextPos = currentEStrNum = 0;
-    strCount = 0;
 
     currentColumn = 0;
     lastLineSize = 0;
@@ -29,7 +28,6 @@ XMLTextPaginator::XMLTextPaginator(QObject *parent)
     tagsLineCount = 0;
 
     wordWidth = wordHeight = 0;
-
     currentWidth = currentHeight = 0;
 
     stringHeight = 0;
@@ -38,6 +36,8 @@ XMLTextPaginator::XMLTextPaginator(QObject *parent)
     parseDirection = false;
 
     beginParagrafTail = ParagrafTail = false;
+
+    Searcher = 0;
 }
 
 
@@ -70,9 +70,6 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     TableOfContents = parser.getTableOfContents();
     ImageTable = parser.getImageTable();
     notesTable = parser.getNotesTable();
-
-    strCount = bookText.size();
-
 
     Columns.clear();
     for (int i = 0; i < ColumnCount; i++)
@@ -302,7 +299,7 @@ int XMLTextPaginator::parseTag()
     }
 
 
-    if ((TagInf.index == 1 || TagInf.index == 31) && tagType == false)                              ///<title><section>
+    if (/*(TagInf.index == 1 || */TagInf.index == 32 && tagType == false)                              ///<title><section>
     {
         if (!parseDirection)
         {
@@ -318,7 +315,6 @@ int XMLTextPaginator::parseTag()
             doStep();
             return 3;
         }
-
     }
 
 
@@ -534,7 +530,7 @@ void XMLTextPaginator::createHTMLPage()
 
 QString XMLTextPaginator::getPageForward()
 {
-    if (currentTextPos < strCount)
+    if (currentTextPos < bookText.size())
     {
         preparePage(false);
 
@@ -568,7 +564,7 @@ QString XMLTextPaginator::getPageForward()
 
             Columns[currentColumn].append(columnTail);
 
-            for (; currentTextPos < strCount && currentTextPos < bookText.size(); currentTextPos++)
+            for (; currentTextPos < bookText.size() && currentTextPos < bookText.size(); currentTextPos++)
             {
                 if (bookText[currentTextPos].size())
                 {
@@ -817,12 +813,7 @@ QString XMLTextPaginator::searchNextStep()
     if (searchStep >= Searcher->getResultCount())
         searchStep = 0;
 
-    SearchResult* res = Searcher->getResultAt(searchStep);
-    tagStack = res->tags;
-    ParagrafTail = res->paragrafTail;
-    currentEStrNum = res->pos - 1;
-
-    return getPageForward();
+    return doSearchStep();
 }
 
 
@@ -835,6 +826,12 @@ QString XMLTextPaginator::searchPrevStep()
     if (searchStep < 0)
         searchStep = Searcher->getResultCount() - 1;
 
+    return doSearchStep();
+}
+
+
+QString XMLTextPaginator::doSearchStep()
+{
     SearchResult* res = Searcher->getResultAt(searchStep);
     tagStack = res->tags;
     ParagrafTail = res->paragrafTail;
@@ -883,8 +880,8 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 
 float XMLTextPaginator::getProgress() const
 {
-    if (currentBStrNum > 0 && strCount)
-        return (((float)(currentEStrNum+1)/(float)strCount) * 100);
+    if (currentBStrNum > 0 && bookText.size())
+        return (((float)(currentEStrNum+1)/(float)bookText.size()) * 100);
     else
         return 0;
 }

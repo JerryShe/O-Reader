@@ -4,6 +4,9 @@
 #include <QListView>
 
 
+#include <QDebug>
+
+
 void SearchWindow::setStyle(const QString &style)
 {
     QString styleList[3];
@@ -20,6 +23,8 @@ void SearchWindow::setStyle(const QString &style)
 SearchWindow::SearchWindow(const QPoint &position, const QString &style, const bool &mode, QWidget * parent): QDialog(parent)
 {
     workMode = mode;
+    searchIsWorking = false;
+
     hide();
     move(position);
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
@@ -41,7 +46,6 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
     ButtonLayout->setSpacing(0);
 
     TextBox = new QLineEdit(this);
-    connect(TextBox, SIGNAL(textChanged(QString)), this, SLOT(TextChanged()));
     SearchTypeBox = new QComboBox(this);
     SearchTypeBox->setView(new QListView());
     TextLayout->addWidget(TextBox, 0);
@@ -78,10 +82,12 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
         TopLayout->setSpacing(0);
         exit_button->setFixedSize(25,25);
 
-        connect(exit_button, SIGNAL(clicked(bool)), this, SLOT(exitButtonClicked()));
-
         TopLayout->addSpacerItem(topSpacer);
         TopLayout->addWidget(exit_button, 1);
+
+        connect(TextBox, SIGNAL(textChanged(QString)), this, SLOT(searchStop()));
+        connect(exit_button, SIGNAL(clicked(bool)), this, SLOT(close()));
+
 
         exit_button->show();
     }
@@ -105,25 +111,48 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
 
 SearchWindow::~SearchWindow()
 {
+    qDebug()<<"delete search window";
     delete TopLayout;
     delete TextLayout;
     delete ButtonLayout;
 }
 
 
-void SearchWindow::YepButtonClicked()
+void SearchWindow::searchStop()
 {
-    if (workMode)
-        if (!signalWasSended)
-        {
-            emit startSearch(TextBox->text(), SearchTypeBox->currentText());
-            signalWasSended = true;
-        }
-        else
-            emit previousResult();
-    else
+    if (searchIsWorking)
+    {
+        emit searchKeyChanged();
+        searchIsWorking = false;
+    }
+}
+
+
+void SearchWindow::searchStart()
+{
+    if (!searchIsWorking)
     {
         emit startSearch(TextBox->text(), SearchTypeBox->currentText());
+        searchIsWorking = true;
+    }
+}
+
+
+void SearchWindow::YepButtonClicked()
+{
+    if (TextBox->text().isEmpty())
+        return;
+
+    if (workMode)
+    {
+        if (!searchIsWorking)
+            searchStart();
+        else
+            emit previousResult();
+    }
+    else if (!searchIsWorking)
+    {
+        searchStart();
         this->hide();
     }
 }
@@ -131,27 +160,19 @@ void SearchWindow::YepButtonClicked()
 
 void SearchWindow::NopeButtonClicked()
 {
+    if (TextBox->text().isEmpty())
+        return;
+
     if (workMode)
-        if (!signalWasSended)
-        {
-            emit startSearch(TextBox->text(), SearchTypeBox->currentText());
-            signalWasSended = true;
-        }
+    {
+        if (!searchIsWorking)
+            searchStart();
         else
             emit nextResult();
-    else
+    }
+    else if (searchIsWorking)
+    {
+        searchStop();
         this->close();
-}
-
-
-void SearchWindow::exitButtonClicked()
-{
-    emit windowClosed();
-    this->close();
-}
-
-
-void SearchWindow::TextChanged()
-{
-    signalWasSended = false;
+    }
 }

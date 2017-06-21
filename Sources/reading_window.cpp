@@ -453,6 +453,7 @@ void ReadingWindow::showSearchWindow()
     connect(Search, SIGNAL(nextResult()), this, SLOT(searchNextStep()));
     connect(Search, SIGNAL(previousResult()), this, SLOT(searchPrevStep()));
     connect(Search, SIGNAL(finished(int)), this, SLOT(searchStop()));
+    connect(Search, &SearchWindow::searchKeyChanged, [this](){ui->TextPage->setHtml(BookPaginator->searchStop());});
 }
 
 

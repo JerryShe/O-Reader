@@ -17,20 +17,21 @@ public:
 private slots:
     void YepButtonClicked();
     void NopeButtonClicked();
-    void exitButtonClicked();
-    void TextChanged();
+
+    void searchStop();
+    void searchStart();
 
     void setStyle(const QString &style);
 
 signals:
     void startSearch(QString token, QString searchType);
+    void searchKeyChanged();
     void previousResult();
     void nextResult();
-    void windowClosed();
 
 private:
     bool workMode;                  // true - окошко поиска, false - виджет поиска
-    bool signalWasSended = false;
+    bool searchIsWorking;
     QVBoxLayout * VLayout;
 
     QHBoxLayout * TopLayout;
