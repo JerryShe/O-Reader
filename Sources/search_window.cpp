@@ -9,12 +9,13 @@
 
 void SearchWindow::setStyle(const QString &style)
 {
-    QString styleList[3];
+    QString styleList[4];
     setSearchWindowStyle(styleList, style);
     YepButton->setStyleSheet(styleList[0]);
     NopeButton->setStyleSheet(styleList[0]);
     TextBox->setStyleSheet(styleList[1]);
     SearchTypeBox->setStyleSheet(styleList[2]);
+    Step->setStyleSheet(styleList[3]);
 
     setExitButtonStyle(styleList, style);
     exit_button->setStyleSheet(styleList[0]);
@@ -68,6 +69,9 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
     exit_button = new QPushButton(this);
     exit_button->hide();
 
+    Step = new QLabel(this);
+    Step->hide();
+
     QStringList a;
     if (mode == true)
     {
@@ -83,6 +87,11 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
         TopLayout->setContentsMargins(0,0,0,0);
         TopLayout->setSpacing(0);
         exit_button->setFixedSize(30,30);
+
+
+        Step->show();
+        TopLayout->addWidget(Step,1);
+
 
         TopLayout->addSpacerItem(topSpacer);
         TopLayout->addWidget(exit_button, 1);
@@ -180,3 +189,10 @@ void SearchWindow::NopeButtonClicked()
         this->close();
     }
 }
+
+
+void SearchWindow::setCurrentStepData(const QString data)
+{
+    Step->setText(data);
+}
+

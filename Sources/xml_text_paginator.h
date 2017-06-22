@@ -26,11 +26,9 @@ public:
     void setPageGeometry(const int &width, const int &height);
     float getProgress() const;
 
-    QString getPageForward();
-    QString getPageBackward();
-
     QTreeWidgetItem* getBookContentTable() const;
     long long getCurrentSectionIndex() const;
+
 
 public slots:
     QString resizePage(const int &width, const int &height);
@@ -41,10 +39,17 @@ public slots:
 
     QString getPageNotes(const int &viewWidth) const;
 
+    QString getPageForward();
+    QString getPageBackward();
+
     QString searchStart(QString key, QString type);
     QString searchNextStep();
     QString searchPrevStep();
     QString searchStop();
+
+
+signals:
+    void currentSearchStep(QString step);
 
 private:
     int getWordWidth() const;

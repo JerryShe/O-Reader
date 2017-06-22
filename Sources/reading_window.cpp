@@ -405,7 +405,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
     else if (event->type() == QEvent::LanguageChange)
         ui->retranslateUi(this);
 
-    return true;
+    return false;
 }
 
 
@@ -413,6 +413,9 @@ void ReadingWindow::resizeWindow()
 {
     ui->TextPage->setHtml(BookPaginator->resizePage(ui->TextPage->width(), ui->TextPage->height()));
     resizeMiniWindow();
+
+    if (Search != 0)
+        Search->move(QPoint(0, this->height() - 80));
 }
 
 
@@ -457,6 +460,8 @@ void ReadingWindow::showSearchWindow()
     connect(Search, SIGNAL(previousResult()), this, SLOT(searchPrevStep()));
     connect(Search, SIGNAL(finished(int)), this, SLOT(searchStop()));
     connect(Search, &SearchWindow::searchKeyChanged, [this](){ui->TextPage->setHtml(BookPaginator->searchStop());});
+
+    connect(BookPaginator, SIGNAL(currentSearchStep(QString)), Search, SLOT(setCurrentStepData(QString)));
 }
 
 

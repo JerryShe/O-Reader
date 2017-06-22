@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QLabel>
 
 class SearchWindow : public QDialog
 {
@@ -13,6 +14,10 @@ class SearchWindow : public QDialog
 public:
     SearchWindow(const QPoint &position, const QString &style, const bool &mode, QWidget * parent = 0);
     ~SearchWindow();
+
+
+public slots:
+    void setCurrentStepData(const QString data);
 
 private slots:
     void YepButtonClicked();
@@ -45,6 +50,7 @@ private:
 
     QLineEdit * TextBox;
     QComboBox * SearchTypeBox;
+    QLabel * Step;
 };
 
 #endif // SEARCH_WINDOW_H

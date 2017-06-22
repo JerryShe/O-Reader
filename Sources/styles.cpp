@@ -472,6 +472,10 @@ void setSearchWindowStyle(QString SearchStyle[], const QString style)
                             "border:none;"
                             "color:white;"
                             "min-height: 35px;}";
+
+        SearchStyle[3] = "QLabel"
+                         "{color:white;"
+                         "border:none;}";
     }
 }
 

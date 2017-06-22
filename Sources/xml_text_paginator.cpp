@@ -837,6 +837,8 @@ QString XMLTextPaginator::doSearchStep()
     ParagrafTail = res->paragrafTail;
     currentEStrNum = res->pos - 1;
 
+    emit currentSearchStep(QString::number(searchStep+1) + "/" + QString::number(Searcher->getResultCount()));
+
     return getPageForward();
 }
 
