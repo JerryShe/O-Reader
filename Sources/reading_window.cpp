@@ -104,6 +104,9 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 
 
     qDebug()<<"readingWindow created";
+
+    ui->TextPage->setFocus();
+    ui->TextPage->setFocusProxy(ui->TopBarWidget);
 }
 
 

@@ -43,6 +43,8 @@ private slots:
 
     void lostBooks(QVector <Book*> losted);
 
+    void on__SortDirection_toggled(bool checked);
+
 public slots:
     void setStyle();
 

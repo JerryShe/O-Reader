@@ -13,8 +13,14 @@
 #include <QScroller>
 
 
+
+
 LibraryView::LibraryView(QWidget *widget)
 {
+    qRegisterMetaType<QList<QPersistentModelIndex> >("QList<QPersistentModelIndex>");
+    qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
+
+
     setParent(widget);
 
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
@@ -26,13 +32,19 @@ LibraryView::LibraryView(QWidget *widget)
     if (QTouchDevice::devices().size())
         QScroller::grabGesture(viewport(), QScroller::LeftMouseButtonGesture);
 
-    BookModel = new LibraryModel(this);
+    BookModel = new LibraryListModel(this);
+    BookProxyModel = new LibraryListProxyModel();
+    delegate = new LibraryListDelegate(this);
 
-    delegate = new LibraryListDelegate();
     setSettingsData();
-    this->setItemDelegate(delegate);
 
-    setModel(BookModel);
+    this->setItemDelegate(delegate);
+    BookProxyModel->setSourceModel(BookModel);
+
+
+    this->setModel(BookProxyModel);
+    BookProxyModel->setDynamicSortFilter(true);
+    BookProxyModel->sort(0);
 
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -47,7 +59,6 @@ LibraryView::LibraryView(QWidget *widget)
 LibraryView::~LibraryView()
 {
     qDebug()<<"delete LibraryView";
-    delete delegate;
 }
 
 
@@ -63,6 +74,7 @@ void LibraryView::showSelectedItem(const QModelIndex &mIndex)
 void LibraryView::addItem(Book *book)
 {
     BookModel->addBook(book);
+    BookProxyModel->invalidate();
     this->repaint();
 }
 
@@ -103,9 +115,6 @@ QVector<unsigned int> LibraryView::deleteSelectedItems()
     for (int i = 0; i < deletedItems.size(); i++)
         BookModel->deleteBookByIndex(deletedItems[i]);
 
-    if (!BookModel->rowCount())
-        clear();
-
     return deletedItems;
 }
 
@@ -114,6 +123,8 @@ void LibraryView::deleteBook(const unsigned int &index)
 {
     qDebug()<<"delete "<<index;
     BookModel->deleteBookByIndex(index);
+
+    BookProxyModel->invalidate();
 }
 
 
@@ -132,6 +143,30 @@ void LibraryView::clear()
 void LibraryView::groupBy(const QString &mode)
 {
 
+}
+
+
+void LibraryView::setSort(const QString &type, const bool &direction)
+{
+    if (type == tr("Date"))
+        BookProxyModel->setSort(0, direction);
+    else if (type == tr("Author"))
+        BookProxyModel->setSort(1, direction);
+    else if (type == tr("Title"))
+        BookProxyModel->setSort(2, direction);
+
+    BookProxyModel->invalidate();
+}
+
+
+void LibraryView::setFilter(const QString &type, const QVariant &role)
+{
+    if (type == tr("Title"))
+        BookProxyModel->setFilter(BookInf::Title, role);
+    else if (type == tr("Author"))
+        BookProxyModel->setFilter(BookInf::AuthorName, role);
+
+    BookProxyModel->invalidate();
 }
 
 

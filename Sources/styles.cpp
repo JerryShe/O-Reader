@@ -247,6 +247,15 @@ void setTabButtonsStyle (QString tabButtonsStyle [], const QString style)
 
                              "#ShowButton:hover, #ShowButton:checked:hover"
                              "{background-color:rgb(120, 0, 45);}";
+
+        tabButtonsStyle[6] = "#_SortDirection"
+                          "{background-color: rgb(162, 0, 70);"
+                          "background-image: url(:/Images/LightSortArrayFalse.png);"
+                          "border:none;}"
+                          "#_SortDirection:hover"
+                          "{background-color:rgb(147, 0, 60);}"
+                          "#_SortDirection:checked"
+                          "{background-image: url(:/Images/LightSortArrayTrue.png);}";
     }
 }
 

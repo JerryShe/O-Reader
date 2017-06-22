@@ -29,6 +29,7 @@ public slots:
     void openNewBook(const QString &fileList, GenresMap *Gmap);
 
     void findBooks(const QString &key, const QString &mode);
+    void clearFind();
 
     Book* getBookByIndex(const unsigned int &index);
 
@@ -42,7 +43,7 @@ public slots:
 
     Book* getLastOpenedBook();
 
-    void sortBooks(const QString &mode);
+    void sortBooks(const QString &mode, bool direction = false);
 
     QVector <Book*> findMissingBooks();
 
@@ -63,8 +64,6 @@ private:
     Synchronization* UserActions;
 
     QString resoursesFolderPath;
-
-    bool needRefresh;
 
     QStringList filesMask;
 

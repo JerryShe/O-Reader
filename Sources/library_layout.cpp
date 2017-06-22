@@ -16,7 +16,7 @@
 
 void LibraryLayout::setStyle()
 {
-    QString styleSheets[6];
+    QString styleSheets[7];
     QString currentStyle = ProgramSettings->getInterfaceStyle();
 
     setLibraryLayoutButtons(styleSheets, currentStyle);
@@ -30,6 +30,7 @@ void LibraryLayout::setStyle()
     ui->_Delete->setStyleSheet(styleSheets[0]);
     ui->_Group->setStyleSheet(styleSheets[2]);
     ui->_Sort->setStyleSheet(styleSheets[2]);
+    ui->_SortDirection->setStyleSheet(styleSheets[6]);
     ui->_SortBox->setStyleSheet(styleSheets[3]);
     ui->_GroupBox->setStyleSheet(styleSheets[3]);
 
@@ -224,7 +225,13 @@ void LibraryLayout::on__Downscale_clicked()
 void LibraryLayout::on__SortBox_activated(const QString &arg1)
 {
     hideBookWidget();
-    LibHandler->sortBooks(arg1);
+    LibHandler->sortBooks(arg1, ui->_SortDirection->isChecked());
+}
+
+
+void LibraryLayout::on__SortDirection_toggled(bool checked)
+{
+    LibHandler->sortBooks(ui->_SortBox->currentText(), checked);
 }
 
 
@@ -251,7 +258,7 @@ void LibraryLayout::on__Find_toggled(bool checked)
             searchWindow->close();
             searchWindow = 0;
         }
-        LibHandler->refreshLibrary();
+        LibHandler->clearFind();
     }
 }
 

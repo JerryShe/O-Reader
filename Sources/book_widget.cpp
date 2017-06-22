@@ -58,7 +58,7 @@ BookWidget::BookWidget(QWidget *parent) :
     animation->setDuration(100);
 
     s2->assignProperty(this, "pos", QPoint(- this->width(), 30));
-    s1->assignProperty(this, "pos", QPoint(15, 30));
+    s1->assignProperty(this, "pos", QPoint(25, 30));
 
 
     transition1 = s1->addTransition(this, SIGNAL(showButtonClicked()), s2);

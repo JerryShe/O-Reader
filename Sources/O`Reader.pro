@@ -35,7 +35,6 @@ SOURCES += main.cpp\
     client_handler.cpp \
     reading_menu.cpp \
     settings_readerlayoutstyle.cpp \
-    library_model.cpp \
     library_view.cpp \
     book_image_table.cpp \
     battery_widget.cpp \
@@ -46,7 +45,10 @@ SOURCES += main.cpp\
     fb2_parser.cpp \
     tags_resolver.cpp \
     xml_text_parser.cpp \
-    xml_text_searcher.cpp
+    xml_text_searcher.cpp \
+    library_list_delegate.cpp \
+    library_list_proxy_model.cpp \
+    library_list_model.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -75,7 +77,6 @@ HEADERS  += \
     client_handler.h \
     reading_menu.h \
     settings_readerlayoutstyle.h \
-    library_model.h \
     library_view.h \
     book_image_table.h \
     battery_widget.h \
@@ -85,7 +86,10 @@ HEADERS  += \
     xml_text_paginator.h \
     xml_text_parser.h \
     fb2_parser.h \
-    xml_text_searcher.h
+    xml_text_searcher.h \
+    library_list_delegate.h \
+    library_list_proxy_model.h \
+    library_list_model.h
 
 FORMS    += \
     settings_programlayout.ui \

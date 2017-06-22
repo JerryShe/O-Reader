@@ -18,6 +18,8 @@ void SearchWindow::setStyle(const QString &style)
 
     setExitButtonStyle(styleList, style);
     exit_button->setStyleSheet(styleList[0]);
+
+    this->setStyleSheet("background-color:rgb(150, 0, 60);");
 }
 
 SearchWindow::SearchWindow(const QPoint &position, const QString &style, const bool &mode, QWidget * parent): QDialog(parent)
@@ -80,14 +82,13 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
 
         TopLayout->setContentsMargins(0,0,0,0);
         TopLayout->setSpacing(0);
-        exit_button->setFixedSize(25,25);
+        exit_button->setFixedSize(30,30);
 
         TopLayout->addSpacerItem(topSpacer);
         TopLayout->addWidget(exit_button, 1);
 
         connect(TextBox, SIGNAL(textChanged(QString)), this, SLOT(searchStop()));
         connect(exit_button, SIGNAL(clicked(bool)), this, SLOT(close()));
-
 
         exit_button->show();
     }
@@ -100,11 +101,14 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
         YepButton->setText(QObject::tr("Find", "button in find window"));
         NopeButton->setFixedSize(150,35);
         NopeButton->setText(QObject::tr("Cancel"));
-        a<<QObject::tr("Author")<<QObject::tr("Title")<<QObject::tr("Series");
+        a<<QObject::tr("Author")<<QObject::tr("Title");//<<QObject::tr("Series");
     }
+
+
     SearchTypeBox->addItems(a);
     this->setLayout(VLayout);
     setStyle(style);
+
     this->show();
 }
 

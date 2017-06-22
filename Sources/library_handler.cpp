@@ -22,7 +22,6 @@ LibraryHandler::LibraryHandler()
     UserActions = Synchronization::getSynchronization();
     currentBookIndex = 0;
     filesMask << "*.fb2" << "*.zip" << "*.epub";
-    needRefresh = true;
 }
 
 
@@ -34,7 +33,6 @@ void LibraryHandler::setLibraryWidget(LibraryView* lbWidget)
 {
     qDebug()<<"set lib widget";
     libraryView = lbWidget;
-    needRefresh = true;
     refreshLibrary();
 }
 
@@ -58,7 +56,6 @@ bool LibraryHandler::loadBookList()
     QJsonObject LibObj = LibJson.object();
     this->fromJson(LibObj);
 
-    needRefresh = true;
     for (int i = 0; i < bookList.size(); i++)
         if (currentBookIndex > bookList[i].getIndex())
             currentBookIndex = bookList[i].getIndex();
@@ -182,7 +179,6 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
     {
         saveBookList();
         UserActions->saveLog();
-        refreshLibrary();
     }
 }
 
@@ -351,40 +347,12 @@ bool TitleComparator(Book &boo1, Book & boo2)
 }
 
 
-void LibraryHandler::sortBooks(const QString &mode)
+void LibraryHandler::sortBooks(const QString &mode, bool direction)
 {
     if (libraryView == 0)
         return;
 
-    libraryView->clear();
-
-    if (mode == QObject::tr("Date"))
-    {
-        for (int i = 0; i < bookList.size(); i++)
-            libraryView->addItem(&bookList[i]);
-
-        return;
-    }
-    if (mode == QObject::tr("Author"))
-    {
-        QVector <Book> indexVector = bookList;
-        qSort(indexVector.begin(), indexVector.end(), &AuthorComparator);
-
-        for (int i = 0; i < indexVector.size(); i++)
-            libraryView->addItem(&indexVector[i]);
-
-        return;
-    }
-    if (mode == QObject::tr("Title"))
-    {
-        QVector <Book> indexVector = bookList;
-        qSort(indexVector.begin(), indexVector.end(), &TitleComparator);
-
-        for (int i = 0; i < indexVector.size(); i++)
-            libraryView->addItem(&indexVector[i]);
-
-        return;
-    }
+    libraryView->setSort(mode, direction);
 }
 
 
@@ -393,38 +361,16 @@ void LibraryHandler::findBooks(const QString &token, const QString &mode)
     if (libraryView == 0)
         return;
 
+    QVariant key(token);
+
     if (!token.isEmpty())
-    {
-        libraryView->clear();
-        needRefresh = true;
+        libraryView->setFilter(mode, key);
+}
 
-        if (mode == QObject::tr("Title"))
-        {
-            for (int i = 0; i < bookList.size(); i++)
-                if (bookList[i].getTitle().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    libraryView->addItem(&bookList[i]);
 
-            return;
-        }
-
-        if (mode == QObject::tr("Author"))
-        {
-            for (int i = 0; i < bookList.size(); i++)
-                if (bookList[i].getAuthorName().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    libraryView->addItem(&bookList[i]);
-
-            return;
-        }
-
-        if (mode == QObject::tr("Series"))
-        {
-            for (int i = 0; i < bookList.size(); i++)
-                if (bookList[i].getSeries().indexOf(token, 0, Qt::CaseInsensitive) != -1)
-                    libraryView->addItem(&bookList[i]);
-
-            return;
-        }
-    }
+void LibraryHandler::clearFind()
+{
+    libraryView->setFilter(tr("Title"), "");
 }
 
 
@@ -454,12 +400,11 @@ Book* LibraryHandler::getLastOpenedBook()
 
 void LibraryHandler::refreshLibrary()
 {
-    if (needRefresh == true && libraryView != 0)
+    if (libraryView != 0)
     {
         qDebug()<<"refreshing library representation";
 
         libraryView->clear();
-        needRefresh = false;
         for (int i = 0; i < bookList.size(); i++)
             libraryView->addItem(&bookList[i]);
     }
