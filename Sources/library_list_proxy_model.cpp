@@ -42,12 +42,14 @@ bool LibraryListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
                     data(BookInf::AuthorName).toString().contains(curFilterVal.toString(), Qt::CaseInsensitive);
         else
             return true;
+
     case BookInf::Title:
         if (!curFilterVal.toString().isEmpty())
             return sourceModel()->index(sourceRow, 0, sourceParent).
                     data(BookInf::Title).toString().contains(curFilterVal.toString(), Qt::CaseInsensitive);
         else
             return true;
+
     default:
         return true;
     }
@@ -63,11 +65,20 @@ bool LibraryListProxyModel::lessThan(const QModelIndex &left, const QModelIndex 
     case 0:
         answ = (left.data(BookInf::Index).toInt() < right.data(BookInf::Index).toInt()); /// index
         break;
+
     case 1:
         answ = (left.data(BookInf::AuthorName).toString() < right.data(BookInf::AuthorName).toString());
         break;
+
     case 2:
         answ = (left.data(BookInf::Title).toString() < right.data(BookInf::Title).toString());
+        break;
+
+    case 3:
+        answ = (left.data(BookInf::Progress).toDouble() < right.data(BookInf::Progress).toDouble());
+        break;
+
+    default:
         break;
     }
 

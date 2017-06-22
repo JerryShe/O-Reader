@@ -26,9 +26,7 @@ private:
     BookInf curFilter;
     QVariant curFilterVal;
 
-    int sortType;  /// 0 date
-                     ///  1 author
-                     ///  2 title
+    int sortType;  /// 0 - date, 1 - author, 2 - title, 3 - progress
     bool sortDirection;
 };
 

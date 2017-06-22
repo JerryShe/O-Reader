@@ -6,6 +6,8 @@
 
 #include <QDebug>
 
+#include <QProcess>
+
 
 void SearchWindow::setStyle(const QString &style)
 {
@@ -113,7 +115,6 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
         a<<QObject::tr("Author")<<QObject::tr("Title");//<<QObject::tr("Series");
     }
 
-
     SearchTypeBox->addItems(a);
     this->setLayout(VLayout);
     setStyle(style);
@@ -173,21 +174,15 @@ void SearchWindow::YepButtonClicked()
 
 void SearchWindow::NopeButtonClicked()
 {
-    if (TextBox->text().isEmpty())
-        return;
-
-    if (workMode)
+    if (workMode && TextBox->text().isEmpty())
     {
         if (!searchIsWorking)
             searchStart();
         else
             emit nextResult();
     }
-    else if (searchIsWorking)
-    {
-        searchStop();
+    else
         this->close();
-    }
 }
 
 

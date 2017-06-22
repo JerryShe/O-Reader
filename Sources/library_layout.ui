@@ -131,6 +131,11 @@
          <string>Title</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Progress</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item>

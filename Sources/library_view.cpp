@@ -154,6 +154,8 @@ void LibraryView::setSort(const QString &type, const bool &direction)
         BookProxyModel->setSort(1, direction);
     else if (type == tr("Title"))
         BookProxyModel->setSort(2, direction);
+    else if (type == tr("Progress"))
+        BookProxyModel->setSort(3, direction);
 
     BookProxyModel->invalidate();
 }
