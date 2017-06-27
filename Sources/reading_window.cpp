@@ -19,13 +19,9 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QMessageBox>
-
 #include <QScroller>
 
 #include <QDebug>
-
-
-
 
 
 void ReadingWindow::setStyle(const QString &currentStyle)
@@ -103,10 +99,12 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
 
-    qDebug()<<"readingWindow created";
-
     ui->TextPage->setFocus();
     ui->TextPage->setFocusProxy(ui->TopBarWidget);
+
+
+    connect(ui->TextPage, SIGNAL(anchorClicked(QUrl)), this, SLOT(showNoteText(QUrl)));
+    //connect(ui->TextPage, SIGNAL(highlighted(QUrl)), this, SLOT(showNoteText(QUrl)));
 }
 
 
@@ -197,6 +195,57 @@ void ReadingWindow::createReadProfilesWidget()
 }
 
 
+void ReadingWindow::showNoteText(const QUrl &link)
+{
+    if (!link.isEmpty())
+    {
+        if (link.toString()[0] == '#')
+        {
+            QString noteID = link.toString();
+            noteID.remove(0,1);
+
+            QString note = BookPaginator->getPageNote(noteID, 666);
+
+
+            QDialog* NoteWidget = new QDialog(this, Qt::Popup);
+            connect(NoteWidget, &QDialog::finished, [this](){ui->TextPage->setFocus();});
+
+            NoteWidget->setFixedWidth(this->width()/4);
+            NoteWidget->setMaximumHeight(this->height()/4);
+            NoteWidget->setContentsMargins(0,0,0,0);
+            NoteWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+            QTextBrowser* NoteText = new QTextBrowser(NoteWidget->window());
+            NoteText->setFixedWidth(this->width()/4);
+            NoteText->setMaximumHeight(this->height()/4);
+            NoteText->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+            NoteText->setHtml(note);
+            NoteWidget->show();
+
+            QPoint pos = QCursor::pos();
+            pos.setY(pos.y() + 15);
+
+            if (pos.x() + NoteWidget->width() > this->mapToGlobal(QPoint()).x() + this->width())
+                pos.setX(this->mapToGlobal(QPoint()).x() + this->width() - NoteWidget->width());
+            else
+                if (pos.x() < this->mapToGlobal(QPoint()).x())
+                    pos.setX(this->mapToGlobal(QPoint()).x());
+
+            if (pos.y() + NoteWidget->height() > this->mapToGlobal(QPoint()).y() + this->height())
+                pos.setY(pos.y() - NoteWidget->height());
+            else
+                if (pos.y() < this->mapToGlobal(QPoint()).y())
+                    pos.setY(pos.y() + NoteWidget->height());
+
+
+            NoteWidget->move(pos);
+        }
+    }
+}
+
+
+
 void ReadingWindow::on_ReadProfilesButton_clicked()
 {
     if (ProfilesWidget->isHidden())
@@ -266,6 +315,8 @@ void ReadingWindow::on_exit_button_clicked()
     }
     else
         delete answer_window;
+
+    ui->TextPage->setFocus();
 }
 
 
@@ -434,8 +485,10 @@ void ReadingWindow::showContentsTable()
     if (tableWindow->exec() == QDialog::Rejected)
     {
         delete tableWindow;
-        ActiveWindow = false;
     }
+    ActiveWindow = false;
+    ui->TextPage->setFocus();
+
 }
 
 
@@ -492,6 +545,7 @@ void ReadingWindow::searchStop()
     Search = 0;
 
     ActiveWindow = false;
+    ui->TextPage->setFocus();
 
     ui->TextPage->setHtml(BookPaginator->searchStop());
     updateProgress();
@@ -559,8 +613,10 @@ void ReadingWindow::showSettingsWindow()
         reprintNewSettText();
         delete MiniWindow;
         MiniWindow = 0;
-        ActiveWindow = false;
     }
+
+    ActiveWindow = false;
+    ui->TextPage->setFocus();
 }
 
 
@@ -581,6 +637,8 @@ void ReadingWindow::showSynchronizationWindow()
     {
         delete MiniWindow;
         MiniWindow = 0;
-        ActiveWindow = false;
     }
+
+    ActiveWindow = false;
+    ui->TextPage->setFocus();
 }

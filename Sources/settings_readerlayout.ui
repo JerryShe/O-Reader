@@ -3896,6 +3896,9 @@
           <property name="sizeAdjustPolicy">
            <enum>QAbstractScrollArea::AdjustIgnored</enum>
           </property>
+          <property name="documentTitle">
+           <string notr="true"/>
+          </property>
           <property name="html">
            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -3914,6 +3917,12 @@ p, li { white-space: pre-wrap; }
           </property>
           <property name="textInteractionFlags">
            <set>Qt::NoTextInteraction</set>
+          </property>
+          <property name="placeholderText">
+           <string notr="true"/>
+          </property>
+          <property name="searchPaths">
+           <stringlist notr="true"/>
           </property>
           <property name="openLinks">
            <bool>false</bool>

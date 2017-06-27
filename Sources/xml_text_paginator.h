@@ -37,7 +37,7 @@ public slots:
 
     QString goToSection(const long long sectionIndex);
 
-    QString getPageNotes(const int &viewWidth) const;
+    QString getPageNote(const QString &ID, const int &viewWidth) const;
 
     QString getPageForward();
     QString getPageBackward();
@@ -143,8 +143,6 @@ private:
     int HTMLImageSize;
 
     QHash <QString, QStringList> notesTable;
-
-    QStringList PageNotes;
 };
 
 #endif // XML_TEXT_PAGINATOR_H

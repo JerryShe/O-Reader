@@ -50,7 +50,7 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTM
                      "cite{"
                            + topMargin + CurProfile.CiteStyle.getHTMLStyle() + "}"
 
-                     "note{"
+                     "a[type = 'note']{"
                            + "vertical-align: super;"
                            + topMargin + CurProfile.NoteStyle.getHTMLStyle() + "}"
 

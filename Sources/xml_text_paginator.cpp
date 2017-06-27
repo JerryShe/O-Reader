@@ -320,17 +320,10 @@ int XMLTextPaginator::parseTag()
 
     if (TagInf.index == 41)                ///<a>
     {
-        if (!tagType)
-        {
-            if (parseTagAttribute(tag, "type") == "note")
-            {
-                QString id = parseTagAttribute(tag, "href");
-                if (notesTable.contains(id))
-                    PageNotes.append(id);
-                //tag = "note";
-            }
-        }
-        tag ="note";
+        if (tag.contains("l:href"))
+            tag.replace("l:href", "href");
+        else if (tag.contains("xlink:href"))
+            tag.replace("xlink:href", "href");
 
         return 1;
     }
@@ -470,9 +463,6 @@ void XMLTextPaginator::commitWord()
 
 void XMLTextPaginator::preparePage(bool direction)
 {
-    PageNotes.clear();
-
-
     if (direction == parseDirection)
     {
             beginTagStack = tagStack;
@@ -697,69 +687,46 @@ QString XMLTextPaginator::getPageBackward()
 }
 
 
-QString XMLTextPaginator::getPageNotes(const int &viewWidth) const
+QString XMLTextPaginator::getPageNote(const QString &ID, const int &viewWidth) const
 {
-    if (PageNotes.isEmpty())
+    if (!notesTable.contains(ID))
         return QString();
 
-    QString notes;
 
-    int i, j;
-    if (parseDirection)
-    {
-        i = PageNotes.size();
-        j = -1;
-    }
-    else
-    {
-        i = 0;
-        j = 1;
-    }
+    QStringList temp = notesTable[ID];
+    QString note;
 
-
-    for (; i < PageNotes.size() && i >= 0; i += j)
+    for (int i = 0; i < temp.size(); i++)
     {
-        if (notesTable.contains(PageNotes[i]))
+        if (temp[i][0] == '<')
         {
-            QStringList temp = notesTable[PageNotes[i]];
-
-            notes.append("<p>");
-
-            for (int j = 0; j < temp.size(); j++)
+            tagInfo noteTag = Resolver->getTag(temp[i]);
+            if (noteTag.index == 40)
             {
-                if (temp[i][0] == '<')
-                {
-                    tagInfo noteTag = Resolver->getTag(temp[i]);
-                    if (noteTag.index == 40)
-                    {
-                        QString imageName = parseTagAttribute(temp[i], "href");
-                        imageName.remove(0,1);
+                QString imageName = parseTagAttribute(temp[i], "href");
+                imageName.remove(0,1);
 
-                        if (ImageTable->contains(imageName))
-                            notes.append(ImageTable->getHTMLImage(imageName, 6666, viewWidth, 6666).first);
-                    }
-                    else
-                    {
-                        if (noteTag.type)
-                            notes.append("<" + noteTag.html + ">");
-                        else
-                            notes.append("</" + noteTag.html + ">");
-                    }
-                }
-                else
-                {
-                    if (temp[i].right(1) != "-" || temp[i].size() == 1)
-                        notes.append(temp[i] + " ");
-                    else
-                        notes.append(temp[i]);
-                }
+                if (ImageTable->contains(imageName))
+                    note.append(ImageTable->getHTMLImage(imageName, 6666, viewWidth, 6666).first);
             }
-
-            notes.append("</p>");
+            else
+            {
+                if (!noteTag.type)
+                    note.append("<" + noteTag.html + ">");
+                else
+                    note.append("</" + noteTag.html + ">");
+            }
+        }
+        else
+        {
+            if (temp[i].right(1) != "-" || temp[i].size() == 1)
+                note.append(temp[i] + " ");
+            else
+                note.append(temp[i]);
         }
     }
 
-    return PageHTMLStyles + "<body>" + notes + "</body>";
+    return PageHTMLStyles + "<body align = 'justify'>" + note + "</body>";
 }
 
 
@@ -773,14 +740,12 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
 
     if (Searcher->getResultCount() == 0)
     {
-        // сигнал - нет найденного
-
+        emit currentSearchStep(tr("No matches"));
         return searchStop();
     }
 
     preparePage(false);
 
-    PageNotes.clear();
     HTMLImage.clear();
     HTMLImageSize = 0;
 

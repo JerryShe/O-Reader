@@ -48,6 +48,7 @@ private slots:
     void showSearchWindow();
     void showSettingsWindow();
     void showSynchronizationWindow();
+    void showNoteText(const QUrl &link);
 
     void resizeMiniWindow();
 
