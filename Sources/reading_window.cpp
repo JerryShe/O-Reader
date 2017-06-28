@@ -20,6 +20,7 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QScroller>
+#include <QScrollBar>
 
 #include <QDebug>
 
@@ -68,13 +69,12 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 
     ui->TextPage->viewport()->setAutoFillBackground(false);
     ui->TextPage->setAttribute( Qt::WA_TranslucentBackground, true );
-
+    ui->TextPage->verticalScrollBar()->setSingleStep(0);
 
     BookPaginator = new XMLTextPaginator(this);
 
     ui->TextPage->setMouseTracking(true);
     setMouseTracking(true);
-
 
     createReadingMenuWidget();
     createReadProfilesWidget();
@@ -206,6 +206,8 @@ void ReadingWindow::showNoteText(const QUrl &link)
 
             QString note = BookPaginator->getPageNote(noteID, 666);
 
+            if (note.isEmpty())
+                return;
 
             QDialog* NoteWidget = new QDialog(this, Qt::Popup);
             connect(NoteWidget, &QDialog::finished, [this](){ui->TextPage->setFocus();});
@@ -213,18 +215,23 @@ void ReadingWindow::showNoteText(const QUrl &link)
             NoteWidget->setFixedWidth(this->width()/4);
             NoteWidget->setMaximumHeight(this->height()/4);
             NoteWidget->setContentsMargins(0,0,0,0);
-            NoteWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-            QTextBrowser* NoteText = new QTextBrowser(NoteWidget->window());
-            NoteText->setFixedWidth(this->width()/4);
-            NoteText->setMaximumHeight(this->height()/4);
-            NoteText->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+            QVBoxLayout* layout = new QVBoxLayout(NoteWidget);
+            layout->setContentsMargins(0,0,0,0);
+
+            QTextBrowser* NoteText = new QTextBrowser(NoteWidget);
+            layout->addWidget(NoteText);
+
+            NoteText->setFrameStyle(2);
+            NoteText->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+            NoteText->setTextInteractionFlags(Qt::NoTextInteraction);
 
             NoteText->setHtml(note);
             NoteWidget->show();
 
-            QPoint pos = QCursor::pos();
-            pos.setY(pos.y() + 15);
+            NoteWidget->setFixedSize(NoteText->maximumViewportSize() + QSize(0, 15));
+
+            QPoint pos = QCursor::pos() + QPoint(0,15);
 
             if (pos.x() + NoteWidget->width() > this->mapToGlobal(QPoint()).x() + this->width())
                 pos.setX(this->mapToGlobal(QPoint()).x() + this->width() - NoteWidget->width());
@@ -238,6 +245,12 @@ void ReadingWindow::showNoteText(const QUrl &link)
                 if (pos.y() < this->mapToGlobal(QPoint()).y())
                     pos.setY(pos.y() + NoteWidget->height());
 
+
+            if (QTouchDevice::devices().size())
+            {
+                QScroller::grabGesture(NoteText->viewport(), QScroller::LeftMouseButtonGesture);
+                NoteText->verticalScrollBar()->setSingleStep(1);
+            }
 
             NoteWidget->move(pos);
         }
@@ -264,9 +277,7 @@ void ReadingWindow::on_ReadProfilesButton_clicked()
         connect(ProfilesView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(changeReadProfile(QModelIndex)));
     }
     else
-    {
         ProfilesWidget->hide();
-    }
 }
 
 

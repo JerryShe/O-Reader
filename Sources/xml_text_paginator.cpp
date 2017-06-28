@@ -38,6 +38,13 @@ XMLTextPaginator::XMLTextPaginator(QObject *parent)
     beginParagrafTail = ParagrafTail = false;
 
     Searcher = 0;
+
+
+    TagParseFunctions.insert(30, &tag_p);
+    TagParseFunctions.insert(33, &tag_br);
+    TagParseFunctions.insert(32, &tag_section);
+    TagParseFunctions.insert(41, &tag_a);
+    TagParseFunctions.insert(40, &tag_img);
 }
 
 
@@ -214,6 +221,120 @@ void XMLTextPaginator::doStep(int direction = 1)
 }
 
 
+int XMLTextPaginator::tag_p(const tagInfo &info)
+{
+    if (!parseDirection && !tagType)
+        currentWidth = ParLeftTopIdent/100;
+    else
+        currentWidth = 0;
+
+    if (tagType != parseDirection)
+        currentHeight += stringHeight + ParLeftTopIdent%100;
+
+    stringHeight = 0;
+
+    if (ParagrafTail && parseDirection)
+    {
+        tag = "p class='end'";
+        tagType = false;
+
+        ParagrafTail = false;
+        commitTag();
+
+        return 2;
+    }
+    return 1;
+}
+
+
+int XMLTextPaginator::tag_br(const tagInfo &info)
+{
+    if (currentHeight == 0)
+        return 2;
+
+    if (currentHeight + getWordHeight() + ParLeftTopIdent%100 > columnHeight)
+        return 2;
+
+    currentHeight += getWordHeight() + ParLeftTopIdent%100;
+
+    stringHeight = 0;
+
+    tag = "br/";
+    tagType = false;
+    commitTag();
+
+    return 2;
+}
+
+
+int XMLTextPaginator::tag_section(const tagInfo &info)
+{
+    if (!parseDirection)
+    {
+        if (currentHeight != 0)
+            return 3;
+        else
+            return 1;
+    }
+    else
+    {
+        applyTag();
+        commitTag();
+        doStep();
+        return 3;
+    }
+}
+
+
+int XMLTextPaginator::tag_a(const tagInfo &info)
+{
+    if (tag.contains("l:href"))
+        tag.replace("l:href", "href");
+    else if (tag.contains("xlink:href"))
+        tag.replace("xlink:href", "href");
+
+    commitTag();
+
+    return 2;
+}
+
+
+int XMLTextPaginator::tag_img(const tagInfo &info)
+{
+    QString imageName = parseTagAttribute(tag, "href");
+    imageName.remove(0,1);
+
+    if (!ImageTable->contains(imageName))
+        return 2;
+
+    QPair <QString, int> imgData = ImageTable->getHTMLImage(imageName, columnHeight - currentHeight, columnWidth, columnHeight);
+
+    HTMLImage = imgData.first;
+    if (HTMLImage.isEmpty())
+    {
+        HTMLImageSize = 0;
+        return 2;
+    }
+
+    HTMLImageSize = imgData.second;
+
+    if (HTMLImageSize > columnHeight - currentHeight)
+    {
+        doStep();
+        return 3;
+    }
+
+    placeImage();
+
+    if (columnHeight <= currentHeight)
+    {
+        doStep();
+        return 3;
+    }
+    return 2;
+}
+
+
 ///1 - нужный тег, 2 - лишний тег, 3 - тег перевода колонки
 int XMLTextPaginator::parseTag()
 {
@@ -246,49 +367,10 @@ int XMLTextPaginator::parseTag()
     }
 
 
-    if (TagInf.index == 30)        ///<p>
+    if (TagParseFunctions.contains(TagInf.index))
     {
-        if (!parseDirection && !tagType)
-            currentWidth = ParLeftTopIdent/100;
-        else
-            currentWidth = 0;
-
-        if (tagType != parseDirection)
-            currentHeight += stringHeight + ParLeftTopIdent%100;
-
-        stringHeight = 0;
-
-        if (ParagrafTail && parseDirection)
-        {
-            tag = "p class='end'";
-            tagType = false;
-
-            ParagrafTail = false;
-            commitTag();
-
-            return 2;
-        }
-        return 1;
-    }
-
-
-    if (TagInf.index == 33)                ///<br/>
-    {
-        if (currentHeight == 0)
-            return 2;
-
-        if (currentHeight + getWordHeight() + ParLeftTopIdent%100 > columnHeight)
-            return 2;
-
-        currentHeight += getWordHeight() + ParLeftTopIdent%100;
-
-        stringHeight = 0;
-
-        tag = "br/";
-        tagType = false;
-        commitTag();
-
-        return 2;
+        int (XMLTextPaginator::*funct)(const tagInfo &info) = TagParseFunctions[TagInf.index];
+        return (this->*funct)(TagInf);
     }
 
 
@@ -296,72 +378,6 @@ int XMLTextPaginator::parseTag()
     {
         currentHeight += stringHeight;
         currentWidth = 0;
-    }
-
-
-    if (/*(TagInf.index == 1 || */TagInf.index == 32 && tagType == false)                              ///<title><section>
-    {
-        if (!parseDirection)
-        {
-            if (currentHeight != 0)
-                return 3;
-            else
-                return 1;
-        }
-        else
-        {
-            applyTag();
-            commitTag();
-            doStep();
-            return 3;
-        }
-    }
-
-
-    if (TagInf.index == 41)                ///<a>
-    {
-        if (tag.contains("l:href"))
-            tag.replace("l:href", "href");
-        else if (tag.contains("xlink:href"))
-            tag.replace("xlink:href", "href");
-
-        return 1;
-    }
-
-
-    if (TagInf.index == 40)                ///<img>
-    {
-        QString imageName = parseTagAttribute(tag, "href");
-        imageName.remove(0,1);
-
-        if (!ImageTable->contains(imageName))
-            return 2;
-
-        QPair <QString, int> imgData = ImageTable->getHTMLImage(imageName, columnHeight - currentHeight, columnWidth, columnHeight);
-
-        HTMLImage = imgData.first;
-        if (HTMLImage.isEmpty())
-        {
-            HTMLImageSize = 0;
-            return 2;
-        }
-
-        HTMLImageSize = imgData.second;
-
-        if (HTMLImageSize > columnHeight - currentHeight)
-        {
-            doStep();
-            return 3;
-        }
-
-        placeImage();
-
-        if (columnHeight <= currentHeight)
-        {
-            doStep();
-            return 3;
-        }
-        return 2;
     }
 
     if (TagInf.index < 30)
