@@ -174,7 +174,7 @@ void SearchWindow::YepButtonClicked()
 
 void SearchWindow::NopeButtonClicked()
 {
-    if (workMode && TextBox->text().isEmpty())
+    if (workMode && !TextBox->text().isEmpty())
     {
         if (!searchIsWorking)
             searchStart();
