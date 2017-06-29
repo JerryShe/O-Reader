@@ -18,8 +18,6 @@ class XMLTextPaginator : public QObject
 {
     Q_OBJECT
 
-    //typedef int (XMLTextPaginator::*parseFunction)(const tagInfo &info);
-
 public:
     XMLTextPaginator(QObject* parent);
     QString startParser(Book *OpeningBook, const int &Pwidth, const int &Pheight);
@@ -50,11 +48,11 @@ public slots:
     QString searchStop();
 
 
-    int tag_p(const tagInfo &info);
-    int tag_br(const tagInfo &info);
-    int tag_section(const tagInfo &info);
-    int tag_a(const tagInfo &info);
-    int tag_img(const tagInfo &info);
+    int tag_p();
+    int tag_br();
+    int tag_section();
+    int tag_a();
+    int tag_img();
 
 
 signals:
@@ -90,6 +88,8 @@ private:
 
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+    QHash <int, int(XMLTextPaginator::*)()> TagParseFunctions;
+
     QStringList bookText;
     unsigned int columnWidth, columnHeight;
 
@@ -123,19 +123,15 @@ private:
     QString columnTail;
     QString word, tag;
 
-
-    int searchStep;
-
-
     /////////////////////////////////////////////////////////////////////////////////////////////
-
-    QHash <int, int(XMLTextPaginator::*)(const tagInfo &info)> TagParseFunctions;
 
     Book *book;
 
     TagsResolver *Resolver;
     PaginatorHelper *Helper;
+
     XMLTextSearcher* Searcher;
+    int searchStep;
 
 
     QString PageHTMLStyles;

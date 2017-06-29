@@ -221,7 +221,7 @@ void XMLTextPaginator::doStep(int direction = 1)
 }
 
 
-int XMLTextPaginator::tag_p(const tagInfo &info)
+int XMLTextPaginator::tag_p()
 {
     if (!parseDirection && !tagType)
         currentWidth = ParLeftTopIdent/100;
@@ -247,7 +247,7 @@ int XMLTextPaginator::tag_p(const tagInfo &info)
 }
 
 
-int XMLTextPaginator::tag_br(const tagInfo &info)
+int XMLTextPaginator::tag_br()
 {
     if (currentHeight == 0)
         return 2;
@@ -267,7 +267,7 @@ int XMLTextPaginator::tag_br(const tagInfo &info)
 }
 
 
-int XMLTextPaginator::tag_section(const tagInfo &info)
+int XMLTextPaginator::tag_section()
 {
     if (!parseDirection)
     {
@@ -286,7 +286,7 @@ int XMLTextPaginator::tag_section(const tagInfo &info)
 }
 
 
-int XMLTextPaginator::tag_a(const tagInfo &info)
+int XMLTextPaginator::tag_a()
 {
     if (tag.contains("l:href"))
         tag.replace("l:href", "href");
@@ -299,7 +299,7 @@ int XMLTextPaginator::tag_a(const tagInfo &info)
 }
 
 
-int XMLTextPaginator::tag_img(const tagInfo &info)
+int XMLTextPaginator::tag_img()
 {
     QString imageName = parseTagAttribute(tag, "href");
     imageName.remove(0,1);
@@ -368,10 +368,7 @@ int XMLTextPaginator::parseTag()
 
 
     if (TagParseFunctions.contains(TagInf.index))
-    {
-        int (XMLTextPaginator::*funct)(const tagInfo &info) = TagParseFunctions[TagInf.index];
-        return (this->*funct)(TagInf);
-    }
+        return (this->*(TagParseFunctions[TagInf.index]))();
 
 
     if (TagInf.index < 10)              ///<title, subtitle, epigraph, annotation>
@@ -389,12 +386,12 @@ int XMLTextPaginator::parseTag()
 
 void XMLTextPaginator::applyTag()
 {
-    if (tagStack.back() == tag)
+    if (tagStack.contains(tag))
     {
         if (tagType != parseDirection)
         {
             word = "";
-            tagStack.pop();
+            tagStack.removeAt(tagStack.lastIndexOf(tag));
         }
     }
     else if (tagType == parseDirection)
@@ -428,8 +425,7 @@ bool XMLTextPaginator::applyWord()
             stringHeight = wordHeight;
             if (currentHeight + stringHeight > columnHeight)
             {
-                //перенос на сл колонку
-                //отрезать stringWordCount слов от колонки
+                //перенос колонки
                 doStep(-1);
                 return false;
             }
@@ -443,12 +439,12 @@ bool XMLTextPaginator::applyWord()
             {
                 if (currentHeight + stringHeight + wordHeight  > columnHeight)
                 {
-                    //переносим колонку
+                    //перенос колонки
                     return false;
                 }
                 else
                 {
-                    //переносим строку
+                    //перенос строки
                     currentHeight += stringHeight;
                     currentWidth = wordWidth;
 
@@ -596,6 +592,7 @@ QString XMLTextPaginator::getPageForward()
                         {
                             // переносим колонку с разделением параграфа
                             // костыть костылей
+                            // сам иисус воскрес, чтобы сделать его
                             for (unsigned int i = currentWidth; i <= columnWidth + 10; i += 1)
                                 Columns[currentColumn].append("&nbsp;");
 
