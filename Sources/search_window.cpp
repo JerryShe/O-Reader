@@ -15,6 +15,7 @@ void SearchWindow::setStyle(const QString &style)
     setSearchWindowStyle(styleList, style);
     YepButton->setStyleSheet(styleList[0]);
     NopeButton->setStyleSheet(styleList[0]);
+    BackButton->setStyleSheet(styleList[0]);
     TextBox->setStyleSheet(styleList[1]);
     SearchTypeBox->setStyleSheet(styleList[2]);
     Step->setStyleSheet(styleList[3]);
@@ -90,16 +91,19 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
         TopLayout->setSpacing(0);
         exit_button->setFixedSize(30,30);
 
+        BackButton = new QPushButton(this);
+        BackButton->setText(tr("Back"));
+        BackButton->setFixedSize(150, 30);
 
         Step->show();
         TopLayout->addWidget(Step,1);
-
-
         TopLayout->addSpacerItem(topSpacer);
+        TopLayout->addWidget(BackButton, 1);
         TopLayout->addWidget(exit_button, 1);
 
         connect(TextBox, SIGNAL(textChanged(QString)), this, SLOT(searchStop()));
         connect(exit_button, SIGNAL(clicked(bool)), this, SLOT(close()));
+        connect(BackButton, SIGNAL(clicked(bool)), this, SLOT(back_clicked()));
 
         exit_button->show();
     }
@@ -174,15 +178,26 @@ void SearchWindow::YepButtonClicked()
 
 void SearchWindow::NopeButtonClicked()
 {
-    if (workMode && !TextBox->text().isEmpty())
+    if (workMode)
     {
-        if (!searchIsWorking)
-            searchStart();
-        else
-            emit nextResult();
+        if (!TextBox->text().isEmpty())
+        {
+            if (!searchIsWorking)
+                searchStart();
+            else
+                emit nextResult();
+        }
     }
     else
         this->close();
+}
+
+
+void SearchWindow::back_clicked()
+{
+    emit backToStart();
+    searchIsWorking = false;
+    Step->clear();
 }
 
 

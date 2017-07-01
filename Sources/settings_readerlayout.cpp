@@ -145,36 +145,37 @@ void Settings_ReaderLayout::updateTextBox()
             "text-indent:" + ui->ParagraphLeftIdentBox->currentText() + "px;}"
 
        "TitleText{"
-            + topMargin +
-            ui->TitleStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->TitleStyle->getHTMLStyle() + "}"
 
        "subtitle{"
-            + topMargin +
-            ui->SubtitleStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->SubtitleStyle->getHTMLStyle() + "}"
 
        "Text{"
-            + topMargin +
-            ui->RegularStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->RegularStyle->getHTMLStyle() + "}"
 
        "emphasis{"
-            + topMargin +
-            ui->EmphasizedStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->EmphasizedStyle->getHTMLStyle() + "}"
 
-       "note{"
-            + topMargin +
-            ui->NoteStyle->getHTMLStyle() + "}"
+       "a[type = 'note']{"
+            + "vertical-align: super;"
+            + topMargin
+            + ui->NoteStyle->getHTMLStyle() + "}"
 
        "epigraph{"
-            + topMargin +
-            ui->EpigraphStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->EpigraphStyle->getHTMLStyle() + "}"
 
        "poem{"
-            + topMargin +
-            ui->PoemStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->PoemStyle->getHTMLStyle() + "}"
 
        "cite{"
-            + topMargin +
-            ui->CiteStyle->getHTMLStyle() + "}"
+            + topMargin
+            + ui->CiteStyle->getHTMLStyle() + "}"
 
        + ((!ui->BackgroundColorBox->isHidden()) ? ("body{background-color:" + ui->BackgroundColorBox->text()) : ("")) + ";}"
 
@@ -182,16 +183,27 @@ void Settings_ReaderLayout::updateTextBox()
 
     "<td align = 'justify'> <Text>"
     "<TitleText>"
-    "<p>Гарри Гаррисон</p>"
-    "<p>«Новые приключения Стальной Крысы»</p>"
+    "<p>Это заглавный текст</p>"
     "</TitleText>"
+    "<epigraph>"
+    "<p>Это эпиграф</p>"
+    "</epigraph>"
     "<subtitle>"
-    "<p>Мойре и Тодду, чьи любящая помощь и поддержка позволили этой книге появиться на свет.</p>"
+    "<p>А это подзаголовок</p>"
     "</subtitle>"
-    "<p>Стояла заветная пора дня, посягать на которую — святотатство, один из редчайших моментов в жизни, когда все идет без сучка без задоринки. Откинувшись на спинку кресла, я включил стерео размером с комнату — сабвуферы с локомотив, пищалки, от которых зубы ноют, — и воздух напоила благодать токатты и фуги И. С. Баха.</p>"
-    "<p>Моя ладонь ласкала стакан только что налитого трехсотлетнего, драгоценного бурбона, охлажденного кубиками миллионолетнего льда, доставленного с одной из внешних планет. Просто идеально! Благодушно улыбнувшись, я поднес стакан к губам.</p>"
-    "<p>И тут в рай вторглось нечто чуждое, будто пульсирующая зубная боль или чуть слышный комариный зуд. С могучим Бахом схлестнулось тоненькое треньканье. Чувствуя, как губы искажает оскал, я коснулся регулятора громкости, и великий орган жалобно захлебнулся молчанием. И дверной звонок прозвучал вполне отчетливо.</p>"
-    "<emphasis><p>Динь-динь…</p></emphasis>"
+
+    "<p>Похоже нам надо немного простого текста... </p>"
+    "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    " Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    " Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+    " Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"
+    "<emphasis><p>Да и курсив не помешает.<a type='note' l:href='#FbAutId_1'>Заметка она такая</a></p></emphasis>"
+    "<p>Стихи:</p>"
+            "<poem> <p> Ламберт, Ламберт</p>"
+            "<p>Хер моржовый</p>"
+            "<p>Ламберт, Ламберт</p>"
+            "<p>Вредный хуй</p></poem>"
+            "<p><cite>Геральт из Ривии</cite></p>"
     "</Text></body>";
 
     ui->TextExample->setHtml(htEx);
@@ -344,6 +356,7 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
             if (ProgramSettings->getReadProfilesList().indexOf(currentTextStyle) != -1)
                 setStyleData(ProgramSettings->getNamedReadProfile(currentTextStyle));
         }
+
         delete answer_window;
     }
 }

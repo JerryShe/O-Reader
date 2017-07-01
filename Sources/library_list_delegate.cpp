@@ -139,12 +139,16 @@ void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progre
     if (pos.x() == 0)
         return;
 
+
     double a = 0, b = 0;
 
     if (progress <= 50)
         a = 1 - (progress/50.0);
     else
         b = (progress/50.0) - 1;
+
+    if (progress < 0 || progress > 100)
+        a = b = 0;
 
 
     QColor color = QColor::fromRgb(200*a, 200*b, 200 - 200*(b+a));

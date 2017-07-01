@@ -17,6 +17,7 @@ void ReadingMenu::setStyle()
     ui->BackButton->setStyleSheet(styleSheets[4]);
     ui->ContentsButton->setStyleSheet(styleSheets[0]);
     ui->SettingsButton->setStyleSheet(styleSheets[2]);
+    ui->SearchButton->setStyleSheet(styleSheets[1]);
 
     ui->MainWidget->setStyleSheet(styleSheets[5]);
 }

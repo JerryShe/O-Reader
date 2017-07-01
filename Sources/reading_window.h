@@ -54,11 +54,6 @@ private slots:
 
     void setStyle(const QString &currentStyle);
 
-    void searchStart(const QString &key, const QString &type);
-    void searchNextStep();
-    void searchPrevStep();
-    void searchStop();
-
     void clockStep();
     void updateProgress();
 

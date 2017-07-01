@@ -57,7 +57,7 @@ bool LibraryHandler::loadBookList()
     this->fromJson(LibObj);
 
     for (int i = 0; i < bookList.size(); i++)
-        if (currentBookIndex > bookList[i].getIndex())
+        if (currentBookIndex < bookList[i].getIndex())
             currentBookIndex = bookList[i].getIndex();
 
     LibFile.close();

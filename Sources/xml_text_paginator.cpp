@@ -96,6 +96,9 @@ XMLTextPaginator::~XMLTextPaginator()
     delete TableOfContents;
     delete ImageTable;
 
+    if (Searcher != 0)
+        delete Searcher;
+
     qDebug()<<"delete paginator";
 }
 
@@ -532,7 +535,7 @@ void XMLTextPaginator::createHTMLPage()
 
 QString XMLTextPaginator::getPageForward()
 {
-    if (currentTextPos < bookText.size())
+    if (currentEStrNum + 1 < bookText.size())
     {
         preparePage(false);
 
@@ -749,6 +752,7 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
         return refreshPage();
 
     Searcher = new XMLTextSearcher(book->getFormat());
+    Searcher->setStartData(tagStack, currentBStrNum, ParagrafTail);
     Searcher->start(bookText, key);
 
     if (Searcher->getResultCount() == 0)
@@ -776,7 +780,7 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
         searchStep = Searcher->getResultFrom(currentBStrNum);
     }
     else
-        return QString();
+        return refreshPage();
 
     return searchNextStep();
 }
@@ -784,6 +788,7 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
 
 QString XMLTextPaginator::searchNextStep()
 {
+    qDebug()<<"search next step";
     if (Searcher == 0)
         return refreshPage();
 
@@ -797,6 +802,8 @@ QString XMLTextPaginator::searchNextStep()
 
 QString XMLTextPaginator::searchPrevStep()
 {
+    qDebug()<<"search prev step";
+
     if (Searcher == 0)
         return refreshPage();
 
@@ -811,6 +818,9 @@ QString XMLTextPaginator::searchPrevStep()
 QString XMLTextPaginator::doSearchStep()
 {
     SearchResult* res = Searcher->getResultAt(searchStep);
+    if (res == 0)
+        return refreshPage();
+
     tagStack = res->tags;
     ParagrafTail = res->paragrafTail;
     currentEStrNum = res->pos - 1;
@@ -823,14 +833,36 @@ QString XMLTextPaginator::doSearchStep()
 
 QString XMLTextPaginator::searchStop()
 {
-    delete Searcher;
+    qDebug()<<"stop search";
+    emit currentSearchStep("");
+
+    if (Searcher != 0)
+        delete Searcher;
+
     Searcher = 0;
     return refreshPage();
 }
 
 
+QString XMLTextPaginator::searchBack()
+{
+    qDebug()<<"back to search start";
+    if (Searcher == 0)
+        return refreshPage();
+
+    SearchResult res = Searcher->getStartData();
+    beginTagStack = res.tags;
+    beginParagrafTail = res.paragrafTail;
+    currentBStrNum = res.pos;
+
+    return searchStop();
+}
+
+
 QString XMLTextPaginator::refreshPage()
 {
+    qDebug()<<"refresh page";
+
     currentEStrNum = currentBStrNum = currentBStrNum - 1;
     tagStack = beginTagStack;
     ParagrafTail = beginParagrafTail;

@@ -123,15 +123,11 @@ void ReadingWindow::createReadingMenuWidget()
 void ReadingWindow::setBackgroundImage()
 {
     if (ProgramSettings->getCurrentReadProfileElem().BackgroundType == false)
-    {
         ui->TextBackground->setStyleSheet("#TextBackground{background-image:url(" +
                                           ProgramSettings->getCurrentReadProfileElem().BackgroundImage +
                                           + ");}");
-    }
     else
-    {
         ui->TextBackground->setStyleSheet("");
-    }
 }
 
 
@@ -299,6 +295,7 @@ void ReadingWindow::clockStep()
             if (HidenTimer == 4)
             {
                 ui->TopBarWidget->hide();
+                ui->TextPage->setFocus();
                 HidenTimer = 0;
             }
             else
@@ -320,12 +317,9 @@ void ReadingWindow::on_exit_button_clicked()
     answer_window->show();
 
     if (answer_window->exec() == QDialog::Accepted)
-    {
-        delete answer_window;
         emit closeWindow();
-    }
-    else
-        delete answer_window;
+
+    delete answer_window;
 
     ui->TextPage->setFocus();
 }
@@ -399,6 +393,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             if (!MenuWidget->menuIsHidden())
             {
                 MenuWidget->hideMenu();
+                ui->TextPage->setFocus();
                 break;
             }
 
@@ -492,7 +487,9 @@ void ReadingWindow::showContentsTable()
     ActiveWindow = true;
     BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), this);
     tableWindow->move(0, ui->MenuButton->height());
+
     connect(tableWindow, SIGNAL(goToSection(long long)), this, SLOT(goToSection(long long)));
+
     if (tableWindow->exec() == QDialog::Rejected)
     {
         delete tableWindow;
@@ -519,47 +516,35 @@ void ReadingWindow::showSearchWindow()
 
     Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
 
-    connect(Search, SIGNAL(startSearch(QString,QString)), this, SLOT(searchStart(QString,QString)));
-    connect(Search, SIGNAL(nextResult()), this, SLOT(searchNextStep()));
-    connect(Search, SIGNAL(previousResult()), this, SLOT(searchPrevStep()));
-    connect(Search, SIGNAL(finished(int)), this, SLOT(searchStop()));
-    connect(Search, &SearchWindow::searchKeyChanged, [this](){ui->TextPage->setHtml(BookPaginator->searchStop());});
+    connect(Search, &SearchWindow::startSearch, [this](const QString &key, const QString &type){
+        ui->TextPage->setHtml(BookPaginator->searchStart(key, type));
+        updateProgress();});
+
+    connect(Search, &SearchWindow::nextResult, [this](){
+        ui->TextPage->setHtml(BookPaginator->searchNextStep());
+        updateProgress();});
+
+    connect(Search, &SearchWindow::previousResult, [this](){
+        ui->TextPage->setHtml(BookPaginator->searchPrevStep());
+        updateProgress();});
+
+    connect(Search, &SearchWindow::finished, [this](){
+        ui->TextPage->setFocus();
+        Search = 0;
+        ActiveWindow = false;
+        ui->TextPage->setFocus();
+        ui->TextPage->setHtml(BookPaginator->searchStop());
+        updateProgress();});
+
+
+    connect(Search, &SearchWindow::searchKeyChanged, [this](){
+        ui->TextPage->setHtml(BookPaginator->searchStop());});
+
+    connect(Search, &SearchWindow::backToStart, [this](){
+        ui->TextPage->setHtml(BookPaginator->searchBack());
+        updateProgress();});
 
     connect(BookPaginator, SIGNAL(currentSearchStep(QString)), Search, SLOT(setCurrentStepData(QString)));
-}
-
-
-void ReadingWindow::searchStart(const QString &key, const QString &type)
-{
-    ui->TextPage->setHtml(BookPaginator->searchStart(key, type));
-    updateProgress();
-}
-
-
-void ReadingWindow::searchNextStep()
-{
-    ui->TextPage->setHtml(BookPaginator->searchNextStep());
-    updateProgress();
-}
-
-
-void ReadingWindow::searchPrevStep()
-{
-    ui->TextPage->setHtml(BookPaginator->searchPrevStep());
-    updateProgress();
-}
-
-
-void ReadingWindow::searchStop()
-{
-    ui->TextPage->setFocus();
-    Search = 0;
-
-    ActiveWindow = false;
-    ui->TextPage->setFocus();
-
-    ui->TextPage->setHtml(BookPaginator->searchStop());
-    updateProgress();
 }
 
 

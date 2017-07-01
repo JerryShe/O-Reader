@@ -28,6 +28,10 @@ public:
 public slots:
     void start(const QStringList &bookText, const QString searchKey);
 
+    void setStartData(const QStack<QString> &stack, const long long &pos, const bool &parTail);
+    SearchResult getStartData() const;
+
+
     int getResultCount() const;
 
     SearchResult* getResultAt(const int &index) const;
@@ -37,6 +41,10 @@ private:
     QVector <SearchResult*> results;
 
     TagsResolver* resolver;
+
+    QStack <QString> startStack;
+    long long startPos;
+    bool paragrafTail;
 };
 
 #endif // XML_TEXT_SEARCHER_H

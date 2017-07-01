@@ -29,6 +29,20 @@ XMLTextSearcher::~XMLTextSearcher()
 }
 
 
+void XMLTextSearcher::setStartData(const QStack<QString> &stack, const long long &pos, const bool &parTail)
+{
+    startStack = stack;
+    startPos = pos;
+    paragrafTail = parTail;
+}
+
+
+SearchResult XMLTextSearcher::getStartData() const
+{
+    return SearchResult(startPos, startStack, paragrafTail);
+}
+
+
 void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey)
 {
     if (!searchKey.size())

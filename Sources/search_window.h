@@ -23,6 +23,7 @@ private slots:
     void YepButtonClicked();
     void NopeButtonClicked();
 
+    void back_clicked();
     void searchStop();
     void searchStart();
 
@@ -33,6 +34,7 @@ signals:
     void searchKeyChanged();
     void previousResult();
     void nextResult();
+    void backToStart();
 
 private:
     bool workMode;                  // true - окошко поиска, false - виджет поиска
@@ -44,6 +46,7 @@ private:
     QHBoxLayout * ButtonLayout;
 
     QPushButton * exit_button;
+    QPushButton * BackButton;
     QSpacerItem * topSpacer;
     QPushButton * YepButton;
     QPushButton * NopeButton;

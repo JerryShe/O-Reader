@@ -46,6 +46,7 @@ public slots:
     QString searchNextStep();
     QString searchPrevStep();
     QString searchStop();
+    QString searchBack();
 
 
     int tag_p();
