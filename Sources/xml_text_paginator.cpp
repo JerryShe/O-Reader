@@ -112,6 +112,47 @@ void XMLTextPaginator::setPageGeometry(const int &width, const int &height)
 }
 
 
+QString XMLTextPaginator::goToPosition(const BookPosition &pos)
+{
+    tagStack = pos.PrevTags;
+    ParagrafTail = pos.ParagrafTail;
+    pageEndTextPos = pageBeginTextPos = pos.TextPos - 1;
+
+    parseDirection = false;
+
+    return getPageForward();
+}
+
+
+BookPosition XMLTextPaginator::getCurrentPosition() const
+{
+    BookPosition pos;
+
+    if (!parseDirection)
+    {
+        pos.TextPos = pageBeginTextPos;
+        pos.ParagrafTail = beginParagrafTail;
+        pos.PrevTags = beginTagStack;
+    }
+    else
+    {
+        pos.TextPos = pageEndTextPos;
+        pos.ParagrafTail = ParagrafTail;
+        pos.PrevTags = tagStack;
+    }
+
+    return pos;
+}
+
+
+QString XMLTextPaginator::refreshPage()
+{
+    BookPosition pos(pageBeginTextPos, beginTagStack, beginParagrafTail);
+
+    return goToPosition(pos);
+}
+
+
 QTreeWidgetItem *XMLTextPaginator::getBookContentTable() const
 {
     return TableOfContents->clone();
@@ -476,8 +517,8 @@ void XMLTextPaginator::preparePage(bool direction)
 {
     if (direction == parseDirection)
     {
-            beginTagStack = tagStack;
-            beginParagrafTail = ParagrafTail;
+        beginTagStack = tagStack;
+        beginParagrafTail = ParagrafTail;
     }
     else
     {
@@ -748,7 +789,7 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
         return refreshPage();
 
     Searcher = new XMLTextSearcher(book->getFormat());
-    Searcher->setStartData(tagStack, pageBeginTextPos, ParagrafTail);
+    Searcher->setStartData(getCurrentPosition());
     Searcher->start(bookText, key);
 
     if (Searcher->getResultCount() == 0)
@@ -817,13 +858,9 @@ QString XMLTextPaginator::doSearchStep()
     if (res == 0)
         return refreshPage();
 
-    tagStack = res->PrevTags;
-    ParagrafTail = res->ParagrafTail;
-    pageEndTextPos = res->TextPos - 1;
-
     emit currentSearchStep(QString::number(searchStep+1) + "/" + QString::number(Searcher->getResultCount()));
 
-    return getPageForward();
+    return goToPosition(*res);//getPageForward();
 }
 
 
@@ -846,23 +883,33 @@ QString XMLTextPaginator::searchBack()
     if (Searcher == 0)
         return refreshPage();
 
-    BookPosition res = Searcher->getStartData();
-    beginTagStack = res.PrevTags;
-    beginParagrafTail = res.ParagrafTail;
-    pageBeginTextPos = res.TextPos;
+    goToPosition(Searcher->getStartData());
 
     return searchStop();
 }
 
 
-QString XMLTextPaginator::refreshPage()
+bool XMLTextPaginator::addBookmark() const
 {
-    qDebug()<<"refresh page";
+    return book->addBookmark(getCurrentPosition());
+}
 
-    pageEndTextPos = pageBeginTextPos = pageBeginTextPos - 1;
-    tagStack = beginTagStack;
-    ParagrafTail = beginParagrafTail;
-    return getPageForward();
+
+bool XMLTextPaginator::addBooknote(const QString &note) const
+{
+    return book->addBooknote(getCurrentPosition(), note);
+}
+
+
+QString XMLTextPaginator::goToBookmark(const int &index)
+{
+    goToPosition(book->getBookmarkAt(index));
+}
+
+
+QString XMLTextPaginator::goToNote(const int &index)
+{
+    goToPosition(book->getBooknoteAt(index).first);
 }
 
 

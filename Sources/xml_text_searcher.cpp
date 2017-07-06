@@ -21,17 +21,15 @@ XMLTextSearcher::~XMLTextSearcher()
 }
 
 
-void XMLTextSearcher::setStartData(const QStack<QString> &stack, const long long &pos, const bool &parTail)
+void XMLTextSearcher::setStartData(const BookPosition &position)
 {
-    startStack = stack;
-    startPos = pos;
-    paragrafTail = parTail;
+    startPos = position;
 }
 
 
 BookPosition XMLTextSearcher::getStartData() const
 {
-    return BookPosition(startPos, startStack, paragrafTail);
+    return startPos;
 }
 
 

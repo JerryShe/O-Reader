@@ -48,18 +48,25 @@ public slots:
     QString searchStop();
     QString searchBack();
 
+    bool addBookmark() const;
+    bool addBooknote(const QString &note) const;
 
+    QString goToBookmark(const int &index);
+    QString goToNote(const int &index);
+
+signals:
+    void currentSearchStep(QString step);
+
+private:    
     int tag_p();
     int tag_br();
     int tag_section();
     int tag_a();
     int tag_img();
 
+    QString goToPosition(const BookPosition &pos);
+    BookPosition getCurrentPosition() const;
 
-signals:
-    void currentSearchStep(QString step);
-
-private:
     int getWordWidth() const;
     int getWordHeight() const;
     int getWordHeightFor(QString name) const;

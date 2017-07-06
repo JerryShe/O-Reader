@@ -748,6 +748,14 @@ QVector <BookPosition> Book::getBookmarks() const
 }
 
 
+BookPosition Book::getBookmarkAt(const int &index) const
+{
+    if (Bookmarks.size() > index && index >= 0)
+        return Bookmarks[index];
+    return BookPosition();
+}
+
+
 bool Book::addBooknote(const BookPosition &position, const QString &note)
 {
     int i = 0;
@@ -771,4 +779,11 @@ bool Book::addBooknote(const BookPosition &position, const QString &note)
 QVector <QPair <BookPosition, QString>> Book::getBooknotes() const
 {
     return Booknotes;
+}
+
+QPair <BookPosition, QString> Book::getBooknoteAt(const int &index) const
+{
+    if (Booknotes.size() > index && index >= 0)
+        return Booknotes[index];
+    return QPair <BookPosition, QString>();
 }

@@ -20,7 +20,7 @@ public:
 public slots:
     void start(const QStringList &bookText, const QString searchKey);
 
-    void setStartData(const QStack<QString> &stack, const long long &pos, const bool &parTail);
+    void setStartData(const BookPosition &position);
     BookPosition getStartData() const;
 
 
@@ -34,9 +34,7 @@ private:
 
     TagsResolver* resolver;
 
-    QStack <QString> startStack;
-    long long startPos;
-    bool paragrafTail;
+    BookPosition startPos;
 };
 
 #endif // XML_TEXT_SEARCHER_H

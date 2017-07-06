@@ -83,9 +83,12 @@ public:
 
     bool addBookmark(const BookPosition &position);
     QVector <BookPosition> getBookmarks() const;
+    BookPosition getBookmarkAt(const int &index) const;
 
     bool addBooknote(const BookPosition &position, const QString &note);
     QVector<QPair<BookPosition, QString> > getBooknotes() const;
+    QPair <BookPosition, QString> getBooknoteAt(const int &index) const;
+
 
 private:
     bool loadFB2(QDomDocument *doc, GenresMap *Gmap);
