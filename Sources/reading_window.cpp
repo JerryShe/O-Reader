@@ -374,14 +374,21 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             if (ProgramSettings->getTurnByWheel() == true)
             {
                 QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
-                if (Wheel->delta() < 0)
+                QPoint wheelSteps = Wheel->pixelDelta();
+
+                if (wheelSteps.isNull())
+                    wheelSteps = Wheel->angleDelta() / 120;
+
+                if (wheelSteps.y() < 0)
                 {
                     showNextPage();
                 }
-                else if (Wheel->delta() > 0)
+                else if (wheelSteps.y() > 0)
                 {
                     showPrevPage();
                 }
+
+                Wheel->accept();
             }
             break;
         }

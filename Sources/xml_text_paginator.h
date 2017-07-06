@@ -102,9 +102,9 @@ private:
 
     QString HTMLPage;
 
-    long long currentBStrNum,
+    long long pageBeginTextPos,
                  currentTextPos,
-                 currentEStrNum;
+                 pageEndTextPos;
 
     int currentColumn;
     unsigned short ColumnCount;

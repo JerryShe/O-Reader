@@ -7,10 +7,24 @@
 #include <QDateTime>
 #include <QDataStream>
 #include <QIcon>
-
-#include "genresmap.h"
 #include <QJsonObject>
 #include <QDomDocument>
+#include <QStack>
+
+#include "genresmap.h"
+
+
+struct BookPosition
+{
+    BookPosition(const long long &position, const QStack<QString> &tagsStack, const bool &tail);
+    BookPosition();
+
+    long long TextPos;
+    QStack <QString> PrevTags;
+    bool ParagrafTail;
+};
+
+
 
 class Book
 {
@@ -38,10 +52,12 @@ public:
     QString getSeries() const;
     QString getLanguage() const;
 
-    long long getProgress() const;
-    double getProgressProcent();
-    QStringList getProgressTagStack() const;
-    void setProgress(const long long &progress, const double &procent, const QStringList &tagStack);
+    long long getProgressPosition() const;
+    double getProgressProcent() const;
+    QStack<QString> getProgressTagStack() const;
+
+    void setProgress(const long long &progress, const bool &paragrafTail, const QStack<QString> &tagStack, const double &procent);
+    BookPosition getProgress() const;
 
     QString getCodec() const;
     void setCodec(const QString &Codec);
@@ -82,11 +98,12 @@ private:
     QString Language;
     QString SourceLanguage;
     QDateTime AddittionTime;
-    long long Progress = 0;
     double ProgressProcent = 0;
-    QStringList ProgressTagStack;
     QString CoverType;
     QString Cover;
+
+    BookPosition lastBookProgress;
+
 };
 
 #endif // BOOKBAR_H

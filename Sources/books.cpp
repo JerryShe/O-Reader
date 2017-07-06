@@ -22,10 +22,26 @@
 #include <QtGui/private/qzipreader_p.h>
 
 
+BookPosition::BookPosition(const long long &position, const QStack<QString> &tagsStack, const bool &tail)
+{
+    TextPos = position;
+    PrevTags = tagsStack;
+    ParagrafTail = tail;
+}
+
+
+BookPosition::BookPosition()
+{
+    TextPos = -1;
+    ParagrafTail = false;
+}
+
+
 
 Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 {
     File = fileName;
+    ProgressProcent = 0;
 
     QFileInfo fileInfo(fileName);
     QString fileFormat = fileInfo.suffix();
@@ -58,6 +74,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 
     }
 }
+
 
 //for zipped fb2
 Book::Book(bool &result, const QString &zipFileName, const QString &fileName, const QByteArray byArr, GenresMap *Gmap)
@@ -159,7 +176,6 @@ bool Book::loadFB2(QDomDocument *doc, GenresMap *Gmap)
 {
     CoverType = "noImage";
     Format = 1;
-    Progress = -1;
 
     if (doc->namedItem("FictionBook").nodeName().isNull())
         return false;
@@ -335,43 +351,88 @@ void Book::fromJson(const QJsonObject &json)
     QJsonArray tempArr;
     Genres.clear();
     Annotation.clear();
-    ProgressTagStack.clear();
+    lastBookProgress.PrevTags.clear();
 
-    Format = json["Format"].toInt();
-    File = json["File"].toString();
-    ZippedFile = json["ZippedFile"].toString();
-    Index = (unsigned int)json["Index"].toInt();
-    Codec = json["Codec"].toString();
-    Title = json["Title"].toString();
-    AuthorFirstName = json["AuthorFirstName"].toString();
-    AuthorMiddleName = json["AuthorMiddleName"].toString();
-    AuthorLastName = json["AuthorLastName"].toString();
-    Series.first = json["SeriesFirst"].toString();
-    Series.second = json["SeriesSecond"].toInt();
+    if (json.contains("Format"))
+        Format = json["Format"].toInt();
 
-    tempArr = json["Genres"].toArray();
-    foreach (auto i, tempArr) {
-       Genres.append(i.toString());
+    if (json.contains("File"))
+        File = json["File"].toString();
+
+    if (json.contains("ZippedFile"))
+        ZippedFile = json["ZippedFile"].toString();
+
+    if (json.contains("Index"))
+        Index = (unsigned int)json["Index"].toInt();
+
+    if (json.contains("Codec"))
+        Codec = json["Codec"].toString();
+
+    if (json.contains("Title"))
+        Title = json["Title"].toString();
+
+    if (json.contains("AuthorFirstName"))
+        AuthorFirstName = json["AuthorFirstName"].toString();
+
+    if (json.contains("AuthorMiddleName"))
+        AuthorMiddleName = json["AuthorMiddleName"].toString();
+
+    if (json.contains("AuthorLastName"))
+        AuthorLastName = json["AuthorLastName"].toString();
+
+    if (json.contains("SeriesFirst"))
+        Series.first = json["SeriesFirst"].toString();
+
+    if (json.contains("SeriesSecond"))
+        Series.second = json["SeriesSecond"].toInt();
+
+    if (json.contains("Genres"))
+    {
+        tempArr = json["Genres"].toArray();
+        foreach (auto i, tempArr) {
+            Genres.append(i.toString());
+        }
     }
 
-    tempArr = json["Annotation"].toArray();
-    foreach (auto i, tempArr) {
-       Annotation.append(i.toString());
+    if (json.contains("Annotation"))
+    {
+        tempArr = json["Annotation"].toArray();
+        foreach (auto i, tempArr) {
+            Annotation.append(i.toString());
+        }
     }
 
-    Language = json["Language"].toString();
-    SourceLanguage = json["SourceLanguage"].toString();
-    AddittionTime = QDateTime::fromString(json["AddittionTime"].toString());
-    Progress = json["Progress"].toString().toLongLong();
+    if (json.contains("Language"))
+        Language = json["Language"].toString();
 
-    tempArr = json["ProgressTagStack"].toArray();
-    foreach (auto i, tempArr) {
-       ProgressTagStack.append(i.toString());
+    if (json.contains("SourceLanguage"))
+        SourceLanguage = json["SourceLanguage"].toString();
+
+    if (json.contains("AddittionTime"))
+        AddittionTime = QDateTime::fromString(json["AddittionTime"].toString());
+
+    if (json.contains("Progress"))
+        lastBookProgress.TextPos = json["Progress"].toString().toLongLong();
+
+    if (json.contains("ParagrafTail"))
+        lastBookProgress.ParagrafTail = json["ParagrafTail"].toBool();
+
+    if (json.contains("Annotation"))
+    {
+        tempArr = json["ProgressTagStack"].toArray();
+        foreach (auto i, tempArr) {
+            lastBookProgress.PrevTags.push(i.toString());
+        }
     }
 
-    ProgressProcent = json["ProgressProcent"].toDouble();
-    CoverType = json["CoverType"].toString();
-    Cover = json["Cover"].toString();
+    if (json.contains("ProgressProcent"))
+        ProgressProcent = json["ProgressProcent"].toDouble();
+
+    if (json.contains("CoverType"))
+        CoverType = json["CoverType"].toString();
+
+    if (json.contains("Cover"))
+        Cover = json["Cover"].toString();
 }
 
 
@@ -398,9 +459,14 @@ QJsonObject Book::toJson() const
     json["Language"] = Language;
     json["SourceLanguage"] = SourceLanguage;
     json["AddittionTime"] = AddittionTime.toString();
-    json["Progress"] = QString::number(Progress);
 
-    json["ProgressTagStack"] = QJsonArray::fromStringList(ProgressTagStack);
+    json["Progress"] = QString::number(lastBookProgress.TextPos);
+    json["ParagrafTail"] = lastBookProgress.ParagrafTail;
+
+    QStringList temp;
+    for(int i = 0; i < lastBookProgress.PrevTags.size(); i++)
+        temp.append(lastBookProgress.PrevTags[i]);
+    json["ProgressTagStack"] = QJsonArray::fromStringList(temp);
 
     json["ProgressProcent"] = ProgressProcent;
     json["CoverType"] = CoverType;
@@ -503,30 +569,40 @@ QString Book::getLanguage() const
 }
 
 
-long long Book::getProgress() const
+long long Book::getProgressPosition() const
 {
-    return Progress;
+    return lastBookProgress.TextPos;
 }
 
 
-QStringList Book::getProgressTagStack() const
+QStack <QString> Book::getProgressTagStack() const
 {
-    return ProgressTagStack;
+    return lastBookProgress.PrevTags;
 }
 
 
-double Book::getProgressProcent()
+double Book::getProgressProcent() const
 {
     return ProgressProcent;
 }
 
 
-void Book::setProgress(const long long &progress, const double &procent, const QStringList &tagStack)
+void Book::setProgress(const long long &progress, const bool &paragrafTail, const QStack <QString> &tagStack, const double &procent)
 {
-    Progress = progress;
+    lastBookProgress.TextPos = progress;
+    lastBookProgress.ParagrafTail = paragrafTail;
+    lastBookProgress.PrevTags = tagStack;
+
     ProgressProcent = procent;
-    ProgressTagStack = tagStack;
-    Synchronization::getSynchronization()->addAction(UActions::UpdateProgress, File, Progress);
+
+    //TODO: в синхронизацию кидать структуру и процент
+    //Synchronization::getSynchronization()->addAction(UActions::UpdateProgress, File, Progress);
+}
+
+
+BookPosition Book::getProgress() const
+{
+    return lastBookProgress;
 }
 
 

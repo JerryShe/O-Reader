@@ -20,7 +20,7 @@ XMLTextPaginator::XMLTextPaginator(QObject *parent)
 
     columnWidth = columnHeight = 0;
 
-    currentBStrNum = currentTextPos = currentEStrNum = 0;
+    pageBeginTextPos = currentTextPos = pageEndTextPos = 0;
 
     currentColumn = 0;
     lastLineSize = 0;
@@ -53,11 +53,13 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
 {
     book = OpeningBook;
 
-    currentEStrNum = currentBStrNum = book->getProgress();
-    if (currentEStrNum < 5)
-        currentEStrNum = currentBStrNum = -1;
+    BookPosition lastPos = book->getProgress();
+    pageEndTextPos = pageBeginTextPos = lastPos.TextPos;
+    if (pageEndTextPos < 5)
+        pageEndTextPos = pageBeginTextPos = -1;
 
-    tagStack.fromList(book->getProgressTagStack());
+    tagStack = lastPos.PrevTags;
+    ParagrafTail = lastPos.ParagrafTail;
 
     if (tagStack.size() == 0)
         tagStack.push("Text");
@@ -131,7 +133,7 @@ long long XMLTextPaginator::getCurrentSectionIndex() const
 
 QString XMLTextPaginator::goToSection(const long long sectionIndex)
 {
-    currentTextPos = currentEStrNum = sectionIndex;
+    currentTextPos = pageEndTextPos = sectionIndex;
     tagStack.clear();
     tagStack.append("Text");
     parseDirection = false;
@@ -351,6 +353,7 @@ int XMLTextPaginator::parseTag()
 
     if (TagInf.index < 31)
     {
+        /*
         if (tagType == parseDirection)
         {
             int height = getWordHeightFor(tag);
@@ -366,7 +369,7 @@ int XMLTextPaginator::parseTag()
                     return 3;
                 }
             }
-        }
+        }*/
     }
 
 
@@ -473,6 +476,7 @@ void XMLTextPaginator::commitWord()
         Columns[currentColumn].append(bookText[currentTextPos]);
 
     tagsLineCount = 0;
+    tagsLineDirection = false;
 }
 
 
@@ -535,11 +539,11 @@ void XMLTextPaginator::createHTMLPage()
 
 QString XMLTextPaginator::getPageForward()
 {
-    if (currentEStrNum + 1 < bookText.size())
+    if (pageEndTextPos + 1 < bookText.size())
     {
         preparePage(false);
 
-        currentTextPos = currentBStrNum = currentEStrNum + 1;
+        currentTextPos = pageBeginTextPos = pageEndTextPos + 1;
 
         for (currentColumn = 0; currentColumn < ColumnCount; currentColumn++)
         {
@@ -610,9 +614,9 @@ QString XMLTextPaginator::getPageForward()
                 Columns[currentColumn].append("</" + tagStack[p] + ">");
         }
 
-        currentEStrNum = currentTextPos - 1;
+        pageEndTextPos = currentTextPos - 1;
 
-        book->setProgress(currentBStrNum - 1, getProgress(), beginTagStack.toList());
+        book->setProgress(pageBeginTextPos - 1, ParagrafTail, beginTagStack, getProgress());
 
         createHTMLPage();
         debugSave(HTMLPage);
@@ -624,11 +628,11 @@ QString XMLTextPaginator::getPageForward()
 
 QString XMLTextPaginator::getPageBackward()
 {
-    if (currentBStrNum > 0)
+    if (pageBeginTextPos > 0)
     {
         preparePage(true);
 
-        currentTextPos = currentEStrNum = currentBStrNum - 1;
+        currentTextPos = pageEndTextPos = pageBeginTextPos - 1;
 
         for (currentColumn = 0; currentColumn < ColumnCount; currentColumn++)
         {
@@ -691,9 +695,9 @@ QString XMLTextPaginator::getPageBackward()
             Columns[currentColumn].append(columnTail);
         }
 
-        currentBStrNum = currentTextPos + 1;
+        pageBeginTextPos = currentTextPos + 1;
 
-        book->setProgress(currentBStrNum - 1, getProgress(), tagStack.toList());
+        book->setProgress(pageBeginTextPos - 1, ParagrafTail, tagStack, getProgress());
 
         createHTMLPage();
         debugSave(HTMLPage);
@@ -752,7 +756,7 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
         return refreshPage();
 
     Searcher = new XMLTextSearcher(book->getFormat());
-    Searcher->setStartData(tagStack, currentBStrNum, ParagrafTail);
+    Searcher->setStartData(tagStack, pageBeginTextPos, ParagrafTail);
     Searcher->start(bookText, key);
 
     if (Searcher->getResultCount() == 0)
@@ -777,7 +781,7 @@ QString XMLTextPaginator::searchStart(QString key, QString type)
     }
     else if (type == QObject::tr("From the current position"))
     {
-        searchStep = Searcher->getResultFrom(currentBStrNum);
+        searchStep = Searcher->getResultFrom(pageBeginTextPos);
     }
     else
         return refreshPage();
@@ -817,13 +821,13 @@ QString XMLTextPaginator::searchPrevStep()
 
 QString XMLTextPaginator::doSearchStep()
 {
-    SearchResult* res = Searcher->getResultAt(searchStep);
+    BookPosition* res = Searcher->getResultAt(searchStep);
     if (res == 0)
         return refreshPage();
 
-    tagStack = res->tags;
-    ParagrafTail = res->paragrafTail;
-    currentEStrNum = res->pos - 1;
+    tagStack = res->PrevTags;
+    ParagrafTail = res->ParagrafTail;
+    pageEndTextPos = res->TextPos - 1;
 
     emit currentSearchStep(QString::number(searchStep+1) + "/" + QString::number(Searcher->getResultCount()));
 
@@ -850,10 +854,10 @@ QString XMLTextPaginator::searchBack()
     if (Searcher == 0)
         return refreshPage();
 
-    SearchResult res = Searcher->getStartData();
-    beginTagStack = res.tags;
-    beginParagrafTail = res.paragrafTail;
-    currentBStrNum = res.pos;
+    BookPosition res = Searcher->getStartData();
+    beginTagStack = res.PrevTags;
+    beginParagrafTail = res.ParagrafTail;
+    pageBeginTextPos = res.TextPos;
 
     return searchStop();
 }
@@ -863,7 +867,7 @@ QString XMLTextPaginator::refreshPage()
 {
     qDebug()<<"refresh page";
 
-    currentEStrNum = currentBStrNum = currentBStrNum - 1;
+    pageEndTextPos = pageBeginTextPos = pageBeginTextPos - 1;
     tagStack = beginTagStack;
     ParagrafTail = beginParagrafTail;
     return getPageForward();
@@ -892,8 +896,8 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 
 float XMLTextPaginator::getProgress() const
 {
-    if (currentBStrNum > 0 && bookText.size())
-        return (((float)(currentEStrNum+1)/(float)bookText.size()) * 100);
+    if (pageBeginTextPos > 0 && bookText.size())
+        return (((float)(pageEndTextPos+1)/(float)bookText.size()) * 100);
     else
         return 0;
 }

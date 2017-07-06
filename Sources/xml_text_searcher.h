@@ -5,17 +5,9 @@
 #include <QVector>
 #include <QStack>
 
-#include <tags_resolver.h>
+#include "books.h"
+#include "tags_resolver.h"
 
-
-struct SearchResult
-{
-    SearchResult(const long long &position, const QStack<QString> &tagsStack, const bool &tail);
-
-    long long pos;
-    QStack <QString> tags;
-    bool paragrafTail;
-};
 
 
 class XMLTextSearcher : public QObject
@@ -29,16 +21,16 @@ public slots:
     void start(const QStringList &bookText, const QString searchKey);
 
     void setStartData(const QStack<QString> &stack, const long long &pos, const bool &parTail);
-    SearchResult getStartData() const;
+    BookPosition getStartData() const;
 
 
     int getResultCount() const;
 
-    SearchResult* getResultAt(const int &index) const;
+    BookPosition* getResultAt(const int &index) const;
     int getResultFrom(const long long &position) const;
 
 private:
-    QVector <SearchResult*> results;
+    QVector <BookPosition*> results;
 
     TagsResolver* resolver;
 

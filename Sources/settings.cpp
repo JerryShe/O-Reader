@@ -78,6 +78,22 @@ bool Settings::saveSettings() const
 
 bool Settings::loadSettings()
 {
+    InterfaceStyle = "Red";
+    Language = "English";
+    FKeyForwardPage = Qt::Key_Right;
+    SKeyForwardPage = Qt::Key_Space;
+    FKeyBackwardPage = Qt::Key_Left;
+    SKeyBackwardPage = -1;
+    PageTurnByWheel = true;
+    PageTurnByTap = false;
+    LibraryReprezentation = false;
+    HideTopBar = false;
+
+    LibraryReprezentation = false;
+    LibraryIconBarSize = 140;
+    LibraryIconListSize = 50;
+
+
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
@@ -92,36 +108,22 @@ bool Settings::loadSettings()
         QJsonDocument SetJson(QJsonDocument::fromJson(in));
 
         QJsonObject SetObj = SetJson.object();
-        SetObj = SetObj["Settings"].toObject();
 
-        this->fromJson(SetObj);
+        if (SetObj.contains("Settings"))
+        {
+            SetObj = SetObj["Settings"].toObject();
+            this->fromJson(SetObj);
+            SettingsFile.close();
+            return 1;
+        }
     }
-    else
-    {        
-        InterfaceStyle = "Red";
-        Language = "English";
-        FKeyForwardPage = Qt::Key_Right;
-        SKeyForwardPage = Qt::Key_Space;
-        FKeyBackwardPage = Qt::Key_Left;
-        SKeyBackwardPage = -1;
-        PageTurnByWheel = true;
-        PageTurnByTap = false;
-        LibraryReprezentation = false;
-        HideTopBar = false;
 
-        LibraryReprezentation = false;
-        LibraryIconBarSize = 140;
-        LibraryIconListSize = 50;
+    TextStylesNames.append("Standart");
+    TextStyles.append(ReadingProfile());
+    currentStyle = "Standart";
 
-        TextStylesNames.push_back("Standart");
-        TextStyles.push_back(ReadingProfile());
-        currentStyle = "Standart";
-
-        saveSettings();
-
-        return 1;
-    }
-    SettingsFile.close();
+    // дошли сюда <=> не удалось загрузить профили, создадим новые
+    saveSettings();
     return 1;
 }
 
@@ -142,7 +144,7 @@ QJsonObject Settings::toJson() const
     json["LibraryIconBarSize"] = (int)LibraryIconBarSize;
     json["LibraryIconListSize"] = (int)LibraryIconListSize;
     json["HideTopBar"] = HideTopBar;
-    json["currentStyle"] = currentStyle;
+    json["CurrentStyle"] = currentStyle;
 
     json["TextStylesNames"] = QJsonArray::fromStringList(TextStylesNames);
 
@@ -157,35 +159,77 @@ QJsonObject Settings::toJson() const
 
 void Settings::fromJson(const QJsonObject &json)
 {
-    InterfaceStyle = json["InterfaceStyle"].toString();
-    Language = json["Language"].toString();
-    FKeyForwardPage = json["FKeyForwardPage"].toInt();
-    SKeyForwardPage = json["SKeyForwardPage"].toInt();
-    FKeyBackwardPage = json["FKeyBackwardPage"].toInt();
-    SKeyBackwardPage = json["SKeyBackwardPage"].toInt();
-    PageTurnByWheel = json["PageTurnByWheel"].toBool();
-    PageTurnByTap = json["PageTurnByTap"].toBool();
-    LibraryReprezentation = json["LibraryReprezentation"].toBool();
-    LibraryIconBarSize = (unsigned short)json["LibraryIconBarSize"].toInt();
-    LibraryIconListSize = (unsigned short)json["LibraryIconListSize"].toInt();
-    HideTopBar = json["HideTopBar"].toBool();
-    currentStyle = json["currentStyle"].toString();
+    if (json.contains("InterfaceStyle"))
+        InterfaceStyle = json["InterfaceStyle"].toString();
 
-    TextStylesNames.clear();
-    QJsonArray arr = json["TextStylesNames"].toArray();
-    foreach (auto i, arr) {
-        TextStylesNames.append(i.toString());
+    if (json.contains("Language"))
+        Language = json["Language"].toString();
+
+    if (json.contains("FKeyForwardPage"))
+        FKeyForwardPage = json["FKeyForwardPage"].toInt();
+
+    if (json.contains("SKeyForwardPage"))
+        SKeyForwardPage = json["SKeyForwardPage"].toInt();
+
+    if (json.contains("FKeyBackwardPage"))
+        FKeyBackwardPage = json["FKeyBackwardPage"].toInt();
+
+    if (json.contains("SKeyBackwardPage"))
+        SKeyBackwardPage = json["SKeyBackwardPage"].toInt();
+
+    if (json.contains("PageTurnByWheel"))
+        PageTurnByWheel = json["PageTurnByWheel"].toBool();
+
+    if (json.contains("PageTurnByTap"))
+        PageTurnByTap = json["PageTurnByTap"].toBool();
+
+    if (json.contains("LibraryReprezentation"))
+        LibraryReprezentation = json["LibraryReprezentation"].toBool();
+
+    if (json.contains("LibraryIconBarSize"))
+        LibraryIconBarSize = (unsigned short)json["LibraryIconBarSize"].toInt();
+
+    if (json.contains("LibraryIconListSize"))
+        LibraryIconListSize = (unsigned short)json["LibraryIconListSize"].toInt();
+
+    if (json.contains("HideTopBar"))
+        HideTopBar = json["HideTopBar"].toBool();
+
+    TextStylesNames.clear();    
+    if (json.contains("TextStylesNames"))
+    {
+        QJsonArray arr = json["TextStylesNames"].toArray();
+        foreach (auto i, arr) {
+            TextStylesNames.append(i.toString());
+    }
     }
 
     TextStyles.clear();
-    QJsonObject Obj = json["TextStyles"].toObject();
-    QJsonObject temp;
-    for (int i = 0; i < TextStylesNames.size(); i++)
+    if (json.contains("TextStyles"))
     {
-        temp = Obj[TextStylesNames[i]].toObject();
-        TextStyles.append(ReadingProfile(temp));
+        QJsonObject Obj = json["TextStyles"].toObject();
+        QJsonObject temp;
+        for (int i = 0; i < TextStylesNames.size(); i++)
+        {
+            temp = Obj[TextStylesNames[i]].toObject();
+            TextStyles.append(ReadingProfile(temp));
+        }
     }
 
+
+    if (json.contains("CurrentStyle"))
+        currentStyle = json["CurrentStyle"].toString();
+    else
+    {
+        if (TextStylesNames.size() != 0)
+            currentStyle = TextStylesNames[0];
+        else
+        {
+            TextStyles.append(ReadingProfile());
+            TextStylesNames.append("Standart");
+            currentStyle = "Standart";
+        }
+    }
 }
 
 
@@ -243,22 +287,51 @@ QJsonObject ReadingProfile::toJson()  const
 
 void ReadingProfile::fromJson(const QJsonObject &json)
 {
-    ColumnCount = (unsigned short)json["ColumnCount"].toInt();
-    BackgroundType = json["BackgroundType"].toBool();
-    BackgroundImage = json["BackgroundImage"].toString();
-    TextAntiAliasing = json["TextAntiAliasing"].toBool();
-    ParLeftTopIdent = (unsigned short) json["ParLeftTopIdent"].toInt();
-    TextLeftRightIdent = (unsigned short)json["TextLeftRightIdent"].toInt();
-    TextTopBottomIdent = (unsigned short)json["TextTopBottomIdent"].toInt();
+    if (json.contains("ColumnCount"))
+        ColumnCount = (unsigned short)json["ColumnCount"].toInt();
 
-    RegularStyle.fromJson(json["Regular"].toObject());
-    EmphasizedStyle.fromJson(json["Emphasized"].toObject());
-    TitleStyle.fromJson(json["Title"].toObject());
-    SubtitleStyle.fromJson(json["Subtitle"].toObject());
-    EpigraphStyle.fromJson(json["Epigraph"].toObject());
-    CiteStyle.fromJson(json["Cite"].toObject());
-    PoemStyle.fromJson(json["Poem"].toObject());
-    NoteStyle.fromJson(json["Note"].toObject());
+    if (json.contains("BackgroundType"))
+        BackgroundType = json["BackgroundType"].toBool();
+
+    if (json.contains("BackgroundImage"))
+        BackgroundImage = json["BackgroundImage"].toString();
+
+    if (json.contains("TextAntiAliasing"))
+        TextAntiAliasing = json["TextAntiAliasing"].toBool();
+
+    if (json.contains("ParLeftTopIdent"))
+        ParLeftTopIdent = (unsigned short) json["ParLeftTopIdent"].toInt();
+
+    if (json.contains("TextLeftRightIdent"))
+        TextLeftRightIdent = (unsigned short)json["TextLeftRightIdent"].toInt();
+
+    if (json.contains("TextTopBottomIdent"))
+        TextTopBottomIdent = (unsigned short)json["TextTopBottomIdent"].toInt();
+
+
+    if (json.contains("Regular"))
+        RegularStyle.fromJson(json["Regular"].toObject());
+
+    if (json.contains("Emphasized"))
+        EmphasizedStyle.fromJson(json["Emphasized"].toObject());
+
+    if (json.contains("Title"))
+        TitleStyle.fromJson(json["Title"].toObject());
+
+    if (json.contains("Subtitle"))
+        SubtitleStyle.fromJson(json["Subtitle"].toObject());
+
+    if (json.contains("Epigraph"))
+        EpigraphStyle.fromJson(json["Epigraph"].toObject());
+
+    if (json.contains("Cite"))
+        CiteStyle.fromJson(json["Cite"].toObject());
+
+    if (json.contains("Poem"))
+        PoemStyle.fromJson(json["Poem"].toObject());
+
+    if (json.contains("Note"))
+        NoteStyle.fromJson(json["Note"].toObject());
 }
 
 
@@ -305,12 +378,23 @@ QJsonObject TextStyleSheet::toJson() const
 
 void TextStyleSheet::fromJson(const QJsonObject &json)
 {
-    Family = json["Family"].toString();
-    Size = (unsigned short)json["Size"].toInt();
-    Style = (unsigned short)json["Style"].toInt();
-    LineSpacing = json["LineSpacing"].toDouble();
-    Align = (unsigned short)json["Align"].toInt();
-    Color = json["Color"].toString();
+    if (json.contains("Family"))
+        Family = json["Family"].toString();
+
+    if (json.contains("Size"))
+        Size = (unsigned short)json["Size"].toInt();
+
+    if (json.contains("Style"))
+        Style = (unsigned short)json["Style"].toInt();
+
+    if (json.contains("LineSpacing"))
+        LineSpacing = json["LineSpacing"].toDouble();
+
+    if (json.contains("Align"))
+        Align = (unsigned short)json["Align"].toInt();
+
+    if (json.contains("Color"))
+        Color = json["Color"].toString();
 }
 
 
@@ -521,10 +605,8 @@ ReadingProfile Settings::getCurrentReadProfileElem() const
 void Settings::saveReadProfile(const QString &name, const ReadingProfile &style)
 {
     if (TextStyles.size() != TextStylesNames.size())
-    {
-        qDebug()<<"WTF -_-";
         return;
-    }
+
     if (TextStylesNames.indexOf(name) == -1)
     {
         TextStylesNames.push_back(name);

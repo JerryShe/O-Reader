@@ -5,14 +5,6 @@
 #include <QDebug>
 
 
-SearchResult::SearchResult(const long long &position, const QStack<QString> &tagsStack, const bool &tail)
-{
-    pos = position;
-    tags = tagsStack;
-    paragrafTail = tail;
-}
-
-
 
 XMLTextSearcher::XMLTextSearcher(const int &bookFormat)
 {
@@ -37,9 +29,9 @@ void XMLTextSearcher::setStartData(const QStack<QString> &stack, const long long
 }
 
 
-SearchResult XMLTextSearcher::getStartData() const
+BookPosition XMLTextSearcher::getStartData() const
 {
-    return SearchResult(startPos, startStack, paragrafTail);
+    return BookPosition(startPos, startStack, paragrafTail);
 }
 
 
@@ -120,7 +112,7 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
                 pos++;
                 if (pos >= key.size())
                 {
-                    SearchResult* res = new SearchResult(i - key.size() + 1, tags, tail);
+                    BookPosition* res = new BookPosition(i - key.size() + 1, tags, tail);
                     results.push_back(res);
                     pos = 0;
                 }
@@ -141,7 +133,7 @@ int XMLTextSearcher::getResultCount() const
 int XMLTextSearcher::getResultFrom(const long long &position) const
 {
     for (int i = 0; i < results.size(); i++)
-        if (position < results[i]->pos)
+        if (position < results[i]->TextPos)
             return i;
 
     if (results.size())
@@ -151,7 +143,7 @@ int XMLTextSearcher::getResultFrom(const long long &position) const
 }
 
 
-SearchResult* XMLTextSearcher::getResultAt(const int &index) const
+BookPosition *XMLTextSearcher::getResultAt(const int &index) const
 {
     if (index >= 0 && index < results.size())
         return results[index];
