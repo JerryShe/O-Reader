@@ -270,18 +270,13 @@ void ReadingWindow::on_ReadProfilesButton_clicked()
         ProfilesWidget->move(ui->ReadProfilesButton->x(), ui->ReadProfilesButton->height());
         ProfilesWidget->setFixedHeight(ProfilesList.size() * 30);
 
-        connect(ProfilesView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(changeReadProfile(QModelIndex)));
+        connect(ProfilesView, &QListWidget::doubleClicked, [this](const QModelIndex &index){
+            ProgramSettings->setCurrentReadProfile(ProgramSettings->getReadProfilesList().at(index.row()));
+            reprintNewSettText();
+        });
     }
     else
         ProfilesWidget->hide();
-}
-
-
-void ReadingWindow::changeReadProfile(const QModelIndex &index)
-{
-    ProgramSettings->setCurrentReadProfile(ProgramSettings->getReadProfilesList().at(index.row()));
-    reprintNewSettText();
-    setBackgroundImage();
 }
 
 
@@ -373,6 +368,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         {
             if (ProgramSettings->getTurnByWheel() == true)
             {
+                qDebug()<<"woop";
                 QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
                 QPoint wheelSteps = Wheel->pixelDelta();
 
@@ -390,6 +386,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 
                 Wheel->accept();
             }
+            return true;
             break;
         }
 
@@ -495,22 +492,16 @@ void ReadingWindow::showContentsTable()
     BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), this);
     tableWindow->move(0, ui->MenuButton->height());
 
-    connect(tableWindow, SIGNAL(goToSection(long long)), this, SLOT(goToSection(long long)));
+    connect(tableWindow, &BookTableOfContents::goToSection, [this](const long long sectionPos){
+        ui->TextPage->setHtml(BookPaginator->goToSection(sectionPos));
+        updateProgress();
+    });
 
     if (tableWindow->exec() == QDialog::Rejected)
-    {
         delete tableWindow;
-    }
+
     ActiveWindow = false;
     ui->TextPage->setFocus();
-
-}
-
-
-void ReadingWindow::goToSection(const long long sectionIndex)
-{
-    ui->TextPage->setHtml(BookPaginator->goToSection(sectionIndex));
-    updateProgress();
 }
 
 
@@ -529,11 +520,13 @@ void ReadingWindow::showSearchWindow()
 
     connect(Search, &SearchWindow::nextResult, [this](){
         ui->TextPage->setHtml(BookPaginator->searchNextStep());
-        updateProgress();});
+        updateProgress();
+    });
 
     connect(Search, &SearchWindow::previousResult, [this](){
         ui->TextPage->setHtml(BookPaginator->searchPrevStep());
-        updateProgress();});
+        updateProgress();
+    });
 
     connect(Search, &SearchWindow::finished, [this](){
         ui->TextPage->setFocus();
@@ -541,15 +534,18 @@ void ReadingWindow::showSearchWindow()
         ActiveWindow = false;
         ui->TextPage->setFocus();
         ui->TextPage->setHtml(BookPaginator->searchStop());
-        updateProgress();});
+        updateProgress();
+    });
 
 
     connect(Search, &SearchWindow::searchKeyChanged, [this](){
-        ui->TextPage->setHtml(BookPaginator->searchStop());});
+        ui->TextPage->setHtml(BookPaginator->searchStop());
+    });
 
     connect(Search, &SearchWindow::backToStart, [this](){
         ui->TextPage->setHtml(BookPaginator->searchBack());
-        updateProgress();});
+        updateProgress();
+    });
 
     connect(BookPaginator, SIGNAL(currentSearchStep(QString)), Search, SLOT(setCurrentStepData(QString)));
 }

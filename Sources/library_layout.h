@@ -39,8 +39,6 @@ private slots:
     void hideFind();
     void hideBookWidget();
 
-    void on_ShowButton_clicked();
-
     void lostBooks(QVector <Book*> losted);
 
     void on__SortDirection_toggled(bool checked);

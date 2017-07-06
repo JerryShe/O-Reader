@@ -61,9 +61,6 @@ private slots:
     void reprintNewSettText();
 
     void on_ReadProfilesButton_clicked();
-    void changeReadProfile(const QModelIndex &index);
-
-    void goToSection(const long long sectionIndex);
 
     void setBackgroundImage();
 

@@ -72,6 +72,7 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     bookWidget = new BookWidget(this);
     bookWidget->move(15, 30);
     connect(ui->ShowButton, SIGNAL(toggled(bool)), bookWidget, SIGNAL(showButtonClicked()));
+    connect(ui->ShowButton, &QPushButton::clicked, [this](){hideFind();});
 
     connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
     connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
@@ -296,10 +297,4 @@ void LibraryLayout::deleteBook(const unsigned int &index)
         }
 
     LibHandler->deleteBook(index);
-}
-
-
-void LibraryLayout::on_ShowButton_clicked()
-{
-    hideFind();
 }

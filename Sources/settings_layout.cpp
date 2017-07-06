@@ -28,9 +28,9 @@ SettingsLayout::SettingsLayout(QWidget *Parent)
     ReaderWidget = new Settings_ReaderLayout(this);
     ProfileWidget = new Settings_ProfileLayout(this);
 
-    connect(ProgramWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSavebuttons(int)));
-    connect(ReaderWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSavebuttons(int)));
-    connect(ProfileWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSavebuttons(int)));
+    connect(ProgramWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
+    connect(ReaderWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
+    connect(ProfileWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
 
     MainLayout = new QVBoxLayout(this);
     SettingsLayout::setLayout(MainLayout);
@@ -112,7 +112,7 @@ void SettingsLayout::hideWithoutSaving()
 }
 
 
-void SettingsLayout::updateSavebuttons(const int &type)
+void SettingsLayout::updateSaveButtons(const int &type)
 {
     ProfileWidget->setSavebuttonView(type);
     ProgramWidget->setSavebuttonView(type);

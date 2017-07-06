@@ -32,7 +32,7 @@ public slots:
     void addExitButton();
 
 private slots:
-    void updateSavebuttons(const int &type);
+    void updateSaveButtons(const int &type);
     void exit_button_clicked();
 
 protected:
