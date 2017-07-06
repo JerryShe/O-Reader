@@ -278,16 +278,8 @@ int XMLTextPaginator::tag_section()
     {
         if (currentHeight != 0)
             return 3;
-        else
-            return 1;
     }
-    else
-    {
-        applyTag();
-        commitTag();
-        doStep();
-        return 3;
-    }
+    return 2;
 }
 
 

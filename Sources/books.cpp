@@ -37,6 +37,49 @@ BookPosition::BookPosition()
 }
 
 
+BookPosition::BookPosition(const QJsonObject &json)
+{
+    this->fromJson(json);
+}
+
+
+QJsonObject BookPosition::toJson() const
+{
+    QJsonObject json;
+
+    json["TextPosition"] = QString::number(TextPos);
+
+    QStringList temp;
+    for(int i = 0; i < PrevTags.size(); i++)
+        temp.append(PrevTags[i]);
+    json["PrevTags"] = QJsonArray::fromStringList(temp);
+
+    json["ParagrafTail"] = ParagrafTail;
+
+    return json;
+}
+
+
+void BookPosition::fromJson(const QJsonObject &json)
+{
+    if (json.contains("TextPosition"))
+        TextPos = json["TextPosition"].toString().toLongLong();
+
+    if (json.contains("PrevTags"))
+    {
+        PrevTags.clear();
+        QJsonArray tempArr = json["PrevTags"].toArray();
+        for (int i = 0; i < tempArr.size(); i++)
+            PrevTags.append(tempArr[i].toString());
+    }
+
+    if (json.contains("ParagrafTail"))
+        ParagrafTail = json["ParagrafTail"].toBool();
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 {
@@ -411,28 +454,33 @@ void Book::fromJson(const QJsonObject &json)
     if (json.contains("AddittionTime"))
         AddittionTime = QDateTime::fromString(json["AddittionTime"].toString());
 
-    if (json.contains("Progress"))
-        lastBookProgress.TextPos = json["Progress"].toString().toLongLong();
-
-    if (json.contains("ParagrafTail"))
-        lastBookProgress.ParagrafTail = json["ParagrafTail"].toBool();
-
-    if (json.contains("Annotation"))
-    {
-        tempArr = json["ProgressTagStack"].toArray();
-        foreach (auto i, tempArr) {
-            lastBookProgress.PrevTags.push(i.toString());
-        }
-    }
-
-    if (json.contains("ProgressProcent"))
-        ProgressProcent = json["ProgressProcent"].toDouble();
-
     if (json.contains("CoverType"))
         CoverType = json["CoverType"].toString();
 
     if (json.contains("Cover"))
         Cover = json["Cover"].toString();
+
+    if (json.contains("LastPosition"))
+        lastBookProgress.fromJson(json["LastPosition"].toObject());
+
+    if (json.contains("ProgressProcent"))
+        ProgressProcent = json["ProgressProcent"].toDouble();
+
+
+    if (json.contains("Bookmarks"))
+    {
+        tempArr = json["Bookmarks"].toArray();
+        for (int i = 0; i < tempArr.size(); i++)
+            Bookmarks.append(BookPosition(tempArr[i].toObject()));
+    }
+
+
+    if (json.contains("Booknotes"))
+    {
+        tempArr = json["Bookmarks"].toArray();
+        for (int i = 0; i < tempArr.size(); i++)
+            Booknotes.append( QPair<BookPosition, QString> (BookPosition(tempArr[i].toObject()), tempArr[i].toObject()["Note"].toString()));
+    }
 }
 
 
@@ -460,17 +508,26 @@ QJsonObject Book::toJson() const
     json["SourceLanguage"] = SourceLanguage;
     json["AddittionTime"] = AddittionTime.toString();
 
-    json["Progress"] = QString::number(lastBookProgress.TextPos);
-    json["ParagrafTail"] = lastBookProgress.ParagrafTail;
-
-    QStringList temp;
-    for(int i = 0; i < lastBookProgress.PrevTags.size(); i++)
-        temp.append(lastBookProgress.PrevTags[i]);
-    json["ProgressTagStack"] = QJsonArray::fromStringList(temp);
+    json["LastPosition"] = lastBookProgress.toJson();
 
     json["ProgressProcent"] = ProgressProcent;
     json["CoverType"] = CoverType;
     json["Cover"] = Cover;
+
+
+    QJsonArray bookmarksArr;
+    for (int i = 0; i < Bookmarks.size(); i++)
+        bookmarksArr.append(Bookmarks[i].toJson());
+    json["Bookmarks"] = bookmarksArr;
+
+    QJsonArray booknotesArr;
+    for (int i = 0; i < Booknotes.size(); i++)
+    {
+        QJsonObject tempObj = Booknotes[i].first.toJson();
+        tempObj["Note"] = Booknotes[i].second;
+        booknotesArr.append(tempObj);
+    }
+    json["Booknotes"] = booknotesArr;
 
     return json;
 }
@@ -662,4 +719,56 @@ int Book::getFormat()  const
 void Book::setFormat(const int format)
 {
     Format = format;
+}
+
+
+bool Book::addBookmark(const BookPosition &position)
+{
+    int i = 0;
+    for (; i < Bookmarks.size(); i++)
+    {
+        if (position.TextPos > Bookmarks[i].TextPos)
+            break;
+        else if (position.TextPos == Bookmarks[i].TextPos)
+            return false;
+    }
+
+    if (i == Bookmarks.size())
+        Bookmarks.append(position);
+    else
+        Bookmarks.insert(i, position);
+
+    return true;
+}
+
+
+QVector <BookPosition> Book::getBookmarks() const
+{
+    return Bookmarks;
+}
+
+
+bool Book::addBooknote(const BookPosition &position, const QString &note)
+{
+    int i = 0;
+    for (; i < Booknotes.size(); i++)
+    {
+        if (position.TextPos > Booknotes[i].first.TextPos)
+            break;
+        else if (position.TextPos == Booknotes[i].first.TextPos)
+            return false;
+    }
+
+    if (i == Booknotes.size())
+        Booknotes.append(QPair <BookPosition, QString> (position, note));
+    else
+        Booknotes.insert(i, QPair <BookPosition, QString> (position, note));
+
+    return true;
+}
+
+
+QVector <QPair <BookPosition, QString>> Book::getBooknotes() const
+{
+    return Booknotes;
 }

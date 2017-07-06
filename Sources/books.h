@@ -18,6 +18,10 @@ struct BookPosition
 {
     BookPosition(const long long &position, const QStack<QString> &tagsStack, const bool &tail);
     BookPosition();
+    BookPosition(const QJsonObject &json);
+
+    QJsonObject toJson() const;
+    void fromJson(const QJsonObject &json);
 
     long long TextPos;
     QStack <QString> PrevTags;
@@ -52,13 +56,6 @@ public:
     QString getSeries() const;
     QString getLanguage() const;
 
-    long long getProgressPosition() const;
-    double getProgressProcent() const;
-    QStack<QString> getProgressTagStack() const;
-
-    void setProgress(const long long &progress, const bool &paragrafTail, const QStack<QString> &tagStack, const double &procent);
-    BookPosition getProgress() const;
-
     QString getCodec() const;
     void setCodec(const QString &Codec);
 
@@ -76,6 +73,19 @@ public:
 
     QDomDocument* getFB2BookDomDoc(bool &result);
     QByteArray getFB2BookByteArray(bool &result);
+
+    long long getProgressPosition() const;
+    double getProgressProcent() const;
+    QStack<QString> getProgressTagStack() const;
+
+    void setProgress(const long long &progress, const bool &paragrafTail, const QStack<QString> &tagStack, const double &procent);
+    BookPosition getProgress() const;
+
+    bool addBookmark(const BookPosition &position);
+    QVector <BookPosition> getBookmarks() const;
+
+    bool addBooknote(const BookPosition &position, const QString &note);
+    QVector<QPair<BookPosition, QString> > getBooknotes() const;
 
 private:
     bool loadFB2(QDomDocument *doc, GenresMap *Gmap);
@@ -98,12 +108,14 @@ private:
     QString Language;
     QString SourceLanguage;
     QDateTime AddittionTime;
-    double ProgressProcent = 0;
     QString CoverType;
     QString Cover;
 
     BookPosition lastBookProgress;
+    double ProgressProcent = 0;
 
+    QVector <BookPosition> Bookmarks;
+    QVector <QPair<BookPosition, QString>> Booknotes;
 };
 
 #endif // BOOKBAR_H
