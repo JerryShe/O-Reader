@@ -36,6 +36,9 @@ signals:
     void nextResult();
     void backToStart();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+
 private:
     bool workMode;                  // true - окошко поиска, false - виджет поиска
     bool searchIsWorking;

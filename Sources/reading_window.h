@@ -6,19 +6,13 @@
 #include "books.h"
 #include "answer_dialog.h"
 #include "settings.h"
-#include "settings_layout.h"
 #include "search_window.h"
 #include "xml_text_paginator.h"
 #include "reading_menu.h"
-
-#include <QVBoxLayout>
-#include <QThread>
-
+#include "book_table_of_contents.h"
 
 #include <QThread>
-#include <QDomDocument>
 #include <QKeyEvent>
-
 #include <QListWidget>
 
 namespace Ui {
@@ -40,7 +34,6 @@ public:
 private slots:
     void on_exit_button_clicked();
 
-
     void createReadProfilesWidget();
     void createReadingMenuWidget();
 
@@ -50,6 +43,7 @@ private slots:
     void showSynchronizationWindow();
     void showNoteText(const QUrl &link);
 
+    void createMiniWindow();
     void resizeMiniWindow();
 
     void setStyle(const QString &currentStyle);
@@ -96,9 +90,7 @@ private:
     QListWidget* ProfilesView;
 
     QDialog* MiniWindow;
-    QVBoxLayout* MiniWindowLayout;
-    SettingsLayout* SettingsPage;
-
+    BookTableOfContents* ContentsTableWindow;
     SearchWindow* Search;
 
     QString styles[5];

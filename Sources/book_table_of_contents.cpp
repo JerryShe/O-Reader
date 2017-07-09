@@ -30,6 +30,7 @@ BookTableOfContents::BookTableOfContents(const QString &style, QTreeWidgetItem *
     }
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
     setStyle(style);
 
@@ -48,6 +49,8 @@ BookTableOfContents::BookTableOfContents(const QString &style, QTreeWidgetItem *
         QScroller::grabGesture(ui->TableOfContents->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TableOfContents->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
+
+    qDebug()<<"create table of contents";
 }
 
 

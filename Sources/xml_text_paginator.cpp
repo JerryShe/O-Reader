@@ -384,9 +384,9 @@ int XMLTextPaginator::parseTag()
     tag = TagInf.html;
 
 
+    //TODO: привести в нормальный вид
     if (TagInf.index < 31)
     {
-        /*
         if (tagType == parseDirection)
         {
             int height = getWordHeightFor(tag);
@@ -402,7 +402,7 @@ int XMLTextPaginator::parseTag()
                     return 3;
                 }
             }
-        }*/
+        }
     }
 
 
@@ -468,7 +468,7 @@ bool XMLTextPaginator::applyWord()
                 doStep(-1);
                 return false;
             }
-        }
+        }        
 
         wordWidth = getWordWidth();
 
@@ -860,7 +860,7 @@ QString XMLTextPaginator::doSearchStep()
 
     emit currentSearchStep(QString::number(searchStep+1) + "/" + QString::number(Searcher->getResultCount()));
 
-    return goToPosition(*res);//getPageForward();
+    return goToPosition(*res);
 }
 
 

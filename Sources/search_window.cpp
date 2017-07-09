@@ -2,7 +2,7 @@
 #include "styles.h"
 #include <QPushButton>
 #include <QListView>
-
+#include <QEvent>
 
 #include <QDebug>
 
@@ -31,7 +31,8 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, const b
     workMode = mode;
     searchIsWorking = false;
 
-    hide();
+    this->parentWidget()->installEventFilter(this);
+
     move(position);
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);
@@ -133,6 +134,16 @@ SearchWindow::~SearchWindow()
     delete TopLayout;
     delete TextLayout;
     delete ButtonLayout;
+}
+
+
+bool SearchWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::Resize)
+    {
+        this->move(0, this->parentWidget()->height() - this->height());
+    }
+    return false;
 }
 
 

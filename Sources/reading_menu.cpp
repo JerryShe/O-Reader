@@ -122,13 +122,6 @@ bool ReadingMenu::eventFilter(QObject *obj, QEvent *event)
     {
         this->resize(70, this->parentWidget()->height() - 25);
     }
-    else if (event->type() == QEvent::KeyPress)
-    {
-        QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-        if (KeyEvent->key() == Qt::Key_Escape)
-            hideMenu();
-    }
-
     return false;
 }
 

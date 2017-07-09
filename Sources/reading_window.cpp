@@ -10,7 +10,7 @@
 #include "book_table_of_contents.h"
 #include "styles.h"
 #include "battery_widget.h"
-
+#include "settings_layout.h"
 
 #include <QTimer>
 #include <QMouseEvent>
@@ -61,6 +61,9 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 
     ActiveWindow = false;
     MiniWindow = 0;
+    ContentsTableWindow = 0;
+    Search = 0;
+
     TopBarNeedHide = true;
     HidenTimer = 0;
 
@@ -120,6 +123,27 @@ void ReadingWindow::createReadingMenuWidget()
 }
 
 
+void ReadingWindow::createReadProfilesWidget()
+{
+    ProfilesWidget = new QWidget(this);
+    QVBoxLayout* ProfilesLayout = new QVBoxLayout(ProfilesWidget);
+    ProfilesWidget->setLayout(ProfilesLayout);
+    ProfilesWidget->setContentsMargins(0,0,0,0);
+    ProfilesLayout->setContentsMargins(0,0,0,0);
+
+    ProfilesView = new QListWidget(ProfilesWidget);
+    ProfilesWidget->setFixedWidth(200);
+    ProfilesLayout->addWidget(ProfilesView);
+    ProfilesWidget->hide();
+
+    if (QTouchDevice::devices().size())
+        QScroller::grabGesture(ProfilesView->viewport(), QScroller::LeftMouseButtonGesture);
+
+    connect(ui->MenuButton, &QPushButton::clicked, [this](){ProfilesWidget->hide();});
+    connect(ui->ReadProfilesButton, &QPushButton::clicked, [this](){MenuWidget->hideMenu();});
+}
+
+
 void ReadingWindow::setBackgroundImage()
 {
     if (ProgramSettings->getCurrentReadProfileElem().BackgroundType == false)
@@ -158,6 +182,9 @@ ReadingWindow::~ReadingWindow()
 
 void ReadingWindow::showNextPage()
 {
+    if (ActiveWindow)
+        return;
+
     ui->TextPage->setHtml(BookPaginator->getPageForward());
     updateProgress();
 }
@@ -165,29 +192,11 @@ void ReadingWindow::showNextPage()
 
 void ReadingWindow::showPrevPage()
 {
+    if (ActiveWindow)
+        return;
+
     ui->TextPage->setHtml(BookPaginator->getPageBackward());
     updateProgress();
-}
-
-
-void ReadingWindow::createReadProfilesWidget()
-{
-    ProfilesWidget = new QWidget(this);
-    QVBoxLayout* ProfilesLayout = new QVBoxLayout(ProfilesWidget);
-    ProfilesWidget->setLayout(ProfilesLayout);
-    ProfilesWidget->setContentsMargins(0,0,0,0);
-    ProfilesLayout->setContentsMargins(0,0,0,0);
-
-    ProfilesView = new QListWidget(ProfilesWidget);
-    ProfilesWidget->setFixedWidth(200);
-    ProfilesLayout->addWidget(ProfilesView);
-    ProfilesWidget->hide();
-
-    if (QTouchDevice::devices().size())
-        QScroller::grabGesture(ProfilesView->viewport(), QScroller::LeftMouseButtonGesture);
-
-    connect(ui->MenuButton, &QPushButton::clicked, [this](){ProfilesWidget->hide();});
-    connect(ui->ReadProfilesButton, &QPushButton::clicked, [this](){MenuWidget->hideMenu();});
 }
 
 
@@ -209,7 +218,6 @@ void ReadingWindow::showNoteText(const QUrl &link)
             connect(NoteWidget, &QDialog::finished, [this](){ui->TextPage->setFocus();});
 
             NoteWidget->setFixedWidth(this->width()/4);
-            NoteWidget->setMaximumHeight(this->height()/4);
             NoteWidget->setContentsMargins(0,0,0,0);
 
             QVBoxLayout* layout = new QVBoxLayout(NoteWidget);
@@ -225,7 +233,8 @@ void ReadingWindow::showNoteText(const QUrl &link)
             NoteText->setHtml(note);
             NoteWidget->show();
 
-            NoteWidget->setFixedSize(NoteText->maximumViewportSize() + QSize(0, 15));
+            if (NoteText->document()->size().toSize().height() + 15 <= this->height()/4)
+                NoteWidget->setFixedHeight(NoteText->document()->size().toSize().height() + 15);
 
             QPoint pos = QCursor::pos() + QPoint(0,15);
 
@@ -322,144 +331,167 @@ void ReadingWindow::on_exit_button_clicked()
 
 bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if (!ActiveWindow)
+    switch (event->type())
     {
-        switch (event->type())
+    case QEvent::MouseMove:
+    {
+        QMouseEvent* MouseMoveEvent = static_cast<QMouseEvent*>(event);
+        if (ProgramSettings->getHideTopBar())
         {
-        case QEvent::MouseMove:
-        {
-            QMouseEvent* MouseMoveEvent = static_cast<QMouseEvent*>(event);
-            if (ProgramSettings->getHideTopBar())
+            if (MouseMoveEvent->pos().y() <= 50 && ui->TopBarWidget->isHidden())
             {
-                if (MouseMoveEvent->pos().y() <= 50 && ui->TopBarWidget->isHidden())
-                {
-                    ui->TopBarWidget->show();
-                    TopBarNeedHide = false;
-                }
-                if (MouseMoveEvent->pos().y() > 50 && !ui->TopBarWidget->isHidden())
-                    TopBarNeedHide = true;
+                ui->TopBarWidget->show();
+                TopBarNeedHide = false;
             }
-            break;
+            if (MouseMoveEvent->pos().y() > 50 && !ui->TopBarWidget->isHidden())
+                TopBarNeedHide = true;
         }
+        break;
+    }
 
-        case QEvent::KeyPress:
+    case QEvent::KeyPress:
+    {
+        QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
+        if (KeyEvent->key() == ProgramSettings->getFForwardKey() || KeyEvent->key() == ProgramSettings->getSForwardKey())
         {
-            QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
-            if (KeyEvent->key() == ProgramSettings->getFForwardKey() || KeyEvent->key() == ProgramSettings->getSForwardKey())
-            {
-                showNextPage();
-            }
-            else
-                if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
-                {
-                    showPrevPage();
-                }
-                else
-                    if (KeyEvent->key() == Qt::Key_Escape && this->parentWidget()->isMaximized())
-                    {
-                        emit showWindowMaximazed();
-                        ui->TopBarWidget->show();
-                    }
-
-            break;
+            showNextPage();
         }
-
-        case QEvent::Wheel:
+        else if (KeyEvent->key() == ProgramSettings->getFBackwardKey() || KeyEvent->key() == ProgramSettings->getSBackwardKey())
         {
-            if (ProgramSettings->getTurnByWheel() == true)
-            {
-                qDebug()<<"woop";
-                QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
-                QPoint wheelSteps = Wheel->pixelDelta();
-
-                if (wheelSteps.isNull())
-                    wheelSteps = Wheel->angleDelta() / 120;
-
-                if (wheelSteps.y() < 0)
-                {
-                    showNextPage();
-                }
-                else if (wheelSteps.y() > 0)
-                {
-                    showPrevPage();
-                }
-
-                Wheel->accept();
-            }
-            return true;
-            break;
+            showPrevPage();
         }
-
-        case QEvent::MouseButtonPress:
+        else if (KeyEvent->key() == Qt::Key_Escape)
         {
-            QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
-
             if (!MenuWidget->menuIsHidden())
             {
                 MenuWidget->hideMenu();
                 ui->TextPage->setFocus();
-                break;
             }
-
-            if(MousePressEvent->button() == Qt::LeftButton)
+            else if (MiniWindow != 0)
             {
-                if (MousePressEvent->pos().y() > 20)
-                {
-                    if (ProgramSettings->getTurnByTap())
-                    {
-                        if (MousePressEvent->pos().x() > this->size().width() - 100)
-                        {
-                            showNextPage();
-                        }
-                        else if (MousePressEvent->pos().x() < 100)
-                        {
-                            showPrevPage();
-                        }
-                    }
-                }
+                MiniWindow->close();
             }
-            break;
+            else if (Search != 0)
+            {
+                Search->close();
+            }
+            else if (ContentsTableWindow != 0)
+            {
+                ContentsTableWindow->close();
+            }
+            else if (this->parentWidget()->isMaximized())
+            {
+                emit showWindowMaximazed();
+                ui->TopBarWidget->show();
+            }
         }
-
-        case QEvent::MouseButtonDblClick:
+        else if (KeyEvent->modifiers() & Qt::CTRL)
         {
-            QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+            if (KeyEvent->key() == Qt::Key_F)
+                showSearchWindow();
+            else if (KeyEvent->key() == Qt::Key_S)
+                showSettingsWindow();
+            else if (KeyEvent->key() == Qt::Key_T)
+                showContentsTable();
+        }
 
-            if (!MenuWidget->menuIsHidden())
+        break;
+    }
+
+    case QEvent::Wheel:
+    {
+        if (ProgramSettings->getTurnByWheel() == true)
+        {
+            QWheelEvent* Wheel = static_cast<QWheelEvent*>(event);
+            QPoint wheelSteps = Wheel->pixelDelta();
+
+            if (wheelSteps.isNull())
+                wheelSteps = Wheel->angleDelta() / 120;
+
+            if (wheelSteps.y() < 0)
             {
-                MenuWidget->hideMenu();
-                break;
+                showNextPage();
+            }
+            else if (wheelSteps.y() > 0)
+            {
+                showPrevPage();
             }
 
-            if(MousePressEvent->button() == Qt::LeftButton)
-            {
-                if (MousePressEvent->pos().y() > 20)
-                {
-                    if (ProgramSettings->getTurnByTap())
-                    {
-                        if (MousePressEvent->pos().x() > this->size().width() - 100)
-                        {
-                            showNextPage();
-                        }
-                        else if (MousePressEvent->pos().x() < 100)
-                        {
-                            showPrevPage();
-                        }
-                    }
+            Wheel->accept();
+        }
+        return true;
+    }
 
-                    if (MousePressEvent->pos().x() > this->size().width()/2 - 100 && MousePressEvent->pos().x() < this->size().width()/2 + 100)
+    case QEvent::MouseButtonPress:
+    {
+        QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+
+        if (!MenuWidget->menuIsHidden())
+        {
+            MenuWidget->hideMenu();
+            ui->TextPage->setFocus();
+            break;
+        }
+
+        if(MousePressEvent->button() == Qt::LeftButton)
+        {
+            if (MousePressEvent->pos().y() > 20)
+            {
+                if (ProgramSettings->getTurnByTap())
+                {
+                    if (MousePressEvent->pos().x() > this->size().width() - 100)
                     {
-                        emit showWindowMaximazed();
-                        ui->TopBarWidget->show();
+                        showNextPage();
+                    }
+                    else if (MousePressEvent->pos().x() < 100)
+                    {
+                        showPrevPage();
                     }
                 }
             }
-            break;
         }
-        default:
-            break;
-        }
+        break;
     }
+
+    case QEvent::MouseButtonDblClick:
+    {
+        QMouseEvent* MousePressEvent = static_cast<QMouseEvent*>(event);
+
+        if (!MenuWidget->menuIsHidden())
+        {
+            MenuWidget->hideMenu();
+            break;
+        }
+
+        if(MousePressEvent->button() == Qt::LeftButton)
+        {
+            if (MousePressEvent->pos().y() > 20)
+            {
+                if (ProgramSettings->getTurnByTap())
+                {
+                    if (MousePressEvent->pos().x() > this->size().width() - 100)
+                    {
+                        showNextPage();
+                    }
+                    else if (MousePressEvent->pos().x() < 100)
+                    {
+                        showPrevPage();
+                    }
+                }
+
+                if (MousePressEvent->pos().x() > this->size().width()/2 - 100 && MousePressEvent->pos().x() < this->size().width()/2 + 100)
+                {
+                    emit showWindowMaximazed();
+                    ui->TopBarWidget->show();
+                }
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
 
     if (event->type() == QEvent::Resize)
         emit windowWasResized();
@@ -473,10 +505,6 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
 void ReadingWindow::resizeWindow()
 {
     ui->TextPage->setHtml(BookPaginator->resizePage(ui->TextPage->width(), ui->TextPage->height()));
-    resizeMiniWindow();
-
-    if (Search != 0)
-        Search->move(QPoint(0, this->height() - 80));
 }
 
 
@@ -488,52 +516,55 @@ void ReadingWindow::updateProgress()
 
 void ReadingWindow::showContentsTable()
 {
-    ActiveWindow = true;
-    BookTableOfContents* tableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), this);
-    tableWindow->move(0, ui->MenuButton->height());
+    if (ContentsTableWindow != 0 || ActiveWindow)
+        return;
 
-    connect(tableWindow, &BookTableOfContents::goToSection, [this](const long long sectionPos){
+    ActiveWindow = true;
+    ContentsTableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), this);
+    ContentsTableWindow->move(0, ui->MenuButton->height());
+    ContentsTableWindow->installEventFilter(this);
+
+
+    connect(ContentsTableWindow, &BookTableOfContents::goToSection, [this](const long long sectionPos){
         ui->TextPage->setHtml(BookPaginator->goToSection(sectionPos));
         updateProgress();
     });
 
-    if (tableWindow->exec() == QDialog::Rejected)
-        delete tableWindow;
 
-    ActiveWindow = false;
-    ui->TextPage->setFocus();
+    connect(ContentsTableWindow, &BookTableOfContents::finished, [this](){
+        ContentsTableWindow = 0;
+        ActiveWindow = false;
+        ui->TextPage->setFocus();
+    });
+
+    ContentsTableWindow->show();
 }
 
 
 void ReadingWindow::showSearchWindow()
 {
-    if (Search != 0)
+    if (Search != 0 || ActiveWindow)
         return;
 
     ActiveWindow = true;
 
     Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
+    Search->installEventFilter(this);
 
     connect(Search, &SearchWindow::startSearch, [this](const QString &key, const QString &type){
         ui->TextPage->setHtml(BookPaginator->searchStart(key, type));
-        updateProgress();});
+        updateProgress();
+    });
+
 
     connect(Search, &SearchWindow::nextResult, [this](){
         ui->TextPage->setHtml(BookPaginator->searchNextStep());
         updateProgress();
     });
 
+
     connect(Search, &SearchWindow::previousResult, [this](){
         ui->TextPage->setHtml(BookPaginator->searchPrevStep());
-        updateProgress();
-    });
-
-    connect(Search, &SearchWindow::finished, [this](){
-        ui->TextPage->setFocus();
-        Search = 0;
-        ActiveWindow = false;
-        ui->TextPage->setFocus();
-        ui->TextPage->setHtml(BookPaginator->searchStop());
         updateProgress();
     });
 
@@ -542,12 +573,24 @@ void ReadingWindow::showSearchWindow()
         ui->TextPage->setHtml(BookPaginator->searchStop());
     });
 
+
     connect(Search, &SearchWindow::backToStart, [this](){
         ui->TextPage->setHtml(BookPaginator->searchBack());
         updateProgress();
     });
 
+    connect(Search, &SearchWindow::destroyed, [this](){
+        Search = 0;
+        ActiveWindow = false;
+        ui->TextPage->setFocus();
+        ui->TextPage->setHtml(BookPaginator->searchStop());
+        updateProgress();
+    });
+
+
     connect(BookPaginator, SIGNAL(currentSearchStep(QString)), Search, SLOT(setCurrentStepData(QString)));
+
+    Search->show();
 }
 
 
@@ -555,6 +598,36 @@ void ReadingWindow::reprintNewSettText()
 {
     setBackgroundImage();
     ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
+}
+
+
+void ReadingWindow::createMiniWindow()
+{
+    if (MiniWindow != 0 || ActiveWindow)
+        return;
+
+    ActiveWindow = true;
+
+    MiniWindow = new QDialog(this);
+    MiniWindow->installEventFilter(this);
+
+    MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    MiniWindow->setAttribute(Qt::WA_DeleteOnClose);
+
+    resizeMiniWindow();
+    MiniWindow->setContentsMargins(0,0,0,0);
+
+    QVBoxLayout *MiniWindowLayout = new QVBoxLayout(MiniWindow);
+    MiniWindow->setLayout(MiniWindowLayout);
+    MiniWindowLayout->setContentsMargins(0,0,0,0);
+
+    connect(MiniWindow, &QDialog::finished, [this](){
+        MiniWindow = 0;
+        ActiveWindow = false;
+        ui->TextPage->setFocus();
+    });
+
+    connect(this, SIGNAL(windowWasResized()), this, SLOT(resizeMiniWindow()));
 }
 
 
@@ -580,64 +653,35 @@ void ReadingWindow::resizeMiniWindow()
 
 void ReadingWindow::showSettingsWindow()
 {
-    ActiveWindow = true;
 
-    MiniWindow = new QDialog(this);
+    createMiniWindow();
+    if (MiniWindow == 0)
+        return;
+
     QString style[2];
     setBackgroundWindowColor(style, ProgramSettings->getInterfaceStyle());
     setStyleSheet(style[1]);
 
-    MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-
-    resizeMiniWindow();
-    MiniWindow->setContentsMargins(0,0,0,0);
-
-    MiniWindowLayout = new QVBoxLayout(MiniWindow);
-    MiniWindow->setLayout(MiniWindowLayout);
-    MiniWindowLayout->setContentsMargins(0,0,0,0);
-
-    SettingsPage = new SettingsLayout(MiniWindow);
+    SettingsLayout *SettingsPage = new SettingsLayout(MiniWindow);
 
     SettingsPage->setSettingsData();
 
-    MiniWindowLayout->addWidget(SettingsPage);
+    MiniWindow->layout()->addWidget(SettingsPage);
 
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(reject()));
 
-    MiniWindow->show();
 
     if (MiniWindow->exec() == QDialog::Rejected)
-    {
         reprintNewSettText();
-        delete MiniWindow;
-        MiniWindow = 0;
-    }
-
-    ActiveWindow = false;
-    ui->TextPage->setFocus();
 }
 
 
 void ReadingWindow::showSynchronizationWindow()
 {
-    MiniWindow = new QDialog(this);
-    ActiveWindow = true;
+    createMiniWindow();
+    if (MiniWindow == 0)
+        return;
 
-    MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-
-    resizeMiniWindow();
-    MiniWindow->setContentsMargins(0,0,0,0);
-
-
-    MiniWindow->show();
-
-    if (MiniWindow->exec() == QDialog::Rejected)
-    {
-        delete MiniWindow;
-        MiniWindow = 0;
-    }
-
-    ActiveWindow = false;
-    ui->TextPage->setFocus();
+    MiniWindow->exec();
 }
