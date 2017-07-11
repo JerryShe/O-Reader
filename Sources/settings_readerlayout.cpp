@@ -77,18 +77,20 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
     ui->PoemStyle->setStyleName(QObject::tr("Poems"));
     ui->CiteStyle->setStyleName(QObject::tr("Citations"));
 
-    ui->StyleBox->setView(new QListView());
+
+    ui->StyleBox->setView(new QListView(this));
     connect(ui->StyleBox, SIGNAL(activated(QString)), this, SLOT(on_StyleBox_activated(QString)));
 
-    ui->BackgroundTypeBox->setView(new QListView());
-    ui->ColumnNumberBox->setView(new QListView());
-    ui->TextAntiAliasingBox->setView(new QListView());
-    ui->ParagraphLeftIdentBox->setView(new QListView());
-    ui->ParagraphTopIdentBox->setView(new QListView());
-    ui->TextLeftIdentBox->setView(new QListView());
-    ui->TextRightIdentBox->setView(new QListView());
-    ui->TextTopIndentBox->setView(new QListView());
-    ui->TextBottomIndentBox->setView(new QListView());
+    ui->BackgroundTypeBox->setView(new QListView(this));
+    ui->ColumnNumberBox->setView(new QListView(this));
+    ui->TextAntiAliasingBox->setView(new QListView(this));
+    ui->ParagraphLeftIdentBox->setView(new QListView(this));
+    ui->ParagraphTopIdentBox->setView(new QListView(this));
+    ui->TextLeftIdentBox->setView(new QListView(this));
+    ui->TextRightIdentBox->setView(new QListView(this));
+    ui->TextTopIndentBox->setView(new QListView(this));
+    ui->TextBottomIndentBox->setView(new QListView(this));
+
 
     ui->TextExample->viewport()->setAutoFillBackground(false);
     ui->TextExample->setAttribute( Qt::WA_TranslucentBackground, true );
@@ -98,30 +100,47 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
     {
         QScroller::grabGesture(ui->ReaderSettingArea->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ReaderSettingArea->verticalScrollBar()->setSingleStep(1);
+
         QScroller::grabGesture(ui->TextExample->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextExample->verticalScrollBar()->setSingleStep(1);
 
+
         QScroller::grabGesture(ui->StyleBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->StyleBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->BackgroundTypeBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->BackgroundTypeBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->ColumnNumberBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ColumnNumberBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->TextAntiAliasingBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextAntiAliasingBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->ParagraphLeftIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ParagraphLeftIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->ParagraphTopIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ParagraphLeftIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->TextLeftIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextLeftIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->TextRightIdentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextRightIdentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->TextTopIndentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextTopIndentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
         QScroller::grabGesture(ui->TextBottomIndentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextBottomIndentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
+}
+
+
+Settings_ReaderLayout::~Settings_ReaderLayout()
+{
+    delete ui;
 }
 
 
@@ -293,12 +312,6 @@ void Settings_ReaderLayout::setSettingsData()
 
     setStyleData(ProgramSettings->getNamedReadProfile(currentTextStyle));
     changedSignal = 1;
-}
-
-
-Settings_ReaderLayout::~Settings_ReaderLayout()
-{
-    delete ui;
 }
 
 

@@ -298,7 +298,6 @@
       </item>
      </layout>
      <zorder>ImageLabel</zorder>
-     <zorder></zorder>
     </widget>
    </item>
   </layout>

@@ -48,7 +48,9 @@ SOURCES += main.cpp\
     xml_text_searcher.cpp \
     library_list_delegate.cpp \
     library_list_proxy_model.cpp \
-    library_list_model.cpp
+    library_list_model.cpp \
+    reading_search_widget.cpp \
+    reading_mini_window.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -89,7 +91,9 @@ HEADERS  += \
     xml_text_searcher.h \
     library_list_delegate.h \
     library_list_proxy_model.h \
-    library_list_model.h
+    library_list_model.h \
+    reading_search_widget.h \
+    reading_mini_window.h
 
 FORMS    += \
     settings_programlayout.ui \
@@ -104,7 +108,8 @@ FORMS    += \
     synchronization_layout.ui \
     book_widget.ui \
     reading_menu.ui \
-    settings_readerlayoutstyle.ui
+    settings_readerlayoutstyle.ui \
+    reading_search_widget.ui
 
 RESOURCES += \
     images.qrc

@@ -241,8 +241,7 @@ void LibraryLayout::on__Find_toggled(bool checked)
     if (checked == true)
     {
         searchWindow = new SearchWindow(QPoint(ui->_Find->x(),ui->_Find->y() + ui->_Find->height()),
-                                        ProgramSettings->getInterfaceStyle(), false,
-                                        this);
+                                        ProgramSettings->getInterfaceStyle(), this);
         //            _____   ___
         //  \  /\  /    |     |__
         //   \/  \/     |     |

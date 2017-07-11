@@ -1,5 +1,5 @@
-#ifndef SETTINGSLAYOUT_H
-#define SETTINGSLAYOUT_H
+#ifndef SETTINGS_LAYOUT_H
+#define SETTINGS_LAYOUT_H
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -8,21 +8,24 @@
 #include "settings_programlayout.h"
 #include "settings_profilelayout.h"
 #include "settings_readerlayout.h"
+
 #include "synchronization.h"
+#include "settings.h"
 
 #include "QTabSwitcher.h"
+
 
 
 class SettingsLayout : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SettingsLayout(QWidget *Parent=0);
+    SettingsLayout(QWidget *Parent=0);
     ~SettingsLayout();
 
     void setSettingsData();
     void hideWithoutSaving();
-    void setSettWindowStyle();
+    void setStyle();
 
 signals:
     void settingsClosed();
@@ -62,4 +65,4 @@ private:
     Settings * ProgramSettings;
 };
 
-#endif // SETTINGSLAYOUT_H
+#endif // SETTINGS_LAYOUT_H

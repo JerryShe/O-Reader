@@ -28,7 +28,7 @@
         <file>Images/LightNewReadProfile.png</file>
         <file>Images/LightReadProfileSwap.png</file>
         <file>Images/LightArrowOpen.png</file>
-        <file>Images/LightSortArrayFalse.png</file>
-        <file>Images/LightSortArrayTrue.png</file>
+        <file>Images/LightSortArrowFalse.png</file>
+        <file>Images/LightSortArrowTrue.png</file>
     </qresource>
 </RCC>

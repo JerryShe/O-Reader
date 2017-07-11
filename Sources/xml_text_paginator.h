@@ -42,11 +42,7 @@ public slots:
     QString getPageForward();
     QString getPageBackward();
 
-    QString searchStart(QString key, QString type);
-    QString searchNextStep();
-    QString searchPrevStep();
-    QString searchStop();
-    QString searchBack();
+    QVector<QPair<BookPosition, QString> > searchStart(QString key);
 
     bool addBookmark() const;
     bool addBooknote(const QString &note) const;
@@ -92,7 +88,6 @@ private:
 
     void debugSave(const QString &HTMLPage) const;
 
-    QString doSearchStep();
 
     /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -137,10 +132,6 @@ private:
 
     TagsResolver *Resolver;
     PaginatorHelper *Helper;
-
-    XMLTextSearcher* Searcher;
-    int searchStep;
-
 
     QString PageHTMLStyles;
     QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;

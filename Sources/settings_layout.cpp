@@ -4,13 +4,15 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QEvent>
+#include <QDebug>
+
 
 #include "styles.h"
 
 
-void SettingsLayout::setSettWindowStyle()
+void SettingsLayout::setStyle()
 {
-    QString tabsStyleSheets[6];
+    QString tabsStyleSheets[7];
 
     setTabButtonsStyle(tabsStyleSheets, ProgramSettings->getInterfaceStyle());
 
@@ -23,17 +25,15 @@ void SettingsLayout::setSettWindowStyle()
 
 SettingsLayout::SettingsLayout(QWidget *Parent)
 {
+    qDebug()<<"create SettingsLayout";
+
     this->setParent(Parent);
     ProgramWidget = new Settings_ProgramLayout(this);
     ReaderWidget = new Settings_ReaderLayout(this);
     ProfileWidget = new Settings_ProfileLayout(this);
 
-    connect(ProgramWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
-    connect(ReaderWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
-    connect(ProfileWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
-
     MainLayout = new QVBoxLayout(this);
-    SettingsLayout::setLayout(MainLayout);
+    setLayout(MainLayout);
     MainLayout->setContentsMargins(0,0,0,0);
     MainLayout->setSpacing(0);
 
@@ -66,22 +66,29 @@ SettingsLayout::SettingsLayout(QWidget *Parent)
 }
 
 
+SettingsLayout::~SettingsLayout()
+{
+    qDebug()<<"delete SettingsLayout";
+
+    delete TabsLayout;
+    delete ButtonsLayout;
+}
+
+
 void SettingsLayout::setSettingsData()
 {
     ProgramSettings = Settings::getSettings();
     UserActions = Synchronization::getSynchronization();
-    setSettWindowStyle();
+    setStyle();
     tabSwitcher->start(1);
 
     ReaderWidget->setSettingsData();
     ProgramWidget->setSettingsData();
     ProfileWidget->setSettingsData();
-}
 
-
-SettingsLayout::~SettingsLayout()
-{
-    delete TabsLayout;
+    connect(ProgramWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
+    connect(ReaderWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
+    connect(ProfileWidget, SIGNAL(settingsChanged(int)), this, SLOT(updateSaveButtons(int)));
 }
 
 
@@ -99,9 +106,8 @@ void SettingsLayout::addExitButton()
 
 void SettingsLayout::exit_button_clicked()
 {
-    hideWithoutSaving();
     emit settingsClosed();
-    close();
+    ProgramSettings->loadSettings();
 }
 
 

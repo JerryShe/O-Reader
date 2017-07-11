@@ -2,6 +2,8 @@
 #include "ui_settings_profilelayout.h"
 #include "styles.h"
 
+#include <QDebug>
+
 void Settings_ProfileLayout::setLayoutStyle()
 {
     QString a[2];

@@ -9,6 +9,10 @@
 #include <QScroller>
 #include <QScrollBar>
 
+
+#include <QDebug>
+
+
 void Settings_ProgramLayout::setLayoutStyle()
 {
     QString a[2];
@@ -27,11 +31,12 @@ void Settings_ProgramLayout::setLayoutStyle()
 Settings_ProgramLayout::Settings_ProgramLayout(QWidget *parent) : QFrame(parent), ui(new Ui::Settings_ProgramLayout)
 {
     ui->setupUi(this);
-    ui->InterfaceStyleBox->setView(new QListView());
-    ui->LanguageBox->setView(new QListView());
-    ui->TopBarShowBox->setView(new QListView());
-    ui->TurnByTapBox->setView(new QListView());
-    ui->TurnByWheelBox->setView(new QListView());
+
+    ui->InterfaceStyleBox->setView(new QListView(this));
+    ui->LanguageBox->setView(new QListView(this));
+    ui->TopBarShowBox->setView(new QListView(this));
+    ui->TurnByTapBox->setView(new QListView(this));
+    ui->TurnByWheelBox->setView(new QListView(this));
 }
 
 

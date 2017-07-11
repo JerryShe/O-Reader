@@ -14,11 +14,13 @@ Settings_ReaderLayoutStyle::Settings_ReaderLayoutStyle(QWidget *parent) :
     ui->setupUi(this);
     ui->StyleWidget->hide();
 
-    ui->NameBox->setView(new QListView());
-    ui->SizeBox->setView(new QListView());
-    ui->TextStyleBox->setView(new QListView());
-    ui->LineSpacingBox->setView(new QListView());
-    ui->AlignmentBox->setView(new QListView());
+
+    ui->NameBox->setView(new QListView(this));
+    ui->SizeBox->setView(new QListView(this));
+    ui->TextStyleBox->setView(new QListView(this));
+    ui->LineSpacingBox->setView(new QListView(this));
+    ui->AlignmentBox->setView(new QListView(this));
+
 
     connect(ui->NameBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));
     connect(ui->SizeBox, SIGNAL(activated(QString)), this, SIGNAL(settingsUpdate()));

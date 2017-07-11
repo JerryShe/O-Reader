@@ -19,22 +19,20 @@ public:
 
 public slots:
     void start(const QStringList &bookText, const QString searchKey);
-
-    void setStartData(const BookPosition &position);
-    BookPosition getStartData() const;
-
-
-    int getResultCount() const;
-
-    BookPosition* getResultAt(const int &index) const;
-    int getResultFrom(const long long &position) const;
+    QVector <QPair<BookPosition, QString>> getResults();
 
 private:
-    QVector <BookPosition*> results;
+    QString createPreview(const BookPosition &pos, const long long &textPos, const QStringList &bookText);
+
+    void commitTag(QStack<QString> &tags, const tagInfo &TagInf);
+    void checkP(const tagInfo &TagInf, const bool &type, bool &paragrafTail);
+
+    QVector <QPair<BookPosition, QString>> results;
 
     TagsResolver* resolver;
 
-    BookPosition startPos;
+    bool parTail;
+
 };
 
 #endif // XML_TEXT_SEARCHER_H

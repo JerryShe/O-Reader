@@ -10,6 +10,7 @@
 #include "xml_text_paginator.h"
 #include "reading_menu.h"
 #include "book_table_of_contents.h"
+#include "reading_mini_window.h"
 
 #include <QThread>
 #include <QKeyEvent>
@@ -43,8 +44,7 @@ private slots:
     void showSynchronizationWindow();
     void showNoteText(const QUrl &link);
 
-    void createMiniWindow();
-    void resizeMiniWindow();
+    bool createMiniWindow();
 
     void setStyle(const QString &currentStyle);
 
@@ -89,7 +89,7 @@ private:
     QWidget* ProfilesWidget;
     QListWidget* ProfilesView;
 
-    QDialog* MiniWindow;
+    ReadingMiniWindow* MiniWindow;
     BookTableOfContents* ContentsTableWindow;
     SearchWindow* Search;
 

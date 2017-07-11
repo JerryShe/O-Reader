@@ -1,7 +1,7 @@
 #include "qtabswitcher.h"
 
 
-QTab::QTab(QWidget *Widget, QPushButton *Button, QString AStyle, QString IStyle)
+QTab::QTab(QWidget *Widget, QPushButton *Button, const QString &AStyle, const QString &IStyle)
 {
     widget = Widget;
     button = Button;
@@ -10,46 +10,55 @@ QTab::QTab(QWidget *Widget, QPushButton *Button, QString AStyle, QString IStyle)
     hiden = false;
 }
 
+
 QPushButton* QTab::getButton()
 {
     return button;
 }
+
 
 QWidget* QTab::getWidget()
 {
     return widget;
 }
 
+
 QString QTab::getActiveStyle()
 {
     return activeStyle;
 }
+
 
 QString QTab::getInactiveStyle()
 {
     return inactiveStyle;
 }
 
+
 bool QTab::isHiden()
 {
     return hiden;
 }
+
 
 void QTab::setButton(QPushButton* Button)
 {
     button = Button;
 }
 
+
 void QTab::setWidget(QWidget* Widget)
 {
     widget = Widget;
 }
+
 
 void QTab::setStyles(QString ActiveStyle, QString InactiveStyle)
 {
     activeStyle = ActiveStyle;
     inactiveStyle = InactiveStyle;
 }
+
 
 void QTab::openTab()
 {
@@ -60,17 +69,20 @@ void QTab::openTab()
     }
 }
 
+
 void QTab::closeTab()
 {
     button->setStyleSheet(inactiveStyle);
     widget->hide();
 }
 
+
 void QTab::show()
 {
     button->show();
     hiden = false;
 }
+
 
 void QTab::hide()
 {
@@ -89,6 +101,7 @@ QTabSwitcher::QTabSwitcher(QObject* parent)
     CurrentTab = -1;
 }
 
+
 QTabSwitcher::~QTabSwitcher()
 {
     for (int i = 0; i < tabList.size(); i++)
@@ -97,13 +110,15 @@ QTabSwitcher::~QTabSwitcher()
     delete SignalMapper;
 }
 
-void QTabSwitcher::addTab(QWidget *tabWidget, QPushButton *tabButton, QString activeStyle, QString inactiveStyle)
+
+void QTabSwitcher::addTab(QWidget *tabWidget, QPushButton *tabButton, const QString &activeStyle, const QString &inactiveStyle)
 {
     tabList.append(new QTab(tabWidget, tabButton, activeStyle, inactiveStyle));
 
     connect(tabButton, SIGNAL(clicked()), SignalMapper, SLOT(map()));
     SignalMapper->setMapping(tabButton, tabList.size() - 1);
 }
+
 
 void QTabSwitcher::addTab(QTab* tab)
 {
@@ -113,7 +128,8 @@ void QTabSwitcher::addTab(QTab* tab)
     SignalMapper->setMapping(tab->getButton(), tabList.size() - 1);
 }
 
-void QTabSwitcher::setButtonStyleSheet(int tabIndex, QString ActiveStyle, QString inactiveStyle)
+
+void QTabSwitcher::setButtonStyleSheet(const int &tabIndex, const QString &ActiveStyle, const QString &inactiveStyle)
 {
     if (tabIndex < 0 || tabIndex >= tabList.size())
         return;
@@ -121,10 +137,12 @@ void QTabSwitcher::setButtonStyleSheet(int tabIndex, QString ActiveStyle, QStrin
     tabList[tabIndex]->setStyles(ActiveStyle, inactiveStyle);
 }
 
+
 void QTabSwitcher::setButtonStyleSheet(QPushButton *tabButton, QString activeStyle, QString inactiveStyle)
 {
     setButtonStyleSheet(indexOf(tabButton), activeStyle, inactiveStyle);
 }
+
 
 void QTabSwitcher::setButtonStyleSheet(QWidget* tabWidget, QString activeStyle, QString inactiveStyle)
 {
@@ -165,15 +183,18 @@ void QTabSwitcher::removeTab(int tabIndex)
 
 }
 
+
 void QTabSwitcher::removeTab(QPushButton *tabButton)
 {
     removeTab(indexOf(tabButton));
 }
 
+
 void QTabSwitcher::removeTab(QWidget *tabWidget)
 {
     removeTab(indexOf(tabWidget));
 }
+
 
 int QTabSwitcher::indexOf(QPushButton *tabButton)
 {
@@ -184,6 +205,7 @@ int QTabSwitcher::indexOf(QPushButton *tabButton)
     return -1;
 }
 
+
 int QTabSwitcher::indexOf(QWidget *tabWidget)
 {
     for (int i = 0; i < tabList.size(); i++)
@@ -192,6 +214,7 @@ int QTabSwitcher::indexOf(QWidget *tabWidget)
 
     return -1;
 }
+
 
 int QTabSwitcher::indexOf(QTab* tab)
 {
@@ -202,15 +225,18 @@ int QTabSwitcher::indexOf(QTab* tab)
     return -1;
 }
 
+
 int QTabSwitcher::getCurrentTabIndex()
 {
     return CurrentTab;
 }
 
+
 QTab* QTabSwitcher::getCurrentTab()
 {
     return tabList[CurrentTab];
 }
+
 
 QPushButton* QTabSwitcher::getCurrentButton()
 {
@@ -219,6 +245,7 @@ QPushButton* QTabSwitcher::getCurrentButton()
     else
         return 0;
 }
+
 
 QWidget* QTabSwitcher::getCurrentWidget()
 {
@@ -233,12 +260,10 @@ int QTabSwitcher::getTabCount()
     return tabList.size();
 }
 
-void QTabSwitcher::start(int startTab)
-{
-    if (startTab < 0)
-        startTab = 0;
 
-    if (startTab >= tabList.size())
+void QTabSwitcher::start(const int &startTab)
+{
+    if (startTab < 0 || startTab >= tabList.size())
         return;
 
     CurrentTab = startTab;
@@ -249,17 +274,20 @@ void QTabSwitcher::start(int startTab)
     tabList[CurrentTab]->openTab();
 }
 
+
 void QTabSwitcher::start(QPushButton* startTabButton)
 {
     start(indexOf(startTabButton));
 }
+
 
 void QTabSwitcher::start(QWidget* startTabWidget)
 {
     start(indexOf(startTabWidget));
 }
 
-void QTabSwitcher::switchTab(int tabIndex)
+
+void QTabSwitcher::switchTab(const int &tabIndex)
 {
     if (tabIndex < 0 || tabIndex >= tabList.size())
         return;
@@ -285,7 +313,7 @@ void QTabSwitcher::switchTab(QWidget* tabWidget)
 }
 
 
-void QTabSwitcher::activateTab(int index)
+void QTabSwitcher::activateTab(const int &index)
 {
     if (index < 0 || index >= tabList.size())
         return;

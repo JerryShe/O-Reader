@@ -11,7 +11,8 @@ class QTab: public QObject
 {
     Q_OBJECT
 public:
-    QTab(QWidget *Widget, QPushButton *Button, QString AStyle = QString(), QString IStyle = QString());
+    QTab(QWidget *Widget, QPushButton *Button, const QString &AStyle = QString(), const QString &IStyle = QString());
+    ~QTab(){}
 
     QPushButton* getButton();
     QWidget* getWidget();
@@ -49,10 +50,10 @@ public:
 
 
 public slots:
-    void addTab(QWidget* tabWidget, QPushButton* tabButton, QString activeStyle = QString(), QString inactiveStyle = QString());
+    void addTab(QWidget* tabWidget, QPushButton* tabButton, const QString &activeStyle = QString(), const QString &inactiveStyle = QString());
     void addTab(QTab* tab);
 
-    void setButtonStyleSheet(int tabIndex, QString activeStyle = QString(), QString inactiveStyle = QString());
+    void setButtonStyleSheet(const int &tabIndex, const QString &activeStyle = QString(), const QString &inactiveStyle = QString());
     void setButtonStyleSheet(QPushButton* tabButton, QString activeStyle = QString(), QString inactiveStyle = QString());
     void setButtonStyleSheet(QWidget* tabWidget, QString activeStyle = QString(), QString inactiveStyle = QString());
 
@@ -72,11 +73,11 @@ public slots:
 
     int getTabCount();
 
-    void switchTab(int tabIndex);
+    void switchTab(const int &tabIndex);
     void switchTab(QPushButton* tabButton);
     void switchTab(QWidget* tabWidget);
 
-    void activateTab(int index);
+    void activateTab(const int &index);
     void activateTab(QPushButton* tabButton);
     void activateTab(QWidget* tabWidget);
 
@@ -84,7 +85,7 @@ public slots:
     void deactivateTab(QPushButton* tabButton);
     void deactivateTab(QWidget* tabWidget);
 
-    void start(int startTab = 0);
+    void start(const int &startTab = 0);
     void start(QPushButton* startTabButton);
     void start(QWidget* startTabWidget);
 

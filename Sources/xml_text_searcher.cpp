@@ -16,20 +16,30 @@ XMLTextSearcher::XMLTextSearcher(const int &bookFormat)
 XMLTextSearcher::~XMLTextSearcher()
 {
     qDebug()<<"delete text searcher";
-    for (int i = 0; i < results.size(); i++)
-        delete results[i];
 }
 
 
-void XMLTextSearcher::setStartData(const BookPosition &position)
+void XMLTextSearcher::commitTag(QStack <QString> &tags, const tagInfo &TagInf)
 {
-    startPos = position;
+    if (TagInf.index < 31)
+    {
+        if (tags.back() == TagInf.html)
+            tags.pop();
+        else
+            tags.push(TagInf.html);
+    }
 }
 
 
-BookPosition XMLTextSearcher::getStartData() const
+void XMLTextSearcher::checkP(const tagInfo &TagInf, const bool &type, bool &paragrafTail)
 {
-    return startPos;
+    if (TagInf.html == "p")
+    {
+        if (TagInf.type == type)
+            paragrafTail = true;
+        else
+            paragrafTail = false;
+    }
 }
 
 
@@ -69,6 +79,7 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
 
     QRegExp regExp("[?!.;,:-    \n*&%#@'\"+-()^/\\s]");
 
+
     for (long long i = 0; i < bookText.size(); i++)
     {
         if (bookText[i][0] == '<')
@@ -77,22 +88,8 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
             if (TagInf.index == -1)
                 continue;
 
-            if (TagInf.index < 31)
-            {
-                if (tags.back() == TagInf.html)
-                    tags.pop();
-                else
-                    tags.push(TagInf.html);
-            }
-
-
-            if (TagInf.html == "p")
-            {
-                if (TagInf.type == false)
-                    tail = true;
-                else
-                    tail = false;
-            }
+            commitTag(tags, TagInf);
+            checkP(TagInf, false, tail);
         }
         else
         {
@@ -110,8 +107,8 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
                 pos++;
                 if (pos >= key.size())
                 {
-                    BookPosition* res = new BookPosition(i - key.size() + 1, tags, tail);
-                    results.push_back(res);
+                    BookPosition res(i - key.size() + 1, tags, tail);
+                    results.push_back(QPair<BookPosition, QString>(res, createPreview(res, i, bookText)));
                     pos = 0;
                 }
             }
@@ -122,29 +119,92 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
 }
 
 
-int XMLTextSearcher::getResultCount() const
+QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long &textPos, const QStringList &bookText)
 {
-    return results.size();
+    int wordCount = 0;
+    QStack <QString> previewTags = pos.PrevTags;
+    bool previewTail = pos.ParagrafTail;
+    long long prevStart;
+
+    for (prevStart = pos.TextPos; prevStart > 0 && wordCount <= 10; prevStart--)
+    {
+        if (bookText[prevStart][0] == '<')
+        {
+            tagInfo TagInf = resolver->getTag(bookText[prevStart]);
+            if (TagInf.index == -1)
+                continue;
+
+            if (TagInf.index < 5 || TagInf.index == 32)
+                break;
+
+            commitTag(previewTags, TagInf);
+            checkP(TagInf, true, previewTail);
+        }
+        else
+            wordCount++;
+    }
+
+    QString preview;
+
+    for (int j = 0; j < previewTags.size(); j++)
+        preview.append("<" + previewTags[j] + ">");
+
+    if (previewTail)
+        preview.append("... ");
+
+    wordCount = 0;
+
+
+    for (long long j = prevStart; j < bookText.size() && wordCount <= 20; j++)
+    {
+        if (j == pos.TextPos)
+            preview.append("<mark>");
+
+        if (bookText[j][0] == '<')
+        {
+            tagInfo TagInf = resolver->getTag(bookText[j]);
+            if (TagInf.index == -1)
+                continue;
+
+            if (TagInf.index < 5 || TagInf.index == 32)
+                break;
+
+            commitTag(previewTags, TagInf);
+
+            if (TagInf.type == false)
+                preview.append("<" + TagInf.html + ">");
+            else
+                preview.append("</" + TagInf.html + ">");
+
+            checkP(TagInf, false, previewTail);
+        }
+        else
+        {
+            if (bookText[j].right(1) != "-" || bookText[j].size() == 1)
+                preview.append(bookText[j] + " ");
+            else
+                preview.append(bookText[j]);
+
+            wordCount++;
+        }
+
+        if (j == textPos)
+            preview.append("</mark>");
+    }
+
+
+    if (previewTail)
+        preview.append("...");
+
+    for (int j = previewTags.size() - 1; j >= 0; j--)
+        preview.append("</" + previewTags[j] + ">");
+
+    return preview;
 }
 
 
-int XMLTextSearcher::getResultFrom(const long long &position) const
+QVector <QPair<BookPosition, QString>> XMLTextSearcher::getResults()
 {
-    for (int i = 0; i < results.size(); i++)
-        if (position < results[i]->TextPos)
-            return i;
-
-    if (results.size())
-        return results.size() - 1;
-    else
-        return -1;
+    return results;
 }
 
-
-BookPosition *XMLTextSearcher::getResultAt(const int &index) const
-{
-    if (index >= 0 && index < results.size())
-        return results[index];
-
-    return 0;
-}

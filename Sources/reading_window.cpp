@@ -8,6 +8,7 @@
 #include "settings.h"
 #include "styles.h"
 #include "book_table_of_contents.h"
+#include "reading_search_widget.h"
 #include "styles.h"
 #include "battery_widget.h"
 #include "settings_layout.h"
@@ -114,6 +115,7 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
 void ReadingWindow::createReadingMenuWidget()
 {
     MenuWidget = new ReadingMenu(this);
+    MenuWidget->installEventFilter(this);
     connect(ui->MenuButton, SIGNAL(clicked(bool)), MenuWidget, SIGNAL(MenuButtonClicked()));
 
     connect(MenuWidget, SIGNAL(showMainWindow()), this, SIGNAL(showMainWindow()));
@@ -369,11 +371,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             }
             else if (MiniWindow != 0)
             {
-                MiniWindow->close();
-            }
-            else if (Search != 0)
-            {
-                Search->close();
+                MiniWindow->closeWindow();
             }
             else if (ContentsTableWindow != 0)
             {
@@ -493,8 +491,9 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
     }
 
 
-    if (event->type() == QEvent::Resize)
+    if (obj == ui->TextPage && event->type() == QEvent::Resize)
         emit windowWasResized();
+
     else if (event->type() == QEvent::LanguageChange)
         ui->retranslateUi(this);
 
@@ -541,59 +540,6 @@ void ReadingWindow::showContentsTable()
 }
 
 
-void ReadingWindow::showSearchWindow()
-{
-    if (Search != 0 || ActiveWindow)
-        return;
-
-    ActiveWindow = true;
-
-    Search = new SearchWindow(QPoint(0, this->height() - 80), ProgramSettings->getInterfaceStyle(), true, this);
-    Search->installEventFilter(this);
-
-    connect(Search, &SearchWindow::startSearch, [this](const QString &key, const QString &type){
-        ui->TextPage->setHtml(BookPaginator->searchStart(key, type));
-        updateProgress();
-    });
-
-
-    connect(Search, &SearchWindow::nextResult, [this](){
-        ui->TextPage->setHtml(BookPaginator->searchNextStep());
-        updateProgress();
-    });
-
-
-    connect(Search, &SearchWindow::previousResult, [this](){
-        ui->TextPage->setHtml(BookPaginator->searchPrevStep());
-        updateProgress();
-    });
-
-
-    connect(Search, &SearchWindow::searchKeyChanged, [this](){
-        ui->TextPage->setHtml(BookPaginator->searchStop());
-    });
-
-
-    connect(Search, &SearchWindow::backToStart, [this](){
-        ui->TextPage->setHtml(BookPaginator->searchBack());
-        updateProgress();
-    });
-
-    connect(Search, &SearchWindow::destroyed, [this](){
-        Search = 0;
-        ActiveWindow = false;
-        ui->TextPage->setFocus();
-        ui->TextPage->setHtml(BookPaginator->searchStop());
-        updateProgress();
-    });
-
-
-    connect(BookPaginator, SIGNAL(currentSearchStep(QString)), Search, SLOT(setCurrentStepData(QString)));
-
-    Search->show();
-}
-
-
 void ReadingWindow::reprintNewSettText()
 {
     setBackgroundImage();
@@ -601,61 +547,47 @@ void ReadingWindow::reprintNewSettText()
 }
 
 
-void ReadingWindow::createMiniWindow()
+bool ReadingWindow::createMiniWindow()
 {
     if (MiniWindow != 0 || ActiveWindow)
+        return false;
+
+    ActiveWindow = true;
+
+    MiniWindow = new ReadingMiniWindow(this);
+    MiniWindow->installEventFilter(this);
+
+    connect(MiniWindow, &QDialog::destroyed, [this](){
+        MiniWindow = 0;
+        ActiveWindow = false;
+        ui->TextPage->setFocus();
+        qDebug()<<"woopee";
+    });
+
+    return true;
+}
+
+
+void ReadingWindow::showSearchWindow()
+{
+    if (!createMiniWindow())
         return;
 
     ActiveWindow = true;
 
-    MiniWindow = new QDialog(this);
-    MiniWindow->installEventFilter(this);
+    ReadingSearchWidget* Search = new ReadingSearchWidget(MiniWindow);
+    MiniWindow->layout()->addWidget(Search);
 
-    MiniWindow->setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-    MiniWindow->setAttribute(Qt::WA_DeleteOnClose);
+    connect(Search, SIGNAL(searchClosed()), MiniWindow, SLOT(reject()));
 
-    resizeMiniWindow();
-    MiniWindow->setContentsMargins(0,0,0,0);
-
-    QVBoxLayout *MiniWindowLayout = new QVBoxLayout(MiniWindow);
-    MiniWindow->setLayout(MiniWindowLayout);
-    MiniWindowLayout->setContentsMargins(0,0,0,0);
-
-    connect(MiniWindow, &QDialog::finished, [this](){
-        MiniWindow = 0;
-        ActiveWindow = false;
-        ui->TextPage->setFocus();
-    });
-
-    connect(this, SIGNAL(windowWasResized()), this, SLOT(resizeMiniWindow()));
-}
-
-
-void ReadingWindow::resizeMiniWindow()
-{
-    if (MiniWindow != 0)
-    {
-        int frame, w, h;
-        if (this->width() - 100 < 1066)
-            w = 1066;
-        else
-            w = this->width() - 100;
-        if (this->height() - 100 < 536)
-            h = 536;
-        else
-            h = this->height() - 100;
-        frame = (this->height() - h)/2;
-
-        MiniWindow->setGeometry(frame, frame, w, h);
-    }
+    MiniWindow->openWindow();
+    MiniWindow->show();
 }
 
 
 void ReadingWindow::showSettingsWindow()
 {
-
-    createMiniWindow();
-    if (MiniWindow == 0)
+    if (!createMiniWindow())
         return;
 
     QString style[2];
@@ -669,18 +601,17 @@ void ReadingWindow::showSettingsWindow()
     MiniWindow->layout()->addWidget(SettingsPage);
 
     SettingsPage->addExitButton();
-    connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(reject()));
+    connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(closeWindow()));
+    connect(MiniWindow, SIGNAL(finished(int)), this, SLOT(reprintNewSettText()));
 
-
-    if (MiniWindow->exec() == QDialog::Rejected)
-        reprintNewSettText();
+    MiniWindow->openWindow();
+    MiniWindow->show();
 }
 
 
 void ReadingWindow::showSynchronizationWindow()
 {
-    createMiniWindow();
-    if (MiniWindow == 0)
+    if (!createMiniWindow())
         return;
 
     MiniWindow->exec();
