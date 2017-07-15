@@ -19,7 +19,7 @@ public:
 
 public slots:
     void start(const QStringList &bookText, const QString searchKey);
-    QVector <QPair<BookPosition, QString>> getResults();
+    QVector <BookNote> getResults();
 
 private:
     QString createPreview(const BookPosition &pos, const long long &textPos, const QStringList &bookText);
@@ -27,7 +27,7 @@ private:
     void commitTag(QStack<QString> &tags, const tagInfo &TagInf);
     void checkP(const tagInfo &TagInf, const bool &type, bool &paragrafTail);
 
-    QVector <QPair<BookPosition, QString>> results;
+    QVector <BookNote> results;
 
     TagsResolver* resolver;
 

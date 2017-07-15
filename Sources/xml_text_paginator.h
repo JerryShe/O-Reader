@@ -42,7 +42,7 @@ public slots:
     QString getPageForward();
     QString getPageBackward();
 
-    QVector<QPair<BookPosition, QString> > searchStart(QString key);
+    QVector<BookNote> searchStart(QString key);
 
     bool addBookmark() const;
     bool addBooknote(const QString &note) const;

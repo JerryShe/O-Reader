@@ -78,6 +78,52 @@ void BookPosition::fromJson(const QJsonObject &json)
 }
 
 
+
+BookNote::BookNote()
+{}
+
+
+BookNote::BookNote(const long long &position, const QStack<QString> &tagsStack, const bool &tail, QString note)
+{
+    TextPos = position;
+    PrevTags = tagsStack;
+    ParagrafTail = tail;
+    Note = note;
+}
+
+
+BookNote::BookNote(const BookPosition &position, const QString &note)
+{
+    TextPos = position.TextPos;
+    PrevTags = position.PrevTags;
+    ParagrafTail = position.ParagrafTail;
+    Note = note;
+}
+
+
+BookNote::BookNote(const QJsonObject &json)
+{
+    fromJson(json);
+}
+
+
+void BookNote::fromJson(const QJsonObject &json)
+{
+    if (json.contains("Note"))
+        Note = json["Note"].toString();
+    BookPosition::fromJson(json);
+}
+
+
+QJsonObject BookNote::toJson() const
+{
+    QJsonObject json = BookPosition::toJson();
+    json["Note"] = Note;
+
+    return json;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -479,7 +525,7 @@ void Book::fromJson(const QJsonObject &json)
     {
         tempArr = json["Bookmarks"].toArray();
         for (int i = 0; i < tempArr.size(); i++)
-            Booknotes.append( QPair<BookPosition, QString> (BookPosition(tempArr[i].toObject()), tempArr[i].toObject()["Note"].toString()));
+            Booknotes.append( BookNote(BookPosition(tempArr[i].toObject()), tempArr[i].toObject()["Note"].toString()));
     }
 }
 
@@ -522,11 +568,7 @@ QJsonObject Book::toJson() const
 
     QJsonArray booknotesArr;
     for (int i = 0; i < Booknotes.size(); i++)
-    {
-        QJsonObject tempObj = Booknotes[i].first.toJson();
-        tempObj["Note"] = Booknotes[i].second;
-        booknotesArr.append(tempObj);
-    }
+        booknotesArr.append(Booknotes[i].toJson());
     json["Booknotes"] = booknotesArr;
 
     return json;
@@ -761,29 +803,30 @@ bool Book::addBooknote(const BookPosition &position, const QString &note)
     int i = 0;
     for (; i < Booknotes.size(); i++)
     {
-        if (position.TextPos > Booknotes[i].first.TextPos)
+        if (position.TextPos > Booknotes[i].TextPos)
             break;
-        else if (position.TextPos == Booknotes[i].first.TextPos)
+        else if (position.TextPos == Booknotes[i].TextPos)
             return false;
     }
 
     if (i == Booknotes.size())
-        Booknotes.append(QPair <BookPosition, QString> (position, note));
+        Booknotes.append(BookNote(position, note));
     else
-        Booknotes.insert(i, QPair <BookPosition, QString> (position, note));
+        Booknotes.insert(i, BookNote(position, note));
 
     return true;
 }
 
 
-QVector <QPair <BookPosition, QString>> Book::getBooknotes() const
+QVector <BookNote> Book::getBooknotes() const
 {
     return Booknotes;
 }
 
-QPair <BookPosition, QString> Book::getBooknoteAt(const int &index) const
+
+BookNote Book::getBooknoteAt(const int &index) const
 {
     if (Booknotes.size() > index && index >= 0)
         return Booknotes[index];
-    return QPair <BookPosition, QString>();
+    return BookNote();
 }

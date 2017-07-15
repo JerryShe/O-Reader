@@ -108,7 +108,7 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
                 if (pos >= key.size())
                 {
                     BookPosition res(i - key.size() + 1, tags, tail);
-                    results.push_back(QPair<BookPosition, QString>(res, createPreview(res, i, bookText)));
+                    results.push_back(BookNote(res, createPreview(res, i, bookText)));
                     pos = 0;
                 }
             }
@@ -203,7 +203,7 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
 }
 
 
-QVector <QPair<BookPosition, QString>> XMLTextSearcher::getResults()
+QVector<BookNote> XMLTextSearcher::getResults()
 {
     return results;
 }

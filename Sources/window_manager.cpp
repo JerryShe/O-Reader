@@ -106,7 +106,9 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     case 2:
         if (clientHandler->autoLoginOnServer())
         {
-            QFile bookFile(LibHandler->getLastOpenedBook()->getFileName());
+            //TODO:проверка на нулптр
+             QFile bookFile(LibHandler->getLastOpenedBook()->getFileName());
+
              if (!bookFile.exists())
              {
                  QMessageBox::information(0, tr("Error!"), tr("Book file lost :( \nReturning to library..."));

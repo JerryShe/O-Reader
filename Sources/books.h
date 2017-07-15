@@ -20,12 +20,26 @@ struct BookPosition
     BookPosition();
     BookPosition(const QJsonObject &json);
 
-    QJsonObject toJson() const;
-    void fromJson(const QJsonObject &json);
+    virtual QJsonObject toJson() const;
+    virtual void fromJson(const QJsonObject &json);
 
     long long TextPos;
     QStack <QString> PrevTags;
     bool ParagrafTail;
+};
+
+
+struct BookNote: public BookPosition
+{
+    BookNote();
+    BookNote(const long long &position, const QStack<QString> &tagsStack, const bool &tail, QString note);
+    BookNote(const BookPosition &position, const QString &note);
+    BookNote(const QJsonObject &json);
+
+    virtual QJsonObject toJson() const;
+    virtual void fromJson(const QJsonObject &json);
+
+    QString Note;
 };
 
 
@@ -86,8 +100,8 @@ public:
     BookPosition getBookmarkAt(const int &index) const;
 
     bool addBooknote(const BookPosition &position, const QString &note);
-    QVector<QPair<BookPosition, QString> > getBooknotes() const;
-    QPair <BookPosition, QString> getBooknoteAt(const int &index) const;
+    QVector<BookNote> getBooknotes() const;
+    BookNote getBooknoteAt(const int &index) const;
 
 
 private:
@@ -118,7 +132,7 @@ private:
     double ProgressProcent = 0;
 
     QVector <BookPosition> Bookmarks;
-    QVector <QPair<BookPosition, QString>> Booknotes;
+    QVector <BookNote> Booknotes;
 };
 
 #endif // BOOKBAR_H

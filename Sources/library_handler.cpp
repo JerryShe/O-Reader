@@ -108,6 +108,9 @@ QJsonObject LibraryHandler::toJson() const
 
 void LibraryHandler::fromJson(const QJsonObject &json)
 {
+    if (!json.contains("Library"))
+        return;
+
     QJsonArray LibArray = json["Library"].toArray();
     QJsonObject temp;
 

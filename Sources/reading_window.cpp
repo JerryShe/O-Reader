@@ -51,6 +51,11 @@ void ReadingWindow::setStyle(const QString &currentStyle)
 
     ui->ReadProfilesButton->setStyleSheet(styleSheets[2]);
     ProfilesView->setStyleSheet(styleSheets[3]);
+
+    //TODO: убрать костыль
+    QString style[2];
+    setBackgroundWindowColor(style, ProgramSettings->getInterfaceStyle());
+    setStyleSheet(style[1]);
 }
 
 
@@ -589,10 +594,6 @@ void ReadingWindow::showSettingsWindow()
 {
     if (!createMiniWindow())
         return;
-
-    QString style[2];
-    setBackgroundWindowColor(style, ProgramSettings->getInterfaceStyle());
-    setStyleSheet(style[1]);
 
     SettingsLayout *SettingsPage = new SettingsLayout(MiniWindow);
 

@@ -231,14 +231,24 @@ void XMLTextPaginator::findTagsTail()
     for (int i = 0; i < tagsLineCount; i++)
     {
         tag = Columns[currentColumn].last();
-        int parseResalt = parseTag();
-        if (parseResalt == 1 || parseResalt == 0)
-        {
-            tagType = !tagType;
-            applyTag();
-            Columns[currentColumn].removeLast();
-        }
+        tagInfo inf = Resolver->getTag(tag);
+        tag = inf.html;
+
+        if (!tagStack.isEmpty())
+            if (tagStack.last() == tag)
+                tagStack.pop();
+
+        if (inf.type)
+            tag = "</" + tag + ">";
+        else
+            tag = "<" + tag + ">";
+
+        if (!Columns[currentColumn].isEmpty())
+            if (Columns[currentColumn].last() == tag)
+                Columns[currentColumn].removeLast();
+
     }
+
     currentTextPos -= tagsLineCount;
     tagsLineCount = 0;
     parseDirection = realParseDirection;
@@ -290,6 +300,7 @@ int XMLTextPaginator::tag_p()
 
         return 2;
     }
+
     return 1;
 }
 
@@ -378,12 +389,16 @@ int XMLTextPaginator::tag_img()
 int XMLTextPaginator::parseTag()
 {
     tagInfo TagInf = Resolver->getTag(tag);
-    if (TagInf.index == -1)
+    if (TagInf.index == -1)        
         return 2;
 
     tagType = TagInf.type;
     tag = TagInf.html;
 
+    if (currentTextPos == 46238)
+    {
+        qDebug()<<1;
+    }
 
     //TODO: привести в нормальный вид
     if (TagInf.index < 31)
@@ -621,6 +636,7 @@ QString XMLTextPaginator::getPageForward()
                     {
                         tag = bookText[currentTextPos];
                         int parseResalt = parseTag();
+
                         if (parseResalt == 1)
                         {
                             applyTag();
@@ -650,7 +666,6 @@ QString XMLTextPaginator::getPageForward()
                     }
                 }
             }
-
             for (int p = tagStack.size() - 1; p > 0; p--)
                 Columns[currentColumn].append("</" + tagStack[p] + ">");
         }
@@ -791,7 +806,7 @@ QString XMLTextPaginator::getPageNote(const QString &ID, const int &viewWidth) c
 }
 
 
-QVector <QPair<BookPosition, QString>> XMLTextPaginator::searchStart(QString key)
+QVector<BookNote> XMLTextPaginator::searchStart(QString key)
 {
     XMLTextSearcher Searcher(book->getFormat());
     Searcher.start(bookText, key);
@@ -820,7 +835,7 @@ QString XMLTextPaginator::goToBookmark(const int &index)
 
 QString XMLTextPaginator::goToNote(const int &index)
 {
-    return goToPosition(book->getBooknoteAt(index).first);
+    return goToPosition(book->getBooknoteAt(index));
 }
 
 
