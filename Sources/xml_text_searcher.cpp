@@ -1,5 +1,6 @@
 #include "xml_text_searcher.h"
-#include <QString>
+
+#include <QStringList>
 #include <QRegExp>
 
 #include <QDebug>
@@ -43,12 +44,21 @@ void XMLTextSearcher::checkP(const tagInfo &TagInf, const bool &type, bool &para
 }
 
 
-void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey)
+void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey, const bool &caseSensitive, const bool &punctuation)
 {
     if (!searchKey.size())
         return;
 
-    QStringList key = searchKey.split(" ");
+
+    QString::SplitBehavior splitMode;
+
+    if (punctuation)
+        splitMode = QString::KeepEmptyParts;
+    else
+        splitMode = QString::SkipEmptyParts;
+
+    QStringList key = searchKey.split(" ", splitMode);
+
 
     for (int i = 0; i < key.size(); i++)
     {
@@ -69,6 +79,7 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
         }
     }
 
+
     qDebug()<<"new search: "<<key;
 
     int pos = 0;
@@ -77,8 +88,13 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
     tags.push("Text");
     bool tail;
 
-    QRegExp regExp("[?!.;,:-    \n*&%#@'\"+-()^/\\s]");
 
+    QRegExp regExp("[?!.;,:-    \n*&%#@'\"+-()^/\\s]");
+    Qt::CaseSensitivity sensitivity;
+    if (caseSensitive)
+        sensitivity = Qt::CaseSensitive;
+    else
+        sensitivity = Qt::CaseInsensitive;
 
     for (long long i = 0; i < bookText.size(); i++)
     {
@@ -96,13 +112,16 @@ void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey
             QString text = bookText[i];
             QString keyText = key[pos];
 
-            text.remove(regExp);
-            keyText.remove(regExp);
+            if (!punctuation)
+            {
+                text.remove(regExp);
+                keyText.remove(regExp);
+            }
 
             if (keyText.isEmpty() || text.isEmpty())
                 continue;
 
-            if (text.compare(keyText, Qt::CaseInsensitive) == 0)
+            if (text.compare(keyText, sensitivity) == 0)
             {
                 pos++;
                 if (pos >= key.size())

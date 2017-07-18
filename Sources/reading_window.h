@@ -11,6 +11,7 @@
 #include "reading_menu.h"
 #include "book_table_of_contents.h"
 #include "reading_mini_window.h"
+#include "reading_search_widget.h"
 
 #include <QThread>
 #include <QKeyEvent>
@@ -90,6 +91,7 @@ private:
     QListWidget* ProfilesView;
 
     ReadingMiniWindow* MiniWindow;
+    ReadingSearchWidget* SearchWidget;
     BookTableOfContents* ContentsTableWindow;
     SearchWindow* Search;
 

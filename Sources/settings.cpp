@@ -596,7 +596,7 @@ ReadingProfile Settings::getNamedReadProfile(const QString name) const
 }
 
 
-ReadingProfile Settings::getCurrentReadProfileElem() const
+ReadingProfile Settings::getCurrentReadProfile() const
 {
     return TextStyles.at(TextStylesNames.indexOf(currentStyle));
 }

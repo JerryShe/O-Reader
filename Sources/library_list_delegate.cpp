@@ -44,23 +44,17 @@ bool LibraryListDelegate::listViewMode() const
 }
 
 
-void LibraryListDelegate::setItemsColors(const QColor &norm, const QColor &sel, const QColor &hov, const QColor &hovSel)
-{
-    normal = norm;
-    selected = sel;
-    hover = hov;
-    hoverSelected = hovSel;
-}
-
-
 void LibraryListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     painter->save();
+    painter->setRenderHints(QPainter::Antialiasing| QPainter::TextAntialiasing);
+
+    //TODO: костыль или не костыль, вот в чем вопрос...
+    QStyledItemDelegate::paint(painter, option, index);
 
     QRect rect = option.rect;
     rect.setHeight(option.decorationSize.height());
 
-    drawBackground(painter, option, rect);
 
     if (!viewMode)
         paintIconViewItem(painter, option, index, rect);
@@ -156,20 +150,6 @@ void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progre
     QColor penColor(0,0,0);
     painter->setPen(penColor);
     painter->drawEllipse(pos.x() - 5, pos.y() - 5, 10, 10);
-}
-
-
-void LibraryListDelegate::drawBackground(QPainter *painter, const QStyleOptionViewItem &option, const QRect &rect) const
-{
-    if (option.state & QStyle::State_MouseOver)
-    {
-        if (option.state & QStyle::State_Selected)
-            painter->fillRect(rect, QBrush(hoverSelected));
-        else
-            painter->fillRect(rect, QBrush(hover));
-    }
-    else if (option.state & QStyle::State_Selected)
-        painter->fillRect(rect, QBrush(selected));
 }
 
 

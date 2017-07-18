@@ -29,8 +29,6 @@ void setBookOrFolderStyle (QString buttonStyle [], const QString style);
 
 void setLibraryStyle (QString ListViewStyle[], const QString style);
 
-void getLibraryStyleColors (QColor &back, QColor &selected, QColor &hover, QColor &hoverSelected);
-
 void setBookPageStyle(QString BookPageStyle[], const QString style);
 
 void setSearchWindowStyle(QString SearchStyle[], const QString style);

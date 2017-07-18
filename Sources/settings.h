@@ -112,7 +112,7 @@ public:
     void removeNamedReadProfile(const QString &name);
 
     ReadingProfile getNamedReadProfile(const QString name) const;
-    ReadingProfile getCurrentReadProfileElem() const;
+    ReadingProfile getCurrentReadProfile() const;
 
     QString getTextAlignName(const unsigned short &key) const;
 

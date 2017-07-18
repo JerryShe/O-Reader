@@ -18,7 +18,7 @@ public:
     ~XMLTextSearcher();
 
 public slots:
-    void start(const QStringList &bookText, const QString searchKey);
+    void start(const QStringList &bookText, const QString searchKey, const bool &caseSensitive, const bool &punctuation);
     QVector <BookNote> getResults();
 
 private:

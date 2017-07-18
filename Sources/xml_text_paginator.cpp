@@ -222,7 +222,7 @@ int XMLTextPaginator::getSpaceWidth() const
 
 void XMLTextPaginator::findTagsTail()
 {
-    if (tagsLineCount == 0)
+    if (tagsLineCount == 0 || parseDirection)
         return;
 
     const bool realParseDirection = parseDirection;
@@ -246,7 +246,6 @@ void XMLTextPaginator::findTagsTail()
         if (!Columns[currentColumn].isEmpty())
             if (Columns[currentColumn].last() == tag)
                 Columns[currentColumn].removeLast();
-
     }
 
     currentTextPos -= tagsLineCount;
@@ -672,7 +671,7 @@ QString XMLTextPaginator::getPageForward()
 
         pageEndTextPos = currentTextPos - 1;
 
-        book->setProgress(pageBeginTextPos - 1, ParagrafTail, beginTagStack, getProgress());
+        book->setProgress(pageBeginTextPos - 1, beginParagrafTail, beginTagStack, getProgress());
 
         createHTMLPage();
         debugSave(HTMLPage);
@@ -753,7 +752,7 @@ QString XMLTextPaginator::getPageBackward()
 
         pageBeginTextPos = currentTextPos + 1;
 
-        book->setProgress(pageBeginTextPos - 1, ParagrafTail, tagStack, getProgress());
+        book->setProgress(currentTextPos, ParagrafTail, tagStack, getProgress());
 
         createHTMLPage();
         debugSave(HTMLPage);
@@ -806,10 +805,10 @@ QString XMLTextPaginator::getPageNote(const QString &ID, const int &viewWidth) c
 }
 
 
-QVector<BookNote> XMLTextPaginator::searchStart(QString key)
+QVector<BookNote> XMLTextPaginator::searchStart(const QString &key, const bool &caseSensitivity, const bool& punctuation)
 {
     XMLTextSearcher Searcher(book->getFormat());
-    Searcher.start(bookText, key);
+    Searcher.start(bookText, key, caseSensitivity, punctuation);
 
     return Searcher.getResults();
 }
@@ -865,6 +864,12 @@ float XMLTextPaginator::getProgress() const
         return (((float)(pageEndTextPos+1)/(float)bookText.size()) * 100);
     else
         return 0;
+}
+
+
+QString XMLTextPaginator::getTextStyles()
+{
+    return PageHTMLStyles;
 }
 
 

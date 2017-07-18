@@ -79,7 +79,10 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, QWidget
     this->setLayout(VLayout);
     setStyle(style);
 
+    connect(TextBox, SIGNAL(returnPressed()), this, SLOT(YepButtonClicked()));
+
     this->show();
+    TextBox->setFocus();
 }
 
 

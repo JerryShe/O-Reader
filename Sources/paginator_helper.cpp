@@ -126,7 +126,7 @@ void PaginatorHelper::setFontMetrics(QHash <QString, QFontMetrics*> *fontsMetric
 
 void PaginatorHelper::refreshSettings()
 {
-    CurProfile = Settings::getSettings()->getCurrentReadProfileElem();
+    CurProfile = Settings::getSettings()->getCurrentReadProfile();
 }
 
 

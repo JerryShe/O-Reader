@@ -35,20 +35,22 @@ public slots:
     QString updateSettings(const int &width, const int &height);
     QString refreshPage();
 
-    QString goToSection(const long long sectionIndex);
+    QString goToPosition(const BookPosition &pos);
+    QString goToSection(const long long sectionIndex);  
+    QString goToBookmark(const int &index);
+    QString goToNote(const int &index);
 
     QString getPageNote(const QString &ID, const int &viewWidth) const;
 
     QString getPageForward();
     QString getPageBackward();
 
-    QVector<BookNote> searchStart(QString key);
+    QVector<BookNote> searchStart(const QString &key, const bool &caseSensitivity, const bool &punctuation);
 
     bool addBookmark() const;
     bool addBooknote(const QString &note) const;
 
-    QString goToBookmark(const int &index);
-    QString goToNote(const int &index);
+    QString getTextStyles();
 
 signals:
     void currentSearchStep(QString step);
@@ -60,7 +62,6 @@ private:
     int tag_a();
     int tag_img();
 
-    QString goToPosition(const BookPosition &pos);
     BookPosition getCurrentPosition() const;
 
     int getWordWidth() const;

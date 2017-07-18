@@ -330,6 +330,7 @@ void setBookOrFolderStyle (QString buttonStyle [], const QString style)
     }
 }
 
+
 void setLibraryStyle (QString ListViewStyle[], const QString style)
 {
     if (style == "Red")
@@ -343,22 +344,15 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
                            " {outline: 0px;"
                            " border: none;}"
 
-                           " QListView::item:hover, QListView::item:selected,"
-                           " QListView:selected"
-                           " {color:white;"
-                           " outline: 0px;"
-                           " border: none;"
-                           " background-color:rgb(100, 0, 30);}";
+                           " QListView::item:hover"
+                           "{background-color:rgb(100,0,30);}"
+
+                           " QListView::item:selected"
+                           "{background-color:rgb(151,151,227);}"
+
+                           " QListView::item:selected:hover"
+                           "{background-color:rgb(130,130,195);}";
     }
-}
-
-
-void getLibraryStyleColors (QColor &back, QColor &selected, QColor &hover, QColor &hoverSelected)
-{
-    back.setRgb(150, 0 ,60);
-    selected.setRgb(151, 151, 227);
-    hover.setRgb(100, 0, 30);
-    hoverSelected.setRgb(130, 130, 195);
 }
 
 

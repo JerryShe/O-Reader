@@ -6,6 +6,8 @@
 
 #include <QDebug>
 
+#include <styles.h>
+
 ReadingMiniWindow::ReadingMiniWindow(QWidget *parent): QDialog(parent)
 {
     qDebug()<<"create MiniWindow";
@@ -23,9 +25,13 @@ ReadingMiniWindow::ReadingMiniWindow(QWidget *parent): QDialog(parent)
     setLayout(MiniWindowLayout);
     MiniWindowLayout->setContentsMargins(0,0,0,0);
 
-
     connect(this, SIGNAL(accepted()), this, SLOT(closeWindow()));
     connect(this, SIGNAL(rejected()), this, SLOT(closeWindow()));
+
+    //TODO: убрать костыль
+    QString style[2];
+    setBackgroundWindowColor(style, "Red");
+    setStyleSheet(style[1]);
 }
 
 

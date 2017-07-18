@@ -8,7 +8,6 @@
 #include "settings.h"
 #include "styles.h"
 #include "book_table_of_contents.h"
-#include "reading_search_widget.h"
 #include "styles.h"
 #include "battery_widget.h"
 #include "settings_layout.h"
@@ -51,11 +50,6 @@ void ReadingWindow::setStyle(const QString &currentStyle)
 
     ui->ReadProfilesButton->setStyleSheet(styleSheets[2]);
     ProfilesView->setStyleSheet(styleSheets[3]);
-
-    //TODO: убрать костыль
-    QString style[2];
-    setBackgroundWindowColor(style, ProgramSettings->getInterfaceStyle());
-    setStyleSheet(style[1]);
 }
 
 
@@ -153,9 +147,9 @@ void ReadingWindow::createReadProfilesWidget()
 
 void ReadingWindow::setBackgroundImage()
 {
-    if (ProgramSettings->getCurrentReadProfileElem().BackgroundType == false)
+    if (ProgramSettings->getCurrentReadProfile().BackgroundType == false)
         ui->TextBackground->setStyleSheet("#TextBackground{background-image:url(" +
-                                          ProgramSettings->getCurrentReadProfileElem().BackgroundImage +
+                                          ProgramSettings->getCurrentReadProfile().BackgroundImage +
                                           + ");}");
     else
         ui->TextBackground->setStyleSheet("");
@@ -566,7 +560,6 @@ bool ReadingWindow::createMiniWindow()
         MiniWindow = 0;
         ActiveWindow = false;
         ui->TextPage->setFocus();
-        qDebug()<<"woopee";
     });
 
     return true;
@@ -580,10 +573,20 @@ void ReadingWindow::showSearchWindow()
 
     ActiveWindow = true;
 
-    ReadingSearchWidget* Search = new ReadingSearchWidget(MiniWindow);
-    MiniWindow->layout()->addWidget(Search);
+    SearchWidget = new ReadingSearchWidget(BookPaginator->getBookContentTable(),
+                                           CurBook->getProgressPosition(),
+                                           BookPaginator->getTextStyles(),
+                                           MiniWindow);
+    MiniWindow->layout()->addWidget(SearchWidget);
 
-    connect(Search, SIGNAL(searchClosed()), MiniWindow, SLOT(reject()));
+    connect(SearchWidget, &ReadingSearchWidget::startSearch, [this](const QString &token, const bool &caseSensitivity, const bool &punctuation){
+        SearchWidget->setSearchResults(BookPaginator->searchStart(token, caseSensitivity, punctuation));
+    });
+
+    connect(SearchWidget, SIGNAL(searchClosed()), MiniWindow, SLOT(closeWindow()));
+    connect(SearchWidget, &ReadingSearchWidget::goTo, [this](const BookPosition &pos){
+        ui->TextPage->setHtml(BookPaginator->goToPosition(pos));
+    });
 
     MiniWindow->openWindow();
     MiniWindow->show();

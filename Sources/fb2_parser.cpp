@@ -126,6 +126,7 @@ void FB2Parser::parseText(QStringList &bookText)
 void FB2Parser::createTableOfContents(const QStringList &bookText, QTreeWidgetItem*& tableOfContents) const
 {
     tableOfContents = new QTreeWidgetItem(0);
+    tableOfContents->setWhatsThis(0, QString::number(0));
     QTreeWidgetItem* curItem = tableOfContents;
 
     for (long long i = 0; i < bookText.size(); i++)
@@ -133,7 +134,7 @@ void FB2Parser::createTableOfContents(const QStringList &bookText, QTreeWidgetIt
         if (bookText[i] == "<section>")
         {
             QString text;
-            int pos = i;
+            long long pos = i;
 
             for (; i < bookText.size(); i++)
                 if (bookText[i] == "<title>" || bookText[i] == "</section>")

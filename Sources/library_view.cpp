@@ -252,12 +252,4 @@ void LibraryView::setSettingsData()
         delegate->setListViewMode(false);
         setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
     }
-
-    QColor normal;
-    QColor selected;
-    QColor hover;
-    QColor hoverSelected;
-
-    getLibraryStyleColors(normal, selected, hover, hoverSelected);
-    delegate->setItemsColors(normal, selected, hover, hoverSelected);
 }
