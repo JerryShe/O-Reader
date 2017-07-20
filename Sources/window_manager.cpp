@@ -17,7 +17,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 {
     LastWindow = 0;
     loadingLabel = 0;
-
+    moving = false;
 
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -46,17 +46,13 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     setMouseTracking(true);
     setWindowFlags(Qt::CustomizeWindowHint);
 
-    this->setGeometry(qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
-    prev_geometry = geometry();
-
-
-    ProgramSettings->loadSettings();
-
-    UserSynchro->loadLog();
-
     connect(LibHandler, SIGNAL(showLoadImage(QString)), this, SLOT(showLoadingImage(QString)));
     connect(LibHandler, SIGNAL(hideLoadImage()), this, SLOT(hideLoadingImage()));
+
+    ProgramSettings->loadSettings();
+    UserSynchro->loadLog();
     LibHandler->loadBookList();
+
 
     LanguageTranslator = new QTranslator(this);
 
@@ -131,12 +127,29 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         break;
     }
 
+
+
+    qDebug()<<ProgramSettings->getWindowGeometry();
+    qDebug()<<ProgramSettings->windowWasMaximized();
+
     windowMachine->start();
+
+    prev_geometry = ProgramSettings->getWindowGeometry();
+    this->setGeometry(ProgramSettings->getWindowGeometry());
+
+    if (ProgramSettings->windowWasMaximized())
+        this->setWindowState(Qt::WindowFullScreen);
+    else
+        this->setWindowState(Qt::WindowNoState);
 }
 
 
 void WindowManager::saveProgramData()
 {
+    if (!this->isFullScreen())
+        prev_geometry = geometry();
+    ProgramSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
+
     ProgramSettings->saveSettings();
     UserSynchro->saveLog();
     LibHandler->saveBookList();
@@ -243,6 +256,10 @@ void WindowManager::showReading()
 
 void WindowManager::closeWindow()
 {
+    if (!this->isFullScreen())
+        prev_geometry = geometry();
+    ProgramSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
+
     if(!LibHandler->saveBookList())
     {
 
@@ -267,15 +284,18 @@ void WindowManager::mouseMoveEvent(QMouseEvent *e)
 {
     if (moving)
     {
-        if (!isMaximized())
+        if (!isFullScreen())
         {
-            move(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7);
+            move(prev_geometry.topLeft() + QPoint(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7));
         }
         else
         {
-            prev_geometry.setY(e->globalY());
-            normalGeometry() = prev_geometry;
             showNormal();
+            setGeometry(prev_geometry);
+            move(e->globalX() - prev_geometry.width()/2, e->globalY());
+
+            prev_geometry = geometry();
+            lastPoint = e->globalPos();
         }
     }
 }
@@ -288,7 +308,10 @@ void WindowManager::mousePressEvent(QMouseEvent *e)
         if (e->pos().y() <= 50 && e->pos().y() > resizingFrame)
         {
             moving = true;
-            lastPoint = e->pos();
+            lastPoint = e->globalPos();
+
+            if (!isFullScreen())
+                prev_geometry = geometry();
         }
     }
 }
@@ -308,8 +331,8 @@ void WindowManager::showWindowMinimazed()
 {
     if(isMinimized())
     {
-        normalGeometry() = prev_geometry;
         showNormal();
+        setGeometry(prev_geometry);
     }
     else
     {
@@ -321,15 +344,15 @@ void WindowManager::showWindowMinimazed()
 
 void WindowManager::showWindowMaximazed()
 {
-    if(isMaximized())
+    if(isFullScreen())
     {
-        normalGeometry() = prev_geometry;
         showNormal();
+        setGeometry(prev_geometry);
     }
     else
     {
         prev_geometry = geometry();
-        showMaximized();
+        showFullScreen();
     }
 }
 

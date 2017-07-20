@@ -85,7 +85,7 @@ bool BookWidget::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::Resize)
     {
         this->resize(this->width(), this->parentWidget()->height() - 30);
-        this->move(15, 30);
+        this->move(25, 30);
 
         if (ui->ImageLabel->height() < Cover.height())
             ui->ImageLabel->setPixmap(Cover.scaledToHeight(ui->ImageLabel->height()));

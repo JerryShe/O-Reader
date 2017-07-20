@@ -6,8 +6,9 @@
 #include <QObject>
 #include <QMap>
 #include <QTranslator>
-
+#include <QRect>
 #include <QJsonObject>
+
 
 struct TextStyleSheet
 {
@@ -31,6 +32,7 @@ struct TextStyleSheet
 
     QString getHTMLStyle() const;
 };
+
 
 struct ReadingProfile
 {
@@ -58,10 +60,12 @@ struct ReadingProfile
     void fromJson(const QJsonObject &json);
 };
 
+
 class Settings : public QObject
 {
 public:
     static Settings* getSettings();
+
     void setTranslator(QTranslator* translator);
 
     bool saveSettings() const;
@@ -116,15 +120,19 @@ public:
 
     QString getTextAlignName(const unsigned short &key) const;
 
+    void setWindowGeometry(const bool &maximized, const QRect &geometry);
+    bool windowWasMaximized() const;
+    QRect getWindowGeometry() const;
+
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
-
-signals:
-    void loadDone(){}
 
 private:
     Settings();
     ~Settings();
+
+    bool WindowMaximized;
+    QRect WindowGeometry;
 
     QString InterfaceStyle;
     QString Language;

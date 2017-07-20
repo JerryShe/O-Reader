@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>929</width>
+    <width>715</width>
     <height>542</height>
    </rect>
   </property>
@@ -50,7 +50,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>120</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>
@@ -72,7 +72,7 @@
       <widget class="QPushButton" name="_Sort">
        <property name="minimumSize">
         <size>
-         <width>120</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>
@@ -94,7 +94,7 @@
       <widget class="QComboBox" name="_SortBox">
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>
@@ -167,7 +167,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>120</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>
@@ -189,7 +189,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>101</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>
@@ -242,7 +242,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>120</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>
@@ -267,7 +267,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>120</width>
+         <width>70</width>
          <height>30</height>
         </size>
        </property>

@@ -22,6 +22,8 @@
 #include <QScroller>
 #include <QScrollBar>
 
+#include <QDesktopServices>
+
 #include <QDebug>
 
 
@@ -260,6 +262,10 @@ void ReadingWindow::showNoteText(const QUrl &link)
 
             NoteWidget->move(pos);
         }
+        else
+            if (link.isValid())
+                QDesktopServices::openUrl(link);
+
     }
 }
 
@@ -283,9 +289,10 @@ void ReadingWindow::on_ReadProfilesButton_clicked()
         connect(ProfilesView, &QListWidget::doubleClicked, [this](const QModelIndex &index){
             ProgramSettings->setCurrentReadProfile(ProgramSettings->getReadProfilesList().at(index.row()));
             reprintNewSettText();
+            ui->TextPage->setFocus();
         });
     }
-    else
+    else        
         ProfilesWidget->hide();
 }
 
@@ -371,6 +378,10 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             else if (MiniWindow != 0)
             {
                 MiniWindow->closeWindow();
+            }
+            else if (!ProfilesWidget->isHidden())
+            {
+                ProfilesWidget->hide();
             }
             else if (ContentsTableWindow != 0)
             {

@@ -1,14 +1,18 @@
 #include "settings.h"
+
+
 #include <QVector>
 #include <QDataStream>
 #include <QFile>
 #include <QDir>
-
-#include <QDebug>
-
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QApplication>
+#include <QDesktopWidget>
+
+#include <QDebug>
+
 
 Settings::Settings()
 {
@@ -93,6 +97,9 @@ bool Settings::loadSettings()
     LibraryIconBarSize = 140;
     LibraryIconListSize = 50;
 
+    WindowMaximized = false;
+    WindowGeometry = QRect (qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
+
 
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -146,6 +153,14 @@ QJsonObject Settings::toJson() const
     json["HideTopBar"] = HideTopBar;
     json["CurrentStyle"] = currentStyle;
 
+    QJsonObject rectObj;
+    rectObj["maximized"] = WindowMaximized;
+    rectObj["x"] = WindowGeometry.x();
+    rectObj["y"] = WindowGeometry.y();
+    rectObj["w"] = WindowGeometry.width();
+    rectObj["h"] = WindowGeometry.height();
+    json["WindowGeometry"] = rectObj;
+
     json["TextStylesNames"] = QJsonArray::fromStringList(TextStylesNames);
 
     QJsonObject Obj;
@@ -194,6 +209,28 @@ void Settings::fromJson(const QJsonObject &json)
 
     if (json.contains("HideTopBar"))
         HideTopBar = json["HideTopBar"].toBool();
+
+
+    if (json.contains("WindowGeometry"))
+    {
+        QJsonObject rectObj = json["WindowGeometry"].toObject();
+
+        if (rectObj.contains("maximized"))
+            WindowMaximized = rectObj["maximized"].toBool();
+
+        if (rectObj.contains("x"))
+            WindowGeometry.setX(rectObj["x"].toInt());
+        if (rectObj.contains("y"))
+            WindowGeometry.setY(rectObj["y"].toInt());
+        if (rectObj.contains("w"))
+            WindowGeometry.setWidth(rectObj["w"].toInt());
+        if (rectObj.contains("h"))
+            WindowGeometry.setHeight(rectObj["h"].toInt());
+
+        if (WindowGeometry == QRect(0,0,0,0))
+            WindowGeometry = QRect (qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
+    }
+
 
     TextStylesNames.clear();    
     if (json.contains("TextStylesNames"))
@@ -631,4 +668,23 @@ void Settings::removeNamedReadProfile(const QString &name)
     {
         qDebug()<<"delete style wtf";
     }
+}
+
+
+void Settings::setWindowGeometry(const bool &maximized, const QRect &geometry)
+{
+    WindowMaximized = maximized;
+    WindowGeometry = geometry;
+}
+
+
+bool Settings::windowWasMaximized() const
+{
+    return WindowMaximized;
+}
+
+
+QRect Settings::getWindowGeometry() const
+{
+    return WindowGeometry;
 }
