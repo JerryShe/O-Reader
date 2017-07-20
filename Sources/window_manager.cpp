@@ -32,13 +32,13 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     ProgramSettings = Settings::getSettings();
     UserSynchro = Synchronization::getSynchronization();
     LibHandler = LibraryHandler::getLibraryHandler();
-    clientHandler = ClientHandler::getClientHandler();
+    ClientHandler = ClientHandler::getClientHandler();
 
 
     ProgramSettings->moveToThread(HandlerThread);
     UserSynchro->moveToThread(HandlerThread);
     LibHandler->moveToThread(HandlerThread);
-    clientHandler->moveToThread(HandlerThread);
+    ClientHandler->moveToThread(HandlerThread);
 
     HandlerThread->start();
 
@@ -97,25 +97,30 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         break;
 
     case 1:
-        if (clientHandler->autoLoginOnServer())
+        if (ClientHandler->autoLoginOnServer())
             windowMachine->setInitialState(mainState);
         else
             windowMachine->setInitialState(loginState);
         break;
 
     case 2:
-        if (clientHandler->autoLoginOnServer())
+        if (ClientHandler->autoLoginOnServer())
         {
-            //TODO:проверка на нулптр
-             QFile bookFile(LibHandler->getLastOpenedBook()->getFileName());
+            //TODO: сделать красиво
+            if (LibHandler->getLastOpenedBook() == 0)
+            {
+                windowMachine->setInitialState(mainState);
+                break;
+            }
 
-             if (!bookFile.exists())
-             {
-                 QMessageBox::information(0, tr("Error!"), tr("Book file lost :( \nReturning to library..."));
-                 windowMachine->setInitialState(mainState);
-             }
-             else
-                 windowMachine->setInitialState(readingState);
+            QFile bookFile(LibHandler->getLastOpenedBook()->getFileName());
+            if (!bookFile.exists())
+            {
+                QMessageBox::information(0, tr("Error!"), tr("Book file lost :( \nReturning to library..."));
+                windowMachine->setInitialState(mainState);
+            }
+            else
+                windowMachine->setInitialState(readingState);
         }
         else
             windowMachine->setInitialState(loginState);

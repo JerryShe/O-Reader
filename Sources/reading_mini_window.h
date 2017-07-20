@@ -3,6 +3,7 @@
 
 #include <QDialog>
 
+
 class ReadingMiniWindow : public QDialog
 {
     Q_OBJECT
@@ -14,6 +15,8 @@ public:
 public slots:
     void openWindow();
     void closeWindow();
+
+    void setStyle();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

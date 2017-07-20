@@ -27,7 +27,7 @@ public slots:
 
 signals:
     void goTo(BookPosition pos);
-    void startSearch(const QString &token, const bool &caseSensitivity, const bool &punctuation);
+    void startSearch(const QString &token, const bool &caseSensitivity, const bool &punctuation, const int &previewSize);
     void searchClosed();
 
 private slots:
@@ -35,6 +35,8 @@ private slots:
     void addResultToTree(const QTreeWidgetItem* item);
     void addResultsToLast();
     void addBranchFor(const QTreeWidgetItem* item);
+
+    void showFirstResult();
 
     void on_StartSearch_clicked();
     void on_GoToSelected_clicked();

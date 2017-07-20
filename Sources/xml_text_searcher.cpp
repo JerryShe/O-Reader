@@ -44,11 +44,12 @@ void XMLTextSearcher::checkP(const tagInfo &TagInf, const bool &type, bool &para
 }
 
 
-void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey, const bool &caseSensitive, const bool &punctuation)
+void XMLTextSearcher::start(const QStringList &bookText, const QString searchKey, const bool &caseSensitive, const bool &punctuation, const int &previewSize)
 {
     if (!searchKey.size())
         return;
 
+    PreviewSize = previewSize;
 
     QString::SplitBehavior splitMode;
 
@@ -145,7 +146,7 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
     bool previewTail = pos.ParagrafTail;
     long long prevStart;
 
-    for (prevStart = pos.TextPos; prevStart > 0 && wordCount <= 10; prevStart--)
+    for (prevStart = pos.TextPos; prevStart > 0 && wordCount <= (PreviewSize-1)/2; prevStart--)
     {
         if (bookText[prevStart][0] == '<')
         {
@@ -174,7 +175,7 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
     wordCount = 0;
 
 
-    for (long long j = prevStart; j < bookText.size() && wordCount <= 20; j++)
+    for (long long j = prevStart; j < bookText.size() && wordCount <= PreviewSize; j++)
     {
         if (j == pos.TextPos)
             preview.append("<mark>");

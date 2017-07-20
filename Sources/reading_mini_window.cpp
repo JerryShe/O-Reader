@@ -6,7 +6,17 @@
 
 #include <QDebug>
 
-#include <styles.h>
+#include <settings.h>
+
+
+void ReadingMiniWindow::setStyle()
+{
+    //TODO: убрать костыль
+    this->setStyleSheet("ReadingMiniWindow{background-color:rgb(150, 0, 60);"
+                        " border:none;"
+                        " color: white;}");
+}
+
 
 ReadingMiniWindow::ReadingMiniWindow(QWidget *parent): QDialog(parent)
 {
@@ -25,13 +35,7 @@ ReadingMiniWindow::ReadingMiniWindow(QWidget *parent): QDialog(parent)
     setLayout(MiniWindowLayout);
     MiniWindowLayout->setContentsMargins(0,0,0,0);
 
-    connect(this, SIGNAL(accepted()), this, SLOT(closeWindow()));
-    connect(this, SIGNAL(rejected()), this, SLOT(closeWindow()));
-
-    //TODO: убрать костыль
-    QString style[2];
-    setBackgroundWindowColor(style, "Red");
-    setStyleSheet(style[1]);
+    setStyle();
 }
 
 
@@ -49,7 +53,8 @@ void ReadingMiniWindow::openWindow()
     animation->setEndValue(QRect(this->x(), this->y(), this->width(), this->height()));
     animation->setEasingCurve(QEasingCurve::OutCubic);
 
-    animation->start();
+    this->show();
+    animation->start(animation->DeleteWhenStopped);
 }
 
 
@@ -62,8 +67,7 @@ void ReadingMiniWindow::closeWindow()
     animation->setEasingCurve(QEasingCurve::InCubic);
 
     connect(animation, SIGNAL(finished()), this, SLOT(close()));
-
-    animation->start();
+    animation->start(animation->DeleteWhenStopped);
 }
 
 

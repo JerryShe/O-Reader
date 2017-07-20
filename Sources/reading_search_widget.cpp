@@ -17,7 +17,7 @@ void ReadingSearchWidget::setStyle()
     setExitButtonStyle(styles, Settings::getSettings()->getInterfaceStyle());
     ui->ExitButton->setStyleSheet(styles[0]);
 
-    ui->ResultsView->setStyleSheet(" QTreeView"
+    ui->ResultsView->setStyleSheet("QTreeView"
                                    "{background-color:rgb(150, 0, 60);"
                                    "color: white;"
                                    "font-size:16px;"
@@ -80,6 +80,7 @@ ReadingSearchWidget::ReadingSearchWidget(QTreeWidgetItem* item, const long long 
         ui->ResultsView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
 
+
     ui->SearchKey->setFocus();
 }
 
@@ -129,6 +130,8 @@ void ReadingSearchWidget::setSearchResults(const QVector<BookNote> results)
     createResultsTree(Contents);
     if(CurSearchResult != SearchResults.size())
         addResultsToLast();
+
+    showFirstResult();
 }
 
 
@@ -186,23 +189,72 @@ void ReadingSearchWidget::addBranchFor(const QTreeWidgetItem* item)
 }
 
 
+void ReadingSearchWidget::showFirstResult()
+{
+    QStandardItem* item = ResultsRoot;
+
+    switch (ui->SearchType->currentIndex()) {
+    case 0:
+    {
+        while(item->hasChildren())
+            item = item->child(0,0);
+        break;
+    }
+    case 1:
+    {
+        while (item->hasChildren())
+            item = item->child(item->rowCount() - 1, 0);
+        break;
+    }
+    case 2:
+    {
+        long long lastKey = 0;
+
+        for (int i = 0;i < TreeElems.size(); i++)
+            if (TreeElems.keys()[i] <= CurrentPos && TreeElems.keys()[i] > lastKey)
+                lastKey = TreeElems.keys()[i];
+
+        QStandardItem* rootItem = TreeElems[lastKey];
+        for (int i = 0; i < rootItem->rowCount(); i++)
+            if (SearchResults[rootItem->child(i, 0)->data(Qt::UserRole + 1).toLongLong()].TextPos > CurrentPos)
+            {
+                item = rootItem->child(i, 0);
+                break;
+            }
+
+        break;
+    }
+    default:
+        return;
+    }
+
+    //lol-bug
+    ui->ResultsView->scrollTo(item->index(), QAbstractItemView::EnsureVisible);
+    ui->ResultsView->scrollTo(item->index(), QAbstractItemView::EnsureVisible);
+
+    ui->ResultsView->selectionModel()->select(item->index(), QItemSelectionModel::SelectCurrent);
+}
+
+
 void ReadingSearchWidget::on_StartSearch_clicked()
 {
     if (!ui->SearchKey->text().isEmpty())
     {
         clearResults();
-        emit startSearch(ui->SearchKey->text(), ui->CaseSensitive->isChecked(), ui->Punctuation->isChecked());
+        emit startSearch(ui->SearchKey->text(), ui->CaseSensitive->isChecked(), ui->Punctuation->isChecked(), ui->PreviewSize->value());
     }
 }
 
 
 void ReadingSearchWidget::on_GoToSelected_clicked()
 {
-    if (ui->ResultsView->selectionModel()->selectedIndexes().first().data(Qt::UserRole).toInt() == 1)
-    {
-        emit goTo(SearchResults[ui->ResultsView->selectionModel()->selectedIndexes().first().data(Qt::UserRole + 1).toInt()]);
-        emit searchClosed();
-    }
+    if (ui->ResultsView->selectionModel() != 0)
+        if (ui->ResultsView->selectionModel()->selectedIndexes().size() != 0)
+            if (ui->ResultsView->selectionModel()->selectedIndexes().first().data(Qt::UserRole).toInt() == 1)
+            {
+                emit goTo(SearchResults[ui->ResultsView->selectionModel()->selectedIndexes().first().data(Qt::UserRole + 1).toInt()]);
+                emit searchClosed();
+            }
 }
 
 

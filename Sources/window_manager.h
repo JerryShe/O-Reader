@@ -78,7 +78,7 @@ private:
     Synchronization* UserSynchro;
     Settings* ProgramSettings;
     LibraryHandler* LibHandler;
-    ClientHandler* clientHandler;
+    ClientHandler* ClientHandler;
 
 
     QWidget* LastWindow;

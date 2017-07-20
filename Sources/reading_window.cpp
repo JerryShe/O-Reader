@@ -71,7 +71,7 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->BookName->setText(CurBook->getAuthorName() + ": " + CurBook->getTitle());
 
     ui->TextPage->viewport()->setAutoFillBackground(false);
-    ui->TextPage->setAttribute( Qt::WA_TranslucentBackground, true );
+    ui->TextPage->setAttribute(Qt::WA_TranslucentBackground, true);
     ui->TextPage->verticalScrollBar()->setSingleStep(0);
 
     BookPaginator = new XMLTextPaginator(this);
@@ -381,6 +381,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 emit showWindowMaximazed();
                 ui->TopBarWidget->show();
             }
+            return true;
         }
         else if (KeyEvent->modifiers() & Qt::CTRL)
         {
@@ -556,7 +557,7 @@ bool ReadingWindow::createMiniWindow()
     MiniWindow = new ReadingMiniWindow(this);
     MiniWindow->installEventFilter(this);
 
-    connect(MiniWindow, &QDialog::destroyed, [this](){
+    connect(MiniWindow, &ReadingMiniWindow::finished, [this](){
         MiniWindow = 0;
         ActiveWindow = false;
         ui->TextPage->setFocus();
@@ -571,25 +572,25 @@ void ReadingWindow::showSearchWindow()
     if (!createMiniWindow())
         return;
 
-    ActiveWindow = true;
-
     SearchWidget = new ReadingSearchWidget(BookPaginator->getBookContentTable(),
                                            CurBook->getProgressPosition(),
                                            BookPaginator->getTextStyles(),
                                            MiniWindow);
+
     MiniWindow->layout()->addWidget(SearchWidget);
 
-    connect(SearchWidget, &ReadingSearchWidget::startSearch, [this](const QString &token, const bool &caseSensitivity, const bool &punctuation){
-        SearchWidget->setSearchResults(BookPaginator->searchStart(token, caseSensitivity, punctuation));
+    connect(SearchWidget, &ReadingSearchWidget::startSearch, [this](const QString &token, const bool &caseSensitivity, const bool &punctuation, const int &previewSize){
+        SearchWidget->setSearchResults(BookPaginator->searchStart(token, caseSensitivity, punctuation, previewSize));
+    });
+
+    connect(SearchWidget, &ReadingSearchWidget::goTo, [this](const BookPosition &pos){
+        ui->TextPage->setHtml(BookPaginator->goToPosition(pos));
+        updateProgress();
     });
 
     connect(SearchWidget, SIGNAL(searchClosed()), MiniWindow, SLOT(closeWindow()));
-    connect(SearchWidget, &ReadingSearchWidget::goTo, [this](const BookPosition &pos){
-        ui->TextPage->setHtml(BookPaginator->goToPosition(pos));
-    });
 
     MiniWindow->openWindow();
-    MiniWindow->show();
 }
 
 
@@ -606,10 +607,11 @@ void ReadingWindow::showSettingsWindow()
 
     SettingsPage->addExitButton();
     connect(SettingsPage, SIGNAL(settingsClosed()), MiniWindow, SLOT(closeWindow()));
-    connect(MiniWindow, SIGNAL(finished(int)), this, SLOT(reprintNewSettText()));
+
+    //TODO: убрать лаг анимации при закрытии
+    connect(SettingsPage, SIGNAL(destroyed(QObject*)), this, SLOT(reprintNewSettText()));
 
     MiniWindow->openWindow();
-    MiniWindow->show();
 }
 
 
@@ -618,5 +620,5 @@ void ReadingWindow::showSynchronizationWindow()
     if (!createMiniWindow())
         return;
 
-    MiniWindow->exec();
+    MiniWindow->openWindow();
 }

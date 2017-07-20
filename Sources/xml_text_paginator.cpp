@@ -805,10 +805,10 @@ QString XMLTextPaginator::getPageNote(const QString &ID, const int &viewWidth) c
 }
 
 
-QVector<BookNote> XMLTextPaginator::searchStart(const QString &key, const bool &caseSensitivity, const bool& punctuation)
+QVector<BookNote> XMLTextPaginator::searchStart(const QString &key, const bool &caseSensitivity, const bool& punctuation, const int &previewSize)
 {
     XMLTextSearcher Searcher(book->getFormat());
-    Searcher.start(bookText, key, caseSensitivity, punctuation);
+    Searcher.start(bookText, key, caseSensitivity, punctuation, previewSize);
 
     return Searcher.getResults();
 }
