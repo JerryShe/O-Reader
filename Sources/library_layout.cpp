@@ -272,9 +272,7 @@ void LibraryLayout::hideFind()
 void LibraryLayout::hideBookWidget()
 {
     if (bookWidget != 0)
-    {
         ui->ShowButton->setChecked(true);
-    }
 }
 
 

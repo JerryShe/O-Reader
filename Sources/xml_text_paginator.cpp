@@ -673,7 +673,7 @@ QString XMLTextPaginator::getPageForward()
         book->setProgress(pageBeginTextPos - 1, beginParagrafTail, beginTagStack, getProgress());
 
         createHTMLPage();
-        debugSave(HTMLPage);
+        //debugSave(HTMLPage);
     }
 
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
@@ -754,7 +754,7 @@ QString XMLTextPaginator::getPageBackward()
         book->setProgress(currentTextPos, ParagrafTail, tagStack, getProgress());
 
         createHTMLPage();
-        debugSave(HTMLPage);
+        //debugSave(HTMLPage);
     }
 
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;

@@ -109,8 +109,6 @@ BookPage::BookPage(Book *boo, QWidget *parent) :
 
 
     //illustrations
-    qDebug()<<book->getContainImages();
-
     switch (book->getContainImages()) {
     case -1:
     {

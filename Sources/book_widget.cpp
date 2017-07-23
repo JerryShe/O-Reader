@@ -116,14 +116,12 @@ void BookWidget::hideWidget()
 
 void BookWidget::on_ReadButton_clicked()
 {
-    this->hideWidget();
     emit startReading(BookIndex);
 }
 
 
 void BookWidget::on_PageButton_clicked()
 {
-    this->hideWidget();
     emit showBookPage(BookIndex);
 }
 
