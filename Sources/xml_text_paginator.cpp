@@ -228,7 +228,7 @@ void XMLTextPaginator::findTagsTail()
     const bool realParseDirection = parseDirection;
     parseDirection = true;
 
-    for (int i = 0; i < tagsLineCount; i++)
+    for (int i = 0; i < tagsLineCount && !Columns[currentColumn].isEmpty(); i++)
     {
         tag = Columns[currentColumn].last();
         tagInfo inf = Resolver->getTag(tag);
@@ -243,9 +243,8 @@ void XMLTextPaginator::findTagsTail()
         else
             tag = "<" + tag + ">";
 
-        if (!Columns[currentColumn].isEmpty())
-            if (Columns[currentColumn].last() == tag)
-                Columns[currentColumn].removeLast();
+        if (Columns[currentColumn].last() == tag)
+            Columns[currentColumn].removeLast();
     }
 
     currentTextPos -= tagsLineCount;

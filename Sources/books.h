@@ -53,25 +53,6 @@ public:
     Book(const QJsonObject &BookJson);
     Book(){}
 
-    void writeToConsole();
-
-    QString getAuthorName() const;
-    QString getTitle() const;
-
-    QImage getCover() const;
-    bool haveCoverImage() const;
-    QString getHTMLCover() const;
-
-    void setIndex(const int &index);
-    unsigned int getIndex() const;
-
-    QStringList getAnnotation() const;
-    QStringList getGenres() const;
-    QString getSeries() const;
-    QString getLanguage() const;
-
-    QString getCodec() const;
-    void setCodec(const QString &Codec);
 
     QString getFileName() const;
     QString getZippedFileName() const;
@@ -104,6 +85,29 @@ public:
     BookNote getBooknoteAt(const int &index) const;
 
 
+
+    QString getAuthorName() const;
+    QString getTitle() const;
+
+    QImage getCover() const;
+    bool haveCoverImage() const;
+    QString getHTMLCover() const;
+
+    void setIndex(const int &index);
+    unsigned int getIndex() const;
+
+    QStringList getAnnotation() const;
+    QStringList getGenres() const;
+    QString getSeries() const;
+    QString getLanguage() const;
+
+    QString getCodec() const;
+    void setCodec(const QString &Codec);
+
+    int getContainImages();
+    void setContainImages(const int &contain);
+
+
 private:
     bool loadFB2(QDomDocument *doc, GenresMap *Gmap);
     bool loadEPub(QString fileName);
@@ -127,6 +131,7 @@ private:
     QDateTime AddittionTime;
     QString CoverType;
     QString Cover;
+    int ContainImages;            /// -1 - unknown, 0 - nope, 1 - yepe
 
     BookPosition lastBookProgress;
     double ProgressProcent = 0;

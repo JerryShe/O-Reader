@@ -22,8 +22,8 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
-    if ( ! QDir("Downloaded books").exists()==true)
-        QDir().mkdir("Downloaded books");
+    //if ( ! QDir("Downloaded books").exists()==true)
+       // QDir().mkdir("Downloaded books");
 
 
     HandlerThread = new QThread(this);
@@ -127,10 +127,6 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         break;
     }
 
-
-
-    qDebug()<<ProgramSettings->getWindowGeometry();
-    qDebug()<<ProgramSettings->windowWasMaximized();
 
     windowMachine->start();
 

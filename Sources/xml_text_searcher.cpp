@@ -24,7 +24,7 @@ void XMLTextSearcher::commitTag(QStack <QString> &tags, const tagInfo &TagInf)
 {
     if (TagInf.index < 31)
     {
-        if (tags.back() == TagInf.html)
+        if (tags.last() == TagInf.html)
             tags.pop();
         else
             tags.push(TagInf.html);
@@ -151,11 +151,14 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
         if (bookText[prevStart][0] == '<')
         {
             tagInfo TagInf = resolver->getTag(bookText[prevStart]);
-            if (TagInf.index == -1)
+            if (TagInf.index == -1 || TagInf.index == 31 || TagInf.index == 32 || TagInf.index == 40)
                 continue;
 
-            if (TagInf.index < 5 || TagInf.index == 32)
+            if (TagInf.index < 5)
+            {
+                prevStart++;
                 break;
+            }
 
             commitTag(previewTags, TagInf);
             checkP(TagInf, true, previewTail);
@@ -164,7 +167,7 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
             wordCount++;
     }
 
-    QString preview;
+    QString preview = "<body>";
 
     for (int j = 0; j < previewTags.size(); j++)
         preview.append("<" + previewTags[j] + ">");
@@ -183,11 +186,14 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
         if (bookText[j][0] == '<')
         {
             tagInfo TagInf = resolver->getTag(bookText[j]);
-            if (TagInf.index == -1)
+            if (TagInf.index == -1 || TagInf.index == 31 || TagInf.index == 32 || TagInf.index == 40)
                 continue;
 
-            if (TagInf.index < 5 || TagInf.index == 32)
+            if (TagInf.index < 5)
+            {
+                prevStart++;
                 break;
+            }
 
             commitTag(previewTags, TagInf);
 
@@ -218,6 +224,8 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
 
     for (int j = previewTags.size() - 1; j >= 0; j--)
         preview.append("</" + previewTags[j] + ">");
+
+    preview.append("</body>");
 
     return preview;
 }

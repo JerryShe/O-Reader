@@ -387,7 +387,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             {
                 ContentsTableWindow->close();
             }
-            else if (this->parentWidget()->isMaximized())
+            else if (this->parentWidget()->isFullScreen())
             {
                 emit showWindowMaximazed();
                 ui->TopBarWidget->show();

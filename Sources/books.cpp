@@ -131,6 +131,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
 {
     File = fileName;
     ProgressProcent = 0;
+    ContainImages = -1;
 
     QFileInfo fileInfo(fileName);
     QString fileFormat = fileInfo.suffix();
@@ -170,7 +171,8 @@ Book::Book(bool &result, const QString &zipFileName, const QString &fileName, co
 {
     File = zipFileName;
     ZippedFile = fileName;
-
+    ProgressProcent = 0;
+    ContainImages = -1;
 
     QDomDocument *doc = new QDomDocument();
     if (doc->setContent(byArr))
@@ -265,6 +267,7 @@ bool Book::loadFB2(QDomDocument *doc, GenresMap *Gmap)
 {
     CoverType = "noImage";
     Format = 1;
+
 
     if (doc->namedItem("FictionBook").nodeName().isNull())
         return false;
@@ -417,24 +420,6 @@ Book::Book(const QJsonObject &json)
 }
 
 
-void Book::writeToConsole()
-{
-    qDebug()<<File;
-    qDebug()<<Codec;
-    qDebug()<<Index;
-    qDebug()<<Title;
-    qDebug()<<AuthorFirstName;
-    qDebug()<<AuthorMiddleName;
-    qDebug()<<AuthorLastName;
-    qDebug()<<Annotation;
-    qDebug()<<SourceLanguage;
-    qDebug()<<Language;
-    qDebug()<<Genres;
-    qDebug()<<Series;
-    qDebug()<<AddittionTime;
-}
-
-
 void Book::fromJson(const QJsonObject &json)
 {
     QJsonArray tempArr;
@@ -506,6 +491,10 @@ void Book::fromJson(const QJsonObject &json)
     if (json.contains("Cover"))
         Cover = json["Cover"].toString();
 
+    if (json.contains("Images"))
+        ContainImages = json["Images"].toInt();
+
+
     if (json.contains("LastPosition"))
         lastBookProgress.fromJson(json["LastPosition"].toObject());
 
@@ -559,6 +548,7 @@ QJsonObject Book::toJson() const
     json["ProgressProcent"] = ProgressProcent;
     json["CoverType"] = CoverType;
     json["Cover"] = Cover;
+    json["Images"] = ContainImages;
 
 
     QJsonArray bookmarksArr;
@@ -761,6 +751,18 @@ int Book::getFormat()  const
 void Book::setFormat(const int format)
 {
     Format = format;
+}
+
+
+int Book::getContainImages()
+{
+    return ContainImages;
+}
+
+
+void Book::setContainImages(const int &contain)
+{
+    ContainImages = contain;
 }
 
 

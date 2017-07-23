@@ -109,11 +109,35 @@ BookPage::BookPage(Book *boo, QWidget *parent) :
 
 
     //illustrations
-    BookImageTable imageTable(book);
-    images = imageTable.getBookImages();
+    qDebug()<<book->getContainImages();
 
-    if (images.size() == 0)
+    switch (book->getContainImages()) {
+    case -1:
+    {
+        BookImageTable imageTable(book);
+        images = imageTable.getBookImages();
+
+        if (images.size() == 0)
+        {
+            ui->ShowIllustrations->setEnabled(false);
+            book->setContainImages(0);
+        }
+        else
+            book->setContainImages(1);
+
+        break;
+    }
+    case 0:
+    {
         ui->ShowIllustrations->setEnabled(false);
+        break;
+    }
+    case 1:
+    {
+
+        break;
+    }
+    }
 
 
     this->installEventFilter(this);
@@ -158,6 +182,12 @@ void BookPage::on_deleteBook_clicked()
 
 void BookPage::on_ShowIllustrations_clicked()
 {
+    if (images.size() == 0)
+    {
+        BookImageTable imageTable(book);
+        images = imageTable.getBookImages();
+    }
+
     curImage = 0;
     showIllustrationAt(curImage);
 

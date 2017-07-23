@@ -80,6 +80,9 @@ ReadingSearchWidget::ReadingSearchWidget(QTreeWidgetItem* item, const long long 
         ui->ResultsView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
 
+    connect(ui->ResultsView, &QTreeView::doubleClicked, [this](const QModelIndex &index){
+        qDebug()<<index.data(Qt::UserRole + 2).toString();
+    });
 
     ui->SearchKey->setFocus();
 }

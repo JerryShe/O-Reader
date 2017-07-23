@@ -33,7 +33,7 @@ void ReadingSearchResultsDelegate::paint(QPainter *painter, const QStyleOptionVi
     if (index.data(Qt::UserRole).toInt() == 1)
     {
         ResultPreview->setTextWidth(option.rect.width());
-        ResultPreview->setHtml(TextStyles + "<body>" + index.data(Qt::UserRole + 2).toString() + "<body>");
+        ResultPreview->setHtml(TextStyles + index.data(Qt::UserRole + 2).toString());
 
         QAbstractTextDocumentLayout::PaintContext context;
         context.palette = option.palette;
@@ -81,8 +81,8 @@ QSize ReadingSearchResultsDelegate::sizeHint(const QStyleOptionViewItem &option,
         return QStyledItemDelegate::sizeHint(option, index);
 
     ResultPreview->setTextWidth(1000);
-    ResultPreview->setHtml(TextStyles + "<body>" + index.data(Qt::UserRole + 2).toString() + "<body>");
-    return ResultPreview->size().toSize();
+    ResultPreview->setHtml(TextStyles + index.data(Qt::UserRole + 2).toString());
+    return ResultPreview->size().toSize() + QSize(4,13);
 }
 
 
