@@ -28,7 +28,6 @@ private slots:
     void on__AddBooks_clicked();
     void on__Delete_clicked();
     void on__ChangeViewMode_toggled(bool checked);
-    void on__Upscale_clicked();
     void on__Downscale_clicked();
     void on__SortBox_activated(const QString &arg1);
     void on__Find_toggled(bool checked);

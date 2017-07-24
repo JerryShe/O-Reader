@@ -10,6 +10,7 @@
 #include "reading_window.h"
 
 #include "settings.h"
+#include "device_settings.h"
 #include "synchronization.h"
 #include "library_handler.h"
 #include "client_handler.h"
@@ -77,6 +78,7 @@ private:
 
     Synchronization* UserSynchro;
     Settings* ProgramSettings;
+    DeviceSettings* deviceSettings;
     LibraryHandler* LibHandler;
     ClientHandler* ClientHandler;
 

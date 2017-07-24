@@ -33,9 +33,11 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     UserSynchro = Synchronization::getSynchronization();
     LibHandler = LibraryHandler::getLibraryHandler();
     ClientHandler = ClientHandler::getClientHandler();
+    deviceSettings = DeviceSettings::getDeviceSettings();
 
 
     ProgramSettings->moveToThread(HandlerThread);
+    deviceSettings->moveToThread(HandlerThread);
     UserSynchro->moveToThread(HandlerThread);
     LibHandler->moveToThread(HandlerThread);
     ClientHandler->moveToThread(HandlerThread);
@@ -50,6 +52,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     connect(LibHandler, SIGNAL(hideLoadImage()), this, SLOT(hideLoadingImage()));
 
     ProgramSettings->loadSettings();
+    deviceSettings->loadDeviceSettings();
     UserSynchro->loadLog();
     LibHandler->loadBookList();
 
@@ -130,10 +133,10 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     windowMachine->start();
 
-    prev_geometry = ProgramSettings->getWindowGeometry();
-    this->setGeometry(ProgramSettings->getWindowGeometry());
+    prev_geometry = deviceSettings->getWindowGeometry();
+    this->setGeometry(deviceSettings->getWindowGeometry());
 
-    if (ProgramSettings->windowWasMaximized())
+    if (deviceSettings->windowWasMaximized())
         this->setWindowState(Qt::WindowFullScreen);
     else
         this->setWindowState(Qt::WindowNoState);
@@ -144,8 +147,9 @@ void WindowManager::saveProgramData()
 {
     if (!this->isFullScreen())
         prev_geometry = geometry();
-    ProgramSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
+    deviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
 
+    deviceSettings->saveDeviceSettings();
     ProgramSettings->saveSettings();
     UserSynchro->saveLog();
     LibHandler->saveBookList();
@@ -254,13 +258,17 @@ void WindowManager::closeWindow()
 {
     if (!this->isFullScreen())
         prev_geometry = geometry();
-    ProgramSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
+    deviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
 
     if(!LibHandler->saveBookList())
     {
 
     }
     if(!ProgramSettings->saveSettings())
+    {
+
+    }
+    if(!deviceSettings->saveDeviceSettings())
     {
 
     }

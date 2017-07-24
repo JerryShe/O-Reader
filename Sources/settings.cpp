@@ -8,8 +8,6 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QApplication>
-#include <QDesktopWidget>
 
 #include <QDebug>
 
@@ -20,6 +18,16 @@ Settings::Settings()
     textAlignMap.insert(1, "left");
     textAlignMap.insert(2, "right");
     textAlignMap.insert(3, "center");
+
+    InterfaceStyle = "Red";
+    Language = "English";
+    FKeyForwardPage = Qt::Key_Right;
+    SKeyForwardPage = Qt::Key_Space;
+    FKeyBackwardPage = Qt::Key_Left;
+    SKeyBackwardPage = -1;
+    PageTurnByWheel = true;
+    PageTurnByTap = false;
+    HideTopBar = false;
 }
 
 
@@ -82,25 +90,6 @@ bool Settings::saveSettings() const
 
 bool Settings::loadSettings()
 {
-    InterfaceStyle = "Red";
-    Language = "English";
-    FKeyForwardPage = Qt::Key_Right;
-    SKeyForwardPage = Qt::Key_Space;
-    FKeyBackwardPage = Qt::Key_Left;
-    SKeyBackwardPage = -1;
-    PageTurnByWheel = true;
-    PageTurnByTap = false;
-    LibraryReprezentation = false;
-    HideTopBar = false;
-
-    LibraryReprezentation = false;
-    LibraryIconBarSize = 140;
-    LibraryIconListSize = 50;
-
-    WindowMaximized = false;
-    WindowGeometry = QRect (qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
-
-
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
         QDir().mkdir(resoursesFolderPath);
@@ -129,7 +118,6 @@ bool Settings::loadSettings()
     TextStyles.append(ReadingProfile());
     currentStyle = "Standart";
 
-    // дошли сюда <=> не удалось загрузить профили, создадим новые
     saveSettings();
     return 1;
 }
@@ -147,19 +135,8 @@ QJsonObject Settings::toJson() const
     json["SKeyBackwardPage"] = SKeyBackwardPage;
     json["PageTurnByWheel"] = PageTurnByWheel;
     json["PageTurnByTap"] = PageTurnByTap;
-    json["LibraryReprezentation"] = LibraryReprezentation;
-    json["LibraryIconBarSize"] = (int)LibraryIconBarSize;
-    json["LibraryIconListSize"] = (int)LibraryIconListSize;
     json["HideTopBar"] = HideTopBar;
     json["CurrentStyle"] = currentStyle;
-
-    QJsonObject rectObj;
-    rectObj["maximized"] = WindowMaximized;
-    rectObj["x"] = WindowGeometry.x();
-    rectObj["y"] = WindowGeometry.y();
-    rectObj["w"] = WindowGeometry.width();
-    rectObj["h"] = WindowGeometry.height();
-    json["WindowGeometry"] = rectObj;
 
     json["TextStylesNames"] = QJsonArray::fromStringList(TextStylesNames);
 
@@ -171,6 +148,7 @@ QJsonObject Settings::toJson() const
 
     return json;
 }
+
 
 void Settings::fromJson(const QJsonObject &json)
 {
@@ -198,39 +176,8 @@ void Settings::fromJson(const QJsonObject &json)
     if (json.contains("PageTurnByTap"))
         PageTurnByTap = json["PageTurnByTap"].toBool();
 
-    if (json.contains("LibraryReprezentation"))
-        LibraryReprezentation = json["LibraryReprezentation"].toBool();
-
-    if (json.contains("LibraryIconBarSize"))
-        LibraryIconBarSize = (unsigned short)json["LibraryIconBarSize"].toInt();
-
-    if (json.contains("LibraryIconListSize"))
-        LibraryIconListSize = (unsigned short)json["LibraryIconListSize"].toInt();
-
     if (json.contains("HideTopBar"))
         HideTopBar = json["HideTopBar"].toBool();
-
-
-    if (json.contains("WindowGeometry"))
-    {
-        QJsonObject rectObj = json["WindowGeometry"].toObject();
-
-        if (rectObj.contains("maximized"))
-            WindowMaximized = rectObj["maximized"].toBool();
-
-        if (rectObj.contains("x"))
-            WindowGeometry.setX(rectObj["x"].toInt());
-        if (rectObj.contains("y"))
-            WindowGeometry.setY(rectObj["y"].toInt());
-        if (rectObj.contains("w"))
-            WindowGeometry.setWidth(rectObj["w"].toInt());
-        if (rectObj.contains("h"))
-            WindowGeometry.setHeight(rectObj["h"].toInt());
-
-        if (WindowGeometry == QRect(0,0,0,0))
-            WindowGeometry = QRect (qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
-    }
-
 
     TextStylesNames.clear();    
     if (json.contains("TextStylesNames"))
@@ -462,42 +409,6 @@ void Settings::setInterfaceStyle(const QString &style)
 }
 
 
-bool Settings::getLibraryReprezentation() const
-{
-    return LibraryReprezentation;
-}
-
-
-void Settings::setLibraryReprezentation(const bool &val)
-{
-    LibraryReprezentation = val;
-}
-
-
-unsigned short Settings::getLibraryBarIconSize() const
-{
-    return LibraryIconBarSize;
-}
-
-
-unsigned short Settings::getLibraryListIconSize() const
-{
-    return LibraryIconBarSize;
-}
-
-
-void Settings::setLibraryListIconSize(const unsigned short &size)
-{
-    LibraryIconListSize = size;
-}
-
-
-void Settings::setLibraryBarIconSize(const unsigned short &size)
-{
-    LibraryIconBarSize = size;
-}
-
-
 QString Settings::getCurrentLanguage() const
 {
     return Language;
@@ -668,23 +579,4 @@ void Settings::removeNamedReadProfile(const QString &name)
     {
         qDebug()<<"delete style wtf";
     }
-}
-
-
-void Settings::setWindowGeometry(const bool &maximized, const QRect &geometry)
-{
-    WindowMaximized = maximized;
-    WindowGeometry = geometry;
-}
-
-
-bool Settings::windowWasMaximized() const
-{
-    return WindowMaximized;
-}
-
-
-QRect Settings::getWindowGeometry() const
-{
-    return WindowGeometry;
 }

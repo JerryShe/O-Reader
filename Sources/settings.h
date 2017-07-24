@@ -63,8 +63,11 @@ struct ReadingProfile
 
 class Settings : public QObject
 {
+    Q_OBJECT
+
 public:
     static Settings* getSettings();
+
 
     void setTranslator(QTranslator* translator);
 
@@ -95,23 +98,12 @@ public:
     bool getTurnByTap() const;
     void setTurnByTap(const bool &turn);
 
-    bool getLibraryReprezentation() const;
-    void setLibraryReprezentation(const bool &val);
-
-    unsigned short getLibraryBarIconSize() const;
-    void setLibraryBarIconSize(const unsigned short &size);
-
-    unsigned short getLibraryListIconSize() const;
-    void setLibraryListIconSize(const unsigned short &size);
 
     QString getCurrentReadProfileName() const;
     void setCurrentReadProfile(const QString &style);
 
     QStringList getReadProfilesList() const;
     void saveReadProfile(const QString &name, const ReadingProfile &style);
-
-    void setToken(const QString &token);
-    QString getToken();
 
     void removeNamedReadProfile(const QString &name);
 
@@ -120,10 +112,6 @@ public:
 
     QString getTextAlignName(const unsigned short &key) const;
 
-    void setWindowGeometry(const bool &maximized, const QRect &geometry);
-    bool windowWasMaximized() const;
-    QRect getWindowGeometry() const;
-
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
@@ -131,8 +119,6 @@ private:
     Settings();
     ~Settings();
 
-    bool WindowMaximized;
-    QRect WindowGeometry;
 
     QString InterfaceStyle;
     QString Language;
@@ -145,9 +131,7 @@ private:
     bool PageTurnByWheel;
     bool PageTurnByTap;
 
-    bool LibraryReprezentation;                 // 0 - плитка, 1 - список
-    unsigned short LibraryIconBarSize;
-    unsigned short LibraryIconListSize;
+
     bool HideTopBar;                               // 1 - показывать всегда, 0 - показывать при наведении
 
     QStringList TextStylesNames;

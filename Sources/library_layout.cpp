@@ -14,6 +14,10 @@
 #include <QScroller>
 
 
+#include <QSlider>
+#include <QWidgetAction>
+#include <QMenu>
+
 void LibraryLayout::setStyle()
 {
     QString styleSheets[7];
@@ -21,7 +25,6 @@ void LibraryLayout::setStyle()
 
     setLibraryLayoutButtons(styleSheets, currentStyle);
     ui->_ChangeViewMode->setStyleSheet(styleSheets[0]);
-    ui->_Upscale->setStyleSheet(styleSheets[1]);
     ui->_Downscale->setStyleSheet(styleSheets[2]);
 
     setTabButtonsStyle(styleSheets, currentStyle);
@@ -53,10 +56,10 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
 
     setStyle();
 
-    if (ProgramSettings->getLibraryReprezentation())
-        ui->_ChangeViewMode->setChecked(true);
-
     ui->Library_View->setSettingsData();
+
+    if (ui->Library_View->getLibraryRepresentation())
+        ui->_ChangeViewMode->setChecked(true);
 
 
     connect(ui->Library_View, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
@@ -72,7 +75,7 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     bookWidget = new BookWidget(this);
     bookWidget->move(15, 30);
     connect(ui->ShowButton, SIGNAL(toggled(bool)), bookWidget, SIGNAL(showButtonClicked()));
-    connect(ui->ShowButton, &QPushButton::clicked, [this](){hideFind();});
+    connect(ui->ShowButton, SIGNAL(clicked(bool)), this, SLOT(hideFind()));
 
     connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
     connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
@@ -84,6 +87,7 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
 
 
     connect(LibHandler, SIGNAL(lostBooks(QVector<Book*>)), this, SLOT(lostBooks(QVector<Book*>)));
+    connect(ui->Library_View, SIGNAL(clicked(QModelIndex)), this, SLOT(hideBookWidget()));
 
 
     if (QTouchDevice::devices().size())
@@ -206,21 +210,43 @@ void LibraryLayout::on__Delete_clicked()
 void LibraryLayout::on__ChangeViewMode_toggled(bool checked)
 {
     ui->Library_View->changeViewMod();
-    ProgramSettings->setLibraryReprezentation(checked);
-}
-
-
-void LibraryLayout::on__Upscale_clicked()
-{
-    hideBookWidget();
-    ui->Library_View->iconUpscale();
 }
 
 
 void LibraryLayout::on__Downscale_clicked()
 {
     hideBookWidget();
-    ui->Library_View->iconDownscale();
+
+    QMenu *menu = new QMenu(this);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    menu->move(ui->_Downscale->mapToGlobal(QPoint(-3, ui->_Downscale->height() - 3)));
+
+    QSlider* slider = new QSlider(Qt::Vertical, menu);
+    slider->setRange(110, 350);
+    slider->setValue(ui->Library_View->getBookIconSize());
+    slider->setFixedSize(ui->_Downscale->width(), 100);
+    slider->setStyleSheet("QSlider::groove:vertical {"
+                     "border: none;"
+                     "background-color:rgb(70,0,30);"
+                     "width:30px;"
+                     "margin-top:-4px;}"
+
+                      "QSlider::handle:vertical {"
+                      "background-color: white;"
+                      "border: none;"
+                      "height: 15px;}");
+
+    QWidgetAction *widAct = new QWidgetAction(menu);
+    widAct->setDefaultWidget(slider);
+
+    menu->setAttribute(Qt::WA_TranslucentBackground);
+    menu->setWindowFlags(menu->windowFlags() | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    menu->setStyleSheet("QMenu{background:rgba(0, 0, 0, 0);}");
+
+    connect(slider, SIGNAL(sliderMoved(int)), ui->Library_View, SLOT(setBookIconSize(int)));
+
+    menu->addAction(widAct);
+    menu->show();
 }
 
 void LibraryLayout::on__SortBox_activated(const QString &arg1)

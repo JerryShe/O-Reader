@@ -6,7 +6,7 @@
 #include <QListView>
 #include <QStandardItemModel>
 
-#include "settings.h"
+#include "device_settings.h"
 #include "books.h"
 #include "library_list_model.h"
 #include "library_list_delegate.h"
@@ -29,13 +29,15 @@ public:
     void setSettingsData();
 
     int getSelectedItemsCount();
+    bool getLibraryRepresentation() const;
 
     void groupBy(const QString &mode);
 
 public slots:
     void changeViewMod();
-    void iconUpscale();
-    void iconDownscale();
+
+    void setBookIconSize(const int &size);
+    int getBookIconSize() const;
 
     void clear();
 
@@ -53,10 +55,10 @@ private:
     LibraryListProxyModel* BookProxyModel;
     LibraryListDelegate* delegate;
 
-    Settings* ProgramSettings;
+    DeviceSettings* deviceSettings;
 
-    unsigned short IconBarSize;
-    unsigned short IconListSize;
+    int IconBarSize;
+    int IconListSize;
 };
 
 #endif // LIBRARY_VIEW_H

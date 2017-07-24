@@ -49,11 +49,11 @@ void LibraryListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing| QPainter::TextAntialiasing);
 
-    //TODO: костыль или не костыль, вот в чем вопрос...
-    QStyledItemDelegate::paint(painter, option, index);
-
     QRect rect = option.rect;
     rect.setHeight(option.decorationSize.height());
+
+    //TODO: костыль или не костыль, вот в чем вопрос...
+    QStyledItemDelegate::paint(painter, option, index);
 
 
     if (!viewMode)
@@ -155,5 +155,5 @@ void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progre
 
 QSize LibraryListDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index ) const
 {
-    return(option.rect.size());
+    return(QSize(option.rect.width(), option.decorationSize.height()));
 }

@@ -963,23 +963,26 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="TabsLayout">
+         <layout class="QVBoxLayout" name="PagesLayout">
           <property name="spacing">
            <number>0</number>
           </property>
-          <property name="sizeConstraint">
-           <enum>QLayout::SetFixedSize</enum>
-          </property>
-          <property name="bottomMargin">
+          <property name="rightMargin">
            <number>0</number>
           </property>
           <item>
-           <widget class="LibraryLayout" name="LibraryWidget" native="true">
+           <widget class="SynchronizationLayout" name="SynchronizationWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>100</height>
+             </size>
             </property>
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
@@ -1006,18 +1009,12 @@
            </widget>
           </item>
           <item>
-           <widget class="SynchronizationLayout" name="SynchronizationWidget" native="true">
+           <widget class="LibraryLayout" name="LibraryWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>100</height>
-             </size>
             </property>
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>

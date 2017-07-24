@@ -7,11 +7,10 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QCoreApplication>
-
 #include <QScrollBar>
-
 #include <QScroller>
 
+#include "settings.h"
 
 
 
@@ -83,21 +82,54 @@ void LibraryView::changeViewMod()
 {
     if (viewMode() == QListView::IconMode)
     {
-        setGridSize(QSize(IconListSize + 5, IconListSize+ 5));
         setViewMode(QListView::ListMode);
         delegate->setListViewMode(true);
-        setIconSize(QSize(IconListSize + 5,IconListSize + 5));
-        ProgramSettings->setLibraryReprezentation(true);
+
+        setIconSize(QSize(IconListSize,IconListSize));
+        setGridSize(QSize(IconListSize, IconListSize));
+
+        deviceSettings->setLibraryReprezentation(true);
     }
     else
     {
-        setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
         setViewMode(QListView::IconMode);
         delegate->setListViewMode(false);
-        setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
-        ProgramSettings->setLibraryReprezentation(false);
+
+        setIconSize(QSize(IconBarSize, IconBarSize + 70));
+        setGridSize(QSize(IconBarSize, IconBarSize + 70));
+
+        deviceSettings->setLibraryReprezentation(false);
     }
     verticalScrollBar()->setSingleStep(30);
+}
+
+
+void LibraryView::setBookIconSize(const int &size)
+{
+    if (viewMode() == QListView::IconMode)
+    {
+        IconBarSize = size;
+        deviceSettings->setLibraryBarIconSize(size);
+
+        setGridSize(QSize(size, size + 70));
+        setIconSize(QSize(size, size + 70));
+    }
+    else
+    {
+        IconListSize = size;
+        deviceSettings->setLibraryListIconSize(size);
+
+        setGridSize(QSize(size, size));
+        setIconSize(QSize(size, size));
+    }
+}
+
+
+int LibraryView::getBookIconSize() const
+{
+    if (viewMode() == QListView::ListMode)
+        return IconListSize;
+    return IconBarSize;
 }
 
 
@@ -172,84 +204,37 @@ void LibraryView::setFilter(const QString &type, const QVariant &role)
 }
 
 
-void LibraryView::iconUpscale()
-{
-    if (viewMode() == QListView::IconMode)
-    {
-        if (IconBarSize < 260)
-        {
-            IconBarSize+=30;
-            setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            ProgramSettings->setLibraryBarIconSize(IconBarSize);
-        }
-    }
-    else
-    {
-        if (IconListSize < 200)
-        {
-            IconListSize+=10;
-            setGridSize(QSize(IconListSize + 5,IconListSize + 5));
-            setIconSize(QSize(IconListSize + 5,IconListSize + 5));
-            ProgramSettings->setLibraryListIconSize(IconListSize);
-        }
-    }
-}
-
-
-void LibraryView::iconDownscale()
-{
-    if (viewMode() == QListView::IconMode)
-    {
-        if (IconBarSize > 110)
-        {
-            IconBarSize-=30;
-            setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
-            ProgramSettings->setLibraryBarIconSize(IconBarSize);
-        }
-    }
-    else
-    {
-        if (IconListSize > 30)
-        {
-            IconListSize-=10;
-            setGridSize(QSize(IconListSize + 5, IconListSize + 5));
-            setIconSize(QSize(IconListSize + 5,IconListSize + 5));
-            ProgramSettings->setLibraryListIconSize(IconListSize);
-        }
-    }
-}
-
-
 void LibraryView::setSettingsData()
 {
-    ProgramSettings = Settings::getSettings();
+    deviceSettings = DeviceSettings::getDeviceSettings();
 
     QString ListViewStyle[1];
-    setLibraryStyle (ListViewStyle, ProgramSettings->getInterfaceStyle());
+    setLibraryStyle (ListViewStyle, Settings::getSettings()->getInterfaceStyle());
     setStyleSheet(ListViewStyle[0]);
 
-    IconBarSize = ProgramSettings->getLibraryBarIconSize();
-    IconListSize = ProgramSettings->getLibraryListIconSize();
+    IconBarSize = deviceSettings->getLibraryBarIconSize();
+    IconListSize = deviceSettings->getLibraryListIconSize();
 
-    if (IconBarSize < 80 || IconBarSize > 280)
-        IconBarSize = 140;
-    if (IconListSize < 20 || IconBarSize > 210)
-        IconListSize = 50;
-
-    if (ProgramSettings->getLibraryReprezentation())
+    if (deviceSettings->getLibraryRepresentation())
     {
-        setGridSize(QSize(IconListSize + 5, IconListSize + 5));
         setViewMode(QListView::ListMode);
         delegate->setListViewMode(true);
-        setIconSize(QSize(IconListSize + 5, IconListSize + 5));
+        setIconSize(QSize(IconListSize, IconListSize));
+        setGridSize(QSize(IconListSize, IconListSize));
     }
     else
     {
-        setGridSize(QSize(IconBarSize - 10, IconBarSize + 60));
         setViewMode(QListView::IconMode);
         delegate->setListViewMode(false);
-        setIconSize(QSize(IconBarSize - 10, IconBarSize + 60));
+        setIconSize(QSize(IconBarSize, IconBarSize + 70));
+        setGridSize(QSize(IconBarSize, IconBarSize + 70));
     }
+}
+
+
+bool LibraryView::getLibraryRepresentation() const
+{
+    if (viewMode() == QListView::ListMode)
+        return true;
+    return false;
 }

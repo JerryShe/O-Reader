@@ -22,7 +22,7 @@ XMLTextSearcher::~XMLTextSearcher()
 
 void XMLTextSearcher::commitTag(QStack <QString> &tags, const tagInfo &TagInf)
 {
-    if (TagInf.index < 31)
+    if (!tags.isEmpty() && TagInf.index < 31)
     {
         if (tags.last() == TagInf.html)
             tags.pop();
@@ -155,10 +155,8 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
                 continue;
 
             if (TagInf.index < 5)
-            {
-                prevStart++;
                 break;
-            }
+
 
             commitTag(previewTags, TagInf);
             checkP(TagInf, true, previewTail);
@@ -172,13 +170,13 @@ QString XMLTextSearcher::createPreview(const BookPosition &pos, const long long 
     for (int j = 0; j < previewTags.size(); j++)
         preview.append("<" + previewTags[j] + ">");
 
-    if (previewTail)
+    if (previewTail && bookText[prevStart + 1][0] != "–" && bookText[prevStart + 1][0] != '-')
         preview.append("... ");
 
     wordCount = 0;
 
 
-    for (long long j = prevStart; j < bookText.size() && wordCount <= PreviewSize; j++)
+    for (long long j = prevStart + 1; j < bookText.size() && wordCount <= PreviewSize; j++)
     {
         if (j == pos.TextPos)
             preview.append("<mark>");

@@ -51,7 +51,8 @@ SOURCES += main.cpp\
     library_list_model.cpp \
     reading_search_widget.cpp \
     reading_mini_window.cpp \
-    reading_search_results_delegate.cpp
+    reading_search_results_delegate.cpp \
+    device_settings.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -95,7 +96,8 @@ HEADERS  += \
     library_list_model.h \
     reading_search_widget.h \
     reading_mini_window.h \
-    reading_search_results_delegate.h
+    reading_search_results_delegate.h \
+    device_settings.h
 
 FORMS    += \
     settings_programlayout.ui \
