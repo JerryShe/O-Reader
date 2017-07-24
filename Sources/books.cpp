@@ -184,6 +184,15 @@ Book::Book(bool &result, const QString &zipFileName, const QString &fileName, co
 }
 
 
+Book::Book(const QJsonObject &json)
+{
+    ProgressProcent = 0;
+    ContainImages = -1;
+
+    this->fromJson(json);
+}
+
+
 QDomDocument* Book::getFB2BookDomDoc(bool &result)
 {
     if (Format != 1)
@@ -413,11 +422,6 @@ bool Book::loadEPub(QString fileName)
     return false;
 }
 
-
-Book::Book(const QJsonObject &json)
-{
-    this->fromJson(json);
-}
 
 
 void Book::fromJson(const QJsonObject &json)
