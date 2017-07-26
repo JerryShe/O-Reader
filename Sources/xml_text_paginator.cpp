@@ -69,7 +69,7 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
 
     Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
-    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
+    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
 
     setPageGeometry(Pwidth, Pheight);
 
@@ -104,7 +104,7 @@ XMLTextPaginator::~XMLTextPaginator()
 
 void XMLTextPaginator::setPageGeometry(const int &width, const int &height)
 {
-    columnWidth = (width - 10 - 30*(ColumnCount-1) - TextLeftRightIdent/100 - TextLeftRightIdent%100)/ColumnCount;
+    columnWidth = (width - 10 - ColumnIndent*(ColumnCount-1) - TextLeftRightIdent/100 - TextLeftRightIdent%100)/ColumnCount;
     columnHeight = height - 20 - TextTopBottomIdent/100 - TextTopBottomIdent%100;
 }
 
@@ -673,7 +673,7 @@ QString XMLTextPaginator::getPageForward()
         book->setProgress(pageBeginTextPos - 1, beginParagrafTail, beginTagStack, getProgress());
 
         createHTMLPage();
-        //debugSave(HTMLPage);
+        debugSave(HTMLPage);
     }
 
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
@@ -754,7 +754,7 @@ QString XMLTextPaginator::getPageBackward()
         book->setProgress(currentTextPos, ParagrafTail, tagStack, getProgress());
 
         createHTMLPage();
-        //debugSave(HTMLPage);
+        debugSave(HTMLPage);
     }
 
     return PageHTMLStyles + PageHTMLHeader + HTMLPage + PageHTMLBottom;
@@ -849,7 +849,7 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
     Helper->refreshSettings();
     Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
-    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent);
+    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
 
     setPageGeometry(width, height);
 

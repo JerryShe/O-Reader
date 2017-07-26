@@ -69,7 +69,7 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTM
                        "margin-left:" + QString::number(CurProfile.TextLeftRightIdent/100) + "px;"
                        "margin-right:" + QString::number(CurProfile.TextLeftRightIdent%100) + "px;'"
                        "width='100%'"
-                       "cellspacing='-30' cellpadding='30'>"
+                       "cellspacing='-" + QString::number(CurProfile.ColumnIndent) + "' cellpadding='" + QString::number(CurProfile.ColumnIndent) + "'>"
                      "<tr>"
                      "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
                      "<Text>";
@@ -130,9 +130,10 @@ void PaginatorHelper::refreshSettings()
 }
 
 
-void PaginatorHelper::setPageSizes(unsigned short &columnCount, unsigned short &TextLeftRightIdent, unsigned short &TextTopBottomIdent, unsigned short &ParLeftTopIdent)
+void PaginatorHelper::setPageSizes(unsigned short &columnCount, unsigned short &TextLeftRightIdent, unsigned short &TextTopBottomIdent, unsigned short &ParLeftTopIdent, unsigned short &columnIndent)
 {
     columnCount = CurProfile.ColumnCount;
+    columnIndent = CurProfile.ColumnIndent;
     TextLeftRightIdent = CurProfile.TextLeftRightIdent;
     TextTopBottomIdent = CurProfile.TextTopBottomIdent;
     ParLeftTopIdent = CurProfile.ParLeftTopIdent;

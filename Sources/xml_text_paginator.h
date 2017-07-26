@@ -110,7 +110,7 @@ private:
                  pageEndTextPos;
 
     int currentColumn;
-    unsigned short ColumnCount;
+    unsigned short ColumnCount, ColumnIndent;
     unsigned short TextLeftRightIdent, TextTopBottomIdent;
     unsigned short ParLeftTopIdent;
 

@@ -40,6 +40,7 @@ struct ReadingProfile
     ReadingProfile(QJsonObject &json);
 
     unsigned short ColumnCount;
+    unsigned short ColumnIndent;
     bool BackgroundType;     //1 - color, 0 - image
     QString BackgroundImage;
     bool TextAntiAliasing;

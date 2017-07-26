@@ -47,9 +47,16 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
 
     ui->_OverallSettingsWidget->hide();
 
+    ui->TextExample->viewport()->setAutoFillBackground(false);
+    ui->TextExample->setAttribute(Qt::WA_TranslucentBackground, true);
+
+    for (int i = 5; i <= 300; i++)
+        ui->TextColumnsIndentBox->addItem(QString::number(i));
+
 
     connect(ui->BackgroundTypeBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->ColumnNumberBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
+    connect(ui->TextColumnsIndentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->TextAntiAliasingBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->ParagraphLeftIdentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
     connect(ui->ParagraphTopIdentBox, SIGNAL(activated(QString)), this, SLOT(updateTextBox()));
@@ -83,6 +90,7 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
 
     ui->BackgroundTypeBox->setView(new QListView(this));
     ui->ColumnNumberBox->setView(new QListView(this));
+    ui->TextColumnsIndentBox->setView(new QListView(this));
     ui->TextAntiAliasingBox->setView(new QListView(this));
     ui->ParagraphLeftIdentBox->setView(new QListView(this));
     ui->ParagraphTopIdentBox->setView(new QListView(this));
@@ -113,6 +121,9 @@ Settings_ReaderLayout::Settings_ReaderLayout(QWidget *parent) : QFrame(parent), 
 
         QScroller::grabGesture(ui->ColumnNumberBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->ColumnNumberBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+        QScroller::grabGesture(ui->TextColumnsIndentBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
+        ui->TextColumnsIndentBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
         QScroller::grabGesture(ui->TextAntiAliasingBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->TextAntiAliasingBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -154,51 +165,50 @@ void Settings_ReaderLayout::changeEvent(QEvent *event)
 
 void Settings_ReaderLayout::updateTextBox()
 {
-    QString topMargin = "margin-top:" + ui->ParagraphTopIdentBox->currentText()  + "px;";
+    QString topParMargin = "margin-top:" + ui->ParagraphTopIdentBox->currentText()  + "px;";
 
     QString htEx = "<style type='text/css'>"
        "p{"
             "margin-bottom:0px;"
+            + topParMargin +
             "margin-left:" + ui->TextLeftIdentBox->currentText() + "px;"
             "margin-right:" + ui->TextRightIdentBox->currentText() + "px;"
             "text-indent:" + ui->ParagraphLeftIdentBox->currentText() + "px;}"
 
        "TitleText{"
-            + topMargin
+            + topParMargin
             + ui->TitleStyle->getHTMLStyle() + "}"
 
        "subtitle{"
-            + topMargin
+            + topParMargin
             + ui->SubtitleStyle->getHTMLStyle() + "}"
 
        "Text{"
-            + topMargin
+            + topParMargin
             + ui->RegularStyle->getHTMLStyle() + "}"
 
        "emphasis{"
-            + topMargin
+            + topParMargin
             + ui->EmphasizedStyle->getHTMLStyle() + "}"
 
        "a[type = 'note']{"
             + "vertical-align: super;"
-            + topMargin
+            + topParMargin
             + ui->NoteStyle->getHTMLStyle() + "}"
 
        "epigraph{"
-            + topMargin
+            + topParMargin
             + ui->EpigraphStyle->getHTMLStyle() + "}"
 
        "poem{"
-            + topMargin
+            + topParMargin
             + ui->PoemStyle->getHTMLStyle() + "}"
 
        "cite{"
-            + topMargin
+            + topParMargin
             + ui->CiteStyle->getHTMLStyle() + "}"
 
-       + ((!ui->BackgroundColorBox->isHidden()) ? ("body{background-color:" + ui->BackgroundColorBox->text()) : ("")) + ";}"
-
-    "</style> <body>"
+    "</style> <body style='margin-top: " + ui->TextTopIndentBox->currentText() + "px'>"
 
     "<td align = 'justify'> <Text>"
     "<TitleText>"
@@ -229,6 +239,7 @@ void Settings_ReaderLayout::updateTextBox()
     emit settingsChanged(changedSignal);
 }
 
+
 void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
 {
     ui->BackgroundTypeBox->setCurrentIndex(profile.BackgroundType);
@@ -239,6 +250,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
                                   255 - QColor(profile.BackgroundImage).blue()).name() + ";}");
 
         ui->BackgroundColorBox->setText(profile.BackgroundImage);
+        ui->TextBackground->setStyleSheet("#TextBackground{background-color:" + profile.BackgroundImage + ";}");
     }
     else
     {
@@ -251,6 +263,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
     }
 
     ui->ColumnNumberBox->setCurrentText(QString::number(profile.ColumnCount));
+    ui->TextColumnsIndentBox->setCurrentText(QString::number(profile.ColumnIndent));
     ui->TextAntiAliasingBox->setCurrentIndex(profile.TextAntiAliasing);
     ui->ParagraphLeftIdentBox->setCurrentText(QString::number(profile.ParLeftTopIdent/100));
     ui->ParagraphTopIdentBox->setCurrentText(QString::number(profile.ParLeftTopIdent%100));
@@ -272,6 +285,7 @@ void Settings_ReaderLayout::setStyleData(const ReadingProfile &profile)
     updateTextBox();
 }
 
+
 ReadingProfile Settings_ReaderLayout::getStyleData()
 {
     ReadingProfile profile;
@@ -282,6 +296,7 @@ ReadingProfile Settings_ReaderLayout::getStyleData()
         profile.BackgroundImage = currentBackgroundImage;
 
     profile.ColumnCount = ui->ColumnNumberBox->currentText().toInt();
+    profile.ColumnIndent = ui->TextColumnsIndentBox->currentText().toInt();
     profile.TextAntiAliasing = ui->TextAntiAliasingBox->currentIndex();
     profile.ParLeftTopIdent = ui->ParagraphLeftIdentBox->currentText().toShort()*100 + ui->ParagraphTopIdentBox->currentText().toShort();
     profile.TextLeftRightIdent = ui->TextLeftIdentBox->currentText().toShort()*100 + ui->TextRightIdentBox->currentText().toShort();
@@ -392,7 +407,7 @@ void Settings_ReaderLayout::on_BackgroundColorBox_clicked()
                                      "color:" + QColor(255 - BackgroundColor.red(), 255 - BackgroundColor.green(), 255 - BackgroundColor.blue()).name() + ";}");
     ui->BackgroundColorBox->setText(BackgroundColor.name());
 
-    ui->TextBackground->setStyleSheet("");
+    ui->TextBackground->setStyleSheet("#TextBackground{background-color:" + BackgroundColor.toRgb().name() + ";}");
 
     updateTextBox();
 }
@@ -426,7 +441,6 @@ void Settings_ReaderLayout::on_BackgroundTypeBox_currentIndexChanged(int index)
     if (index == 0 && ui->BackgroundImageBox->isHidden())
     {
         ui->BackgroundImageBox->setText(QObject::tr("No image"));
-        ui->TextBackground->setStyleSheet("");
         ui->BackgroundColor->hide();
         ui->BackgroundColorBox->hide();
         ui->BackgroundImage->show();
@@ -442,6 +456,7 @@ void Settings_ReaderLayout::on_BackgroundTypeBox_currentIndexChanged(int index)
         ui->BackgroundImageBox->hide();
         updateTextBox();
     } 
+    ui->TextBackground->setStyleSheet("#TextBackground{background-color:rgb(255,255,255);}");
 }
 
 

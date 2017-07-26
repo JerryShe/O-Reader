@@ -220,6 +220,7 @@ void Settings::fromJson(const QJsonObject &json)
 ReadingProfile::ReadingProfile()
 {
     ColumnCount = 2;
+    ColumnIndent = 30;
     BackgroundType = 1;
     BackgroundImage = "#ffffff";
     TextAntiAliasing = false;
@@ -249,6 +250,7 @@ QJsonObject ReadingProfile::toJson()  const
     QJsonObject json;
 
     json["ColumnCount"] = (int)ColumnCount;
+    json["ColumnIndent"] = (int)ColumnIndent;
     json["BackgroundType"] = BackgroundType;
     json["BackgroundImage"] = BackgroundImage;
     json["TextAntiAliasing"] = TextAntiAliasing;
@@ -273,6 +275,9 @@ void ReadingProfile::fromJson(const QJsonObject &json)
 {
     if (json.contains("ColumnCount"))
         ColumnCount = (unsigned short)json["ColumnCount"].toInt();
+
+    if (json.contains("ColumnIndent"))
+        ColumnIndent = (unsigned short)json["ColumnIndent"].toInt();
 
     if (json.contains("BackgroundType"))
         BackgroundType = json["BackgroundType"].toBool();

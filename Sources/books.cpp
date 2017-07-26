@@ -277,7 +277,6 @@ bool Book::loadFB2(QDomDocument *doc, GenresMap *Gmap)
     CoverType = "noImage";
     Format = 1;
 
-
     if (doc->namedItem("FictionBook").nodeName().isNull())
         return false;
 
