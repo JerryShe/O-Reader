@@ -36,7 +36,7 @@ private slots:
     void addResultsToLast();
     void addBranchFor(const QTreeWidgetItem* item);
 
-    void showFirstResult();
+    void showCurrentResult();
 
     void on_StartSearch_clicked();
     void on_GoToSelected_clicked();

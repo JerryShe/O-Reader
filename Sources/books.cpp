@@ -661,7 +661,7 @@ QString Book::getLanguage() const
 }
 
 
-long long Book::getProgressPosition() const
+long long Book::getTextPosition() const
 {
     return lastBookProgress.TextPos;
 }

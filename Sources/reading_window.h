@@ -9,7 +9,7 @@
 #include "search_window.h"
 #include "xml_text_paginator.h"
 #include "reading_menu.h"
-#include "book_table_of_contents.h"
+#include "reading_table_of_contents.h"
 #include "reading_mini_window.h"
 #include "reading_search_widget.h"
 
@@ -92,7 +92,7 @@ private:
 
     ReadingMiniWindow* MiniWindow;
     ReadingSearchWidget* SearchWidget;
-    BookTableOfContents* ContentsTableWindow;
+    ReadingTableOfContents* ContentsTableWindow;
     SearchWindow* Search;
 
     QString styles[5];

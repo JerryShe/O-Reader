@@ -27,8 +27,6 @@ public:
     float getProgress() const;
 
     QTreeWidgetItem* getBookContentTable() const;
-    long long getCurrentSectionIndex() const;
-
 
 public slots:
     QString resizePage(const int &width, const int &height);

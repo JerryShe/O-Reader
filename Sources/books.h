@@ -69,7 +69,7 @@ public:
     QDomDocument* getFB2BookDomDoc(bool &result);
     QByteArray getFB2BookByteArray(bool &result);
 
-    long long getProgressPosition() const;
+    long long getTextPosition() const;
     double getProgressProcent() const;
     QStack<QString> getProgressTagStack() const;
 

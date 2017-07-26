@@ -49,9 +49,7 @@ public slots:
     void deleteBook(const unsigned int &index);
 
 protected:
-    void changeEvent(QEvent *event);
-    void dropEvent(QDropEvent *e);
-    void dragEnterEvent(QDragEnterEvent *e);
+    bool eventFilter(QObject *watched, QEvent *event);
 
 signals:
     void showBookPage(unsigned int index);

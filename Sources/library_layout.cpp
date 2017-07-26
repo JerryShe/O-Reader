@@ -98,6 +98,9 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
         QScroller::grabGesture(ui->_SortBox->view()->viewport(), QScroller::LeftMouseButtonGesture);
         ui->_SortBox->view()->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
+
+    this->installEventFilter(this);
+    ui->Library_View->installEventFilter(this);
 }
 
 
@@ -107,40 +110,97 @@ LibraryLayout::~LibraryLayout()
 }
 
 
-void LibraryLayout::changeEvent(QEvent *event)
+bool LibraryLayout::eventFilter(QObject *watched, QEvent *event)
 {
-    if (event->type() == QEvent::LanguageChange) {
-        ui->retranslateUi(this);
-    }
-}
-
-
-void LibraryLayout::dropEvent(QDropEvent *e)
-{
-    QStringList fileList;
-    foreach (const QUrl &url, e->mimeData()->urls()) {
-        QString file = url.toLocalFile();
-        QFileInfo fileInf (file);
-        if (fileInf.isDir())
-            LibHandler->AddFolder(file);
-        else
-            if (fileInf.isFile())
-                fileList.append(file);
-    }
-    if (fileList.size() != 0)
+    switch (event->type())
     {
-        hideBookWidget();
-        hideFind();
-        LibHandler->AddBooks(fileList);
+    case QEvent::Drop:
+    {
+        QDropEvent *e = static_cast<QDropEvent*>(event);
+        QStringList fileList;
+        foreach (const QUrl &url, e->mimeData()->urls()) {
+            QString file = url.toLocalFile();
+            QFileInfo fileInf (file);
+            if (fileInf.isDir())
+                LibHandler->AddFolder(file);
+            else
+                if (fileInf.isFile())
+                    fileList.append(file);
+        }
+        if (fileList.size() != 0)
+        {
+            hideBookWidget();
+            hideFind();
+            LibHandler->AddBooks(fileList);
+        }
+        return true;
     }
-}
-
-
-void LibraryLayout::dragEnterEvent(QDragEnterEvent *e)
-{
-    if (e->mimeData()->hasUrls()) {
-        e->acceptProposedAction();
+    case QEvent::DragEnter:
+    {
+        QDragEnterEvent *e = static_cast<QDragEnterEvent*>(event);
+        if (e->mimeData()->hasUrls())
+            e->acceptProposedAction();
+        return true;
     }
+    case QEvent::LanguageChange:
+    {
+        ui->retranslateUi(this);
+        return true;
+    }
+    case QEvent::KeyPress:
+    {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() == Qt::Key_Delete)
+            on__Delete_clicked();
+        else if (keyEvent->modifiers() & Qt::CTRL)
+        {
+            switch (keyEvent->key()) {
+            case Qt::Key_F:
+            {
+                if (!ui->_Find->isChecked())
+                    ui->_Find->setChecked(true);
+                break;
+            }
+            case Qt::Key_A:
+            {
+                on__AddBooks_clicked();
+                break;
+            }
+            case Qt::Key_Plus: case Qt::Key_Equal:
+            {
+                if (ui->Library_View->getBookIconSize() < 348)
+                    ui->Library_View->setBookIconSize(ui->Library_View->getBookIconSize() + 2);
+                break;
+            }
+            case Qt::Key_Minus:
+            {
+                if (ui->Library_View->getBookIconSize() > 112)
+                    ui->Library_View->setBookIconSize(ui->Library_View->getBookIconSize() - 2);
+                break;
+            }
+            case Qt::Key_V:
+            {
+                ui->Library_View->changeViewMod();
+                break;
+            }
+            default:
+                break;
+            }
+        }
+        else if (keyEvent->key() == Qt::Key_Escape)
+        {
+            if (ui->_Find->isChecked())
+                ui->_Find->setChecked(false);
+            hideBookWidget();
+        }
+
+        return true;
+    }
+    default:
+        break;
+    }
+
+    return false;
 }
 
 
@@ -297,8 +357,7 @@ void LibraryLayout::hideFind()
 
 void LibraryLayout::hideBookWidget()
 {
-    if (bookWidget != 0)
-        ui->ShowButton->setChecked(true);
+    ui->ShowButton->setChecked(true);
 }
 
 

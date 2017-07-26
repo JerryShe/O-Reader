@@ -38,7 +38,6 @@ SOURCES += main.cpp\
     library_view.cpp \
     book_image_table.cpp \
     battery_widget.cpp \
-    book_table_of_contents.cpp \
     search_window.cpp \
     paginator_helper.cpp \
     xml_text_paginator.cpp \
@@ -52,7 +51,8 @@ SOURCES += main.cpp\
     reading_search_widget.cpp \
     reading_mini_window.cpp \
     reading_search_results_delegate.cpp \
-    device_settings.cpp
+    device_settings.cpp \
+    reading_table_of_contents.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -84,7 +84,6 @@ HEADERS  += \
     library_view.h \
     book_image_table.h \
     battery_widget.h \
-    book_table_of_contents.h \
     paginator_helper.h \
     tags_resolver.h \
     xml_text_paginator.h \
@@ -97,14 +96,14 @@ HEADERS  += \
     reading_search_widget.h \
     reading_mini_window.h \
     reading_search_results_delegate.h \
-    device_settings.h
+    device_settings.h \
+    reading_table_of_contents.h
 
 FORMS    += \
     settings_programlayout.ui \
     settings_profilelayout.ui \
     settings_readerlayout.ui \
     book_page.ui \
-    booktableofcontents.ui \
     library_layout.ui \
     main_window.ui \
     login_window.ui \
@@ -113,7 +112,8 @@ FORMS    += \
     book_widget.ui \
     reading_menu.ui \
     settings_readerlayoutstyle.ui \
-    reading_search_widget.ui
+    reading_search_widget.ui \
+    reading_table_of_contents.ui
 
 RESOURCES += \
     images.qrc

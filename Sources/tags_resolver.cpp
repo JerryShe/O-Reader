@@ -68,7 +68,7 @@ void TagsResolver::createFB2map()
     TagMap.insert("p", tagInfo(1, 30, "p"));
     TagMap.insert("body", tagInfo(1, 31, "body"));
     TagMap.insert("section", tagInfo(1, 32, "section"));
-    TagMap.insert("empty-line", tagInfo(0, 33, "br/"));
+    TagMap.insert("empty-line/", tagInfo(0, 33, "br/"));
 
 
     TagMap.insert("image", tagInfo(0, 40, "img"));

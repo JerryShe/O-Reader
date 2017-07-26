@@ -134,7 +134,7 @@ void ReadingSearchWidget::setSearchResults(const QVector<BookNote> results)
     if(CurSearchResult != SearchResults.size())
         addResultsToLast();
 
-    showFirstResult();
+    showCurrentResult();
 }
 
 
@@ -192,7 +192,7 @@ void ReadingSearchWidget::addBranchFor(const QTreeWidgetItem* item)
 }
 
 
-void ReadingSearchWidget::showFirstResult()
+void ReadingSearchWidget::showCurrentResult()
 {
     QStandardItem* item = ResultsRoot;
 
@@ -231,6 +231,8 @@ void ReadingSearchWidget::showFirstResult()
         return;
     }
 
+    ui->ResultsView->collapseAll();
+
     //lol-bug
     ui->ResultsView->scrollTo(item->index(), QAbstractItemView::EnsureVisible);
     ui->ResultsView->scrollTo(item->index(), QAbstractItemView::EnsureVisible);
@@ -245,6 +247,7 @@ void ReadingSearchWidget::on_StartSearch_clicked()
     {
         clearResults();
         emit startSearch(ui->SearchKey->text(), ui->CaseSensitive->isChecked(), ui->Punctuation->isChecked(), ui->PreviewSize->value());
+        connect(ui->SearchType, SIGNAL(activated(int)), this, SLOT(showCurrentResult()));
     }
 }
 

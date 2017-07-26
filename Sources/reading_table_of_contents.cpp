@@ -1,5 +1,5 @@
-#include "book_table_of_contents.h"
-#include "ui_booktableofcontents.h"
+#include "reading_table_of_contents.h"
+#include "ui_reading_table_of_contents.h"
 #include "styles.h"
 
 #include <QDebug>
@@ -8,34 +8,34 @@
 #include <QScroller>
 #include <QTouchDevice>
 
+#include <settings.h>
 
-void BookTableOfContents::setStyle(const QString &style)
+void ReadingTableOfContents::setStyle()
 {
     QString windowStyle[2];
-    setReaderTableOfContents(windowStyle, style);
+    setReaderTableOfContents(windowStyle, Settings::getSettings()->getInterfaceStyle());
     ui->TableOfContents->setStyleSheet(windowStyle[0]);
     ui->Close->setStyleSheet(windowStyle[1]);
     ui->GoTo->setStyleSheet(windowStyle[1]);
 }
 
 
-BookTableOfContents::BookTableOfContents(const QString &style, QTreeWidgetItem *content, QWidget *parent) :
+ReadingTableOfContents::ReadingTableOfContents(QTreeWidgetItem *content, const long long &pos, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::BookTableOfContents)
+    ui(new Ui::ReadingTableOfContents)
 {
-
-    if (content->childCount() == 0)
-    {
-        qDebug()<<"yepe";
-    }
-
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
-    setStyle(style);
+    setStyle();
 
     ui->TableOfContents->addTopLevelItem(content);
     ui->TableOfContents->setRootIndex(ui->TableOfContents->model()->index(0,0,QModelIndex()));
+
+    curSection = content;
+    curPos = pos;
+    getCurrentSection(curSection);
+    ui->TableOfContents->setCurrentItem(curSection);
 
     connect(ui->Close, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -54,7 +54,18 @@ BookTableOfContents::BookTableOfContents(const QString &style, QTreeWidgetItem *
 }
 
 
-BookTableOfContents::~BookTableOfContents()
+void ReadingTableOfContents::getCurrentSection(QTreeWidgetItem* item)
+{
+    if (curPos > item->whatsThis(0).toLongLong())
+    {
+        curSection = item;
+        for (int i = 0; i < item->childCount(); i++)
+            getCurrentSection(item->child(i));
+    }
+}
+
+
+ReadingTableOfContents::~ReadingTableOfContents()
 {
     qDebug()<<"delete table of contents";
     delete ui;

@@ -7,7 +7,7 @@
 #include "search_window.h"
 #include "settings.h"
 #include "styles.h"
-#include "book_table_of_contents.h"
+#include "reading_table_of_contents.h"
 #include "styles.h"
 #include "battery_widget.h"
 #include "settings_layout.h"
@@ -530,18 +530,18 @@ void ReadingWindow::showContentsTable()
         return;
 
     ActiveWindow = true;
-    ContentsTableWindow = new BookTableOfContents(ProgramSettings->getInterfaceStyle(), BookPaginator->getBookContentTable(), this);
+    ContentsTableWindow = new ReadingTableOfContents(BookPaginator->getBookContentTable(), CurBook->getTextPosition(), this);
     ContentsTableWindow->move(0, ui->MenuButton->height());
     ContentsTableWindow->installEventFilter(this);
 
 
-    connect(ContentsTableWindow, &BookTableOfContents::goToSection, [this](const long long sectionPos){
+    connect(ContentsTableWindow, &ReadingTableOfContents::goToSection, [this](const long long sectionPos){
         ui->TextPage->setHtml(BookPaginator->goToSection(sectionPos));
         updateProgress();
     });
 
 
-    connect(ContentsTableWindow, &BookTableOfContents::finished, [this](){
+    connect(ContentsTableWindow, &ReadingTableOfContents::finished, [this](){
         ContentsTableWindow = 0;
         ActiveWindow = false;
         ui->TextPage->setFocus();
@@ -584,7 +584,7 @@ void ReadingWindow::showSearchWindow()
         return;
 
     SearchWidget = new ReadingSearchWidget(BookPaginator->getBookContentTable(),
-                                           CurBook->getProgressPosition(),
+                                           CurBook->getTextPosition(),
                                            BookPaginator->getTextStyles(),
                                            MiniWindow);
 

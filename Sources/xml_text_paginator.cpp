@@ -156,19 +156,6 @@ QTreeWidgetItem *XMLTextPaginator::getBookContentTable() const
 }
 
 
-long long XMLTextPaginator::getCurrentSectionIndex() const
-{
-    /*
-    int pos;
-    for (pos = 1; pos < TableOfContentsIndexes.size() && currentBStrNum > TableOfContentsIndexes[pos]; ++pos);
-    if (currentBStrNum > TableOfContentsIndexes.back())
-        return TableOfContentsIndexes.size() - 1;
-    return pos;
-    */
-    return 0;
-}
-
-
 QString XMLTextPaginator::goToSection(const long long sectionIndex)
 {
     currentTextPos = pageEndTextPos = sectionIndex;
