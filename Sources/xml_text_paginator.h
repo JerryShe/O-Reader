@@ -43,6 +43,8 @@ public slots:
     QString getPageForward();
     QString getPageBackward();
 
+    QString rescaleText(const bool &inc);
+
     QVector<BookNote> searchStart(const QString &key, const bool &caseSensitivity, const bool &punctuation, const int &previewSize);
 
     bool addBookmark() const;

@@ -7,6 +7,8 @@ PaginatorHelper::PaginatorHelper(QObject *parent)
     qDebug()<<"create PaginatorHelper";
     setParent(parent);
     refreshSettings();
+
+    textScale = 0;
 }
 
 PaginatorHelper::~PaginatorHelper()
@@ -15,9 +17,41 @@ PaginatorHelper::~PaginatorHelper()
 }
 
 
-void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom)
+void PaginatorHelper::rescaleText(const bool &inc)
+{
+    if (inc)
+    {
+        if (CurProfile.TitleStyle.Size + textScale< 75 &&
+                CurProfile.EpigraphStyle.Size + textScale < 75 &&
+                CurProfile.SubtitleStyle.Size + textScale < 75 &&
+                CurProfile.RegularStyle.Size + textScale < 75 &&
+                CurProfile.EmphasizedStyle.Size + textScale < 75 &&
+                CurProfile.PoemStyle.Size + textScale < 75 &&
+                CurProfile.CiteStyle.Size + textScale < 75 &&
+                CurProfile.NoteStyle.Size + textScale < 75)
+            textScale++;
+    }
+    else
+    {
+        if (CurProfile.TitleStyle.Size + textScale > 6 &&
+                CurProfile.EpigraphStyle.Size + textScale > 6 &&
+                CurProfile.SubtitleStyle.Size + textScale > 6 &&
+                CurProfile.RegularStyle.Size + textScale > 6 &&
+                CurProfile.EmphasizedStyle.Size + textScale > 6 &&
+                CurProfile.PoemStyle.Size + textScale > 6 &&
+                CurProfile.CiteStyle.Size + textScale > 6 &&
+                CurProfile.NoteStyle.Size + textScale > 6)
+            textScale--;
+    }
+}
+
+
+void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &columnWidth)
 {
     QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
+
+    int width = columnWidth/CurProfile.ColumnCount;
+
 
     PageHTMLStyles = "<style type='text/css'>"
                      "p{"
@@ -30,29 +64,29 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTM
                      "P.image {text-align: center; text-indent:0px}"
 
                      "TitleText{"
-                           + topMargin + CurProfile.TitleStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.TitleStyle.getHTMLStyle(textScale) + "}"
 
                      "epigraph{"
-                           + topMargin + CurProfile.EpigraphStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.EpigraphStyle.getHTMLStyle(textScale) + "}"
 
                      "subtitle{"
-                           + topMargin + CurProfile.SubtitleStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.SubtitleStyle.getHTMLStyle(textScale) + "}"
 
                      "Text{"
-                           + topMargin + CurProfile.RegularStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.RegularStyle.getHTMLStyle(textScale) + "}"
 
                      "emphasis{"
-                           + topMargin + CurProfile.EmphasizedStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.EmphasizedStyle.getHTMLStyle(textScale) + "}"
 
                      "poem{"
-                           + topMargin + CurProfile.PoemStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.PoemStyle.getHTMLStyle(textScale) + "}"
 
                      "cite{"
-                           + topMargin + CurProfile.CiteStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.CiteStyle.getHTMLStyle(textScale) + "}"
 
                      "a[type = 'note']{"
                            + "vertical-align: super;"
-                           + topMargin + CurProfile.NoteStyle.getHTMLStyle() + "}"
+                           + topMargin + CurProfile.NoteStyle.getHTMLStyle(textScale) + "}"
 
                      "strong{"
                           + topMargin + "font-weight:" + QString::number(99) + "}"
@@ -71,10 +105,9 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTM
                        "width='100%'"
                        "cellspacing='-" + QString::number(CurProfile.ColumnIndent) + "' cellpadding='" + QString::number(CurProfile.ColumnIndent) + "'>"
                      "<tr>"
-                     "<td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'>"
-                     "<Text>";
+                     "<td align = 'justify' width=\"" + QString::number(width + CurProfile.ColumnIndent) + "\"><Text>";
 
-    PageHTMLSep = "</Text></td><td align = 'justify' width = '" + QString::number(100/CurProfile.ColumnCount) + "%'><Text>";
+    PageHTMLSep = "</Text></td><td align = 'justify' width=\"" + QString::number(width + CurProfile.ColumnIndent) + "\"><Text>";
     PageHTMLBottom = "</Text></td></tr></table></body>";
 }
 
@@ -84,31 +117,31 @@ void PaginatorHelper::setFontMetrics(QHash <QString, QFontMetrics*> *fontsMetric
     fontsMetrics->clear();
     fontsLinespaces->clear();
 
-    QFont textFont(CurProfile.RegularStyle.Family, CurProfile.RegularStyle.Size, 49*(CurProfile.RegularStyle.Style%2) + 50, CurProfile.RegularStyle.Style/10);
+    QFont textFont(CurProfile.RegularStyle.Family, CurProfile.RegularStyle.Size + textScale, 49*(CurProfile.RegularStyle.Style%2) + 50, CurProfile.RegularStyle.Style/10);
     fontsMetrics->insert("Text", new QFontMetrics(textFont));
 
     textFont.setWeight(75);
     fontsMetrics->insert("strong", new QFontMetrics(textFont));
 
-    QFont titleFont(CurProfile.TitleStyle.Family, CurProfile.TitleStyle.Size, 49*(CurProfile.TitleStyle.Style%2) + 50, CurProfile.TitleStyle.Style/10);
+    QFont titleFont(CurProfile.TitleStyle.Family, CurProfile.TitleStyle.Size + textScale, 49*(CurProfile.TitleStyle.Style%2) + 50, CurProfile.TitleStyle.Style/10);
     fontsMetrics->insert("TitleText", new QFontMetrics(titleFont));
 
-    QFont epigraphFont(CurProfile.EpigraphStyle.Family, CurProfile.EpigraphStyle.Size, 49*(CurProfile.EpigraphStyle.Style%2) + 50, CurProfile.EpigraphStyle.Style/10);
+    QFont epigraphFont(CurProfile.EpigraphStyle.Family, CurProfile.EpigraphStyle.Size + textScale, 49*(CurProfile.EpigraphStyle.Style%2) + 50, CurProfile.EpigraphStyle.Style/10);
     fontsMetrics->insert("epigraph", new QFontMetrics(epigraphFont));
 
-    QFont empFont(CurProfile.EmphasizedStyle.Family, CurProfile.EmphasizedStyle.Size, 49*(CurProfile.EmphasizedStyle.Style%2) + 50, CurProfile.EmphasizedStyle.Style/10);
+    QFont empFont(CurProfile.EmphasizedStyle.Family, CurProfile.EmphasizedStyle.Size + textScale, 49*(CurProfile.EmphasizedStyle.Style%2) + 50, CurProfile.EmphasizedStyle.Style/10);
     fontsMetrics->insert("emphasis", new QFontMetrics(empFont));
 
-    QFont noteFont(CurProfile.NoteStyle.Family, CurProfile.NoteStyle.Size, 49*(CurProfile.NoteStyle.Style%2) + 50, CurProfile.NoteStyle.Style/10);
+    QFont noteFont(CurProfile.NoteStyle.Family, CurProfile.NoteStyle.Size + textScale, 49*(CurProfile.NoteStyle.Style%2) + 50, CurProfile.NoteStyle.Style/10);
     fontsMetrics->insert("note", new QFontMetrics(noteFont));
 
-    QFont subtitleFont(CurProfile.SubtitleStyle.Family, CurProfile.SubtitleStyle.Size, 49*(CurProfile.SubtitleStyle.Style%2) + 50, CurProfile.SubtitleStyle.Style/10);
+    QFont subtitleFont(CurProfile.SubtitleStyle.Family, CurProfile.SubtitleStyle.Size + textScale, 49*(CurProfile.SubtitleStyle.Style%2) + 50, CurProfile.SubtitleStyle.Style/10);
     fontsMetrics->insert("subtitle", new QFontMetrics(subtitleFont));
 
-    QFont poemFont(CurProfile.PoemStyle.Family, CurProfile.PoemStyle.Size, 49*(CurProfile.PoemStyle.Style%2) + 50, CurProfile.PoemStyle.Style/10);
+    QFont poemFont(CurProfile.PoemStyle.Family, CurProfile.PoemStyle.Size + textScale, 49*(CurProfile.PoemStyle.Style%2) + 50, CurProfile.PoemStyle.Style/10);
     fontsMetrics->insert("poem", new QFontMetrics(poemFont));
 
-    QFont citeFont(CurProfile.CiteStyle.Family, CurProfile.CiteStyle.Size, 49*(CurProfile.CiteStyle.Style%2) + 50, CurProfile.CiteStyle.Style/10);
+    QFont citeFont(CurProfile.CiteStyle.Family, CurProfile.CiteStyle.Size + textScale, 49*(CurProfile.CiteStyle.Style%2) + 50, CurProfile.CiteStyle.Style/10);
     fontsMetrics->insert("cite", new QFontMetrics(citeFont));
 
 

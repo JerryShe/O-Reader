@@ -67,7 +67,7 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
     Resolver = new TagsResolver(this, book->getFormat());
     Helper = new PaginatorHelper(this);
 
-    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
+    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom, Pwidth);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
 
@@ -824,8 +824,19 @@ QString XMLTextPaginator::goToNote(const int &index)
 }
 
 
+QString XMLTextPaginator::rescaleText(const bool &inc)
+{
+    Helper->rescaleText(inc);
+    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom, static_cast<QWidget*>(parent())->width());
+    Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
+
+    return refreshPage();
+}
+
+
 QString XMLTextPaginator::resizePage(const int &width, const int &height)
 {
+    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom, width);
     setPageGeometry(width, height);
     return refreshPage();
 }
@@ -834,7 +845,7 @@ QString XMLTextPaginator::resizePage(const int &width, const int &height)
 QString XMLTextPaginator::updateSettings(const int &width, const int &height)
 {
     Helper->refreshSettings();
-    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom);
+    Helper->setHTMLPageElems(PageHTMLStyles, PageHTMLHeader, PageHTMLSep, PageHTMLBottom, width);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
 

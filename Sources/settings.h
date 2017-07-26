@@ -30,7 +30,7 @@ struct TextStyleSheet
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
-    QString getHTMLStyle() const;
+    QString getHTMLStyle(const int &scale = 0) const;
 };
 
 

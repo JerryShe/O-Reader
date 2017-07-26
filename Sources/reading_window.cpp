@@ -396,12 +396,35 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         }
         else if (KeyEvent->modifiers() & Qt::CTRL)
         {
-            if (KeyEvent->key() == Qt::Key_F)
+            switch (KeyEvent->key()) {
+            case Qt::Key_F:
+            {
                 showSearchWindow();
-            else if (KeyEvent->key() == Qt::Key_S)
+                break;
+            }
+            case Qt::Key_S:
+            {
                 showSettingsWindow();
-            else if (KeyEvent->key() == Qt::Key_T)
+                break;
+            }
+            case Qt::Key_T:
+            {
                 showContentsTable();
+                break;
+            }
+            case Qt::Key_Minus:
+            {
+                ui->TextPage->setHtml(BookPaginator->rescaleText(0));
+                break;
+            }
+            case Qt::Key_Equal: case Qt::Key_Plus:
+            {
+                ui->TextPage->setHtml(BookPaginator->rescaleText(1));
+                break;
+            }
+            default:
+                break;
+            }
         }
 
         break;

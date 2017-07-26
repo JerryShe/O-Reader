@@ -387,11 +387,11 @@ void TextStyleSheet::fromJson(const QJsonObject &json)
 }
 
 
-QString TextStyleSheet::getHTMLStyle() const
+QString TextStyleSheet::getHTMLStyle(const int &scale) const
 {
     QString tempHTML =
                        "font-family:'" + Family + "';"
-                       "font-size:" + QString::number(Size) + "pt;"
+                       "font-size:" + QString::number(Size + scale) + "pt;"
                        "font-weight:" + ((Style%2)? QString("bold"):QString("normal")) + ";"
                        "line-height:" + QString::number(LineSpacing*100) + "%;"
                        "font-style:" + ((Style/2 == 1)?QString("italic"):QString("normal")) + ";"
