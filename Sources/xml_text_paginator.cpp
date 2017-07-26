@@ -539,7 +539,7 @@ void XMLTextPaginator::preparePage(bool direction)
 
     parseDirection = direction;
 
-    for (int i = 0; i < ColumnCount; i++)
+    for (int i = 0; i < Columns.size(); i++)
         Columns[i].clear();
 
     wordWidth = wordHeight = tagType = 0;
@@ -555,7 +555,7 @@ void XMLTextPaginator::createHTMLPage()
         for (int i = 0; i < Columns[0].size(); i++)
             HTMLPage += Columns[0][i];
 
-        for (int i = 1; i < ColumnCount; i++)
+        for (int i = 1; i < Columns.size(); i++)
         {
             HTMLPage += PageHTMLSep;
             for (int j = 0; j < Columns[i].size(); j++)
@@ -564,15 +564,16 @@ void XMLTextPaginator::createHTMLPage()
     }
     else
     {
-        for (int i = Columns[ColumnCount - 1].size() - 1; i >= 0; i--)
-            HTMLPage += Columns[ColumnCount - 1][i];
+        for (int i = Columns[Columns.size() - 1].size() - 1; i >= 0; i--)
+            HTMLPage += Columns[Columns.size() - 1][i];
 
-        for (int i = ColumnCount - 2; i >= 0; i--)
-        {
-            HTMLPage += PageHTMLSep;
-            for (int j = Columns[i].size() - 1; j >= 0; j--)
-                HTMLPage += Columns[i][j];
-        }
+        if (Columns.size() > 2)
+            for (int i = Columns.size() - 2; i >= 0; i--)
+            {
+                HTMLPage += PageHTMLSep;
+                for (int j = Columns[i].size() - 1; j >= 0; j--)
+                    HTMLPage += Columns[i][j];
+            }
     }
 }
 
@@ -850,6 +851,10 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
     Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
 
     setPageGeometry(width, height);
+
+    Columns.clear();
+    for (int i = 0; i < ColumnCount; i++)
+        Columns.append(QStringList());
 
     return refreshPage();
 }
