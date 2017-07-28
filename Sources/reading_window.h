@@ -40,12 +40,13 @@ private slots:
     void createReadingMenuWidget();
 
     void showContentsTable();
-    void showSearchWindow();
+    void showSearchWindow(QString searchKey = QString());
     void showSettingsWindow();
     void showSynchronizationWindow();
     void showNoteText(const QUrl &link);
 
     bool createMiniWindow();
+    void createRightClickMenu(QPoint mousePoint);
 
     void setStyle(const QString &currentStyle);
 
@@ -54,6 +55,10 @@ private slots:
 
     void resizeWindow();
     void reprintNewSettText();
+    void rescaleBookText(const bool &inc);
+
+    void enableTextSelection();
+    void disableTextSelection();
 
     void on_ReadProfilesButton_clicked();
 

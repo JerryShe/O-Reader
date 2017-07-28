@@ -24,6 +24,7 @@ public:
 
 public slots:
     void setSearchResults(const QVector<BookNote> results);
+    void runSearch(const QString &searchKey);
 
 signals:
     void goTo(BookPosition pos);

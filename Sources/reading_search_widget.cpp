@@ -95,6 +95,14 @@ ReadingSearchWidget::~ReadingSearchWidget()
 }
 
 
+void ReadingSearchWidget::runSearch(const QString &searchKey)
+{
+    ui->SearchKey->setText(searchKey);
+    ui->SearchType->setCurrentIndex(2);
+    on_StartSearch_clicked();
+}
+
+
 void ReadingSearchWidget::clearResults()
 {
     if (ResultsModel != 0)

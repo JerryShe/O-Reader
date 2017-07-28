@@ -11,6 +11,7 @@
 #include "styles.h"
 #include "battery_widget.h"
 #include "settings_layout.h"
+#include "reading_right_click_menu.h"
 
 #include <QTimer>
 #include <QMouseEvent>
@@ -22,6 +23,9 @@
 #include <QScrollBar>
 #include <QDesktopServices>
 #include <QGesture>
+#include <QMenu>
+#include <QWidgetAction>
+#include <QClipboard>
 
 #include <QDebug>
 
@@ -362,9 +366,10 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
     {
         if (QGestureEvent * gesEv = static_cast<QGestureEvent*>(event))
             if (QGesture *gesture = gesEv->gesture(Qt::TapAndHoldGesture))
-                if (gesture->state() == Qt::GestureFinished)
+                if (gesture->state() == Qt::GestureFinished && obj == ui->TextPage)
                 {
-                    qDebug()<<"woooop";
+                    QTapAndHoldGesture* tap = static_cast<QTapAndHoldGesture*> (gesture);
+                    createRightClickMenu(tap->position().toPoint());
                 }
         return true;
     }
@@ -426,12 +431,12 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             }
             case Qt::Key_Minus:
             {
-                ui->TextPage->setHtml(BookPaginator->rescaleText(0));
+                rescaleBookText(false);
                 break;
             }
             case Qt::Key_Equal: case Qt::Key_Plus:
             {
-                ui->TextPage->setHtml(BookPaginator->rescaleText(1));
+                rescaleBookText(true);
                 break;
             }
             default:
@@ -474,7 +479,6 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         {
             MenuWidget->hideMenu();
             ui->TextPage->setFocus();
-            break;
         }
 
         if(MousePressEvent->button() == Qt::LeftButton)
@@ -494,6 +498,11 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
                 }
             }
         }
+        else if (MousePressEvent->button() == Qt::RightButton && obj == ui->TextPage)
+        {
+            createRightClickMenu(MousePressEvent->pos());
+        }
+
         break;
     }
 
@@ -559,6 +568,34 @@ void ReadingWindow::updateProgress()
 }
 
 
+void ReadingWindow::reprintNewSettText()
+{
+    setBackgroundImage();
+    ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
+}
+
+
+void ReadingWindow::rescaleBookText(const bool &inc)
+{
+    ui->TextPage->setHtml(BookPaginator->rescaleText(inc));
+}
+
+
+void ReadingWindow::enableTextSelection()
+{
+    ui->TextPage->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
+}
+
+
+void ReadingWindow::disableTextSelection()
+{
+    QTextCursor cur = ui->TextPage->textCursor();
+    cur.clearSelection();
+    ui->TextPage->setTextCursor(cur);
+    ui->TextPage->setTextInteractionFlags(Qt::NoTextInteraction);
+}
+
+
 void ReadingWindow::showContentsTable()
 {
     if (ContentsTableWindow != 0 || ActiveWindow)
@@ -586,10 +623,78 @@ void ReadingWindow::showContentsTable()
 }
 
 
-void ReadingWindow::reprintNewSettText()
+void ReadingWindow::createRightClickMenu(QPoint mousePoint)
 {
-    setBackgroundImage();
-    ui->TextPage->setHtml(BookPaginator->updateSettings(ui->TextPage->width(), ui->TextPage->height()));
+    QMenu *menu = new QMenu(ui->TextPage);
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    QWidgetAction *widAct = new QWidgetAction(menu);
+    ReadingRightClickMenu* clickWidget = new ReadingRightClickMenu(menu);
+    widAct->setDefaultWidget(clickWidget);
+    menu->addAction(widAct);
+
+    menu->setAttribute(Qt::WA_TranslucentBackground);
+    menu->setWindowFlags(menu->windowFlags() | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+    menu->setStyleSheet("QMenu{background:rgba(0, 0, 0, 0);}");
+
+    connect(clickWidget, SIGNAL(rescaleText(bool)), this, SLOT(rescaleBookText(bool)));
+
+    connect(clickWidget, SIGNAL(openSearch()), this, SLOT(showSearchWindow()));
+    connect(clickWidget, SIGNAL(openSearch()), menu, SLOT(close()));
+
+    connect(clickWidget, SIGNAL(openSettings()), this, SLOT(showSettingsWindow()));
+    connect(clickWidget, SIGNAL(openSettings()), menu, SLOT(close()));
+
+
+    if (!(ui->TextPage->textInteractionFlags() & (Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse)))
+    {
+        clickWidget->setState(0);
+        connect(clickWidget, SIGNAL(enableSelect()), this, SLOT(enableTextSelection()));
+        connect(clickWidget, SIGNAL(enableSelect()), menu, SLOT(close()));
+    }
+    else
+    {
+        connect(clickWidget, SIGNAL(disableSelect()), this, SLOT(disableTextSelection()));
+        connect(clickWidget, SIGNAL(disableSelect()), menu, SLOT(close()));
+
+        if (!ui->TextPage->textCursor().hasSelection())
+            clickWidget->setState(1);
+        else
+        {
+            clickWidget->setState(2);
+
+            connect(clickWidget, &ReadingRightClickMenu::copySelected, [this](){
+                QApplication::clipboard()->setText(ui->TextPage->textCursor().selectedText());
+            });
+
+            connect(clickWidget, SIGNAL(findSelected()), menu, SLOT(close()));
+            connect(clickWidget, &ReadingRightClickMenu::findSelected, [this](){
+                showSearchWindow(ui->TextPage->textCursor().selectedText());
+            });
+
+            connect(clickWidget, SIGNAL(findGoogle()), menu, SLOT(close()));
+            connect(clickWidget, &ReadingRightClickMenu::findGoogle, [this](){
+                QDesktopServices::openUrl("https://www.google.ru/search?q=" + ui->TextPage->textCursor().selectedText());
+            });
+
+            connect(clickWidget, SIGNAL(translateGoogle()), menu, SLOT(close()));
+            connect(clickWidget, &ReadingRightClickMenu::translateGoogle, [this](){
+                QDesktopServices::openUrl("https://translate.google.ru/#auto/en/" + ui->TextPage->textCursor().selectedText());
+            });
+        }
+    }
+
+
+
+    QPoint menuPoint = mousePoint;
+
+    if (menuPoint.x() + clickWidget->width()> ui->TextPage->width())
+        menuPoint.setX(menuPoint.x() - clickWidget->width());
+    if (menuPoint.y() + clickWidget->height()> ui->TextPage->height())
+        menuPoint.setY(menuPoint.y() - clickWidget->height());
+
+    menu->move(menuPoint + ui->TextPage->mapToGlobal(QPoint(-3,-3)));
+    menu->show();
 }
 
 
@@ -613,7 +718,7 @@ bool ReadingWindow::createMiniWindow()
 }
 
 
-void ReadingWindow::showSearchWindow()
+void ReadingWindow::showSearchWindow(QString searchKey)
 {
     if (!createMiniWindow())
         return;
@@ -637,6 +742,9 @@ void ReadingWindow::showSearchWindow()
     connect(SearchWidget, SIGNAL(searchClosed()), MiniWindow, SLOT(closeWindow()));
 
     MiniWindow->openWindow();
+
+    if (!searchKey.isEmpty())
+        SearchWidget->runSearch(searchKey);
 }
 
 
