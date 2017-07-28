@@ -16,7 +16,8 @@ public:
     //0 - decrement, 1 - increment
     void rescaleText(const bool &inc);
 
-    void setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &windowWidth);
+    void setHTMLPageStyles(QString &PageHTMLStyles);
+    void setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &windowWidth);
     void setFontMetrics(QHash <QString, QFontMetrics *> *fontsMetrics, QHash <QString, double> *fontsLinespaces);
     void setPageSizes(unsigned short &columnCount, unsigned short &TextLeftRightIdent, unsigned short &TextTopBottomIdent, unsigned short &ParLeftTopIdent, unsigned short &columnIndent);
 

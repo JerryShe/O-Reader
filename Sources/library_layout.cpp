@@ -10,10 +10,8 @@
 #include <QFileDialog>
 #include <QDropEvent>
 #include <QMimeData>
-
 #include <QScroller>
-
-
+#include <QFileDialog>
 #include <QSlider>
 #include <QWidgetAction>
 #include <QMenu>
@@ -231,6 +229,7 @@ void LibraryLayout::on__AddBooks_clicked()
 
 void LibraryLayout::addBooksFromFolder()
 {
+    //TODO: убрать баг с невалидными директориями (компьютер)
     QString path = QFileDialog::getExistingDirectory(this, QObject::tr("Open Directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     LibHandler->AddFolder(path);
 }

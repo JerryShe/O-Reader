@@ -687,7 +687,6 @@ void Book::setProgress(const long long &progress, const bool &paragrafTail, cons
 
     ProgressProcent = procent;
 
-    //TODO: в синхронизацию кидать структуру и процент
     //Synchronization::getSynchronization()->addAction(UActions::UpdateProgress, File, Progress);
 }
 

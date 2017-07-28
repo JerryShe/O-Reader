@@ -52,7 +52,8 @@ SOURCES += main.cpp\
     reading_mini_window.cpp \
     reading_search_results_delegate.cpp \
     device_settings.cpp \
-    reading_table_of_contents.cpp
+    reading_table_of_contents.cpp \
+    reading_right_click_menu.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -97,7 +98,8 @@ HEADERS  += \
     reading_mini_window.h \
     reading_search_results_delegate.h \
     device_settings.h \
-    reading_table_of_contents.h
+    reading_table_of_contents.h \
+    reading_right_click_menu.h
 
 FORMS    += \
     settings_programlayout.ui \
@@ -113,7 +115,8 @@ FORMS    += \
     reading_menu.ui \
     settings_readerlayoutstyle.ui \
     reading_search_widget.ui \
-    reading_table_of_contents.ui
+    reading_table_of_contents.ui \
+    reading_right_click_menu.ui
 
 RESOURCES += \
     images.qrc

@@ -45,13 +45,10 @@ void PaginatorHelper::rescaleText(const bool &inc)
     }
 }
 
-
-void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &columnWidth)
+//TODO: curprofile to pointer
+void PaginatorHelper::setHTMLPageStyles(QString &PageHTMLStyles)
 {
     QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
-
-    int width = columnWidth/CurProfile.ColumnCount;
-
 
     PageHTMLStyles = "<style type='text/css'>"
                      "p{"
@@ -93,10 +90,17 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLStyles, QString &PageHTM
 
                       + ((CurProfile.BackgroundType == true) ? ("body{background-color:" + CurProfile.BackgroundImage + ";}") : ("")) +
                   "</style>";
+}
+
+
+void PaginatorHelper::setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &columnWidth)
+{
+    int width = columnWidth/CurProfile.ColumnCount;
 
     PageHTMLHeader = "<body>"
-                     "<table border='0' style='"
+                     "<table style='"
                        "table-layout: fixed;"
+                       "border:0;"
                        "empty-cells: show;"
                        "margin-top: " + QString::number(CurProfile.TextTopBottomIdent/100) + "px;"
                        "margin-bottom: " + QString::number(CurProfile.TextTopBottomIdent%100) + "px;"

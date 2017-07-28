@@ -18,11 +18,10 @@
 #include <QThread>
 #include <QDialog>
 #include <QListWidget>
-#include <QMessageBox>
 #include <QScroller>
 #include <QScrollBar>
-
 #include <QDesktopServices>
+#include <QGesture>
 
 #include <QDebug>
 
@@ -96,9 +95,6 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     connect(clockTimer, SIGNAL(timeout()), this, SLOT(clockStep()));
     clockTimer->start(1000);
 
-    ui->TextPage->installEventFilter(this);
-    ui->TopBarWidget->installEventFilter(this);
-
 
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
@@ -107,6 +103,11 @@ ReadingWindow::ReadingWindow(QWidget* parent, Book *book) : QWidget(parent), ui(
     ui->TextPage->setFocus();
     ui->TextPage->setFocusProxy(ui->TopBarWidget);
 
+    if (QTouchDevice::devices().size())
+        ui->TextPage->grabGesture(Qt::TapAndHoldGesture);
+
+    ui->TextPage->installEventFilter(this);
+    ui->TopBarWidget->installEventFilter(this);
 
     connect(ui->TextPage, SIGNAL(anchorClicked(QUrl)), this, SLOT(showNoteText(QUrl)));
     //connect(ui->TextPage, SIGNAL(highlighted(QUrl)), this, SLOT(showNoteText(QUrl)));
@@ -357,6 +358,17 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
         break;
     }
 
+    case QEvent::Gesture:
+    {
+        if (QGestureEvent * gesEv = static_cast<QGestureEvent*>(event))
+            if (QGesture *gesture = gesEv->gesture(Qt::TapAndHoldGesture))
+                if (gesture->state() == Qt::GestureFinished)
+                {
+                    qDebug()<<"woooop";
+                }
+        return true;
+    }
+
     case QEvent::KeyPress:
     {
         QKeyEvent *KeyEvent = static_cast<QKeyEvent*>(event);
@@ -427,7 +439,7 @@ bool ReadingWindow::eventFilter(QObject *obj, QEvent *event)
             }
         }
 
-        break;
+        return true;
     }
 
     case QEvent::Wheel:

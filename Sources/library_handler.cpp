@@ -215,9 +215,14 @@ void LibraryHandler::AddFolder(const QString &path)
     QStringList fileList;
 
     QDirIterator it(path, filesMask, QDir::Files, QDirIterator::Subdirectories);
+
+
+    //TODO: проверка корректности пути
+
     while (it.hasNext())
         fileList << it.next();
-    if (!fileList.size())
+
+    if (fileList.size() == 0)
         return;
 
     AddBooks(fileList);
