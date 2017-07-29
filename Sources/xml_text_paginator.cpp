@@ -169,7 +169,7 @@ QString XMLTextPaginator::goToSection(const long long sectionIndex)
 
 int XMLTextPaginator::getWordHeight() const
 {
-    for (int i = tagStack.size() - 1; i > 0; i--)
+    for (int i = tagStack.size() - 1; i >= 0; i--)
         if (fontsLinespaces.contains(tagStack[i]))
             return fontsLinespaces[tagStack[i]];
 
@@ -190,7 +190,7 @@ int XMLTextPaginator::getWordHeightFor(QString name) const
 
 int XMLTextPaginator::getWordWidth() const
 {
-    for (int i = tagStack.size() - 1; i > 0; i--)
+    for (int i = tagStack.size() - 1; i >= 0; i--)
         if (fontsMetrics.contains(tagStack[i]))
             return fontsMetrics[tagStack[i]]->width(word);
 
@@ -200,7 +200,7 @@ int XMLTextPaginator::getWordWidth() const
 
 int XMLTextPaginator::getSpaceWidth() const
 {
-    for (int i = tagStack.size() - 1; i > 0; i--)
+    for (int i = tagStack.size() - 1; i >= 0; i--)
         if (fontsMetrics.contains(tagStack[i]))
             return fontsMetrics[tagStack[i]]->charWidth(" ", 0);
 
@@ -296,15 +296,13 @@ int XMLTextPaginator::tag_br()
     if (currentHeight == 0)
         return 2;
 
-    if (currentHeight + getWordHeight() + ParLeftTopIdent%100 > columnHeight)
+    if (currentHeight + stringHeight + getWordHeight()*2 + ParLeftTopIdent%100 > columnHeight)
         return 2;
 
-    currentHeight += getWordHeight() + ParLeftTopIdent%100;
+    currentHeight += stringHeight + getWordHeight()*2 + ParLeftTopIdent%100;
 
     stringHeight = 0;
 
-    tag = "br/";
-    tagType = false;
     commitTag();
 
     return 2;
@@ -380,11 +378,6 @@ int XMLTextPaginator::parseTag()
 
     tagType = TagInf.type;
     tag = TagInf.html;
-
-    if (currentTextPos == 46238)
-    {
-        qDebug()<<1;
-    }
 
     //TODO: привести в нормальный вид
     if (TagInf.index < 31)
