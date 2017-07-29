@@ -684,16 +684,12 @@ void ReadingWindow::createRightClickMenu(QPoint mousePoint)
         }
     }
 
+    if (mousePoint.x() + clickWidget->width()> ui->TextPage->width())
+        mousePoint.setX(mousePoint.x() - clickWidget->width());
+    if (mousePoint.y() + clickWidget->height()> ui->TextPage->height())
+        mousePoint.setY(mousePoint.y() - clickWidget->height());
 
-
-    QPoint menuPoint = mousePoint;
-
-    if (menuPoint.x() + clickWidget->width()> ui->TextPage->width())
-        menuPoint.setX(menuPoint.x() - clickWidget->width());
-    if (menuPoint.y() + clickWidget->height()> ui->TextPage->height())
-        menuPoint.setY(menuPoint.y() - clickWidget->height());
-
-    menu->move(menuPoint + ui->TextPage->mapToGlobal(QPoint(-3,-3)));
+    menu->move(mousePoint + ui->TextPage->mapToGlobal(QPoint(-3,-3)));
     menu->show();
 }
 

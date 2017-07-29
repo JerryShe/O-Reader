@@ -568,7 +568,7 @@ void XMLTextPaginator::createHTMLPage()
         for (int i = Columns[Columns.size() - 1].size() - 1; i >= 0; i--)
             HTMLPage += Columns[Columns.size() - 1][i];
 
-        if (Columns.size() > 2)
+        if (Columns.size() >= 2)
             for (int i = Columns.size() - 2; i >= 0; i--)
             {
                 HTMLPage += PageHTMLSep;

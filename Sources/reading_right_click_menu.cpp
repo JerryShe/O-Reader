@@ -57,6 +57,8 @@ ReadingRightClickMenu::~ReadingRightClickMenu()
 
 void ReadingRightClickMenu::setState(const int &state)
 {
+    ui->Note->hide();
+
     if (state != 2)
     {
         ui->FindSelected->hide();
@@ -75,7 +77,7 @@ void ReadingRightClickMenu::setState(const int &state)
         connect(ui->GoogleTranslate, SIGNAL(clicked(bool)), this, SIGNAL(translateGoogle()));
         connect(ui->Note, SIGNAL(clicked(bool)), this, SIGNAL(createNote()));
 
-        this->setFixedHeight(270);
+        this->setFixedHeight(240);
     }
 
     if (state != 0)
