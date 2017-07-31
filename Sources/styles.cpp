@@ -337,12 +337,12 @@ void setLibraryStyle (QString ListViewStyle[], const QString style)
     {
         ListViewStyle[0] = " QListView"
                            " {background-color:rgb(150, 0, 60);"
+                           " outline:0px;"
                            " border:none;"
                            " color: white;}"
 
                            " QListView::item"
-                           " {outline: 0px;"
-                           " border: none;}"
+                           " {border: none;}"
 
                            " QListView::item:hover"
                            "{background-color:rgb(100,0,30);}"

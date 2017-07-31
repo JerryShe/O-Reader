@@ -32,7 +32,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     ProgramSettings = Settings::getSettings();
     UserSynchro = Synchronization::getSynchronization();
     LibHandler = LibraryHandler::getLibraryHandler();
-    ClientHandler = ClientHandler::getClientHandler();
+    clientHandler = ClientHandler::getClientHandler();
     deviceSettings = DeviceSettings::getDeviceSettings();
 
 
@@ -40,7 +40,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     deviceSettings->moveToThread(HandlerThread);
     UserSynchro->moveToThread(HandlerThread);
     LibHandler->moveToThread(HandlerThread);
-    ClientHandler->moveToThread(HandlerThread);
+    clientHandler->moveToThread(HandlerThread);
 
     HandlerThread->start();
 
@@ -96,14 +96,14 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         break;
 
     case 1:
-        if (ClientHandler->autoLoginOnServer())
+        if (clientHandler->autoLoginOnServer())
             windowMachine->setInitialState(mainState);
         else
             windowMachine->setInitialState(loginState);
         break;
 
     case 2:
-        if (ClientHandler->autoLoginOnServer())
+        if (clientHandler->autoLoginOnServer())
         {
             //TODO: сделать красиво
             if (LibHandler->getLastOpenedBook() == 0)
@@ -140,6 +140,8 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         this->setWindowState(Qt::WindowFullScreen);
     else
         this->setWindowState(Qt::WindowNoState);
+
+    qDebug()<<QTime::currentTime()<<" create windowManager";
 }
 
 
@@ -290,7 +292,7 @@ void WindowManager::mouseMoveEvent(QMouseEvent *e)
     {
         if (!isFullScreen())
         {
-            move(prev_geometry.topLeft() + QPoint(e->globalX() - lastPoint.x() - 7, e->globalY() - lastPoint.y() - 7));
+            move(prev_geometry.topLeft() + QPoint(e->globalX() - lastClickPoint.x() - 7, e->globalY() - lastClickPoint.y() - 7));
         }
         else
         {
@@ -299,7 +301,7 @@ void WindowManager::mouseMoveEvent(QMouseEvent *e)
             move(e->globalX() - prev_geometry.width()/2, e->globalY());
 
             prev_geometry = geometry();
-            lastPoint = e->globalPos();
+            lastClickPoint = e->globalPos();
         }
     }
 }
@@ -312,7 +314,7 @@ void WindowManager::mousePressEvent(QMouseEvent *e)
         if (e->pos().y() <= 50 && e->pos().y() > resizingFrame)
         {
             moving = true;
-            lastPoint = e->globalPos();
+            lastClickPoint = e->globalPos();
 
             if (!isFullScreen())
                 prev_geometry = geometry();

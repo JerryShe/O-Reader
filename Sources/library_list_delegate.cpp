@@ -47,7 +47,7 @@ bool LibraryListDelegate::listViewMode() const
 void LibraryListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     painter->save();
-    painter->setRenderHints(QPainter::Antialiasing| QPainter::TextAntialiasing);
+    //painter->setRenderHints(QPainter::Antialiasing| QPainter::TextAntialiasing);
 
     QRect rect = option.rect;
     rect.setHeight(option.decorationSize.height());
@@ -147,9 +147,9 @@ void LibraryListDelegate::drawBookStatus(const QPoint &pos, const double &progre
 
     QColor color = QColor::fromRgb(200*a, 200*b, 200 - 200*(b+a));
     painter->setBrush(QBrush(color, Qt::SolidPattern));
-    QColor penColor(0,0,0);
+    QColor penColor(0,0,0,0);
     painter->setPen(penColor);
-    painter->drawEllipse(pos.x() - 5, pos.y() - 5, 10, 10);
+    painter->drawRect(pos.x() - 5, pos.y() - 5, 10, 10);
 }
 
 

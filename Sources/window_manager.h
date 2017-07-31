@@ -21,6 +21,7 @@
 class WindowManager : public QMainWindow
 {
     Q_OBJECT
+
 public:
     explicit WindowManager(QWidget *parent = 0);
     ~WindowManager();
@@ -48,9 +49,9 @@ signals:
     void showReadingWindow();
 
 protected:
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 
 private:
@@ -59,7 +60,9 @@ private:
     bool moving = false;
     int resizingMethod;
     bool resizing = false;
-    QPoint lastPoint;
+
+    QPoint lastClickPoint;
+
     int resizingFrame = 5;
 
 
@@ -80,7 +83,8 @@ private:
     Settings* ProgramSettings;
     DeviceSettings* deviceSettings;
     LibraryHandler* LibHandler;
-    ClientHandler* ClientHandler;
+    ClientHandler* clientHandler;
+
 
 
     QWidget* LastWindow;

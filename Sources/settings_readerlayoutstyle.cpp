@@ -50,6 +50,9 @@ Settings_ReaderLayoutStyle::Settings_ReaderLayoutStyle(QWidget *parent) :
 
     for(double i = 1; i <= 2.5; i += 0.1)
         ui->LineSpacingBox->addItem(QString::number(i));
+
+    for (int i = 6; i <= 76; i++)
+        ui->SizeBox->addItem(QString::number(i));
 }
 
 

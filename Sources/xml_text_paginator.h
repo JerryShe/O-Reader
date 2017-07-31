@@ -5,7 +5,7 @@
 #include "books.h"
 #include "tags_resolver.h"
 #include "book_image_table.h"
-#include "paginator_helper.h"
+#include "xml_paginator_helper.h"
 #include "xml_text_searcher.h"
 
 #include <QStringList>
@@ -110,8 +110,8 @@ private:
                  pageEndTextPos;
 
     int currentColumn;
-    unsigned short ColumnCount, ColumnIndent;
-    unsigned short TextLeftRightIdent, TextTopBottomIdent;
+
+    unsigned short ColumnCount;
     unsigned short ParLeftTopIdent;
 
     unsigned int wordWidth, wordHeight;
@@ -132,7 +132,7 @@ private:
     Book *book;
 
     TagsResolver *Resolver;
-    PaginatorHelper *Helper;
+    XMLPaginatorHelper *Helper;
 
     QString PageHTMLStyles;
     QString PageHTMLHeader, PageHTMLBottom, PageHTMLSep;

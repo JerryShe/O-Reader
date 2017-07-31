@@ -39,7 +39,6 @@ SOURCES += main.cpp\
     book_image_table.cpp \
     battery_widget.cpp \
     search_window.cpp \
-    paginator_helper.cpp \
     xml_text_paginator.cpp \
     fb2_parser.cpp \
     tags_resolver.cpp \
@@ -53,7 +52,8 @@ SOURCES += main.cpp\
     reading_search_results_delegate.cpp \
     device_settings.cpp \
     reading_table_of_contents.cpp \
-    reading_right_click_menu.cpp
+    reading_right_click_menu.cpp \
+    xml_paginator_helper.cpp
 
 HEADERS  += \
     answer_dialog.h \
@@ -85,7 +85,6 @@ HEADERS  += \
     library_view.h \
     book_image_table.h \
     battery_widget.h \
-    paginator_helper.h \
     tags_resolver.h \
     xml_text_paginator.h \
     xml_text_parser.h \
@@ -99,7 +98,8 @@ HEADERS  += \
     reading_search_results_delegate.h \
     device_settings.h \
     reading_table_of_contents.h \
-    reading_right_click_menu.h
+    reading_right_click_menu.h \
+    xml_paginator_helper.h
 
 FORMS    += \
     settings_programlayout.ui \

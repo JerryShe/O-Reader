@@ -14,13 +14,9 @@
 
 
 
-LibraryView::LibraryView(QWidget *widget)
+LibraryView::LibraryView(QWidget *widget) : QListView(widget)
 {
-    qRegisterMetaType<QList<QPersistentModelIndex> >("QList<QPersistentModelIndex>");
-    qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
-
-
-    setParent(widget);
+    qDebug()<<"create LibraryView";
 
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     setResizeMode(QListView::Adjust);
@@ -50,7 +46,6 @@ LibraryView::LibraryView(QWidget *widget)
     setDragDropMode(QAbstractItemView::NoDragDrop);
 
     connect(this, SIGNAL(activated(QModelIndex)), SLOT(showSelectedItem(QModelIndex)));
-    qDebug()<<"create LibraryView";
     this->show();
 }
 
@@ -209,7 +204,7 @@ void LibraryView::setSettingsData()
     deviceSettings = DeviceSettings::getDeviceSettings();
 
     QString ListViewStyle[1];
-    setLibraryStyle (ListViewStyle, Settings::getSettings()->getInterfaceStyle());
+    setLibraryStyle(ListViewStyle, Settings::getSettings()->getInterfaceStyle());
     setStyleSheet(ListViewStyle[0]);
 
     IconBarSize = deviceSettings->getLibraryBarIconSize();

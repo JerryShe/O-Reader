@@ -96,6 +96,9 @@
           </sizepolicy>
          </property>
          <layout class="QFormLayout" name="formLayout_3">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
           <property name="horizontalSpacing">
            <number>0</number>
           </property>
@@ -481,6 +484,9 @@
           </size>
          </property>
          <layout class="QFormLayout" name="formLayout_4">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
+          </property>
           <property name="horizontalSpacing">
            <number>0</number>
           </property>

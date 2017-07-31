@@ -1,8 +1,8 @@
-#include "paginator_helper.h"
+#include "xml_paginator_helper.h"
 
 #include <QDebug>
 
-PaginatorHelper::PaginatorHelper(QObject *parent)
+XMLPaginatorHelper::XMLPaginatorHelper(QObject *parent)
 {
     qDebug()<<"create PaginatorHelper";
     setParent(parent);
@@ -11,13 +11,13 @@ PaginatorHelper::PaginatorHelper(QObject *parent)
     textScale = 0;
 }
 
-PaginatorHelper::~PaginatorHelper()
+XMLPaginatorHelper::~XMLPaginatorHelper()
 {
     qDebug()<<"delete PaginatorHelper";
 }
 
 
-void PaginatorHelper::rescaleText(const bool &inc)
+void XMLPaginatorHelper::rescaleText(const bool &inc)
 {
     if (inc)
     {
@@ -46,7 +46,7 @@ void PaginatorHelper::rescaleText(const bool &inc)
 }
 
 //TODO: curprofile to pointer
-void PaginatorHelper::setHTMLPageStyles(QString &PageHTMLStyles)
+void XMLPaginatorHelper::setHTMLPageStyles(QString &PageHTMLStyles)
 {
     QString topMargin = "margin-top:" + QString::number(CurProfile.ParLeftTopIdent%100) + "px;";
 
@@ -93,7 +93,7 @@ void PaginatorHelper::setHTMLPageStyles(QString &PageHTMLStyles)
 }
 
 
-void PaginatorHelper::setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &columnWidth)
+void XMLPaginatorHelper::setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTMLSep, QString &PageHTMLBottom, const int &columnWidth)
 {
     int width = columnWidth/CurProfile.ColumnCount;
 
@@ -116,7 +116,7 @@ void PaginatorHelper::setHTMLPageElems(QString &PageHTMLHeader, QString &PageHTM
 }
 
 
-void PaginatorHelper::setFontMetrics(QHash <QString, QFontMetrics*> *fontsMetrics, QHash <QString, double> *fontsLinespaces)
+void XMLPaginatorHelper::setFontMetrics(QHash <QString, QFontMetrics*> *fontsMetrics, QHash <QString, double> *fontsLinespaces)
 {
     fontsMetrics->clear();
     fontsLinespaces->clear();
@@ -161,17 +161,21 @@ void PaginatorHelper::setFontMetrics(QHash <QString, QFontMetrics*> *fontsMetric
 }
 
 
-void PaginatorHelper::refreshSettings()
+void XMLPaginatorHelper::refreshSettings()
 {
     CurProfile = Settings::getSettings()->getCurrentReadProfile();
 }
 
 
-void PaginatorHelper::setPageSizes(unsigned short &columnCount, unsigned short &TextLeftRightIdent, unsigned short &TextTopBottomIdent, unsigned short &ParLeftTopIdent, unsigned short &columnIndent)
+QSize XMLPaginatorHelper::getPageSize(const int widgetWidth, const int widgetHeight)
+{
+    return QSize ((widgetWidth - 10 - CurProfile.ColumnIndent*(CurProfile.ColumnCount-1) - CurProfile.TextLeftRightIdent/100 - CurProfile.TextLeftRightIdent%100)/CurProfile.ColumnCount,
+                widgetHeight - 20 - CurProfile.TextTopBottomIdent/100 - CurProfile.TextTopBottomIdent%100);
+}
+
+
+void XMLPaginatorHelper::setPageData(unsigned short &columnCount, unsigned short &ParLeftTopIdent)
 {
     columnCount = CurProfile.ColumnCount;
-    columnIndent = CurProfile.ColumnIndent;
-    TextLeftRightIdent = CurProfile.TextLeftRightIdent;
-    TextTopBottomIdent = CurProfile.TextTopBottomIdent;
     ParLeftTopIdent = CurProfile.ParLeftTopIdent;
 }

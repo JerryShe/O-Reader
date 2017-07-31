@@ -27,7 +27,10 @@ DeviceSettings::DeviceSettings()
     LibraryIconListSize = 50;
 
     WindowMaximized = false;
-    WindowGeometry = QRect (qApp->desktop()->width()/6, qApp->desktop()->height()/6, qApp->desktop()->width()/1.5, qApp->desktop()->height()/1.5);
+    WindowGeometry = QRect (qApp->desktop()->availableGeometry().width()/6,
+                            qApp->desktop()->availableGeometry().height()/6,
+                            qApp->desktop()->availableGeometry().width()/1.5,
+                            qApp->desktop()->availableGeometry().height()/1.5);
 }
 
 

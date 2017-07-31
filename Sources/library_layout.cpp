@@ -159,9 +159,14 @@ bool LibraryLayout::eventFilter(QObject *watched, QEvent *event)
                     ui->_Find->setChecked(true);
                 break;
             }
-            case Qt::Key_A:
+            case Qt::Key_B:
             {
-                on__AddBooks_clicked();
+                addBooksFromFiles();
+                break;
+            }
+            case Qt::Key_D:
+            {
+                addBooksFromFolder();
                 break;
             }
             case Qt::Key_Plus: case Qt::Key_Equal:
@@ -182,8 +187,9 @@ bool LibraryLayout::eventFilter(QObject *watched, QEvent *event)
                 break;
             }
             default:
-                break;
+                return false;
             }
+            return true;
         }
         else if (keyEvent->key() == Qt::Key_Escape)
         {

@@ -65,12 +65,12 @@ QString XMLTextPaginator::startParser(Book *OpeningBook, const int &Pwidth, cons
         tagStack.push("Text");
 
     Resolver = new TagsResolver(this, book->getFormat());
-    Helper = new PaginatorHelper(this);
+    Helper = new XMLPaginatorHelper(this);
 
     Helper->setHTMLPageStyles(PageHTMLStyles);
     Helper->setHTMLPageElems(PageHTMLHeader, PageHTMLSep, PageHTMLBottom, Pwidth);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
-    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
+    Helper->setPageData(ColumnCount, ParLeftTopIdent);
 
     setPageGeometry(Pwidth, Pheight);
 
@@ -105,8 +105,9 @@ XMLTextPaginator::~XMLTextPaginator()
 
 void XMLTextPaginator::setPageGeometry(const int &width, const int &height)
 {
-    columnWidth = (width - 10 - ColumnIndent*(ColumnCount-1) - TextLeftRightIdent/100 - TextLeftRightIdent%100)/ColumnCount;
-    columnHeight = height - 20 - TextTopBottomIdent/100 - TextTopBottomIdent%100;
+    QSize page = Helper->getPageSize(width, height);
+    columnWidth = page.width();
+    columnHeight = page.height();
 }
 
 
@@ -843,7 +844,7 @@ QString XMLTextPaginator::updateSettings(const int &width, const int &height)
     Helper->setHTMLPageStyles(PageHTMLStyles);
     Helper->setHTMLPageElems(PageHTMLHeader, PageHTMLSep, PageHTMLBottom, width);
     Helper->setFontMetrics(&fontsMetrics, &fontsLinespaces);
-    Helper->setPageSizes(ColumnCount, TextLeftRightIdent, TextTopBottomIdent, ParLeftTopIdent, ColumnIndent);
+    Helper->setPageData(ColumnCount, ParLeftTopIdent);
 
     setPageGeometry(width, height);
 
