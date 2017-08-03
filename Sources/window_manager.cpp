@@ -140,8 +140,6 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
         this->setWindowState(Qt::WindowFullScreen);
     else
         this->setWindowState(Qt::WindowNoState);
-
-    qDebug()<<QTime::currentTime()<<" create windowManager";
 }
 
 
@@ -286,22 +284,22 @@ void WindowManager::closeWindow()
 }
 
 
-void WindowManager::mouseMoveEvent(QMouseEvent *e)
+void WindowManager::mouseMoveEvent(QMouseEvent *event)
 {
     if (moving)
     {
         if (!isFullScreen())
         {
-            move(prev_geometry.topLeft() + QPoint(e->globalX() - lastClickPoint.x() - 7, e->globalY() - lastClickPoint.y() - 7));
+            move(prev_geometry.topLeft() + QPoint(event->globalX() - lastClickPoint.x() - 7, event->globalY() - lastClickPoint.y() - 7));
         }
         else
         {
             showNormal();
             setGeometry(prev_geometry);
-            move(e->globalX() - prev_geometry.width()/2, e->globalY());
+            move(event->globalX() - prev_geometry.width()/2, event->globalY());
 
             prev_geometry = geometry();
-            lastClickPoint = e->globalPos();
+            lastClickPoint = event->globalPos();
         }
     }
 }

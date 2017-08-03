@@ -73,7 +73,7 @@ SearchWindow::SearchWindow(const QPoint &position, const QString &style, QWidget
     NopeButton->setText(QObject::tr("Cancel"));
 
     QStringList types;
-    types<<QObject::tr("Author")<<QObject::tr("Title");//<<QObject::tr("Series");
+    types<<QObject::tr("Author")<<QObject::tr("Title")<<QObject::tr("Series");
 
     SearchTypeBox->addItems(types);
     this->setLayout(VLayout);

@@ -12,7 +12,8 @@ enum BookInf
     CoverImage,
     AuthorName,
     Title,
-    Progress
+    Progress,
+    Series
 };
 
 
@@ -23,6 +24,7 @@ struct BookData
     QVariant title;
     QVariant index;
     QVariant progress;
+    QVariant series;
 
     BookData(Book* book);
     BookData();

@@ -42,7 +42,7 @@ public slots:
     void clear();
 
     void setSort(const QString &type, const bool &direction);
-    void setFilter(const QString &type, const QVariant &role);
+    void setFilter(const QString &type, const QVariant &key);
 
 signals:
     void showBookPage(unsigned int index);

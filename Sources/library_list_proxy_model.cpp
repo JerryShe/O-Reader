@@ -37,19 +37,29 @@ bool LibraryListProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &s
     switch (curFilter)
     {
     case BookInf::AuthorName:
+    {
         if (!curFilterVal.toString().isEmpty())
             return sourceModel()->index(sourceRow, 0, sourceParent).
                     data(BookInf::AuthorName).toString().contains(curFilterVal.toString(), Qt::CaseInsensitive);
         else
             return true;
-
+    }
     case BookInf::Title:
+    {
         if (!curFilterVal.toString().isEmpty())
             return sourceModel()->index(sourceRow, 0, sourceParent).
                     data(BookInf::Title).toString().contains(curFilterVal.toString(), Qt::CaseInsensitive);
         else
             return true;
-
+    }
+    case BookInf::Series:
+    {
+        if (!curFilterVal.toString().isEmpty())
+            return sourceModel()->index(sourceRow, 0, sourceParent).
+                    data(BookInf::Series).toString().contains(curFilterVal.toString(), Qt::CaseInsensitive);
+        else
+            return true;
+    }
     default:
         return true;
     }

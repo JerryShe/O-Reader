@@ -704,7 +704,7 @@ bool ReadingWindow::createMiniWindow()
     MiniWindow = new ReadingMiniWindow(this);
     MiniWindow->installEventFilter(this);
 
-    connect(MiniWindow, &ReadingMiniWindow::finished, [this](){
+    connect(MiniWindow, &ReadingMiniWindow::destroyed, [this](){
         MiniWindow = 0;
         ActiveWindow = false;
         ui->TextPage->setFocus();

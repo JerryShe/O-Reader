@@ -16,6 +16,9 @@
 
 LibraryView::LibraryView(QWidget *widget) : QListView(widget)
 {
+    qRegisterMetaType<QList<QPersistentModelIndex> >("QList<QPersistentModelIndex>");
+    qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
+
     qDebug()<<"create LibraryView";
 
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
@@ -188,12 +191,14 @@ void LibraryView::setSort(const QString &type, const bool &direction)
 }
 
 
-void LibraryView::setFilter(const QString &type, const QVariant &role)
+void LibraryView::setFilter(const QString &type, const QVariant &key)
 {
     if (type == tr("Title"))
-        BookProxyModel->setFilter(BookInf::Title, role);
+        BookProxyModel->setFilter(BookInf::Title, key);
     else if (type == tr("Author"))
-        BookProxyModel->setFilter(BookInf::AuthorName, role);
+        BookProxyModel->setFilter(BookInf::AuthorName, key);
+    else if (type == tr("Series"))
+        BookProxyModel->setFilter(BookInf::Series, key);
 
     BookProxyModel->invalidate();
 }
