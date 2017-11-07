@@ -1,0 +1,61 @@
+#ifndef LIBRARY_VIEW_H
+#define LIBRARY_VIEW_H
+
+#include "data_handlers/device_settings.h"
+#include "data_handlers/book.h"
+#include "main_window/library/library_view/library_list_model.h"
+#include "main_window/library/library_view/library_list_delegate.h"
+#include "main_window/library/library_view/library_list_proxy_model.h"
+
+#include <QGridLayout>
+#include <QListView>
+#include <QStandardItemModel>
+
+
+class LibraryView : public QListView
+{
+    Q_OBJECT
+
+public:
+    LibraryView(QWidget *widget = 0);
+    ~LibraryView();
+
+    void addItem(Book *book);
+    QVector <unsigned int> deleteSelectedItems();
+    void deleteBook(const unsigned int &index);
+    void setSettingsData();
+
+    int getSelectedItemsCount();
+    bool getLibraryRepresentation() const;
+
+    void groupBy(const QString &mode);
+
+public slots:
+    void changeViewMod();
+
+    void setBookIconSize(const int &size);
+    int getBookIconSize() const;
+
+    void clear();
+
+    void setSort(const QString &type, const bool &direction);
+    void setFilter(const QString &type, const QVariant &key);
+
+signals:
+    void showBookPage(unsigned int index);
+
+private slots:
+    void showSelectedItem(const QModelIndex &mIndex);
+
+private:
+    LibraryListModel* BookModel;
+    LibraryListProxyModel* BookProxyModel;
+    LibraryListDelegate* delegate;
+
+    DeviceSettings* deviceSettings;
+
+    int IconBarSize;
+    int IconListSize;
+};
+
+#endif // LIBRARY_VIEW_H
