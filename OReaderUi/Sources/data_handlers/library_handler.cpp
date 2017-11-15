@@ -55,12 +55,13 @@ bool LibraryHandler::loadBookList()
     QJsonObject LibObj = LibJson.object();
     this->fromJson(LibObj);
 
-    for (int i = 0; i < bookList.size(); i++)
-        if (currentBookIndex < bookList[i].getIndex())
-            currentBookIndex = bookList[i].getIndex();
+    foreach (unsigned int index, bookTable.keys()) {
+        if (currentBookIndex < index)
+            currentBookIndex = index;
+    }
 
     LibFile.close();
-    qDebug()<<bookList.size()<<"books loaded";
+    qDebug()<<bookTable.size()<<"books loaded";
 
     QVector <Book*> losted = findMissingBooks();
     if (losted.size())
@@ -86,7 +87,7 @@ bool LibraryHandler::saveBookList() const
 
     LibFile.close();
 
-    qDebug()<<bookList.size()<<"books saved";
+    qDebug()<<bookTable.size()<<"books saved";
     return 1;
 }
 
@@ -96,8 +97,9 @@ QJsonObject LibraryHandler::toJson() const
     QJsonObject json;
     QJsonArray LibArray;
 
-    for (int i = 0; i < bookList.size(); i++)
-        LibArray.append(bookList[i].toJson());
+    foreach (unsigned int index, bookTable.keys()) {
+        LibArray.append(bookTable[index].toJson());
+    }
 
     json["Library"] = LibArray;
 
@@ -115,11 +117,11 @@ void LibraryHandler::fromJson(const QJsonObject &json)
 
     for (int i = 0; i < LibArray.size(); i++)
     {
-        temp = LibArray[i].toObject();
-        bookList.append(Book(temp));
+        Book temp = Book(LibArray[i].toObject());
+        bookTable.insert(temp.getIndex(), temp);
 
         if (libraryView != 0)
-            libraryView->addItem(&bookList.back());
+            libraryView->addItem(&bookTable[temp.getIndex()]);
     }
 }
 
@@ -127,22 +129,22 @@ void LibraryHandler::fromJson(const QJsonObject &json)
 QVector <Book*> LibraryHandler::findMissingBooks()
 {
     QVector <Book*> missBooks;
-    for (int i = 0; i < bookList.size(); i++)
+    foreach (unsigned int index, bookTable.keys())
     {
-        QFileInfo file(bookList[i].getFileName());
+        QFileInfo file(bookTable[index].getFileName());
 
         if (!file.isFile())
-            missBooks.append(&bookList[i]);
+            missBooks.append(&bookTable[index]);
         else
-            if (bookList[i].isZipped())
+            if (bookTable[index].isZipped())
             {
-                QZipReader zip(bookList[i].getFileName());
+                QZipReader zip(bookTable[index].getFileName());
                 if (zip.exists())
                 {
                     bool res = false;
                     foreach (QZipReader::FileInfo info, zip.fileInfoList())
                     {
-                        if(info.filePath == bookList[i].getZippedFileName())
+                        if(info.filePath == bookTable[index].getZippedFileName())
                         {
                             res = true;
                             break;
@@ -150,10 +152,10 @@ QVector <Book*> LibraryHandler::findMissingBooks()
                     }
 
                     if (!res)
-                        missBooks.append(&bookList[i]);
+                        missBooks.append(&bookTable[index]);
                 }
                 else
-                    missBooks.append(&bookList[i]);
+                    missBooks.append(&bookTable[index]);
             }
     }
 
@@ -166,15 +168,8 @@ void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
     qDebug()<<"deleting books";
     for (int i = 0; i < deletedItemsIndexes.size(); i++)
     {
-        for (int j = 0; j < bookList.size(); j++)
-        {
-            if (bookList[j].getIndex() == deletedItemsIndexes.at(i))
-            {
-                UserActions->addAction(UActions::DeleteBook, bookList[j].getFileName());
-                bookList.remove(j);
-                break;
-            }
-        }
+        UserActions->addAction(UActions::DeleteBook, bookTable[deletedItemsIndexes[i]].getFileName());
+        bookTable.remove(deletedItemsIndexes[i]);
     }
 
     if (deletedItemsIndexes.size())
@@ -246,38 +241,19 @@ int LibraryHandler::getFileTipe(const QString &fileName) const
 
 void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 {
-    for (int j = 0; j < bookList.size(); j++)
-    {
-        if (file == bookList[j].getFileName())
-        {
-            /// оповещение - такая книга уже есть
-            return;
-        }
-    }
-
     int format = getFileTipe(file);
-
 
     if (format == 1 || format == 2)
     {
         bool result = true;
-        Book boo(result, file, Gmap);
+        Book book(result, file, Gmap);
         if (!result)
         {
             /// оповещение - невозможно открыть как книгу
             qDebug()<<"Invalid file!";
             return;
         }
-
-        boo.setIndex(++currentBookIndex);
-        bookList.push_back(boo);
-
-        UserActions->addAction(UActions::AddBook, file);
-        if (libraryView != 0)
-        {
-            libraryView->addItem(&boo);
-            libraryView->reset();
-        }
+        addBookToLib(book);
     }
     else if (format == 3)
     {
@@ -294,7 +270,7 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
                     {
                         QByteArray byteBook = zip.fileData(zippedFile);
                         bool result = true;
-                        Book boo (result, file, zippedFile, byteBook, Gmap);
+                        Book book(result, file, zippedFile, byteBook, Gmap);
 
                         if (!result)
                         {
@@ -302,17 +278,7 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
                             qDebug()<<"Invalid file!";
                             return;
                         }
-
-                        boo.setIndex(++currentBookIndex);
-                        bookList.push_back(boo);
-
-                        UserActions->addAction(UActions::AddBook, file);
-
-                        if (libraryView != 0)
-                        {
-                            libraryView->addItem(&boo);
-                            libraryView->reset();
-                        }
+                        addBookToLib(book);
                     }
                 }
             }
@@ -323,17 +289,30 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
 }
 
 
+void LibraryHandler::addBookToLib(Book &book)
+{
+    book.setIndex(++currentBookIndex);
+    bookTable.insert(book.getIndex(), book);
+
+    UserActions->addAction(UActions::AddBook, book.getFileName());
+    if (libraryView != 0)
+    {
+        libraryView->addItem(&bookTable[book.getIndex()]);
+        libraryView->reset();
+    }
+}
+
+
 void LibraryHandler::deleteBook(const unsigned int &index)
 {
     if (libraryView != 0)
         libraryView->deleteBook(index);
-    for (int i = 0; i < bookList.size(); i++)
-        if (bookList[i].getIndex() == index)
-        {
-            UserActions->addAction(UActions::DeleteBook, bookList[i].getFileName());
-            bookList.remove(i);
-            break;
-        }
+
+    if (bookTable.contains(index))
+    {
+        UserActions->addAction(UActions::DeleteBook, bookTable[index].getFileName());
+        bookTable.remove(index);
+    }
 }
 
 
@@ -383,15 +362,9 @@ void LibraryHandler::clearFind()
 
 Book* LibraryHandler::getBookByIndex(const unsigned int &index)
 {
-    int i;
-    for (i = 0; i < bookList.size(); i++)
-        if (bookList[i].getIndex() == index)
-            break;
-
-    if (i == bookList.size())
-        return 0;
-
-    return &bookList[i];
+    if (bookTable.contains(index))
+        return &bookTable[index];
+    return nullptr;
 }
 
 
@@ -412,7 +385,8 @@ void LibraryHandler::refreshLibrary()
         qDebug()<<"refreshing library representation";
 
         libraryView->clear();
-        for (int i = 0; i < bookList.size(); i++)
-            libraryView->addItem(&bookList[i]);
+        foreach (unsigned int index, bookTable.keys()) {
+            libraryView->addItem(&bookTable[index]);
+        }
     }
 }

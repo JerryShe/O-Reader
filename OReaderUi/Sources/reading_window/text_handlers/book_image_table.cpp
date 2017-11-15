@@ -18,9 +18,9 @@ BookImageTable::BookImageTable()
 
 BookImageTable::BookImageTable(Book *book)
 {
-    if (book->getFormat() == 1)
+    if (book->getFormat() == Book::BookFormat::FB2)
         createFromFB2(book);
-    else if (book->getFormat() == 2)
+    else if (book->getFormat() == Book::BookFormat::EPUB)
         createFromEPub(book);
     qDebug()<<"create BookImageTable";
 }

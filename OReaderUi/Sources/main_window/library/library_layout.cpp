@@ -268,8 +268,6 @@ void LibraryLayout::on__Delete_clicked()
             for (int i = 0; i < books.size(); i++)
                 deleteBook(books[i]);
         }
-        else
-            delete answer_window;
     }
 }
 

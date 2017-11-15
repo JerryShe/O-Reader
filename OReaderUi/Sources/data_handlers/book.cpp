@@ -159,9 +159,7 @@ Book::Book(bool &result, const QString &fileName, GenresMap *Gmap)
     }
     else if (QString::compare(fileFormat, "epub", Qt::CaseInsensitive) == 0)
     {
-
         result = loadEPub(fileName);
-
     }
 }
 
@@ -195,13 +193,7 @@ Book::Book(const QJsonObject &json)
 
 QDomDocument* Book::getFB2BookDomDoc(bool &result)
 {
-    if (Format != 1)
-    {
-        result = false;
-        return 0;
-    }
-
-    if (ZippedFile.isEmpty())
+    if (Format == FB2 && ZippedFile.isEmpty())
     {
         QFile bookFile(File);
         if (bookFile.open(QIODevice::ReadOnly))
@@ -216,7 +208,7 @@ QDomDocument* Book::getFB2BookDomDoc(bool &result)
             bookFile.close();
         }
     }
-    else
+    else if (Format == FB2 && !ZippedFile.isEmpty())
     {
         QZipReader zip(File);
         if (zip.exists())
@@ -238,14 +230,7 @@ QDomDocument* Book::getFB2BookDomDoc(bool &result)
 
 QByteArray Book::getFB2BookByteArray(bool &result)
 {
-    if (Format != 1)
-    {
-        result = false;
-        return 0;
-    }
-
-
-    if (ZippedFile.isEmpty())
+    if (Format == FB2 && ZippedFile.isEmpty())
     {
         QFile* bookFile= new QFile(File);
         if (bookFile->open(QIODevice::ReadOnly))
@@ -256,7 +241,7 @@ QByteArray Book::getFB2BookByteArray(bool &result)
             return byteArr;
         }
     }
-    else
+    else if (Format == FB2 && !ZippedFile.isEmpty())
     {
         QZipReader zip(File);
         if (zip.exists())
@@ -275,7 +260,7 @@ QByteArray Book::getFB2BookByteArray(bool &result)
 bool Book::loadFB2(QDomDocument *doc, GenresMap *Gmap)
 {
     CoverType = "noImage";
-    Format = 1;
+    Format = FB2;
 
     if (doc->namedItem("FictionBook").nodeName().isNull())
         return false;
@@ -416,7 +401,7 @@ bool Book::loadFB2(QDomDocument *doc, GenresMap *Gmap)
 
 bool Book::loadEPub(QString fileName)
 {
-    Format = 2;
+    Format = EPUB;
 
     return false;
 }
@@ -431,7 +416,7 @@ void Book::fromJson(const QJsonObject &json)
     lastBookProgress.PrevTags.clear();
 
     if (json.contains("Format"))
-        Format = json["Format"].toInt();
+        Format = static_cast <BookFormat> (json["Format"].toInt());
 
     if (json.contains("File"))
         File = json["File"].toString();
@@ -526,7 +511,7 @@ QJsonObject Book::toJson() const
 {
     QJsonObject json;
 
-    json["Format"] = Format;
+    json["Format"] = (int)Format;
     json["File"] = File;
     json["ZippedFile"] = ZippedFile;
     json["Index"] = (int)Index;
@@ -584,7 +569,7 @@ QImage Book::getCover() const
 {
     QImage tempImage;
 
-    if (Format == 1)
+    if (Format == FB2)
     {
         if (CoverType != "noImage")
         {
@@ -606,7 +591,7 @@ QImage Book::getCover() const
         if (tempImage.size().height() > 300)
             tempImage = tempImage.scaledToHeight(300);
     }
-    else if (Format == 2)
+    else if (Format == EPUB)
     {
         /// create epub image
     }
@@ -744,15 +729,9 @@ void Book::setFile(const QString &file)
 }
 
 
-int Book::getFormat()  const
+Book::BookFormat Book::getFormat()  const
 {
     return Format;
-}
-
-
-void Book::setFormat(const int format)
-{
-    Format = format;
 }
 
 

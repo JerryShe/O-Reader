@@ -47,13 +47,6 @@ struct tagInfo
  */
 
 
-
-/* Format index
- * 1 - FB2
- * 2 - EPub
- */
-
-
 class TagsResolver : public QObject
 {
 public:

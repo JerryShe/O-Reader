@@ -170,11 +170,8 @@ void BookPage::on_deleteBook_clicked()
     if (answer_window->exec() == QDialog::Accepted)
     {
         emit deleteBook(book->getIndex());
-        delete answer_window;
         this->close();
     }
-    else
-        delete answer_window;
 }
 
 

@@ -54,7 +54,7 @@ signals:
 
 private:
     int getFileTipe(const QString &fileName) const;           /// 0 - unknown, 1 - FB2, 2 - EPub, 3 - zip
-
+    void addBookToLib(Book &book);
 
     LibraryHandler();
     ~LibraryHandler();
@@ -67,7 +67,7 @@ private:
 
     QStringList filesMask;
 
-    QVector <Book> bookList;
+    QHash <unsigned int, Book> bookTable;
     unsigned int currentBookIndex;
 };
 

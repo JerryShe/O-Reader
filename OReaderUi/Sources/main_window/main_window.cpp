@@ -122,8 +122,6 @@ void MainWindow::on_exit_button_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
         emit closeWindow();
-
-    delete answer_window;
 }
 
 
@@ -138,6 +136,4 @@ void MainWindow::on_Logout_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
         emit showLoginWindow();
-
-    delete answer_window;
 }

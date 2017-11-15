@@ -9,8 +9,8 @@ AnswerDialog::AnswerDialog(const QPoint position, const QString text, QWidget *p
     resize(300,70);
     move(position);
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-    setWindowFlags(Qt::Popup);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::Popup);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     yes = new QPushButton(QObject::tr("Yes"), this);
     yes->setFlat(true);

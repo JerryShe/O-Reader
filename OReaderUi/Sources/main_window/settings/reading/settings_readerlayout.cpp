@@ -383,8 +383,6 @@ void Settings_ReaderLayout::on_NopeButton_clicked()
             if (ProgramSettings->getReadProfilesList().indexOf(currentTextStyle) != -1)
                 setStyleData(ProgramSettings->getNamedReadProfile(currentTextStyle));
         }
-
-        delete answer_window;
     }
 }
 

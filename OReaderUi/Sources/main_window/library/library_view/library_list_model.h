@@ -42,7 +42,6 @@ public:
     ~LibraryListModel();
 
     QVariant data(const QModelIndex &index, int role) const;
-
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     int rowCount(const QModelIndex &parent) const;
@@ -54,7 +53,6 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-
     void addBook(Book* book);
 
     void deleteBookByIndex(const unsigned int &index);
@@ -62,11 +60,9 @@ public:
 
     void clear();
 
-
 private:
     QVector <BookData> bookVector;
     Qt::ItemDataRole DisplayRole;
-
 };
 
 #endif // LIBRARY_LIST_MODEL_H

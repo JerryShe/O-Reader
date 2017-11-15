@@ -167,6 +167,7 @@ void Settings_ProgramLayout::on_FTurnBackward_toggled(bool checked)
 
 void Settings_ProgramLayout::on_STurnBackward_toggled(bool checked)
 {
+    Q_UNUSED(checked)
     ui->STurnForward->setChecked(false);
     ui->FTurnForward->setChecked(false);
     ui->FTurnBackward->setChecked(false);

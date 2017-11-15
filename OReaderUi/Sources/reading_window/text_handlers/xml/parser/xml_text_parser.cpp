@@ -83,11 +83,11 @@ QStringList splitTextToWords(QString temp)
 
 XMLTextParser::XMLTextParser(Book *openingBook)
 {
-    if (openingBook->getFormat() == 1)
+    if (openingBook->getFormat() == Book::BookFormat::FB2)
     {
         FB2Parser parser(openingBook, bookText, ImageTable, TableOfContents, notesTable);
     }
-    else if (openingBook->getFormat() == 2)
+    else if (openingBook->getFormat() == Book::BookFormat::EPUB)
     {
 
     }

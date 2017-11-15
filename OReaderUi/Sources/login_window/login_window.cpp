@@ -145,8 +145,6 @@ void LoginWindow::on_exit_button_clicked()
 
     if (answer_window->exec() == QDialog::Accepted)
         emit closeWindow();
-
-    delete answer_window;
 }
 
 

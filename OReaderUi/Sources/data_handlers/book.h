@@ -47,6 +47,13 @@ struct BookNote: public BookPosition
 class Book
 {
 public:
+    enum BookFormat
+    {
+        FB2 = 0,
+        EPUB
+    };
+
+
     Book(bool &result, const QString &FileName, GenresMap *Gmap);
     Book(bool &result, const QString &zipFileName, const QString &fileName, const QByteArray byArr, GenresMap *Gmap);
 
@@ -60,8 +67,7 @@ public:
 
     bool isZipped();
 
-    int getFormat() const;
-    void setFormat(const int format);
+    BookFormat getFormat() const;
 
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
@@ -113,7 +119,7 @@ private:
     bool loadEPub(QString fileName);
 
 
-    int Format;                            /// 1 - FB2, 2 - EPub
+    BookFormat Format;                            /// 1 - FB2, 2 - EPub
     QString File;
     QString ZippedFile;
     unsigned int Index;
