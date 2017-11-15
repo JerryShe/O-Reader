@@ -1,8 +1,8 @@
 #ifndef XML_TEXT_PARSER_H
 #define XML_TEXT_PARSER_H
 
-#include "data_handlers/book.h"
-#include "reading_window/text_handlers/book_image_table.h"
+#include "book.h"
+#include "book_image_table.h"
 
 #include <QObject>
 #include <QTextStream>

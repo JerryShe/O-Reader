@@ -5,43 +5,12 @@
 #include <QVector>
 #include <QPair>
 #include <QDateTime>
-#include <QDataStream>
-#include <QIcon>
 #include <QJsonObject>
 #include <QDomDocument>
 #include <QStack>
+#include <QImage>
 
-#include "data_handlers/genresmap.h"
-
-
-struct BookPosition
-{
-    BookPosition(const long long &position, const QStack<QString> &tagsStack, const bool &tail);
-    BookPosition();
-    BookPosition(const QJsonObject &json);
-
-    virtual QJsonObject toJson() const;
-    virtual void fromJson(const QJsonObject &json);
-
-    long long TextPos;
-    QStack <QString> PrevTags;
-    bool ParagrafTail;
-};
-
-
-struct BookNote: public BookPosition
-{
-    BookNote();
-    BookNote(const long long &position, const QStack<QString> &tagsStack, const bool &tail, QString note);
-    BookNote(const BookPosition &position, const QString &note);
-    BookNote(const QJsonObject &json);
-
-    virtual QJsonObject toJson() const;
-    virtual void fromJson(const QJsonObject &json);
-
-    QString Note;
-};
-
+#include "book_elems.h"
 
 
 class Book
@@ -54,26 +23,18 @@ public:
     };
 
 
-    Book(bool &result, const QString &FileName, GenresMap *Gmap);
-    Book(bool &result, const QString &zipFileName, const QString &fileName, const QByteArray byArr, GenresMap *Gmap);
-
+    Book();
     Book(const QJsonObject &BookJson);
-    Book(){}
-
 
     QString getFileName() const;
     QString getZippedFileName() const;
-    void setFile(const QString &file);
-
-    bool isZipped();
-
-    BookFormat getFormat() const;
 
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
-    QDomDocument* getFB2BookDomDoc(bool &result);
     QByteArray getFB2BookByteArray(bool &result);
+    QDomDocument *getFB2BookDomDoc(bool &result);
+
 
     long long getTextPosition() const;
     double getProgressProcent() const;
@@ -91,6 +52,9 @@ public:
     BookNote getBooknoteAt(const int &index) const;
 
 
+    bool isZipped();
+
+    BookFormat getFormat() const;
 
     QString getAuthorName() const;
     QString getTitle() const;
@@ -115,11 +79,7 @@ public:
 
 
 private:
-    bool loadFB2(QDomDocument *doc, GenresMap *Gmap);
-    bool loadEPub(QString fileName);
-
-
-    BookFormat Format;                            /// 1 - FB2, 2 - EPub
+    BookFormat Format;
     QString File;
     QString ZippedFile;
     unsigned int Index;
@@ -144,6 +104,8 @@ private:
 
     QVector <BookPosition> Bookmarks;
     QVector <BookNote> Booknotes;
+
+    friend class BookCreator;
 };
 
 #endif // BOOK_H

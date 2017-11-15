@@ -1,9 +1,9 @@
-#include "main_window/library/book_page/book_page.h"
+#include "book_page.h"
 #include "ui_book_page.h"
-#include "data_handlers/book.h"
-#include "data_handlers/settings_handler.h"
-#include "custom_widgets/answer_dialog.h"
-#include "reading_window/text_handlers/book_image_table.h"
+#include "book.h"
+#include "settings_handler.h"
+#include "answer_dialog.h"
+#include "book_image_table.h"
 
 #include "styles.h"
 

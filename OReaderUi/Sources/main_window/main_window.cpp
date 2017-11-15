@@ -1,10 +1,9 @@
-#include "main_window/main_window.h"
+#include "main_window.h"
 #include "ui_main_window.h"
 
-#include "custom_widgets/answer_dialog.h"
-#include "data_handlers/genresmap.h"
-#include "data_handlers/synchronization.h"
-#include "data_handlers/settings_handler.h"
+#include "answer_dialog.h"
+#include "synchronization.h"
+#include "settings_handler.h"
 
 #include "styles.h"
 
@@ -46,8 +45,6 @@ void MainWindow::setStyle()
 
     ui->LeftExpandingWidget->setStyleSheet(styleSheets[8]);
 }
-
-
 
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow)
@@ -123,7 +120,6 @@ void MainWindow::on_exit_button_clicked()
     if (answer_window->exec() == QDialog::Accepted)
         emit closeWindow();
 }
-
 
 
 void MainWindow::on_Logout_clicked()

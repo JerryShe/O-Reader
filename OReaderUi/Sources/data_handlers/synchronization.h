@@ -9,8 +9,8 @@
 
 #include <QDebug>
 
-#include "data_handlers/book.h"
-#include "data_handlers/settings_handler.h"
+#include "book.h"
+#include "settings_handler.h"
 
 enum UActions
 {

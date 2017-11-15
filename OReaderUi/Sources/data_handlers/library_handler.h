@@ -1,10 +1,10 @@
 #ifndef LIBRARYHANDLER_H
 #define LIBRARYHANDLER_H
 
-#include "main_window/library/library_view/library_view.h"
-#include "data_handlers/synchronization.h"
-#include "data_handlers/genresmap.h"
-#include "data_handlers/book.h"
+#include "library_view.h"
+#include "synchronization.h"
+#include "book.h"
+#include "book_creator.h"
 
 #include <QString>
 #include <QObject>
@@ -26,7 +26,7 @@ public slots:
     void deleteBook(const unsigned int &index);
     void deleteBooks(QVector <unsigned int> deletedItemsIndexes);
 
-    void openNewBook(const QString &fileList, GenresMap *Gmap);
+    void openNewBook(const QString &fileList);
 
     void findBooks(const QString &key, const QString &mode);
     void clearFind();
@@ -62,6 +62,8 @@ private:
     LibraryView* libraryView;
 
     Synchronization* UserActions;
+
+    BookCreator* bookCreator;
 
     QString resoursesFolderPath;
 

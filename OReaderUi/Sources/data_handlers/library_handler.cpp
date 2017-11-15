@@ -188,14 +188,17 @@ void LibraryHandler::AddBooks(const QStringList &fileList)
     if (!fileList.size())
         return;
 
-    GenresMap *Gmap = new GenresMap();
+    bookCreator = new BookCreator();
+    bookCreator->moveToThread(this->thread());
+    bookCreator->setParent(this);
 
     for (int i = 0; i < fileList.size(); i++)
-        openNewBook(fileList[i], Gmap);
+        openNewBook(fileList[i]);
+
+    delete bookCreator;
 
     UserActions->saveLog();
     saveBookList();
-    delete Gmap;
 
     emit hideLoadImage();
 }
@@ -239,14 +242,15 @@ int LibraryHandler::getFileTipe(const QString &fileName) const
 }
 
 
-void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
+void LibraryHandler::openNewBook(const QString &file)
 {
     int format = getFileTipe(file);
 
-    if (format == 1 || format == 2)
+    if (format == 1)
     {
         bool result = true;
-        Book book(result, file, Gmap);
+        Book book = bookCreator->createFB2Book(result, file);
+
         if (!result)
         {
             /// оповещение - невозможно открыть как книгу
@@ -269,8 +273,9 @@ void LibraryHandler::openNewBook(const QString &file, GenresMap *Gmap)
                     if (info.suffix().compare("fb2", Qt::CaseInsensitive) == 0)
                     {
                         QByteArray byteBook = zip.fileData(zippedFile);
+
                         bool result = true;
-                        Book book(result, file, zippedFile, byteBook, Gmap);
+                        Book book = bookCreator->createFB2ZippedBook(result, file, zippedFile, byteBook);
 
                         if (!result)
                         {

@@ -1,11 +1,11 @@
 #ifndef XML_TEXT_PAGINATOR_H
 #define XML_TEXT_PAGINATOR_H
 
-#include "data_handlers/book.h"
-#include "reading_window/text_handlers/xml/paginator/tags_resolver.h"
-#include "reading_window/text_handlers/book_image_table.h"
-#include "reading_window/text_handlers/xml/paginator/xml_paginator_helper.h"
-#include "reading_window/text_handlers/xml/searcher/xml_text_searcher.h"
+#include "book.h"
+#include "tags_resolver.h"
+#include "book_image_table.h"
+#include "xml_paginator_helper.h"
+#include "xml_text_searcher.h"
 
 #include <QStringList>
 #include <QStack>

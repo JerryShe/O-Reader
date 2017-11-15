@@ -3,9 +3,9 @@
 
 #include <QWidget>
 
-#include "data_handlers/book.h"
-#include "custom_widgets/answer_dialog.h"
-#include "data_handlers/settings_handler.h"
+#include "book.h"
+#include "answer_dialog.h"
+#include "settings_handler.h"
 #include "search_window.h"
 #include "xml_text_paginator.h"
 #include "left_menu.h"

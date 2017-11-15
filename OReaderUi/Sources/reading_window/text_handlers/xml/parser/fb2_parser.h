@@ -1,8 +1,8 @@
 #ifndef FB2_PARSER_H
 #define FB2_PARSER_H
 
-#include "data_handlers/book.h"
-#include "reading_window/text_handlers/book_image_table.h"
+#include "book.h"
+#include "book_image_table.h"
 
 #include <QTreeWidgetItem>
 

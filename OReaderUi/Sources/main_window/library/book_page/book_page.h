@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "data_handlers/book.h"
+#include "book.h"
 
 namespace Ui {
 class BookPage;

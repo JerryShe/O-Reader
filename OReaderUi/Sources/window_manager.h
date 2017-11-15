@@ -9,12 +9,11 @@
 #include "login_window.h"
 #include "reading_window.h"
 
-#include "data_handlers/settings_handler.h"
-#include "data_handlers/device_settings.h"
+#include "settings_handler.h"
+#include "device_settings.h"
 #include "synchronization.h"
-#include "data_handlers/library_handler.h"
-#include "data_handlers/client_handler.h"
-#include "data_handlers/book.h"
+#include "library_handler.h"
+#include "client_handler.h"
 
 
 class WindowManager : public QMainWindow

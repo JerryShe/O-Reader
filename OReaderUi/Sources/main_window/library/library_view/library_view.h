@@ -1,11 +1,11 @@
 #ifndef LIBRARY_VIEW_H
 #define LIBRARY_VIEW_H
 
-#include "data_handlers/device_settings.h"
-#include "data_handlers/book.h"
-#include "main_window/library/library_view/library_list_model.h"
-#include "main_window/library/library_view/library_list_delegate.h"
-#include "main_window/library/library_view/library_list_proxy_model.h"
+#include "device_settings.h"
+#include "book.h"
+#include "library_list_model.h"
+#include "library_list_delegate.h"
+#include "library_list_proxy_model.h"
 
 #include <QGridLayout>
 #include <QListView>

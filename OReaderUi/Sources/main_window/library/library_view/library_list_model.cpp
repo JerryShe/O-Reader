@@ -1,6 +1,7 @@
 #include "main_window/library/library_view/library_list_model.h"
 
 #include <QVariant>
+#include <QPixmap>
 
 #include <QDebug>
 

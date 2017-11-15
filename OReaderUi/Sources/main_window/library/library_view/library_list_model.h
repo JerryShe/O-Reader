@@ -3,7 +3,7 @@
 
 #include <QAbstractListModel>
 
-#include "data_handlers/book.h"
+#include "book.h"
 
 
 enum BookInf

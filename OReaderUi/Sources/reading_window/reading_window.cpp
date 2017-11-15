@@ -1,16 +1,17 @@
 #include "reading_window.h"
 #include "ui_reading_window.h"
-#include "data_handlers/book.h"
-#include "custom_widgets/answer_dialog.h"
-#include "main_window/settings/settings_layout.h"
-#include "main_window/synchronization/synchronization_layout.h"
+#include "book.h"
+#include "answer_dialog.h"
+#include "settings_layout.h"
+#include "synchronization_layout.h"
 #include "search_window.h"
-#include "data_handlers/settings_handler.h"
+#include "settings_handler.h"
 #include "styles.h"
 #include "table_of_contents_widget.h"
-#include "styles.h"
-#include "custom_widgets/battery_widget.h"
+#include "battery_widget.h"
 #include "right_click_menu.h"
+
+#include "styles.h"
 
 #include <QTimer>
 #include <QMouseEvent>

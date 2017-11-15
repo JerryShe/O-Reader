@@ -7,7 +7,7 @@
 #include <QStandardItem>
 #include <QTextDocument>
 
-#include "data_handlers/book.h"
+#include "book.h"
 
 
 namespace Ui {

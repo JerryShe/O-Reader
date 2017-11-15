@@ -1,7 +1,7 @@
 #ifndef BOOK_WIDGET_H
 #define BOOK_WIDGET_H
 
-#include "data_handlers/book.h"
+#include "book.h"
 
 #include <QWidget>
 #include <QStateMachine>

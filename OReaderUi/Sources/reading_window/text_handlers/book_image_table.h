@@ -4,7 +4,7 @@
 #include <QHash>
 #include <QImage>
 
-#include "data_handlers/book.h"
+#include "book.h"
 
 class BookImageTable
 {

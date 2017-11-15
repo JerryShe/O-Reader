@@ -1,5 +1,6 @@
 #ifndef GENRESMAP_H
 #define GENRESMAP_H
+
 #include <QString>
 #include <QMap>
 

@@ -5,8 +5,8 @@
 #include <QVector>
 #include <QStack>
 
-#include "data_handlers/book.h"
-#include "reading_window/text_handlers/xml/paginator/tags_resolver.h"
+#include "book.h"
+#include "tags_resolver.h"
 
 
 class XMLTextSearcher : public QObject
