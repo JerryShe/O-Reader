@@ -33,11 +33,11 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     UserSynchro = Synchronization::getSynchronization();
     LibHandler = LibraryHandler::getLibraryHandler();
     clientHandler = ClientHandler::getClientHandler();
-    deviceSettings = DeviceSettings::getDeviceSettings();
+    DeviceSettings = DeviceSettingsHandler::getDeviceSettings();
 
 
     ProgramSettings->moveToThread(HandlerThread);
-    deviceSettings->moveToThread(HandlerThread);
+    DeviceSettings->moveToThread(HandlerThread);
     UserSynchro->moveToThread(HandlerThread);
     LibHandler->moveToThread(HandlerThread);
     clientHandler->moveToThread(HandlerThread);
@@ -52,7 +52,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     connect(LibHandler, SIGNAL(hideLoadImage()), this, SLOT(hideLoadingImage()));
 
     ProgramSettings->loadSettings();
-    deviceSettings->loadDeviceSettings();
+    DeviceSettings->loadDeviceSettings();
     UserSynchro->loadLog();
     LibHandler->loadBookList();
 
@@ -89,7 +89,7 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
     connect(readingState, SIGNAL(entered()), this, SLOT(showReading()));
 
 
-    switch (UserSynchro->getLastOpenedWindow())
+    switch (DeviceSettings->getLastOpenedWindow())
     {
     case 0:
         windowMachine->setInitialState(loginState);
@@ -133,10 +133,10 @@ WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 
     windowMachine->start();
 
-    prev_geometry = deviceSettings->getWindowGeometry();
-    this->setGeometry(deviceSettings->getWindowGeometry());
+    prev_geometry = DeviceSettings->getWindowGeometry();
+    this->setGeometry(DeviceSettings->getWindowGeometry());
 
-    if (deviceSettings->windowWasMaximized())
+    if (DeviceSettings->windowWasMaximized())
         this->setWindowState(Qt::WindowFullScreen);
     else
         this->setWindowState(Qt::WindowNoState);
@@ -147,9 +147,9 @@ void WindowManager::saveProgramData()
 {
     if (!this->isFullScreen())
         prev_geometry = geometry();
-    deviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
+    DeviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
 
-    deviceSettings->saveDeviceSettings();
+    DeviceSettings->saveDeviceSettings();
     ProgramSettings->saveSettings();
     UserSynchro->saveLog();
     LibHandler->saveBookList();
@@ -175,7 +175,7 @@ void WindowManager::showLogin()
     connect(loginWindow, SIGNAL(showWindowMaximazed()), this, SLOT(showWindowMaximazed()));
     this->show();
 
-    UserSynchro->setLastOpenedWindow(0);
+    DeviceSettings->setLastOpenedWindow(0);
 
     qDebug()<<"showing login window";
 }
@@ -206,7 +206,7 @@ void WindowManager::showMain()
     connect(mainWindow, SIGNAL(showWindowMaximazed()), this, SLOT(showWindowMaximazed()));
 
 
-    UserSynchro->setLastOpenedWindow(1);
+    DeviceSettings->setLastOpenedWindow(1);
 
     qDebug()<<"showing main window";
 }
@@ -248,7 +248,7 @@ void WindowManager::showReading()
     connect(readingWindow, SIGNAL(showWindowMinimazed()), this, SLOT(showWindowMinimazed()));
     connect(readingWindow, SIGNAL(showWindowMaximazed()), this, SLOT(showWindowMaximazed()));
 
-    UserSynchro->setLastOpenedWindow(2);
+    DeviceSettings->setLastOpenedWindow(2);
 
     qDebug()<<"showing reading window";
 }
@@ -258,7 +258,7 @@ void WindowManager::closeWindow()
 {
     if (!this->isFullScreen())
         prev_geometry = geometry();
-    deviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
+    DeviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
 
     if(!LibHandler->saveBookList())
     {
@@ -268,7 +268,7 @@ void WindowManager::closeWindow()
     {
 
     }
-    if(!deviceSettings->saveDeviceSettings())
+    if(!DeviceSettings->saveDeviceSettings())
     {
 
     }

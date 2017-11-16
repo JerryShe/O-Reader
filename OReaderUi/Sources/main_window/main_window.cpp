@@ -57,8 +57,8 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
 
-    connect(ui->LibraryWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(showBookPage(unsigned int)));
-    connect(ui->LibraryWidget, SIGNAL(startReading(uint)), this, SLOT(startReading(uint)));
+    connect(ui->LibraryWidget, SIGNAL(showBookPage(QString)), this, SLOT(showBookPage(QString)));
+    connect(ui->LibraryWidget, SIGNAL(startReading(QString)), this, SLOT(startReading(QString)));
 
     ui->SettingsWidget->setSettingsData();
 
@@ -95,15 +95,15 @@ LibraryView* MainWindow::getLibraryWidget() const
 }
 
 
-void MainWindow::showBookPage(const unsigned int &index)
+void MainWindow::showBookPage(const QString &index)
 {
     page = new BookPage(ui->LibraryWidget->getBookByIndex(index), this);
-    connect(page, SIGNAL(startReading(unsigned int)), this, SLOT(startReading(unsigned int)));
-    connect(page, SIGNAL(deleteBook(unsigned int)), ui->LibraryWidget, SLOT(deleteBook(unsigned int)));
+    connect(page, SIGNAL(startReading(QString)), this, SLOT(startReading(QString)));
+    connect(page, SIGNAL(deleteBook(QString)), ui->LibraryWidget, SLOT(deleteBook(QString)));
 }
 
 
-void MainWindow::startReading(const unsigned int &index)
+void MainWindow::startReading(const QString &index)
 {
     UserActions->setLastOpenedBookIndex(index);
     emit showReadingWindow();

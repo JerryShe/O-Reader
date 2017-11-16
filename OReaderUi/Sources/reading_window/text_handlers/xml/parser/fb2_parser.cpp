@@ -1,5 +1,5 @@
-#include "reading_window/text_handlers/xml/parser/fb2_parser.h"
-#include "reading_window/text_handlers/xml/parser/xml_text_parser.h"
+#include "fb2_parser.h"
+#include "xml_text_parser.h"
 
 #include <QFile>
 #include <QStringList>

@@ -53,17 +53,17 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
 
     setStyle();
 
-    ui->Library_View->setSettingsData();
+    ui->Library_View->loadSettingsData();
 
-    if (ui->Library_View->getLibraryRepresentation())
-        ui->_ChangeViewMode->setChecked(true);
+    ui->_ChangeViewMode->setChecked(ui->Library_View->getLibraryRepresentation());
+    ui->_SortDirection->setChecked(DeviceSettingsHandler::getDeviceSettings()->getLibrarySortOrder());
+    ui->_SortBox->setCurrentIndex(DeviceSettingsHandler::getDeviceSettings()->getLibrarySortType());
 
-
-    connect(ui->Library_View, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
+    connect(ui->Library_View, SIGNAL(showBookPage(QString)), this, SIGNAL(showBookPage(QString)));
 
     if (LibHandler->getLastOpenedBook() == 0)
     {
-        bookWidget = 0;
+        bookWidget = nullptr;
         ui->ShowButton->setEnabled(false);
         ui->ShowButton->hide();
         return;
@@ -75,17 +75,20 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     connect(ui->ShowButton, SIGNAL(toggled(bool)), bookWidget, SIGNAL(showButtonClicked()));
     connect(ui->ShowButton, SIGNAL(clicked(bool)), this, SLOT(hideFind()));
 
-    connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SIGNAL(showBookPage(unsigned int)));
-    connect(bookWidget, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
-    connect(bookWidget, SIGNAL(startReading(uint)), this, SIGNAL(startReading(uint)));
+    connect(bookWidget, SIGNAL(showBookPage(QString)), this, SIGNAL(showBookPage(QString)));
+    connect(bookWidget, SIGNAL(showBookPage(QString)), this, SLOT(hideBookWidget()));
+    connect(bookWidget, SIGNAL(startReading(QString)), this, SIGNAL(startReading(QString)));
 
-    connect(this, SIGNAL(showBookPage(unsigned int)), this, SLOT(hideBookWidget()));
+    connect(this, SIGNAL(showBookPage(QString)), this, SLOT(hideBookWidget()));
     connect(ui->_Find, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
     connect(ui->_ChangeViewMode, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
 
 
     connect(LibHandler, SIGNAL(lostBooks(QVector<Book*>)), this, SLOT(lostBooks(QVector<Book*>)));
     connect(ui->Library_View, SIGNAL(clicked(QModelIndex)), this, SLOT(hideBookWidget()));
+
+    connect(ui->_SortDirection, SIGNAL(toggled(bool)), this, SLOT(updateViewSort()));
+    connect(ui->_SortBox, SIGNAL(activated(int)), this, SLOT(updateViewSort()));
 
 
     if (QTouchDevice::devices().size())
@@ -264,7 +267,7 @@ void LibraryLayout::on__Delete_clicked()
 
         if (answer_window->exec() == QDialog::Accepted)
         {
-            QVector <unsigned int> books = ui->Library_View->deleteSelectedItems();
+            QVector <QString> books = ui->Library_View->deleteSelectedItems();
             for (int i = 0; i < books.size(); i++)
                 deleteBook(books[i]);
         }
@@ -315,16 +318,14 @@ void LibraryLayout::on__Downscale_clicked()
     menu->show();
 }
 
-void LibraryLayout::on__SortBox_activated(const QString &arg1)
+
+void LibraryLayout::updateViewSort()
 {
     hideBookWidget();
-    LibHandler->sortBooks(arg1, ui->_SortDirection->isChecked());
-}
+    ui->Library_View->setSort(ui->_SortBox->currentText(), ui->_SortDirection->isChecked());
 
-
-void LibraryLayout::on__SortDirection_toggled(bool checked)
-{
-    LibHandler->sortBooks(ui->_SortBox->currentText(), checked);
+    DeviceSettingsHandler::getDeviceSettings()->setLibrarySortType(ui->_SortBox->currentIndex());
+    DeviceSettingsHandler::getDeviceSettings()->setLibrarySortOrder(ui->_SortDirection->isChecked());
 }
 
 
@@ -367,20 +368,20 @@ void LibraryLayout::hideBookWidget()
 }
 
 
-Book* LibraryLayout::getBookByIndex(const unsigned int &index) const
+Book* LibraryLayout::getBookByIndex(const QString &index) const
 {
     return LibHandler->getBookByIndex(index);
 }
 
 
-void LibraryLayout::deleteBook(const unsigned int &index)
+void LibraryLayout::deleteBook(QString index)
 {
-    if (LibHandler->getLastOpenedBook() != 0 && bookWidget != 0)
+    if (LibHandler->getLastOpenedBook() != 0 && bookWidget != nullptr)
         if (index == bookWidget->getBookIndex())
         {
             hideBookWidget();
             delete bookWidget;
-            bookWidget = 0;
+            bookWidget = nullptr;
             ui->ShowButton->setEnabled(false);
             ui->ShowButton->hide();
         }

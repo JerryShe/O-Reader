@@ -21,9 +21,9 @@ public:
     ~LibraryView();
 
     void addItem(Book *book);
-    QVector <unsigned int> deleteSelectedItems();
-    void deleteBook(const unsigned int &index);
-    void setSettingsData();
+    QVector <QString> deleteSelectedItems();
+    void deleteBook(const QString &index);
+    void loadSettingsData();
 
     int getSelectedItemsCount();
     bool getLibraryRepresentation() const;
@@ -42,7 +42,7 @@ public slots:
     void setFilter(const QString &type, const QVariant &key);
 
 signals:
-    void showBookPage(unsigned int index);
+    void showBookPage(QString index);
 
 private slots:
     void showSelectedItem(const QModelIndex &mIndex);
@@ -52,7 +52,7 @@ private:
     LibraryListProxyModel* BookProxyModel;
     LibraryListDelegate* delegate;
 
-    DeviceSettings* deviceSettings;
+    DeviceSettingsHandler* deviceSettings;
 
     int IconBarSize;
     int IconListSize;

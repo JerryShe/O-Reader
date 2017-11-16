@@ -18,7 +18,7 @@ class Book
 public:
     enum BookFormat
     {
-        FB2 = 0,
+        FB2 = 1,
         EPUB
     };
 
@@ -63,8 +63,8 @@ public:
     bool haveCoverImage() const;
     QString getHTMLCover() const;
 
-    void setIndex(const int &index);
-    unsigned int getIndex() const;
+    void setIndex(const QString index);
+    QString getIndex() const;
 
     QStringList getAnnotation() const;
     QStringList getGenres() const;
@@ -82,7 +82,7 @@ private:
     BookFormat Format;
     QString File;
     QString ZippedFile;
-    unsigned int Index;
+    QString Index;
     QString Codec;    
 
     QString Title;

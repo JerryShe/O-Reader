@@ -6,6 +6,7 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QImage>
+#include <QCryptographicHash>
 
 
 BookCreator::BookCreator(QObject* parent) : QObject(parent)
@@ -205,6 +206,8 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
     else
         newBook.CoverType = "noImage";
 
+    newBook.setIndex(createFB2BookHash(doc->toByteArray()));
+
     return true;
 }
 
@@ -215,7 +218,8 @@ bool BookCreator::loadEPub()
 }
 
 
-void BookCreator::createBookHash()
+QString BookCreator::createFB2BookHash(const QByteArray &book)
 {
-
+    QByteArray sum = QCryptographicHash::hash(book, QCryptographicHash::Md5);
+    return QString(sum);
 }

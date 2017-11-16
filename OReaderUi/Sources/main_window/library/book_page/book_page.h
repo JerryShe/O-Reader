@@ -28,8 +28,8 @@ private slots:
     void on_NextIllustration_clicked();
 
 signals:
-    void startReading(unsigned int index);
-    void deleteBook(unsigned int index);
+    void startReading(QString index);
+    void deleteBook(QString index);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

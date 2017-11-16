@@ -28,7 +28,6 @@ private slots:
     void on__Delete_clicked();
     void on__ChangeViewMode_toggled(bool checked);
     void on__Downscale_clicked();
-    void on__SortBox_activated(const QString &arg1);
     void on__Find_toggled(bool checked);
 
     void addBooksFromFiles();
@@ -39,20 +38,20 @@ private slots:
 
     void lostBooks(QVector <Book*> losted);
 
-    void on__SortDirection_toggled(bool checked);
+    void updateViewSort();
 
 public slots:
     void setStyle();
 
-    Book* getBookByIndex(const unsigned int &index) const;
-    void deleteBook(const unsigned int &index);
+    Book* getBookByIndex(const QString &index) const;
+    void deleteBook(QString index);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
 
 signals:
-    void showBookPage(unsigned int index);
-    void startReading(unsigned int index);
+    void showBookPage(QString index);
+    void startReading(QString index);
 
 private:
     Ui::LibraryLayout *ui;

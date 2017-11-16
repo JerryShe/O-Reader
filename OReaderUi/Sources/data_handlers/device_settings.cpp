@@ -12,18 +12,23 @@
 
 #include <QDebug>
 
-DeviceSettings* DeviceSettings::getDeviceSettings()
+DeviceSettingsHandler* DeviceSettingsHandler::getDeviceSettings()
 {
-    static DeviceSettings deviceSettings;
+    static DeviceSettingsHandler deviceSettings;
     return &deviceSettings;
 }
 
 
-DeviceSettings::DeviceSettings()
+DeviceSettingsHandler::DeviceSettingsHandler()
 {
+    LastOpenedWindow = 0;
+
     LibraryRepresentation = false;
     LibraryIconBarSize = 140;
     LibraryIconListSize = 50;
+
+    LibrarySortOrder = false;
+    LibrarySortType = 0;
 
     WindowMaximized = false;
     WindowGeometry = QRect (qApp->desktop()->availableGeometry().width()/6,
@@ -34,13 +39,13 @@ DeviceSettings::DeviceSettings()
 
 
 
-DeviceSettings::~DeviceSettings()
+DeviceSettingsHandler::~DeviceSettingsHandler()
 {
 
 }
 
 
-bool DeviceSettings::saveDeviceSettings() const
+bool DeviceSettingsHandler::saveDeviceSettings() const
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -69,7 +74,7 @@ bool DeviceSettings::saveDeviceSettings() const
 }
 
 
-bool DeviceSettings::loadDeviceSettings()
+bool DeviceSettingsHandler::loadDeviceSettings()
 {
     QString resoursesFolderPath = "LibraryResources";
     if ( ! QDir(resoursesFolderPath).exists()==true)
@@ -100,7 +105,7 @@ bool DeviceSettings::loadDeviceSettings()
 }
 
 
-QJsonObject DeviceSettings::toJson()  const
+QJsonObject DeviceSettingsHandler::toJson()  const
 {
     QJsonObject json;
 
@@ -116,11 +121,14 @@ QJsonObject DeviceSettings::toJson()  const
     json["LibraryIconBarSize"] = LibraryIconBarSize;
     json["LibraryIconListSize"] = LibraryIconListSize;
 
+    json["LibrarySortOrder"] = LibrarySortOrder;
+    json["LibrarySortType"] = LibrarySortType;
+
     return json;
 }
 
 
-void DeviceSettings::fromJson(const QJsonObject &json)
+void DeviceSettingsHandler::fromJson(const QJsonObject &json)
 {
     if (json.contains("LibraryReprezentation"))
         LibraryRepresentation = json["LibraryReprezentation"].toBool();
@@ -130,6 +138,12 @@ void DeviceSettings::fromJson(const QJsonObject &json)
 
     if (json.contains("LibraryIconListSize"))
         LibraryIconListSize = json["LibraryIconListSize"].toInt();
+
+    if (json.contains("LibrarySortType"))
+        LibrarySortType = json["LibrarySortType"].toInt();
+
+    if (json.contains("LibrarySortOrder"))
+        LibrarySortOrder = json["LibrarySortOrder"].toBool();
 
     if (json.contains("WindowGeometry"))
     {
@@ -153,56 +167,88 @@ void DeviceSettings::fromJson(const QJsonObject &json)
 }
 
 
-bool DeviceSettings::getLibraryRepresentation() const
+bool DeviceSettingsHandler::getLibraryRepresentation() const
 {
     return LibraryRepresentation;
 }
 
 
-void DeviceSettings::setLibraryReprezentation(const bool &val)
+void DeviceSettingsHandler::setLibraryReprezentation(const bool &val)
 {
     LibraryRepresentation = val;
 }
 
 
-int DeviceSettings::getLibraryBarIconSize() const
+int DeviceSettingsHandler::getLibraryBarIconSize() const
 {
     return LibraryIconBarSize;
 }
 
 
-int DeviceSettings::getLibraryListIconSize() const
+int DeviceSettingsHandler::getLibraryListIconSize() const
 {
     return LibraryIconListSize;
 }
 
 
-void DeviceSettings::setLibraryListIconSize(const int &size)
+void DeviceSettingsHandler::setLibraryListIconSize(const int &size)
 {
     LibraryIconListSize = size;
 }
 
 
-void DeviceSettings::setLibraryBarIconSize(const int &size)
+void DeviceSettingsHandler::setLibraryBarIconSize(const int &size)
 {
     LibraryIconBarSize = size;
 }
 
 
-void DeviceSettings::setWindowGeometry(const bool &maximized, const QRect &geometry)
+void DeviceSettingsHandler::setWindowGeometry(const bool &maximized, const QRect &geometry)
 {
     WindowMaximized = maximized;
     WindowGeometry = geometry;
 }
 
 
-bool DeviceSettings::windowWasMaximized() const
+bool DeviceSettingsHandler::windowWasMaximized() const
 {
     return WindowMaximized;
 }
 
 
-QRect DeviceSettings::getWindowGeometry() const
+QRect DeviceSettingsHandler::getWindowGeometry() const
 {
     return WindowGeometry;
+}
+
+
+int DeviceSettingsHandler::getLastOpenedWindow() const
+{
+    return LastOpenedWindow;
+}
+
+
+void DeviceSettingsHandler::setLastOpenedWindow(const unsigned int &index)
+{
+    LastOpenedWindow = index;
+}
+
+bool DeviceSettingsHandler::getLibrarySortOrder() const
+{
+    return LibrarySortOrder;
+}
+
+void DeviceSettingsHandler::setLibrarySortOrder(const int &order)
+{
+    LibrarySortOrder = order;
+}
+
+int DeviceSettingsHandler::getLibrarySortType() const
+{
+    return LibrarySortType;
+}
+
+void DeviceSettingsHandler::setLibrarySortType(const int &key)
+{
+    LibrarySortType = key;
 }

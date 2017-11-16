@@ -5,12 +5,12 @@
 #include <QRect>
 #include <QJsonObject>
 
-class DeviceSettings : public QObject
+class DeviceSettingsHandler : public QObject
 {
     Q_OBJECT
 
 public:
-    static DeviceSettings* getDeviceSettings();
+    static DeviceSettingsHandler* getDeviceSettings();
 
 
     bool saveDeviceSettings() const;
@@ -29,17 +29,30 @@ public:
     bool windowWasMaximized() const;
     QRect getWindowGeometry() const;
 
+    int getLastOpenedWindow() const;
+    void setLastOpenedWindow(const unsigned int &index);
+
+    bool getLibrarySortOrder() const;
+    void setLibrarySortOrder(const int &order);
+
+    int getLibrarySortType() const;
+    void setLibrarySortType(const int &key);
+
 private:
-    DeviceSettings();
-    ~DeviceSettings();
+    DeviceSettingsHandler();
+    ~DeviceSettingsHandler();
 
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
+    int LastOpenedWindow;
 
     bool LibraryRepresentation;                 // 0 - плитка, 1 - список
     int LibraryIconBarSize;
     int LibraryIconListSize;
+
+    bool LibrarySortOrder;
+    int LibrarySortType;
 
     bool WindowMaximized;
     QRect WindowGeometry;

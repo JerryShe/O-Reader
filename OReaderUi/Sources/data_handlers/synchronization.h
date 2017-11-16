@@ -24,7 +24,7 @@ enum UActions
 
 struct action
 {
-    unsigned int Index;
+    QString Index;
     quint64 Time;
     QString Spec;
     QString Changes;
@@ -58,9 +58,7 @@ private:
     bool SettingsChanged;
     quint64 SettingsChangedTime;
 
-    int LastOpenedWindow;
-
-    unsigned int LastOpenedBookIndex;
+    QString LastOpenedBookIndex;
 
 public:
     static Synchronization* getSynchronization();
@@ -68,13 +66,8 @@ public:
     bool saveLog() const;
     bool loadLog();
 
-    int getLastOpenedWindow() const;
-    void setLastOpenedWindow(const unsigned int &index);
-
-    unsigned int getLastOpenedBookIndex() const;
-    void setLastOpenedBookIndex(const unsigned int &index);
-
-
+    QString getLastOpenedBookIndex() const;
+    void setLastOpenedBookIndex(const QString &index);
 
     /// Добавление книги - 1: файл, индекс
     /// Удаление книги - 2: файл, индекс

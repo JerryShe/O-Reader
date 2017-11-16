@@ -79,7 +79,7 @@ private:
 
     Synchronization* UserSynchro;
     SettingsHandler* ProgramSettings;
-    DeviceSettings* deviceSettings;
+    DeviceSettingsHandler* DeviceSettings;
     LibraryHandler* LibHandler;
     ClientHandler* clientHandler;
 

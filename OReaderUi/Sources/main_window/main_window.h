@@ -35,9 +35,9 @@ private slots:
 
     void on_Logout_clicked();
 
-    void startReading(const unsigned int &index);
+    void startReading(const QString &index);
 
-    void showBookPage(const unsigned int &index);
+    void showBookPage(const QString &index);
 
 protected:
     void changeEvent(QEvent *event);

@@ -21,7 +21,7 @@ public:
     explicit BookWidget(QWidget *parent = 0);
     ~BookWidget();
 
-    unsigned int getBookIndex();
+    QString getBookIndex();
 
 public slots:
     void hideWidget();
@@ -34,8 +34,8 @@ private slots:
     void setStyle();
 
 signals:
-    void showBookPage(unsigned int index);
-    void startReading(unsigned int index);
+    void showBookPage(QString index);
+    void startReading(QString index);
 
     void showButtonClicked();
 
@@ -45,7 +45,7 @@ protected:
 private:
     Ui::BookWidget *ui;
 
-    unsigned int BookIndex;
+    QString BookIndex;
     QPixmap Cover;
 
     QStateMachine *machine;

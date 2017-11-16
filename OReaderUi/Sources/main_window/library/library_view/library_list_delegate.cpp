@@ -1,5 +1,5 @@
-#include "main_window/library/library_view/library_list_delegate.h"
-#include "main_window/library/library_view/library_list_model.h"
+#include "library_list_delegate.h"
+#include "library_list_model.h"
 
 #include <QApplication>
 #include <QPainter>

@@ -1,4 +1,4 @@
-#include "main_window/library/library_view/library_list_model.h"
+#include "library_list_model.h"
 
 #include <QVariant>
 #include <QPixmap>
@@ -41,7 +41,7 @@ LibraryListModel::~LibraryListModel()
 
 QVariant LibraryListModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if (!index.isValid() && index.row() < bookVector.size())
         return QVariant();
 
     switch (role)
@@ -111,30 +111,32 @@ QVariant LibraryListModel::headerData(int section, Qt::Orientation orientation, 
 Qt::ItemFlags LibraryListModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = QAbstractListModel::flags(index);
-    return index.isValid() ?
-                (flags | Qt::ItemIsEditable) :
-                flags;
+    return index.isValid() ? (flags | Qt::ItemIsEditable) : flags;
 }
 
 
 void LibraryListModel::addBook(Book* book)
 {
+    beginInsertRows(QModelIndex(), 0, 0);
     bookVector.prepend(BookData(book));
+    endInsertRows();
 }
 
 
-void LibraryListModel::deleteBookByIndex(const unsigned int &index)
+void LibraryListModel::deleteBookByIndex(const QString &index)
 {
     for (int i = 0; i < bookVector.size(); i++)
-        if (bookVector[i].index.toUInt()== index)
+        if (bookVector[i].index.toString() == index)
         {
+            beginRemoveRows(QModelIndex(), i, i);
             bookVector.removeAt(i);
+            endRemoveRows();
             break;
         }
 }
 
 
-void LibraryListModel::deleteBooksByIndexes(const QVector<unsigned int> &indexes)
+void LibraryListModel::deleteBooksByIndexes(const QVector<QString> &indexes)
 {
     for (int i = 0; i < indexes.size(); i++)
         deleteBookByIndex(indexes[i]);

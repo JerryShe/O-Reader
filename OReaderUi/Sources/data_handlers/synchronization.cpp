@@ -39,7 +39,7 @@ QJsonObject action::toJson() const
     QJsonObject json;
 
     json["Time"] = QString::number(Time);
-    json["Index"] = (int)Index;
+    json["Index"] = Index;
     json["Spec"] = Spec;
     json["Changes"] = Changes;
 
@@ -50,7 +50,7 @@ QJsonObject action::toJson() const
 void action::fromJson(const QJsonObject &json)
 {
     Time = json["Time"].toString().toULongLong();
-    Index = (unsigned int)json["Index"].toInt();
+    Index = json["Index"].toString();
     Spec = json["Spec"].toString();
     Changes = json["Changes"].toString();
 }
@@ -62,8 +62,6 @@ void action::fromJson(const QJsonObject &json)
 Synchronization::Synchronization()
 {
     SettingsChanged = false;
-    LastOpenedWindow = 0;
-    LastOpenedBookIndex = 0;
 }
 
 
@@ -104,8 +102,7 @@ bool Synchronization::loadLog()
 
     SettingsChanged = SynObj["SettingsChanged"].toBool();
     SettingsChangedTime = SynObj["SettingsChangedTime"].toString().toULongLong();
-    LastOpenedWindow = SynObj["LastOpenedWindow"].toInt();
-    LastOpenedBookIndex = (unsigned int)SynObj["LastOpenedBookIndex"].toInt();
+    LastOpenedBookIndex = SynObj["LastOpenedBookIndex"].toString();
 
     BookQueue.clear();
     QJsonArray BookArray = SynObj["Books"].toArray();
@@ -146,8 +143,7 @@ bool Synchronization::saveLog() const
     QJsonObject SynObj;
     SynObj["SettingsChanged"] = SettingsChanged;
     SynObj["SettingsChangedTime"] = QString::number(SettingsChangedTime);
-    SynObj["LastOpenedWindow"] = LastOpenedWindow;
-    SynObj["LastOpenedBookIndex"] = (int)LastOpenedBookIndex;
+    SynObj["LastOpenedBookIndex"] = LastOpenedBookIndex;
 
     QJsonArray BookArray;
     for (int i = 0; i < BookQueue.size(); i++)
@@ -181,24 +177,13 @@ QString Synchronization::getNumber(const int &item) const
 }
 
 
-int Synchronization::getLastOpenedWindow() const
-{
-    return LastOpenedWindow;
-}
-
-
-void Synchronization::setLastOpenedWindow(const unsigned int &index)
-{
-    LastOpenedWindow = index;
-}
-
-
-unsigned int Synchronization::getLastOpenedBookIndex() const
+QString Synchronization::getLastOpenedBookIndex() const
 {
     return LastOpenedBookIndex;
 }
 
-void Synchronization::setLastOpenedBookIndex(const unsigned int &index)
+
+void Synchronization::setLastOpenedBookIndex(const QString &index)
 {
     LastOpenedBookIndex = index;
 }

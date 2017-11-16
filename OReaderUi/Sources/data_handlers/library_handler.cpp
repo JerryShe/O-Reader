@@ -19,7 +19,6 @@ LibraryHandler::LibraryHandler()
     resoursesFolderPath = "LibraryResources";
     libraryView = 0;
     UserActions = Synchronization::getSynchronization();
-    currentBookIndex = 0;
     filesMask << "*.fb2" << "*.zip" << "*.epub";
 }
 
@@ -54,11 +53,6 @@ bool LibraryHandler::loadBookList()
 
     QJsonObject LibObj = LibJson.object();
     this->fromJson(LibObj);
-
-    foreach (unsigned int index, bookTable.keys()) {
-        if (currentBookIndex < index)
-            currentBookIndex = index;
-    }
 
     LibFile.close();
     qDebug()<<bookTable.size()<<"books loaded";
@@ -97,7 +91,7 @@ QJsonObject LibraryHandler::toJson() const
     QJsonObject json;
     QJsonArray LibArray;
 
-    foreach (unsigned int index, bookTable.keys()) {
+    foreach (QString index, bookTable.keys()) {
         LibArray.append(bookTable[index].toJson());
     }
 
@@ -129,7 +123,7 @@ void LibraryHandler::fromJson(const QJsonObject &json)
 QVector <Book*> LibraryHandler::findMissingBooks()
 {
     QVector <Book*> missBooks;
-    foreach (unsigned int index, bookTable.keys())
+    foreach (QString index, bookTable.keys())
     {
         QFileInfo file(bookTable[index].getFileName());
 
@@ -163,7 +157,7 @@ QVector <Book*> LibraryHandler::findMissingBooks()
 }
 
 
-void LibraryHandler::deleteBooks(QVector<unsigned int> deletedItemsIndexes)
+void LibraryHandler::deleteBooks(QVector<QString> deletedItemsIndexes)
 {
     qDebug()<<"deleting books";
     for (int i = 0; i < deletedItemsIndexes.size(); i++)
@@ -189,8 +183,6 @@ void LibraryHandler::AddBooks(const QStringList &fileList)
         return;
 
     bookCreator = new BookCreator();
-    bookCreator->moveToThread(this->thread());
-    bookCreator->setParent(this);
 
     for (int i = 0; i < fileList.size(); i++)
         openNewBook(fileList[i]);
@@ -296,19 +288,21 @@ void LibraryHandler::openNewBook(const QString &file)
 
 void LibraryHandler::addBookToLib(Book &book)
 {
-    book.setIndex(++currentBookIndex);
-    bookTable.insert(book.getIndex(), book);
-
-    UserActions->addAction(UActions::AddBook, book.getFileName());
-    if (libraryView != 0)
+    if (!bookTable.contains(book.getIndex()))
     {
-        libraryView->addItem(&bookTable[book.getIndex()]);
-        libraryView->reset();
+        bookTable.insert(book.getIndex(), book);
+
+        UserActions->addAction(UActions::AddBook, book.getFileName());
+        if (libraryView != 0)
+        {
+            libraryView->addItem(&bookTable[book.getIndex()]);
+            libraryView->reset();
+        }
     }
 }
 
 
-void LibraryHandler::deleteBook(const unsigned int &index)
+void LibraryHandler::deleteBook(QString &index)
 {
     if (libraryView != 0)
         libraryView->deleteBook(index);
@@ -318,23 +312,6 @@ void LibraryHandler::deleteBook(const unsigned int &index)
         UserActions->addAction(UActions::DeleteBook, bookTable[index].getFileName());
         bookTable.remove(index);
     }
-}
-
-
-bool AuthorComparator(Book &boo1, Book &boo2)
-{
-    if (boo1.getAuthorName() <= boo2.getAuthorName())
-        return true;
-    else
-        return false;
-}
-
-bool TitleComparator(Book &boo1, Book & boo2)
-{
-    if (boo1.getTitle() <= boo2.getTitle())
-        return true;
-    else
-        return false;
 }
 
 
@@ -365,7 +342,7 @@ void LibraryHandler::clearFind()
 }
 
 
-Book* LibraryHandler::getBookByIndex(const unsigned int &index)
+Book* LibraryHandler::getBookByIndex(const QString &index)
 {
     if (bookTable.contains(index))
         return &bookTable[index];
@@ -375,7 +352,7 @@ Book* LibraryHandler::getBookByIndex(const unsigned int &index)
 
 Book* LibraryHandler::getLastOpenedBook()
 {
-    unsigned int index = UserActions->getLastOpenedBookIndex();
+    QString index = UserActions->getLastOpenedBookIndex();
     if (index == 0)
         return 0;
 
@@ -390,7 +367,7 @@ void LibraryHandler::refreshLibrary()
         qDebug()<<"refreshing library representation";
 
         libraryView->clear();
-        foreach (unsigned int index, bookTable.keys()) {
+        foreach (QString index, bookTable.keys()) {
             libraryView->addItem(&bookTable[index]);
         }
     }

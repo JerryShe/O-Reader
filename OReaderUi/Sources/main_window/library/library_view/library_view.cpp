@@ -1,6 +1,6 @@
-#include "main_window/library/library_view/library_view.h"
+#include "library_view/library_view.h"
 #include "styles.h"
-#include "data_handlers/settings_handler.h"
+#include "settings_handler.h"
 
 #include <QGridLayout>
 #include <QPair>
@@ -32,7 +32,7 @@ LibraryView::LibraryView(QWidget *widget) : QListView(widget)
     BookProxyModel = new LibraryListProxyModel();
     delegate = new LibraryListDelegate(this);
 
-    setSettingsData();
+    loadSettingsData();
 
     this->setItemDelegate(delegate);
     BookProxyModel->setSourceModel(BookModel);
@@ -62,7 +62,7 @@ void LibraryView::showSelectedItem(const QModelIndex &mIndex)
    if (!mIndex.isValid())
       return;
 
-   emit(showBookPage(mIndex.data(BookInf::Index).toInt()));
+   emit(showBookPage(mIndex.data(BookInf::Index).toString()));
 }
 
 
@@ -129,16 +129,16 @@ int LibraryView::getBookIconSize() const
 }
 
 
-QVector<unsigned int> LibraryView::deleteSelectedItems()
+QVector<QString> LibraryView::deleteSelectedItems()
 {
     qDebug()<<"delete books";
 
-    QVector <unsigned int> deletedItems;
+    QVector <QString> deletedItems;
 
     QModelIndexList SelectedItems = selectionModel()->selectedIndexes();
 
     for (int i = 0; i < SelectedItems.size(); i++)
-        deletedItems.push_back(SelectedItems.at(i).data(BookInf::Index).toInt());
+        deletedItems.push_back(SelectedItems.at(i).data(BookInf::Index).toString());
 
     for (int i = 0; i < deletedItems.size(); i++)
         BookModel->deleteBookByIndex(deletedItems[i]);
@@ -147,7 +147,7 @@ QVector<unsigned int> LibraryView::deleteSelectedItems()
 }
 
 
-void LibraryView::deleteBook(const unsigned int &index)
+void LibraryView::deleteBook(const QString &index)
 {
     qDebug()<<"delete "<<index;
     BookModel->deleteBookByIndex(index);
@@ -202,9 +202,9 @@ void LibraryView::setFilter(const QString &type, const QVariant &key)
 }
 
 
-void LibraryView::setSettingsData()
+void LibraryView::loadSettingsData()
 {
-    deviceSettings = DeviceSettings::getDeviceSettings();
+    deviceSettings = DeviceSettingsHandler::getDeviceSettings();
 
     QString ListViewStyle[1];
     setLibraryStyle(ListViewStyle, SettingsHandler::getSettings()->getInterfaceStyle());
@@ -227,6 +227,9 @@ void LibraryView::setSettingsData()
         setIconSize(QSize(IconBarSize, IconBarSize + 70));
         setGridSize(QSize(IconBarSize, IconBarSize + 70));
     }
+
+    BookProxyModel->setSort(DeviceSettingsHandler::getDeviceSettings()->getLibrarySortType(),
+                            DeviceSettingsHandler::getDeviceSettings()->getLibrarySortOrder());
 }
 
 

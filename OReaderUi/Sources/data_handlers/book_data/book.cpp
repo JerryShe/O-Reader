@@ -45,7 +45,7 @@ void Book::fromJson(const QJsonObject &json)
         ZippedFile = json["ZippedFile"].toString();
 
     if (json.contains("Index"))
-        Index = (unsigned int)json["Index"].toInt();
+        Index = json["Index"].toString();
 
     if (json.contains("Codec"))
         Codec = json["Codec"].toString();
@@ -206,7 +206,7 @@ QJsonObject Book::toJson() const
     json["Format"] = (int)Format;
     json["File"] = File;
     json["ZippedFile"] = ZippedFile;
-    json["Index"] = (int)Index;
+    json["Index"] = Index;
     json["Codec"] = Codec;
     json["Title"] = Title;
     json["AuthorFirstName"] = AuthorFirstName;
@@ -308,13 +308,13 @@ QString Book::getHTMLCover() const
 }
 
 
-void Book::setIndex(const int &index)
+void Book::setIndex(const QString index)
 {
     Index = index;
 }
 
 
-unsigned int Book::getIndex() const
+QString Book::getIndex() const
 {
     return Index;
 }

@@ -55,8 +55,8 @@ public:
 
     void addBook(Book* book);
 
-    void deleteBookByIndex(const unsigned int &index);
-    void deleteBooksByIndexes(const QVector<unsigned int> &indexes);
+    void deleteBookByIndex(const QString &index);
+    void deleteBooksByIndexes(const QVector<QString> &indexes);
 
     void clear();
 

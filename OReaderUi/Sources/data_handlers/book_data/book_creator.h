@@ -25,7 +25,7 @@ private:
     bool loadFB2(QDomDocument *doc, Book &newBook);
     bool loadEPub();
 
-    void createBookHash();
+    QString createFB2BookHash(const QByteArray &book);
 };
 
 #endif // BOOK_CREATOR_H

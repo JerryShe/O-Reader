@@ -128,7 +128,7 @@ void BookWidget::on_PageButton_clicked()
 }
 
 
-unsigned int BookWidget::getBookIndex()
+QString BookWidget::getBookIndex()
 {
     return BookIndex;
 }

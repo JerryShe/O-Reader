@@ -23,15 +23,15 @@ public slots:
 
     void AddBooks(const QStringList &fileList);
     void AddFolder(const QString &path);
-    void deleteBook(const unsigned int &index);
-    void deleteBooks(QVector <unsigned int> deletedItemsIndexes);
+    void deleteBook(QString &index);
+    void deleteBooks(QVector <QString> deletedItemsIndexes);
 
     void openNewBook(const QString &fileList);
 
     void findBooks(const QString &key, const QString &mode);
     void clearFind();
 
-    Book* getBookByIndex(const unsigned int &index);
+    Book* getBookByIndex(const QString &index);
 
     void refreshLibrary();
 
@@ -69,8 +69,7 @@ private:
 
     QStringList filesMask;
 
-    QHash <unsigned int, Book> bookTable;
-    unsigned int currentBookIndex;
+    QHash <QString, Book> bookTable;
 };
 
 #endif // LIBRARYHANDLER_H
