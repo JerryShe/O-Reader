@@ -14,6 +14,7 @@ BookData::BookData(Book* book)
     index = QVariant(book->getIndex());
     progress = QVariant(book->getProgressProcent());
     series = QVariant(book->getSeries());
+    additionTime = QVariant(book->getAdditionalTime());
 }
 
 
@@ -58,6 +59,8 @@ QVariant LibraryListModel::data(const QModelIndex &index, int role) const
         return bookVector[index.row()].progress;
     case BookInf::Series:
         return bookVector[index.row()].series;
+    case BookInf::AdditionDate:
+        return bookVector[index.row()].additionTime;
 
     default:
         return QVariant();

@@ -45,7 +45,7 @@ private:
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
 
-    int LastOpenedWindow;
+    unsigned int LastOpenedWindow;
 
     bool LibraryRepresentation;                 // 0 - плитка, 1 - список
     int LibraryIconBarSize;

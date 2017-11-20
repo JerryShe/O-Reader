@@ -14,10 +14,9 @@
 
 LibraryView::LibraryView(QWidget *widget) : QListView(widget)
 {
-    qRegisterMetaType<QList<QPersistentModelIndex> >("QList<QPersistentModelIndex>");
-    qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
-
     qDebug()<<"create LibraryView";
+
+    qRegisterMetaType<QAbstractItemModel::LayoutChangeHint>("QAbstractItemModel::LayoutChangeHint");
 
     setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored);
     setResizeMode(QListView::Adjust);

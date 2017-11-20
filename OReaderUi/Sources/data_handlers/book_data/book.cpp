@@ -15,14 +15,14 @@
 Book::Book()
 {
     ProgressProcent = 0;
-    ContainImages = -1;
+    ContainImages = BookContainsImages::UNKNOWN;
 }
 
 
 Book::Book(const QJsonObject &json)
 {
     ProgressProcent = 0;
-    ContainImages = -1;
+    ContainImages = BookContainsImages::UNKNOWN;
 
     this->fromJson(json);
 }
@@ -91,7 +91,7 @@ void Book::fromJson(const QJsonObject &json)
         SourceLanguage = json["SourceLanguage"].toString();
 
     if (json.contains("AddittionTime"))
-        AddittionTime = QDateTime::fromString(json["AddittionTime"].toString());
+        AddittionTime = json["AddittionTime"].toString().toULongLong();
 
     if (json.contains("CoverType"))
         CoverType = json["CoverType"].toString();
@@ -100,7 +100,7 @@ void Book::fromJson(const QJsonObject &json)
         Cover = json["Cover"].toString();
 
     if (json.contains("Images"))
-        ContainImages = json["Images"].toInt();
+        ContainImages = static_cast <BookContainsImages> (json["Images"].toInt());
 
 
     if (json.contains("LastPosition"))
@@ -221,14 +221,14 @@ QJsonObject Book::toJson() const
 
     json["Language"] = Language;
     json["SourceLanguage"] = SourceLanguage;
-    json["AddittionTime"] = AddittionTime.toString();
+    json["AddittionTime"] = QString::number(AddittionTime);
 
     json["LastPosition"] = lastBookProgress.toJson();
 
     json["ProgressProcent"] = ProgressProcent;
     json["CoverType"] = CoverType;
     json["Cover"] = Cover;
-    json["Images"] = ContainImages;
+    json["Images"] = (int)ContainImages;
 
 
     QJsonArray bookmarksArr;
@@ -254,6 +254,12 @@ QString Book::getAuthorName() const
 QString Book::getTitle() const
 {
     return Title;
+}
+
+
+qint64 Book::getAdditionalTime() const
+{
+    return AddittionTime;
 }
 
 
@@ -421,13 +427,13 @@ Book::BookFormat Book::getFormat()  const
 }
 
 
-int Book::getContainImages()
+Book::BookContainsImages Book::getContainImages()
 {
     return ContainImages;
 }
 
 
-void Book::setContainImages(const int &contain)
+void Book::setContainImages(const BookContainsImages contain)
 {
     ContainImages = contain;
 }

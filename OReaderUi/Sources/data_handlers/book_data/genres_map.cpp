@@ -1,4 +1,4 @@
-#include "genresmap.h"
+#include "genres_map.h"
 
 GenresMap::GenresMap()
 {    

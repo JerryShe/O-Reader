@@ -353,8 +353,8 @@ Book* LibraryHandler::getBookByIndex(const QString &index)
 Book* LibraryHandler::getLastOpenedBook()
 {
     QString index = UserActions->getLastOpenedBookIndex();
-    if (index == 0)
-        return 0;
+    if (index.isEmpty())
+        return nullptr;
 
     return getBookByIndex(index);
 }

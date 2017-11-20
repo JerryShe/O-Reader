@@ -1,4 +1,4 @@
-#include"reading_window/text_handlers/book_image_table.h"
+#include "book_image_table.h"
 
 #include <QBuffer>
 #include <QDomDocument>
@@ -45,7 +45,6 @@ void BookImageTable::createFromFB2(Book *book)
 
     if (!result)
         return;
-
 
     QDomNodeList nodeList = doc->elementsByTagName("binary");
     for (int i = 0; i < nodeList.size(); i++)

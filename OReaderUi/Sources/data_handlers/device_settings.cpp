@@ -117,6 +117,8 @@ QJsonObject DeviceSettingsHandler::toJson()  const
     rectObj["h"] = WindowGeometry.height();
     json["WindowGeometry"] = rectObj;
 
+    json["LastOpenedWindow"] = (int)LastOpenedWindow;
+
     json["LibraryReprezentation"] = LibraryRepresentation;
     json["LibraryIconBarSize"] = LibraryIconBarSize;
     json["LibraryIconListSize"] = LibraryIconListSize;
@@ -132,6 +134,9 @@ void DeviceSettingsHandler::fromJson(const QJsonObject &json)
 {
     if (json.contains("LibraryReprezentation"))
         LibraryRepresentation = json["LibraryReprezentation"].toBool();
+
+    if (json.contains("LastOpenedWindow"))
+        LastOpenedWindow = (unsigned int) json["LastOpenedWindow"].toInt();
 
     if (json.contains("LibraryIconBarSize"))
         LibraryIconBarSize = json["LibraryIconBarSize"].toInt();
@@ -233,20 +238,24 @@ void DeviceSettingsHandler::setLastOpenedWindow(const unsigned int &index)
     LastOpenedWindow = index;
 }
 
+
 bool DeviceSettingsHandler::getLibrarySortOrder() const
 {
     return LibrarySortOrder;
 }
+
 
 void DeviceSettingsHandler::setLibrarySortOrder(const int &order)
 {
     LibrarySortOrder = order;
 }
 
+
 int DeviceSettingsHandler::getLibrarySortType() const
 {
     return LibrarySortType;
 }
+
 
 void DeviceSettingsHandler::setLibrarySortType(const int &key)
 {

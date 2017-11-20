@@ -386,10 +386,8 @@ void setBookPageStyle(QString BookPageStyle[], const QString style)
 {
     if (style == "Red")
     {
-        BookPageStyle[0] =  "#BookPage"
-                            "{background-color:rgb(162, 0, 70);"
-                            "border: 1px solid;"
-                            "border-color:black;}";
+        BookPageStyle[0] =  "#bookPage"
+                            "{background-color:rgb(162, 0, 70);}";
 
         BookPageStyle[1] =  "#startReading"
                             "{background-color:rgb(151, 151, 227);"
@@ -402,7 +400,7 @@ void setBookPageStyle(QString BookPageStyle[], const QString style)
                             "{color:white;}";
 
         BookPageStyle[3] =  "QTextEdit"
-                            "{background-color:rgb(162, 0, 70);"
+                            "{background-color:rgb(157, 0, 60);"
                             "border:none;"
                             "color:white;}";
 

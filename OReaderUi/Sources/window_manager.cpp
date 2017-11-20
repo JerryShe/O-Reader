@@ -15,7 +15,7 @@
 
 WindowManager::WindowManager(QWidget *parent) : QMainWindow(parent)
 {
-    LastWindow = 0;
+    LastWindow = nullptr;
     loadingLabel = 0;
     moving = false;
 
@@ -147,6 +147,7 @@ void WindowManager::saveProgramData()
 {
     if (!this->isFullScreen())
         prev_geometry = geometry();
+
     DeviceSettings->setWindowGeometry(this->isFullScreen(), prev_geometry);
 
     DeviceSettings->saveDeviceSettings();
@@ -161,7 +162,7 @@ void WindowManager::showLogin()
     loginWindow = new LoginWindow(this);
     this->setCentralWidget(loginWindow);
 
-    if (LastWindow != 0)
+    if (LastWindow != nullptr)
     {
         delete LastWindow;
         saveProgramData();
@@ -191,7 +192,7 @@ void WindowManager::showMain()
     this->show();
     mainWindow->show();
 
-    if (LastWindow != 0)
+    if (LastWindow != nullptr)
     {
         saveProgramData();
         delete LastWindow;
@@ -234,7 +235,7 @@ void WindowManager::showReading()
     readingWindow->startReading();
 
 
-    if (LastWindow != 0)
+    if (LastWindow != nullptr)
     {
         delete LastWindow;
         saveProgramData();
@@ -277,8 +278,9 @@ void WindowManager::closeWindow()
 
     }
 
+    if (LastWindow != nullptr)
+        delete LastWindow;
 
-    delete LastWindow;
     HandlerThread->quit();
     exit(0);
 }

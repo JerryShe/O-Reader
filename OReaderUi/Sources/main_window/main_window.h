@@ -37,8 +37,6 @@ private slots:
 
     void startReading(const QString &index);
 
-    void showBookPage(const QString &index);
-
 protected:
     void changeEvent(QEvent *event);
 
@@ -54,7 +52,6 @@ private:
     Ui::MainWindow* ui;
 
     ReadingWindow* readingWindow;
-    BookPage* page;
 
     QTabSwitcher* tabSwitcher;
 

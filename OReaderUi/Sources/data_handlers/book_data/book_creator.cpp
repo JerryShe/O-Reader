@@ -141,7 +141,7 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
 
 
     //дата добавления
-    newBook.AddittionTime = QDateTime::currentDateTime();
+    newBook.AddittionTime = QDateTime::currentMSecsSinceEpoch();
 
 
     //изображения

@@ -22,7 +22,6 @@ void BookPage::setStyle(QString Style)
     ui->startReading->setStyleSheet(PageStyles[1]);
     ui->deleteBook->setStyleSheet(PageStyles[4]);
     ui->leftLine->setStyleSheet(PageStyles[5]);
-    ui->leftLine_2->setStyleSheet(PageStyles[5]);
 
     ui->author->setStyleSheet(PageStyles[2]);
     ui->genres->setStyleSheet(PageStyles[2]);
@@ -42,22 +41,27 @@ void BookPage::setStyle(QString Style)
 }
 
 
-BookPage::BookPage(Book *boo, QWidget *parent) :
-    //QMainWindow(parent),
+BookPage::BookPage(QWidget *parent) :
+    QWidget(parent),
     ui(new Ui::BookPage)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-
-    book = boo;
     ui->setupUi(this);
+}
+
+
+BookPage::~BookPage()
+{
+    qDebug()<<"delete BookPage";
+    delete ui;
+}
+
+void BookPage::setBook(Book *showingbook)
+{
+    book = showingbook;
+
     ui->stackedWidget->setCurrentWidget(ui->BookWidget);
 
     setStyle(SettingsHandler::getSettings()->getInterfaceStyle());
-
-    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
-    setWindowFlags(Qt::Popup);
-
-    this->setGeometry(parent->mapToGlobal(QPoint(180, 0)).x(), parent->mapToGlobal(QPoint(0, 100)).y(), parent->width() - 270, parent->height() - 200);
 
     ui->author->setWordWrap(true);
     ui->title->setWordWrap(true);
@@ -78,21 +82,17 @@ BookPage::BookPage(Book *boo, QWidget *parent) :
     ui->annotation->setAlignment(Qt::AlignJustify);
 
     QPixmap cover = QPixmap::fromImage(book->getCover());
-    ui->Image->setFixedSize(cover.size());
-    ui->Image->setPixmap(cover);
-
-    int textWidth = this->width() - ui->BookData->contentsMargins().left() - ui->BookData->contentsMargins().right()
-            - ui->Image->width() - ui->ImageBlock->contentsMargins().left() - ui->ImageBlock->contentsMargins().right()
-            - ui->startReading->width() - ui->VerticalButtonBlock->contentsMargins().right() - 2;
+    ui->CoverImage->setFixedSize(cover.size());
+    ui->CoverImage->setPixmap(cover);
 
     QFontMetrics metrics(ui->author->font());
-    ui->author->setText(metrics.elidedText(book->getAuthorName(), Qt::ElideRight, textWidth));
+    ui->author->setText(metrics.elidedText(book->getAuthorName(), Qt::ElideRight, ui->author->width()));
 
     metrics = QFontMetrics(ui->title->font());
-    ui->title->setText(metrics.elidedText(book->getTitle(), Qt::ElideRight, textWidth));
+    ui->title->setText(metrics.elidedText(book->getTitle(), Qt::ElideRight, ui->title->width()));
 
     metrics = QFontMetrics(ui->series->font());
-    ui->series->setText(metrics.elidedText(book->getSeries(), Qt::ElideRight, textWidth));
+    ui->series->setText(metrics.elidedText(tr("Серия") + book->getSeries(), Qt::ElideRight, ui->series->width()));
 
     ui->BookProgress->setText(QString::number(floor(book->getProgressProcent()*10)/10) + "%");
 
@@ -102,61 +102,66 @@ BookPage::BookPage(Book *boo, QWidget *parent) :
         temp += ", " + list[i];
 
     metrics = QFontMetrics(ui->genres->font());
-    ui->genres->setText(metrics.elidedText(temp, Qt::ElideRight, textWidth));
+    ui->genres->setText(metrics.elidedText(tr("Жанр: ") + temp, Qt::ElideRight, ui->genres->width()));
 
 
-    connect(ui->exit_button, SIGNAL(clicked(bool)), this, SLOT(close()));
+    connect(ui->exit_button, SIGNAL(clicked(bool)), this, SIGNAL(closeBookPage()));
 
 
     //illustrations
-    switch (book->getContainImages()) {
-    case -1:
+    switch (book->getContainImages())
     {
-        BookImageTable imageTable(book);
-        images = imageTable.getBookImages();
+        case Book::BookContainsImages::UNKNOWN:
+        {
+            BookImageTable imageTable(book);
+            images = imageTable.getBookImages();
 
-        if (images.size() == 0)
+            if (images.size() == 0)
+            {
+                ui->ShowIllustrations->setEnabled(false);
+                book->setContainImages(Book::BookContainsImages::NO);
+            }
+            else
+                book->setContainImages(Book::BookContainsImages::YES);
+
+            break;
+        }
+        case Book::BookContainsImages::YES:
+        {
+            break;
+        }
+        case Book::BookContainsImages::NO:
         {
             ui->ShowIllustrations->setEnabled(false);
-            book->setContainImages(0);
+            break;
         }
-        else
-            book->setContainImages(1);
-
-        break;
-    }
-    case 0:
-    {
-        ui->ShowIllustrations->setEnabled(false);
-        break;
-    }
-    case 1:
-    {
-
-        break;
-    }
     }
 
 
     this->installEventFilter(this);
     ui->IllustrationsWidget->installEventFilter(this);
-
-    show();
 }
 
 
-BookPage::~BookPage()
+void BookPage::resetData()
 {
-    qDebug()<<"delete BookPage";
-    delete ui;
+    book = nullptr;
+    images.clear();
+    curImage = 0;
+
+    ui->annotation->clear();
+    ui->author->clear();
+    ui->BookProgress->clear();
+    ui->genres->clear();
+    ui->CoverImage->clear();
+    ui->series->clear();
+    ui->title->clear();
 }
 
 
 void BookPage::on_startReading_clicked()
 {
-    this->hide();
     emit startReading(book->getIndex());
-    this->close();
 }
 
 
@@ -177,16 +182,19 @@ void BookPage::on_deleteBook_clicked()
 
 void BookPage::on_ShowIllustrations_clicked()
 {
-    if (images.size() == 0)
+    if (book->getContainImages() == Book::BookContainsImages::YES)
     {
-        BookImageTable imageTable(book);
-        images = imageTable.getBookImages();
+        if (images.size() == 0)
+        {
+            BookImageTable imageTable(book);
+            images = imageTable.getBookImages();
+        }
+
+        curImage = 0;
+        showIllustrationAt(curImage);
+
+        ui->stackedWidget->setCurrentWidget(ui->IllustrationsWidget);
     }
-
-    curImage = 0;
-    showIllustrationAt(curImage);
-
-    ui->stackedWidget->setCurrentWidget(ui->IllustrationsWidget);
 }
 
 

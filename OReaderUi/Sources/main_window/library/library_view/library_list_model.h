@@ -13,7 +13,8 @@ enum BookInf
     AuthorName,
     Title,
     Progress,
-    Series
+    Series,
+    AdditionDate
 };
 
 
@@ -25,6 +26,7 @@ struct BookData
     QVariant index;
     QVariant progress;
     QVariant series;
+    QVariant additionTime;
 
     BookData(Book* book);
     BookData();

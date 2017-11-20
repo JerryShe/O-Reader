@@ -22,6 +22,12 @@ public:
         EPUB
     };
 
+    enum BookContainsImages
+    {
+        UNKNOWN = -1,
+        YES = 0,
+        NO
+    };
 
     Book();
     Book(const QJsonObject &BookJson);
@@ -58,6 +64,7 @@ public:
 
     QString getAuthorName() const;
     QString getTitle() const;
+    qint64 getAdditionalTime() const;
 
     QImage getCover() const;
     bool haveCoverImage() const;
@@ -74,8 +81,8 @@ public:
     QString getCodec() const;
     void setCodec(const QString &Codec);
 
-    int getContainImages();
-    void setContainImages(const int &contain);
+    BookContainsImages getContainImages();
+    void setContainImages(const BookContainsImages contain);
 
 
 private:
@@ -94,10 +101,10 @@ private:
     QStringList Annotation;
     QString Language;
     QString SourceLanguage;
-    QDateTime AddittionTime;
+    qint64 AddittionTime;
     QString CoverType;
     QString Cover;
-    int ContainImages;            /// -1 - unknown, 0 - nope, 1 - yepe
+    BookContainsImages ContainImages;            /// -1 - unknown, 0 - nope, 1 - yepe
 
     BookPosition lastBookProgress;
     double ProgressProcent = 0;

@@ -56,8 +56,6 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
 
     connect(ui->min_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMinimazed()));
     connect(ui->full_size_button, SIGNAL(clicked(bool)), this, SIGNAL(showWindowMaximazed()));
-
-    connect(ui->LibraryWidget, SIGNAL(showBookPage(QString)), this, SLOT(showBookPage(QString)));
     connect(ui->LibraryWidget, SIGNAL(startReading(QString)), this, SLOT(startReading(QString)));
 
     ui->SettingsWidget->setSettingsData();
@@ -71,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), ui(new Ui::MainWindow
     setStyle();
 
     tabSwitcher->start(0);
+
     qDebug()<<"create MainWindow";
 }
 
@@ -92,14 +91,6 @@ MainWindow::~MainWindow()
 LibraryView* MainWindow::getLibraryWidget() const
 {
     return ui->LibraryWidget->getLibraryWidget();
-}
-
-
-void MainWindow::showBookPage(const QString &index)
-{
-    page = new BookPage(ui->LibraryWidget->getBookByIndex(index), this);
-    connect(page, SIGNAL(startReading(QString)), this, SLOT(startReading(QString)));
-    connect(page, SIGNAL(deleteBook(QString)), ui->LibraryWidget, SLOT(deleteBook(QString)));
 }
 
 

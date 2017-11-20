@@ -5,7 +5,7 @@
 #include <QDomDocument>
 
 #include "book.h"
-#include "genresmap.h"
+#include "genres_map.h"
 
 
 class BookCreator : public QObject

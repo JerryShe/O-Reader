@@ -40,6 +40,9 @@ private slots:
 
     void updateViewSort();
 
+    void showBookPage(QString index);
+    void hideBookPage();
+
 public slots:
     void setStyle();
 
@@ -50,7 +53,6 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event);
 
 signals:
-    void showBookPage(QString index);
     void startReading(QString index);
 
 private:

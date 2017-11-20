@@ -73,7 +73,7 @@ bool LibraryListProxyModel::lessThan(const QModelIndex &left, const QModelIndex 
     switch (sortType)
     {
     case 0:
-        answ = (left.data(BookInf::Index).toInt() < right.data(BookInf::Index).toInt()); /// index
+        answ = (left.data(BookInf::AdditionDate).toULongLong() < right.data(BookInf::AdditionDate).toULongLong()); /// index
         break;
 
     case 1:

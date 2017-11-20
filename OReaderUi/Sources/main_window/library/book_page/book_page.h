@@ -9,14 +9,16 @@ namespace Ui {
 class BookPage;
 }
 
-class BookPage : public QMainWindow
+class BookPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit BookPage(Book *boo, QWidget *parent = 0);
+    explicit BookPage(QWidget *parent = 0);
     ~BookPage();
-    void readBook();
+
+    void setBook(Book* showingbook);
+    void resetData();
 
 private slots:
     void on_startReading_clicked();
@@ -30,6 +32,7 @@ private slots:
 signals:
     void startReading(QString index);
     void deleteBook(QString index);
+    void closeBookPage();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

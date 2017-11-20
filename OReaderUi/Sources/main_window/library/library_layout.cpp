@@ -59,27 +59,33 @@ LibraryLayout::LibraryLayout(QWidget *parent) : QWidget(parent), ui(new Ui::Libr
     ui->_SortDirection->setChecked(DeviceSettingsHandler::getDeviceSettings()->getLibrarySortOrder());
     ui->_SortBox->setCurrentIndex(DeviceSettingsHandler::getDeviceSettings()->getLibrarySortType());
 
-    connect(ui->Library_View, SIGNAL(showBookPage(QString)), this, SIGNAL(showBookPage(QString)));
+    connect(ui->Library_View, SIGNAL(showBookPage(QString)), this, SLOT(showBookPage(QString)));
 
-    if (LibHandler->getLastOpenedBook() == 0)
+    connect(ui->bookPage, SIGNAL(startReading(QString)), this, SIGNAL(startReading(QString)));
+    connect(ui->bookPage, SIGNAL(deleteBook(QString)), this, SLOT(deleteBook(QString)));
+    connect(ui->bookPage, SIGNAL(closeBookPage()), this, SLOT(hideBookPage()));
+
+    if (LibHandler->getLastOpenedBook() == nullptr)
     {
         bookWidget = nullptr;
         ui->ShowButton->setEnabled(false);
         ui->ShowButton->hide();
-        return;
+    }
+    else
+    {
+        ui->ShowButton->raise();
+        bookWidget = new BookWidget(this);
+        bookWidget->move(15, 30);
+
+        connect(ui->ShowButton, SIGNAL(toggled(bool)), bookWidget, SIGNAL(showButtonClicked()));
+
+        connect(bookWidget, SIGNAL(showBookPage(QString)), this, SLOT(showBookPage(QString)));
+        connect(bookWidget, SIGNAL(startReading(QString)), this, SIGNAL(startReading(QString)));
     }
 
-    ui->ShowButton->raise();
-    bookWidget = new BookWidget(this);
-    bookWidget->move(15, 30);
-    connect(ui->ShowButton, SIGNAL(toggled(bool)), bookWidget, SIGNAL(showButtonClicked()));
+
     connect(ui->ShowButton, SIGNAL(clicked(bool)), this, SLOT(hideFind()));
 
-    connect(bookWidget, SIGNAL(showBookPage(QString)), this, SIGNAL(showBookPage(QString)));
-    connect(bookWidget, SIGNAL(showBookPage(QString)), this, SLOT(hideBookWidget()));
-    connect(bookWidget, SIGNAL(startReading(QString)), this, SIGNAL(startReading(QString)));
-
-    connect(this, SIGNAL(showBookPage(QString)), this, SLOT(hideBookWidget()));
     connect(ui->_Find, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
     connect(ui->_ChangeViewMode, SIGNAL(toggled(bool)), this, SLOT(hideBookWidget()));
 
@@ -329,6 +335,26 @@ void LibraryLayout::updateViewSort()
 }
 
 
+void LibraryLayout::showBookPage(QString index)
+{
+    hideBookWidget();
+    Book* book = LibraryHandler::getLibraryHandler()->getBookByIndex(index);
+
+    if (book != nullptr)
+    {
+        ui->bookPage->setBook(book);
+        ui->stackedWidget->setCurrentWidget(ui->BookPageTab);
+    }
+}
+
+
+void LibraryLayout::hideBookPage()
+{
+    ui->stackedWidget->setCurrentWidget(ui->LibraryTab);
+    ui->bookPage->resetData();
+}
+
+
 void LibraryLayout::on__Find_toggled(bool checked)
 {
     if (checked == true)
@@ -376,7 +402,7 @@ Book* LibraryLayout::getBookByIndex(const QString &index) const
 
 void LibraryLayout::deleteBook(QString index)
 {
-    if (LibHandler->getLastOpenedBook() != 0 && bookWidget != nullptr)
+    if (bookWidget != nullptr)
         if (index == bookWidget->getBookIndex())
         {
             hideBookWidget();
