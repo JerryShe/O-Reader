@@ -206,7 +206,7 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
     else
         newBook.CoverType = "noImage";
 
-    newBook.setIndex(createFB2BookHash(doc->toByteArray()));
+    newBook.Index = createFB2BookHash(doc->toByteArray());
 
     return true;
 }
@@ -220,6 +220,6 @@ bool BookCreator::loadEPub()
 
 QString BookCreator::createFB2BookHash(const QByteArray &book)
 {
-    QByteArray sum = QCryptographicHash::hash(book, QCryptographicHash::Md5);
+    QByteArray sum = QCryptographicHash::hash(book, QCryptographicHash::Md5).toHex();
     return QString(sum);
 }

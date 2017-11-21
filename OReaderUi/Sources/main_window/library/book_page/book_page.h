@@ -17,17 +17,18 @@ public:
     explicit BookPage(QWidget *parent = 0);
     ~BookPage();
 
-    void setBook(Book* showingbook);
+    void setBook(Book* showingBook);
     void resetData();
 
 private slots:
     void on_startReading_clicked();
     void on_deleteBook_clicked();
 
+    void showBookPage();
+
     void on_ShowIllustrations_clicked();
-    void on_PrevIllustration_clicked();
-    void on_CloseIllustrations_clicked();
-    void on_NextIllustration_clicked();
+
+    void on_ShowBookData_clicked();
 
 signals:
     void startReading(QString index);
@@ -40,12 +41,9 @@ protected:
 private:
     void setStyle(QString Style);
 
-    void showIllustrationAt(const int i);
-
     Ui::BookPage *ui;
 
     Book* book;
-    QVector <QImage> images;
 
     int curImage;
 };

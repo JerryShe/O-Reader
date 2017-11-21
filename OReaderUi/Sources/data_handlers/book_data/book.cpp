@@ -15,14 +15,14 @@
 Book::Book()
 {
     ProgressProcent = 0;
-    ContainImages = BookContainsImages::UNKNOWN;
+    ContainsImages = BookContainsImages::UNKNOWN;
 }
 
 
 Book::Book(const QJsonObject &json)
 {
     ProgressProcent = 0;
-    ContainImages = BookContainsImages::UNKNOWN;
+    ContainsImages = BookContainsImages::UNKNOWN;
 
     this->fromJson(json);
 }
@@ -100,7 +100,7 @@ void Book::fromJson(const QJsonObject &json)
         Cover = json["Cover"].toString();
 
     if (json.contains("Images"))
-        ContainImages = static_cast <BookContainsImages> (json["Images"].toInt());
+        ContainsImages = static_cast <BookContainsImages> (json["Images"].toInt());
 
 
     if (json.contains("LastPosition"))
@@ -228,7 +228,7 @@ QJsonObject Book::toJson() const
     json["ProgressProcent"] = ProgressProcent;
     json["CoverType"] = CoverType;
     json["Cover"] = Cover;
-    json["Images"] = (int)ContainImages;
+    json["Images"] = (int)ContainsImages;
 
 
     QJsonArray bookmarksArr;
@@ -267,32 +267,25 @@ QImage Book::getCover() const
 {
     QImage tempImage;
 
-    if (Format == FB2)
+    if (CoverType != "noImage")
     {
-        if (CoverType != "noImage")
-        {
-            QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
+        QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
-            QMimeDatabase data;
-            QString type = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+        QMimeDatabase data;
+        QString type = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
 
-            std::string str = type.toStdString();
-            const char* p = str.c_str();
+        std::string str = type.toStdString();
+        const char* p = str.c_str();
 
-            tempImage = QImage::fromData(BinaryCover, p);
-        }
-        else
-            tempImage = QImage(":/Images/noImage.png");
-
-        if (tempImage.size().width() > 200)
-            tempImage = tempImage.scaledToWidth(200);
-        if (tempImage.size().height() > 300)
-            tempImage = tempImage.scaledToHeight(300);
+        tempImage = QImage::fromData(BinaryCover, p);
     }
-    else if (Format == EPUB)
-    {
-        /// create epub image
-    }
+    else
+        tempImage = QImage(":/Images/noImage.png");
+
+    if (tempImage.size().width() > 250)
+        tempImage = tempImage.scaledToWidth(250);
+    if (tempImage.size().height() > 350)
+        tempImage = tempImage.scaledToHeight(350);
 
     return tempImage;
 }
@@ -311,12 +304,6 @@ QString Book::getHTMLCover() const
     if (CoverType != "noImage")
         return Cover;
     return "";
-}
-
-
-void Book::setIndex(const QString index)
-{
-    Index = index;
 }
 
 
@@ -341,12 +328,6 @@ QStringList Book::getGenres() const
 QString Book::getLanguage() const
 {
     return Language;
-}
-
-
-long long Book::getTextPosition() const
-{
-    return lastBookProgress.TextPos;
 }
 
 
@@ -395,12 +376,6 @@ QString Book::getCodec() const
 }
 
 
-void Book::setCodec(const QString &codec)
-{
-    Codec = codec;
-}
-
-
 QString Book::getFileName() const
 {
     return File;
@@ -427,15 +402,15 @@ Book::BookFormat Book::getFormat()  const
 }
 
 
-Book::BookContainsImages Book::getContainImages()
+Book::BookContainsImages Book::getContainsImages() const
 {
-    return ContainImages;
+    return ContainsImages;
 }
 
 
-void Book::setContainImages(const BookContainsImages contain)
+void Book::setContainsImages(const BookContainsImages contain)
 {
-    ContainImages = contain;
+    ContainsImages = contain;
 }
 
 

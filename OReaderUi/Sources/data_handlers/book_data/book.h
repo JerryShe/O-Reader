@@ -33,16 +33,22 @@ public:
     Book(const QJsonObject &BookJson);
 
     QString getFileName() const;
+    bool isZipped();
     QString getZippedFileName() const;
+    BookFormat getFormat() const;
+    QString getIndex() const;
+    QString getCodec() const;
+    qint64 getAdditionalTime() const;
+
 
     QJsonObject toJson() const;
     void fromJson(const QJsonObject &json);
+
 
     QByteArray getFB2BookByteArray(bool &result);
     QDomDocument *getFB2BookDomDoc(bool &result);
 
 
-    long long getTextPosition() const;
     double getProgressProcent() const;
     QStack<QString> getProgressTagStack() const;
 
@@ -58,32 +64,19 @@ public:
     BookNote getBooknoteAt(const int &index) const;
 
 
-    bool isZipped();
-
-    BookFormat getFormat() const;
-
     QString getAuthorName() const;
     QString getTitle() const;
-    qint64 getAdditionalTime() const;
-
-    QImage getCover() const;
-    bool haveCoverImage() const;
-    QString getHTMLCover() const;
-
-    void setIndex(const QString index);
-    QString getIndex() const;
-
     QStringList getAnnotation() const;
     QStringList getGenres() const;
     QString getSeries() const;
     QString getLanguage() const;
 
-    QString getCodec() const;
-    void setCodec(const QString &Codec);
+    bool haveCoverImage() const;
+    QImage getCover() const;
+    QString getHTMLCover() const;
 
-    BookContainsImages getContainImages();
-    void setContainImages(const BookContainsImages contain);
-
+    BookContainsImages getContainsImages() const;
+    void setContainsImages(const BookContainsImages contain);
 
 private:
     BookFormat Format;
@@ -104,7 +97,7 @@ private:
     qint64 AddittionTime;
     QString CoverType;
     QString Cover;
-    BookContainsImages ContainImages;            /// -1 - unknown, 0 - nope, 1 - yepe
+    BookContainsImages ContainsImages;            /// -1 - unknown, 0 - nope, 1 - yepe
 
     BookPosition lastBookProgress;
     double ProgressProcent = 0;

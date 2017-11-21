@@ -600,7 +600,7 @@ void ReadingWindow::showContentsTable()
         return;
 
     ActiveWindow = true;
-    ContentsTableWindow = new TableOfContentsWidget(BookPaginator->getBookContentTable(), CurBook->getTextPosition(), this);
+    ContentsTableWindow = new TableOfContentsWidget(BookPaginator->getBookContentTable(), CurBook->getProgress().TextPos, this);
     ContentsTableWindow->move(0, ui->MenuButton->height());
     ContentsTableWindow->installEventFilter(this);
 
@@ -718,7 +718,7 @@ void ReadingWindow::showSearchWindow(QString searchKey)
         return;
 
     SearchWidget = new ReadingSearchWidget(BookPaginator->getBookContentTable(),
-                                           CurBook->getTextPosition(),
+                                           CurBook->getProgress().TextPos,
                                            BookPaginator->getTextStyles(),
                                            miniWindow);
 

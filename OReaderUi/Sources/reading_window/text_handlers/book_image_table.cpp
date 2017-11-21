@@ -18,11 +18,23 @@ BookImageTable::BookImageTable()
 
 BookImageTable::BookImageTable(Book *book)
 {
+    qDebug()<<"create BookImageTable";
+
+    if (book->getContainsImages() == Book::BookContainsImages::NO)
+        return;
+
     if (book->getFormat() == Book::BookFormat::FB2)
         createFromFB2(book);
     else if (book->getFormat() == Book::BookFormat::EPUB)
         createFromEPub(book);
-    qDebug()<<"create BookImageTable";
+
+    if (book->getContainsImages() == Book::BookContainsImages::UNKNOWN)
+    {
+        if (ImageMap.size() != 0)
+            book->setContainsImages(Book::BookContainsImages::YES);
+        else
+            book->setContainsImages(Book::BookContainsImages::NO);
+    }
 }
 
 
