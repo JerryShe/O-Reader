@@ -19,7 +19,6 @@ void BookPage::setStyle(QString Style)
 
     ui->startReading->setStyleSheet(PageStyles[1]);
     ui->deleteBook->setStyleSheet(PageStyles[4]);
-    ui->leftLine->setStyleSheet(PageStyles[5]);
 
     ui->author->setStyleSheet(PageStyles[2]);
     ui->genres->setStyleSheet(PageStyles[2]);
@@ -27,15 +26,6 @@ void BookPage::setStyle(QString Style)
     ui->series->setStyleSheet(PageStyles[2]);
     ui->BookProgress->setStyleSheet(PageStyles[2]);
     ui->annotation->setStyleSheet(PageStyles[3]);
-
-//    ui->ImageCounter->setStyleSheet(PageStyles[2]);
-
-//    ui->NextIllustration->setStyleSheet(PageStyles[6]);
-//    ui->PrevIllustration->setStyleSheet(PageStyles[7]);
-
-//    setExitButtonStyle(PageStyles, Style);
-//    ui->exit_button->setStyleSheet(PageStyles[0]);
-//    ui->CloseIllustrations->setStyleSheet(PageStyles[0]);
 }
 
 

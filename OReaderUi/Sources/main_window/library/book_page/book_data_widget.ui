@@ -105,6 +105,9 @@
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -113,8 +116,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>800</width>
-        <height>541</height>
+        <width>802</width>
+        <height>543</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">

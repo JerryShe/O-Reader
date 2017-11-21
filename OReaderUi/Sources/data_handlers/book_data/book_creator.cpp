@@ -2,16 +2,45 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <QBuffer>
-#include <QMimeDatabase>
-#include <QMimeType>
 #include <QImage>
 #include <QCryptographicHash>
+#include <QMimeDatabase>
+#include <QMimeType>
 
 
 BookCreator::BookCreator(QObject* parent) : QObject(parent)
 {
 
+}
+
+
+void BookCreator::loadBookFullInfo(Book *book)
+{
+    bool result = true;
+    QDomDocument* doc = book->getFB2BookDomDoc(result);
+    if (result)
+    {
+        QDomNode description = doc->elementsByTagName("description").item(0);
+        if (description.isNull())
+            return;
+
+        //src-title-info
+        QDomNode srcTitleInfo = description.namedItem("src-title-info");
+        if (!srcTitleInfo.isNull())
+            parseFB2TitleInfo(srcTitleInfo, book->SrcTitleInfo);
+
+        //document-info
+        QDomNode documentInfo = description.namedItem("document-info");
+        if (!documentInfo.isNull())
+            parseFB2DocumentInfo(documentInfo, book->DocumentInfo);
+
+        //publish-info
+        QDomNode publishInfo = description.namedItem("publish-info");
+        if (!publishInfo.isNull())
+            parseFB2PublishInfo(publishInfo, book->PublishInfo);
+    }
+
+    book->fullInfoWasLoaded = true;
 }
 
 
@@ -73,6 +102,10 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
     newBook.CoverType = "noImage";
     newBook.Format = Book::BookFormat::FB2;
 
+    newBook.Index = createFB2BookHash(doc->toByteArray());
+    newBook.AddittionTime = QDateTime::currentMSecsSinceEpoch();
+
+
     if (doc->namedItem("FictionBook").nodeName().isNull())
         return false;
 
@@ -93,58 +126,17 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
     if (newBook.Codec == "")
         return false;
 
-    QDomNode titleInfo = doc->elementsByTagName("title-info").item(0);
-    if (titleInfo.isNull())
-    {
-        ///выдать сообщение - не найден title-info
-    }
+    QDomNode description = doc->elementsByTagName("description").item(0);
+    if (description.isNull())
+        return false;
 
-    //название книги
-    if (! titleInfo.namedItem("book-title").isNull())
-        newBook.Title = titleInfo.namedItem("book-title").toElement().text();
-
-    //имя автора
-    QDomNode author = titleInfo.namedItem("author");
-    if (!author.namedItem("first-name").isNull())
-        newBook.AuthorFirstName = author.namedItem("first-name").toElement().text();
-    if (!author.namedItem("middle-name").isNull())
-        newBook.AuthorMiddleName = author.namedItem("middle-name").toElement().text();
-    if (!author.namedItem("last-name").isNull())
-        newBook.AuthorLastName = author.namedItem("last-name").toElement().text();
-
-    //жанры
-    QDomNodeList nodeList = doc->elementsByTagName("genre");
-    for (int i = 0; i < nodeList.length(); ++i)
-        newBook.Genres << genres.getFB2Genre( nodeList.item(i).toElement().text() );
-
-    //языки
-    if (! titleInfo.namedItem("lang").isNull())
-        newBook.Language = titleInfo.namedItem("lang").toElement().text();
-
-    if (! titleInfo.namedItem("src-lang").isNull())
-        newBook.SourceLanguage = titleInfo.namedItem("src-lang").toElement().text();
-
-    //аннотация
-    if (! titleInfo.namedItem("annotation").isNull())
-    {
-        nodeList = titleInfo.namedItem("annotation").childNodes();
-        for (int i = 0; i < nodeList.size(); ++i)
-            newBook.Annotation<<nodeList.item(i).toElement().text();
-    }
-
-    //книжная серия
-    if (! titleInfo.namedItem("sequence").isNull())
-    {
-        newBook.Series.first = titleInfo.namedItem("sequence").toElement().attribute("name", "");
-        newBook.Series.second = titleInfo.namedItem("sequence").toElement().attribute("number", "").toInt();
-    }
+    //title-info
+    QDomNode titleInfo = description.namedItem("title-info");
+    if (!titleInfo.isNull())
+        parseFB2TitleInfo(titleInfo, newBook.TitleInfo);
 
 
-    //дата добавления
-    newBook.AddittionTime = QDateTime::currentMSecsSinceEpoch();
-
-
-    //изображения
+    //images
     if (!titleInfo.namedItem("coverpage").isNull())
     {
         QString coverName = titleInfo.namedItem("coverpage").namedItem("image").toElement().attribute("l:href", "");
@@ -161,54 +153,138 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
         if (coverName.at(0) == '#')
             coverName = coverName.right(coverName.size() - 1);
 
-        nodeList = doc->elementsByTagName("binary");
+        QString base64Cover;
+        QDomNodeList nodeList = doc->elementsByTagName("binary");
         for (int i = 0; i < nodeList.size(); i++)
         {
             if (nodeList.at(i).toElement().attribute("id") == coverName)
             {
-                newBook.CoverType = nodeList.at(i).toElement().attribute("content-type");
-                newBook.Cover = nodeList.at(i).toElement().text();
-
-                for (int i = 0; i < newBook.Cover.size(); i++)
-                    if (newBook.Cover.at(i) == '\r' && newBook.Cover.at(i+1) == '\n')
-                    {
-                        newBook.Cover.replace(i, 2, " ");
-                        i++;
-                    }
+                base64Cover = nodeList.at(i).toElement().text();
+                base64Cover.replace("\r\n", " ");
                 break;
             }
         }
 
-        QImage tempImage;
-        QByteArray BinaryCover = QByteArray::fromBase64(newBook.Cover.toUtf8());
-
+        QByteArray cover = QByteArray::fromBase64(base64Cover.toUtf8());
 
         QMimeDatabase data;
-        newBook.CoverType = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
+        QString format = data.mimeTypeForData(cover).preferredSuffix().toUpper();
 
-        std::string str = newBook.CoverType.toStdString();
-        const char* p = str.c_str();
-
-        tempImage = QImage::fromData(BinaryCover, p);
-
-
-        if (tempImage.height() > 750 || tempImage.width() > 1000)
-            tempImage.scaled(750, 1000, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-
-        QByteArray ba;
-        QBuffer bu(&ba);
-
-        tempImage.save(&bu, p);
-
-        newBook.Cover = ba.toBase64();
+        newBook.setCover(QImage::fromData(cover, format.toStdString().c_str()), format);
     }
     else
         newBook.CoverType = "noImage";
 
-    newBook.Index = createFB2BookHash(doc->toByteArray());
-
     return true;
+}
+
+
+void BookCreator::parseFB2TitleInfo(const QDomNode &titleInfo, BookTitleInfo &title)
+{
+    //genres
+    QDomNodeList nodeList = titleInfo.toElement().elementsByTagName("genre");
+    for (int i = 0; i < nodeList.length(); ++i)
+        title.Genres << FB2GenresMap.getFB2Genre(nodeList.item(i).toElement().text() );
+
+    //title
+    if (!titleInfo.namedItem("book-title").isNull())
+        title.Title = titleInfo.namedItem("book-title").toElement().text();
+
+    //author
+    QDomNode author = titleInfo.namedItem("author");
+    if (!author.isNull())
+        parseFB2PersonInfo(author, title.Author);
+
+    //languages
+    if (!titleInfo.namedItem("lang").isNull())
+        title.Language = titleInfo.namedItem("lang").toElement().text();
+    if (!titleInfo.namedItem("src-lang").isNull())
+        title.SourceLanguage = titleInfo.namedItem("src-lang").toElement().text();
+
+    //translator
+    QDomNode translator = titleInfo.namedItem("translator");
+    if (!translator.isNull())
+        parseFB2PersonInfo(translator, title.Translator);
+
+    //keywords
+    if (!titleInfo.namedItem("keywords").isNull())
+        title.Keywords = titleInfo.namedItem("keywords").toElement().text();
+
+    //date of writing
+    if (!titleInfo.namedItem("date").isNull())
+        title.DateOfWriting = titleInfo.namedItem("date").toElement().text();
+
+
+    //annotation
+    if (!titleInfo.namedItem("annotation").isNull())
+    {
+        QDomNodeList nodeList = titleInfo.namedItem("annotation").childNodes();
+        for (int i = 0; i < nodeList.size(); ++i)
+            title.Annotation<<nodeList.item(i).toElement().text();
+    }
+
+    //series
+    if (! titleInfo.namedItem("sequence").isNull())
+    {
+        title.Series.first = titleInfo.namedItem("sequence").toElement().attribute("name", "");
+        title.Series.second = titleInfo.namedItem("sequence").toElement().attribute("number", "").toInt();
+    }
+}
+
+
+void BookCreator::parseFB2PersonInfo(const QDomNode &personInfo, BookPerson &person)
+{
+    if (!personInfo.namedItem("first-name").isNull())
+        person.FirstName = personInfo.namedItem("first-name").toElement().text();
+    if (!personInfo.namedItem("middle-name").isNull())
+        person.MiddleName = personInfo.namedItem("middle-name").toElement().text();
+    if (!personInfo.namedItem("last-name").isNull())
+        person.LastName = personInfo.namedItem("last-name").toElement().text();
+    if (!personInfo.namedItem("nickname").isNull())
+        person.Nickname = personInfo.namedItem("nickname").toElement().text();
+    if (!personInfo.namedItem("home-page").isNull())
+        person.HomePageUrl = personInfo.namedItem("home-page").toElement().text();
+    if (!personInfo.namedItem("email").isNull())
+        person.Email = personInfo.namedItem("email").toElement().text();
+}
+
+
+void BookCreator::parseFB2DocumentInfo(const QDomNode &documentInfo, BookDocumentInfo &info)
+{
+    QDomNode author = documentInfo.namedItem("author");
+    if (!author.isNull())
+        parseFB2PersonInfo(author, info.DocumentCreator);
+
+    if (!documentInfo.namedItem("program-used").isNull())
+        info.ProgramUsed = documentInfo.namedItem("program-used").toElement().text();
+
+    if (!documentInfo.namedItem("date").isNull())
+        info.CreationDate = documentInfo.namedItem("date").toElement().text();
+
+    if (!documentInfo.namedItem("src-url").isNull())
+        info.SrcUrl = documentInfo.namedItem("src-url").toElement().text();
+
+    if (!documentInfo.namedItem("src-ocr").isNull())
+        info.SrcOrl = documentInfo.namedItem("src-ocr").toElement().text();
+}
+
+
+void BookCreator::parseFB2PublishInfo(const QDomNode &publishInfo, BookPublishInfo &info)
+{
+    if (!publishInfo.namedItem("book-name").isNull())
+        info.PublishBookName = publishInfo.namedItem("book-name").toElement().text();
+
+    if (!publishInfo.namedItem("publisher").isNull())
+        info.Publisher = publishInfo.namedItem("publisher").toElement().text();
+
+    if (!publishInfo.namedItem("city").isNull())
+        info.PublishCity = publishInfo.namedItem("city").toElement().text();
+
+    if (!publishInfo.namedItem("year").isNull())
+        info.PublishYear = publishInfo.namedItem("year").toElement().text();
+
+    if (!publishInfo.namedItem("isbn").isNull())
+        info.ISBN = publishInfo.namedItem("isbn").toElement().text();
 }
 
 

@@ -2,6 +2,8 @@
 #include "ui_book_data_widget.h"
 
 #include <QKeyEvent>
+#include <QFileDialog>
+#include <QImageReader>
 
 BookDataWidget::BookDataWidget(QWidget *parent) :
     QWidget(parent),
@@ -78,7 +80,15 @@ void BookDataWidget::on_CloseData_clicked()
 
 void BookDataWidget::on_ChangeCover_clicked()
 {
+    QString file = QFileDialog::getOpenFileName(this, QObject::tr("Open files"), "", tr("Image file (*.jpg *.jpeg *.png)"));
+    QImage newCover(file);
 
+    ///заглушка
+    book->setCover(newCover, QImageReader::imageFormat(file));
+
+    QPixmap cover = QPixmap::fromImage(book->getCover());
+    ui->_Cover->setFixedSize(cover.size());
+    ui->_Cover->setPixmap(cover);
 }
 
 

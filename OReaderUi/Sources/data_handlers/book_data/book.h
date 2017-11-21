@@ -73,10 +73,12 @@ public:
 
     bool haveCoverImage() const;
     QImage getCover() const;
-    QString getHTMLCover() const;
+    void setCover(const QImage cover, const QString format);
 
     BookContainsImages getContainsImages() const;
     void setContainsImages(const BookContainsImages contain);
+
+    bool getFullInfoWasLoaded() const;
 
 private:
     BookFormat Format;
@@ -84,26 +86,25 @@ private:
     QString ZippedFile;
     QString Index;
     QString Codec;    
-
-    QString Title;
-    QString AuthorFirstName;
-    QString AuthorMiddleName;
-    QString AuthorLastName;
-    QPair <QString, int> Series;
-    QStringList Genres;
-    QStringList Annotation;
-    QString Language;
-    QString SourceLanguage;
     qint64 AddittionTime;
-    QString CoverType;
+    BookContainsImages ContainsImages;
+
     QString Cover;
-    BookContainsImages ContainsImages;            /// -1 - unknown, 0 - nope, 1 - yepe
+    QString CoverType;
 
     BookPosition lastBookProgress;
     double ProgressProcent = 0;
 
     QVector <BookPosition> Bookmarks;
     QVector <BookNote> Booknotes;
+
+
+    BookTitleInfo TitleInfo;
+
+    bool fullInfoWasLoaded;
+    BookTitleInfo SrcTitleInfo;
+    BookDocumentInfo DocumentInfo;
+    BookPublishInfo PublishInfo;
 
     friend class BookCreator;
 };

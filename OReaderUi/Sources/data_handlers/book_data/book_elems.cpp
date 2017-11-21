@@ -103,3 +103,71 @@ QJsonObject BookNote::toJson() const
 
     return json;
 }
+
+
+QJsonObject BookTitleInfo::toJson() const
+{
+    QJsonObject json;
+
+    json["Title"] = Title;
+    json["AuthorFirstName"] = Author.FirstName;
+    json["AuthorMiddleName"] = Author.MiddleName;
+    json["AuthorLastName"] = Author.LastName;
+    json["SeriesFirst"] = Series.first;
+    json["SeriesSecond"] = QString::number(Series.second);
+
+    json["Genres"] = QJsonArray::fromStringList(Genres);
+
+    json["Annotation"] = QJsonArray::fromStringList(Annotation);
+
+    json["Language"] = Language;
+    json["SourceLanguage"] = SourceLanguage;
+
+    return json;
+}
+
+
+void BookTitleInfo::fromJson(const QJsonObject &json)
+{
+    QJsonArray tempArr;
+
+    if (json.contains("Title"))
+        Title = json["Title"].toString();
+
+    if (json.contains("AuthorFirstName"))
+        Author.FirstName = json["AuthorFirstName"].toString();
+
+    if (json.contains("AuthorMiddleName"))
+        Author.MiddleName = json["AuthorMiddleName"].toString();
+
+    if (json.contains("AuthorLastName"))
+        Author.LastName = json["AuthorLastName"].toString();
+
+    if (json.contains("SeriesFirst"))
+        Series.first = json["SeriesFirst"].toString();
+
+    if (json.contains("SeriesSecond"))
+        Series.second = json["SeriesSecond"].toInt();
+
+    if (json.contains("Genres"))
+    {
+        tempArr = json["Genres"].toArray();
+        foreach (auto i, tempArr) {
+            Genres.append(i.toString());
+        }
+    }
+
+    if (json.contains("Annotation"))
+    {
+        tempArr = json["Annotation"].toArray();
+        foreach (auto i, tempArr) {
+            Annotation.append(i.toString());
+        }
+    }
+
+    if (json.contains("Language"))
+        Language = json["Language"].toString();
+
+    if (json.contains("SourceLanguage"))
+        SourceLanguage = json["SourceLanguage"].toString();
+}

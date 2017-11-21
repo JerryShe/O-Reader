@@ -2,9 +2,8 @@
 #include <QImage>
 #include <QJsonArray>
 #include <QJsonValue>
-#include <QMimeDatabase>
-#include <QMimeType>
 #include <QtGui/private/qzipreader_p.h>
+#include <QBuffer>
 
 #include "book.h"
 #include "synchronization.h"
@@ -15,6 +14,7 @@
 Book::Book()
 {
     ProgressProcent = 0;
+    fullInfoWasLoaded = false;
     ContainsImages = BookContainsImages::UNKNOWN;
 }
 
@@ -22,18 +22,54 @@ Book::Book()
 Book::Book(const QJsonObject &json)
 {
     ProgressProcent = 0;
+    fullInfoWasLoaded = false;
     ContainsImages = BookContainsImages::UNKNOWN;
 
     this->fromJson(json);
 }
 
 
+QJsonObject Book::toJson() const
+{
+    QJsonObject json;
+
+    json["Index"] = Index;
+    json["Format"] = (int)Format;
+    json["File"] = File;
+    json["ZippedFile"] = ZippedFile;
+    json["Codec"] = Codec;
+    json["AdditionTime"] = QString::number(AdditionTime);
+    json["CoverType"] = CoverType;
+    json["Cover"] = Cover;
+
+    json["LastPosition"] = LastBookProgress.toJson();
+    json["ProgressProcent"] = ProgressProcent;
+
+    json["Images"] = (int)ContainsImages;
+
+    json["TitleInfo"] = TitleInfo.toJson();
+
+
+    QJsonArray bookmarksArr;
+    for (int i = 0; i < Bookmarks.size(); i++)
+        bookmarksArr.append(Bookmarks[i].toJson());
+    json["Bookmarks"] = bookmarksArr;
+
+    QJsonArray booknotesArr;
+    for (int i = 0; i < Booknotes.size(); i++)
+        booknotesArr.append(Booknotes[i].toJson());
+    json["Booknotes"] = booknotesArr;
+
+    return json;
+}
+
+
 void Book::fromJson(const QJsonObject &json)
 {
     QJsonArray tempArr;
-    Genres.clear();
-    Annotation.clear();
-    lastBookProgress.PrevTags.clear();
+
+    if (json.contains("Index"))
+        Index = json["Index"].toString();
 
     if (json.contains("Format"))
         Format = static_cast <BookFormat> (json["Format"].toInt());
@@ -44,54 +80,14 @@ void Book::fromJson(const QJsonObject &json)
     if (json.contains("ZippedFile"))
         ZippedFile = json["ZippedFile"].toString();
 
-    if (json.contains("Index"))
-        Index = json["Index"].toString();
-
     if (json.contains("Codec"))
         Codec = json["Codec"].toString();
 
-    if (json.contains("Title"))
-        Title = json["Title"].toString();
+    if (json.contains("TitleInfo"))
+        TitleInfo.fromJson(json["TitleInfo"].toObject());
 
-    if (json.contains("AuthorFirstName"))
-        AuthorFirstName = json["AuthorFirstName"].toString();
-
-    if (json.contains("AuthorMiddleName"))
-        AuthorMiddleName = json["AuthorMiddleName"].toString();
-
-    if (json.contains("AuthorLastName"))
-        AuthorLastName = json["AuthorLastName"].toString();
-
-    if (json.contains("SeriesFirst"))
-        Series.first = json["SeriesFirst"].toString();
-
-    if (json.contains("SeriesSecond"))
-        Series.second = json["SeriesSecond"].toInt();
-
-    if (json.contains("Genres"))
-    {
-        tempArr = json["Genres"].toArray();
-        foreach (auto i, tempArr) {
-            Genres.append(i.toString());
-        }
-    }
-
-    if (json.contains("Annotation"))
-    {
-        tempArr = json["Annotation"].toArray();
-        foreach (auto i, tempArr) {
-            Annotation.append(i.toString());
-        }
-    }
-
-    if (json.contains("Language"))
-        Language = json["Language"].toString();
-
-    if (json.contains("SourceLanguage"))
-        SourceLanguage = json["SourceLanguage"].toString();
-
-    if (json.contains("AddittionTime"))
-        AddittionTime = json["AddittionTime"].toString().toULongLong();
+    if (json.contains("AdditionTime"))
+        AdditionTime = json["AdditionTime"].toString().toULongLong();
 
     if (json.contains("CoverType"))
         CoverType = json["CoverType"].toString();
@@ -104,7 +100,7 @@ void Book::fromJson(const QJsonObject &json)
 
 
     if (json.contains("LastPosition"))
-        lastBookProgress.fromJson(json["LastPosition"].toObject());
+        LastBookProgress.fromJson(json["LastPosition"].toObject());
 
     if (json.contains("ProgressProcent"))
         ProgressProcent = json["ProgressProcent"].toDouble();
@@ -199,67 +195,21 @@ QByteArray Book::getFB2BookByteArray(bool &result)
 }
 
 
-QJsonObject Book::toJson() const
-{
-    QJsonObject json;
-
-    json["Format"] = (int)Format;
-    json["File"] = File;
-    json["ZippedFile"] = ZippedFile;
-    json["Index"] = Index;
-    json["Codec"] = Codec;
-    json["Title"] = Title;
-    json["AuthorFirstName"] = AuthorFirstName;
-    json["AuthorMiddleName"] = AuthorMiddleName;
-    json["AuthorLastName"] = AuthorLastName;
-    json["SeriesFirst"] = Series.first;
-    json["SeriesSecond"] = QString::number(Series.second);
-
-    json["Genres"] = QJsonArray::fromStringList(Genres);
-
-    json["Annotation"] = QJsonArray::fromStringList(Annotation);
-
-    json["Language"] = Language;
-    json["SourceLanguage"] = SourceLanguage;
-    json["AddittionTime"] = QString::number(AddittionTime);
-
-    json["LastPosition"] = lastBookProgress.toJson();
-
-    json["ProgressProcent"] = ProgressProcent;
-    json["CoverType"] = CoverType;
-    json["Cover"] = Cover;
-    json["Images"] = (int)ContainsImages;
-
-
-    QJsonArray bookmarksArr;
-    for (int i = 0; i < Bookmarks.size(); i++)
-        bookmarksArr.append(Bookmarks[i].toJson());
-    json["Bookmarks"] = bookmarksArr;
-
-    QJsonArray booknotesArr;
-    for (int i = 0; i < Booknotes.size(); i++)
-        booknotesArr.append(Booknotes[i].toJson());
-    json["Booknotes"] = booknotesArr;
-
-    return json;
-}
-
-
 QString Book::getAuthorName() const
 {
-    return AuthorFirstName + ' ' + AuthorLastName;
+    return TitleInfo.Author.FirstName + " " + TitleInfo.Author.LastName;
 }
 
 
 QString Book::getTitle() const
 {
-    return Title;
+    return TitleInfo.Title;
 }
 
 
 qint64 Book::getAdditionalTime() const
 {
-    return AddittionTime;
+    return AdditionTime;
 }
 
 
@@ -271,11 +221,7 @@ QImage Book::getCover() const
     {
         QByteArray BinaryCover = QByteArray::fromBase64(Cover.toUtf8());
 
-        QMimeDatabase data;
-        QString type = data.mimeTypeForData(BinaryCover).preferredSuffix().toUpper();
-
-        std::string str = type.toStdString();
-        const char* p = str.c_str();
+        const char* p = CoverType.toStdString().c_str();
 
         tempImage = QImage::fromData(BinaryCover, p);
     }
@@ -291,19 +237,27 @@ QImage Book::getCover() const
 }
 
 
+void Book::setCover(const QImage cover, const QString format)
+{
+    CoverType = format;
+
+    if (cover.height() > 500 || cover.width() > 750)
+        cover.scaled(750, 1000, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    QByteArray ba;
+    QBuffer bu(&ba);
+
+    cover.save(&bu, format.toStdString().c_str());
+
+    Cover = ba.toBase64();
+}
+
+
 bool Book::haveCoverImage() const
 {
     if (CoverType == "noImage")
         return false;
     return true;
-}
-
-
-QString Book::getHTMLCover() const
-{
-    if (CoverType != "noImage")
-        return Cover;
-    return "";
 }
 
 
@@ -315,25 +269,25 @@ QString Book::getIndex() const
 
 QStringList Book::getAnnotation() const
 {
-    return Annotation;
+    return TitleInfo.Annotation;
 }
 
 
 QStringList Book::getGenres() const
 {
-    return Genres;
+    return TitleInfo.Genres;
 }
 
 
 QString Book::getLanguage() const
 {
-    return Language;
+    return TitleInfo.Language;
 }
 
 
 QStack <QString> Book::getProgressTagStack() const
 {
-    return lastBookProgress.PrevTags;
+    return LastBookProgress.PrevTags;
 }
 
 
@@ -345,9 +299,9 @@ double Book::getProgressProcent() const
 
 void Book::setProgress(const long long &progress, const bool &paragrafTail, const QStack <QString> &tagStack, const double &procent)
 {
-    lastBookProgress.TextPos = progress;
-    lastBookProgress.ParagrafTail = paragrafTail;
-    lastBookProgress.PrevTags = tagStack;
+    LastBookProgress.TextPos = progress;
+    LastBookProgress.ParagrafTail = paragrafTail;
+    LastBookProgress.PrevTags = tagStack;
 
     ProgressProcent = procent;
 
@@ -357,16 +311,16 @@ void Book::setProgress(const long long &progress, const bool &paragrafTail, cons
 
 BookPosition Book::getProgress() const
 {
-    return lastBookProgress;
+    return LastBookProgress;
 }
 
 
 QString Book::getSeries() const
 {
-    if (Series.second)
-        return Series.first + ' ' + QString::number(Series.second);
+    if (TitleInfo.Series.second)
+        return TitleInfo.Series.first + ' ' + QString::number(TitleInfo.Series.second);
     else
-        return Series.first;
+        return TitleInfo.Series.first;
 }
 
 
@@ -411,6 +365,12 @@ Book::BookContainsImages Book::getContainsImages() const
 void Book::setContainsImages(const BookContainsImages contain)
 {
     ContainsImages = contain;
+}
+
+
+bool Book::getFullInfoWasLoaded() const
+{
+    return fullInfoWasLoaded;
 }
 
 

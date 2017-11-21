@@ -259,7 +259,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="BookData" stretch="0,0,0,0,0,10,0">
+        <layout class="QVBoxLayout" name="BookData" stretch="0,0,0,0,10,0">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -398,25 +398,6 @@
           </widget>
          </item>
          <item>
-          <widget class="Line" name="leftLine">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <property name="midLineWidth">
-            <number>0</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QTextEdit" name="annotation">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -458,6 +439,9 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="cursorWidth">
+            <number>0</number>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::NoTextInteraction</set>
@@ -520,17 +504,23 @@ p, li { white-space: pre-wrap; }
             </size>
            </property>
            <property name="frameShape">
-            <enum>QFrame::Box</enum>
+            <enum>QFrame::NoFrame</enum>
            </property>
            <property name="text">
-            <string notr="true">TextLabel</string>
+            <string notr="true">image</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer">
+          <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -541,34 +531,24 @@ p, li { white-space: pre-wrap; }
           </spacer>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <property name="bottomMargin">
-            <number>0</number>
+          <widget class="QLabel" name="BookProgress">
+           <property name="font">
+            <font>
+             <pointsize>20</pointsize>
+            </font>
            </property>
-           <item>
-            <widget class="QLabel" name="BookProgress">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string notr="true">59,2%</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
+           <property name="text">
+            <string notr="true">59,2%</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_2">
+          <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>

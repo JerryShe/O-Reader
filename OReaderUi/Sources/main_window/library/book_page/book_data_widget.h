@@ -22,6 +22,7 @@ public:
 
 signals:
     void showBookPage();
+    void updateBookData(QString index);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event);

@@ -32,4 +32,59 @@ struct BookNote: public BookPosition
     QString Note;
 };
 
+
+
+
+struct BookPerson
+{
+    QString FirstName;
+    QString MiddleName;
+    QString LastName;
+    QString Nickname;
+    QString HomePageUrl;
+    QString Email;
+};
+
+
+struct BookTitleInfo
+{
+   BookPerson Author;
+   QString Title;
+
+   QPair <QString, int> Series;
+   QStringList Genres;
+   QStringList Annotation;
+   QString Language;
+   QString SourceLanguage;
+
+   QString Keywords;
+   QString DateOfWriting;
+
+   BookPerson Translator;
+
+
+   QJsonObject toJson() const;
+   void fromJson(const QJsonObject &json);
+};
+
+
+struct BookDocumentInfo
+{
+    BookPerson DocumentCreator;
+    QString ProgramUsed;
+    QString CreationDate;
+    QString SrcUrl;
+    QString SrcOrl;
+};
+
+
+struct BookPublishInfo
+{
+    QString PublishBookName;
+    QString Publisher;
+    QString PublishCity;
+    QString PublishYear;
+    QString ISBN;
+};
+
 #endif // BOOK_ELMS_H
