@@ -86,13 +86,13 @@ private:
     QString ZippedFile;
     QString Index;
     QString Codec;    
-    qint64 AddittionTime;
+    qint64 AdditionTime;
     BookContainsImages ContainsImages;
 
     QString Cover;
     QString CoverType;
 
-    BookPosition lastBookProgress;
+    BookPosition LastBookProgress;
     double ProgressProcent = 0;
 
     QVector <BookPosition> Bookmarks;
@@ -105,6 +105,7 @@ private:
     BookTitleInfo SrcTitleInfo;
     BookDocumentInfo DocumentInfo;
     BookPublishInfo PublishInfo;
+
 
     friend class BookCreator;
 };

@@ -110,9 +110,12 @@ QJsonObject BookTitleInfo::toJson() const
     QJsonObject json;
 
     json["Title"] = Title;
-    json["AuthorFirstName"] = Author.FirstName;
-    json["AuthorMiddleName"] = Author.MiddleName;
-    json["AuthorLastName"] = Author.LastName;
+
+    QJsonArray authors;
+    for (int i = 0; i < Authors.size(); ++i)
+        authors.append(Authors[i].toJson());
+    json["Authors"] = authors;
+
     json["SeriesFirst"] = Series.first;
     json["SeriesSecond"] = QString::number(Series.second);
 
@@ -134,14 +137,15 @@ void BookTitleInfo::fromJson(const QJsonObject &json)
     if (json.contains("Title"))
         Title = json["Title"].toString();
 
-    if (json.contains("AuthorFirstName"))
-        Author.FirstName = json["AuthorFirstName"].toString();
-
-    if (json.contains("AuthorMiddleName"))
-        Author.MiddleName = json["AuthorMiddleName"].toString();
-
-    if (json.contains("AuthorLastName"))
-        Author.LastName = json["AuthorLastName"].toString();
+    if (json.contains("Authors"))
+    {
+        QJsonArray authors = json["Authors"].toArray();
+        foreach (auto person, authors) {
+            BookPerson author;
+            author.fromJson(person.toObject());
+            Authors.append(author);
+        }
+    }
 
     if (json.contains("SeriesFirst"))
         Series.first = json["SeriesFirst"].toString();
@@ -170,4 +174,27 @@ void BookTitleInfo::fromJson(const QJsonObject &json)
 
     if (json.contains("SourceLanguage"))
         SourceLanguage = json["SourceLanguage"].toString();
+}
+
+
+QJsonObject BookPerson::toJson() const
+{
+    QJsonObject json;
+    json["FirstName"] = FirstName;
+    json["MiddleName"] = MiddleName;
+    json["LastName"] = LastName;
+    return json;
+}
+
+
+void BookPerson::fromJson(const QJsonObject &json)
+{
+    if (json.contains("FirstName"))
+        FirstName = json["FirstName"].toString();
+
+    if (json.contains("MiddleName"))
+        MiddleName = json["MiddleName"].toString();
+
+    if (json.contains("LastName"))
+        LastName = json["LastName"].toString();
 }

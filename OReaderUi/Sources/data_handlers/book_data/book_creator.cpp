@@ -103,7 +103,7 @@ bool BookCreator::loadFB2(QDomDocument *doc, Book &newBook)
     newBook.Format = Book::BookFormat::FB2;
 
     newBook.Index = createFB2BookHash(doc->toByteArray());
-    newBook.AddittionTime = QDateTime::currentMSecsSinceEpoch();
+    newBook.AdditionTime = QDateTime::currentMSecsSinceEpoch();
 
 
     if (doc->namedItem("FictionBook").nodeName().isNull())
@@ -191,9 +191,20 @@ void BookCreator::parseFB2TitleInfo(const QDomNode &titleInfo, BookTitleInfo &ti
         title.Title = titleInfo.namedItem("book-title").toElement().text();
 
     //author
+    QDomNodeList authorList = titleInfo.toElement().elementsByTagName("author");
+    for (int i = 0; i < authorList.length(); ++i)
+    {
+        if (!authorList.item(i).isNull())
+        {
+            BookPerson author;
+            parseFB2PersonInfo(authorList.item(i), author);
+            title.Authors.append(author);
+        }
+    }
+
     QDomNode author = titleInfo.namedItem("author");
     if (!author.isNull())
-        parseFB2PersonInfo(author, title.Author);
+
 
     //languages
     if (!titleInfo.namedItem("lang").isNull())

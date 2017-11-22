@@ -98,13 +98,11 @@ void Book::fromJson(const QJsonObject &json)
     if (json.contains("Images"))
         ContainsImages = static_cast <BookContainsImages> (json["Images"].toInt());
 
-
     if (json.contains("LastPosition"))
         LastBookProgress.fromJson(json["LastPosition"].toObject());
 
     if (json.contains("ProgressProcent"))
         ProgressProcent = json["ProgressProcent"].toDouble();
-
 
     if (json.contains("Bookmarks"))
     {
@@ -197,7 +195,7 @@ QByteArray Book::getFB2BookByteArray(bool &result)
 
 QString Book::getAuthorName() const
 {
-    return TitleInfo.Author.FirstName + " " + TitleInfo.Author.LastName;
+    return TitleInfo.Authors.first().FirstName + " " + TitleInfo.Authors.first().LastName;
 }
 
 

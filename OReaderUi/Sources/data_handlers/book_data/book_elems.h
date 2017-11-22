@@ -43,12 +43,16 @@ struct BookPerson
     QString Nickname;
     QString HomePageUrl;
     QString Email;
+
+
+    QJsonObject toJson() const;
+    void fromJson(const QJsonObject &json);
 };
 
 
 struct BookTitleInfo
 {
-   BookPerson Author;
+   QVector <BookPerson> Authors;
    QString Title;
 
    QPair <QString, int> Series;
